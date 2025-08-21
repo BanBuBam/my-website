@@ -1,0 +1,121 @@
+import React from 'react';
+import { Link } from 'react-router-dom';
+import './Header.css';
+import logo from '../../../assets/images/logo.png';
+import phoneIcon from '../../../assets/icons/phone-icon.png';
+import earthIcon from '../../../assets/icons/earth-icon.png';
+import arrowDown from '../../../assets/icons/arrow-down.png';
+import facebookIcon from '../../../assets/icons/facebook.png';
+import youtubeIcon from '../../../assets/icons/youtube.png';
+import zaloIcon from '../../../assets/icons/zalo.png';
+import searchIcon from '../../../assets/icons/search.png';
+import arrowDown2 from '../../../assets/icons/arrow-down-2.png';
+const Header = () => {
+  return (
+    <header className="site-header">
+      <div className="header-top">
+        <div className="container header-top-container">
+          <a href="/" className="logo">
+            <img src={logo} alt="Benh vien Phu Yen logo" />
+          </a>
+          <div className="header-contact-info">
+            <div className="contact-item">
+              {/* merged image */}
+              <div className="icon-wrapper">
+                <img src={phoneIcon} alt="Cấp cứu icon" className="icon-visible" />
+                <img src={phoneIcon} alt="" className="icon-hidden" />
+              </div>
+              <div className="text-wrapper">
+                <span>Cấp cứu</span>
+                <strong>84 04 372 766</strong>
+              </div>
+            </div>
+            <div className="contact-item">
+              {/* merged image */}
+              <div className="icon-wrapper">
+                <img src={phoneIcon} alt="Hotline icon" className="icon-visible" />
+                <img src={phoneIcon} alt="" className="icon-hidden" />
+              </div>
+              <div className="text-wrapper">
+                <span>Hotline</span>
+                <strong>84 04 372 766</strong>
+              </div>
+            </div>
+          </div>
+          <div className="header-actions">
+            <div className="language-switcher">
+              <img src={earthIcon} alt="language icon" />
+              <span>Vie</span>
+              <img src={arrowDown} alt="arrow down" />
+            </div>
+            <div className="social-icons">
+              <a href="https://facebook.com" target="_blank" rel="noopener noreferrer">
+                <img src={facebookIcon} alt="Facebook" />
+              </a>
+              <a href="https://youtube.com" target="_blank" rel="noopener noreferrer">
+                <img src={youtubeIcon} alt="Youtube" />
+              </a>
+              <a href="https://zalo.me" target="_blank" rel="noopener noreferrer">
+                <img src={zaloIcon} alt="Zalo" />
+              </a>
+            </div>
+            <button className="search-icon" type="button">
+              <img src={searchIcon} alt="Search" />
+            </button>
+          </div>
+        </div>
+        <div className="container header-quick-links">
+          <Link to="/dat-lich-kham">Đặt lịch khám</Link>
+          <Link to="/tim-bac-si">Tìm bác sĩ</Link>
+          <Link to="/goi-kham">Gói khám</Link>
+          <Link to="/tra-cuu-ket-qua">Tra cứu kết quả</Link>
+          <Link to="/hoi-dap">Hỏi đáp</Link>
+          <Link to="/tai-ung-dung">Tải ứng dụng</Link>
+          <Link to="/dang-nhap">Đăng nhập</Link>
+          <Link to="/dang-ky">Đăng ký</Link>
+        </div>
+      </div>
+      <nav className="main-nav">
+        <div className="container">
+          <ul>
+            <li><a href="#">Trang chủ</a></li>
+            <li>
+              <a href="#">
+                Giới thiệu <img src={arrowDown2} alt="arrow down" />
+              </a>
+            </li>
+            <li>
+              <a href="#">
+                Chuyên khoa <img src={arrowDown2} alt="arrow down" />
+              </a>
+            </li>
+            <li>
+              <a href="#">
+                Chuyên gia - bác sĩ <img src={arrowDown2} alt="arrow down" />
+              </a>
+            </li>
+            <li>
+              <a href="#">
+                Dịch vụ y khoa <img src={arrowDown2} alt="arrow down" />
+              </a>
+            </li>
+            <li>
+              <a href="#">
+                Hỗ trợ khách hàng <img src={arrowDown2} alt="arrow down" />
+              </a>
+            </li>
+            <li>
+              <a href="#">
+                Tin tức và sự kiện <img src={arrowDown2} alt="arrow down" />
+              </a>
+            </li>
+            <li><a href="#">Tuyển dụng</a></li>
+            <li><a href="#">Liên hệ</a></li>
+          </ul>
+        </div>
+      </nav>
+    </header>
+  );
+};
+
+export default Header;

@@ -1,0 +1,80 @@
+/* src/components/LoginForm.css */
+
+/* Dùng để căn form ra giữa màn hình */
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 60vh; /* Chiều cao tối thiểu bằng chiều cao màn hình */
+  background-color: #f0f4f8; /* Màu nền xám nhạt bên ngoài */
+  padding: 20px;
+}
+
+/* Khung trắng chứa form */
+.login-form {
+  background-color: #ffffff;
+  padding: 40px;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1); /* Hiệu ứng đổ bóng */
+  border: 1px solid #e0e0e0; /* Đường viền mờ */
+  max-width: 400px;
+  width: 100%;
+  box-sizing: border-box; /* Đảm bảo padding không làm tăng kích thước */
+}
+
+.login-form h2 {
+  margin-top: 0;
+  margin-bottom: 30px;
+  font-size: 28px;
+  font-weight: 600;
+  color: #333;
+  text-align: left;
+}
+
+/* Mỗi nhóm chứa label và input */
+.form-group {
+  margin-bottom: 25px;
+}
+
+.form-group label {
+  display: block; /* Cho label nằm trên input */
+  margin-bottom: 8px;
+  font-size: 14px;
+  color: #555;
+  font-weight: 500;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 12px 15px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 16px;
+  box-sizing: border-box;
+  transition: border-color 0.3s ease;
+}
+
+/* Hiệu ứng khi focus vào input */
+.form-group input:focus {
+  outline: none;
+  border-color: #2c5282; /* Màu xanh đậm khi focus */
+}
+
+/* Nút Sign In */
+.submit-btn {
+  width: 100%;
+  padding: 14px 20px;
+  border: none;
+  border-radius: 8px;
+  background-color: #2c5282; /* Màu xanh đậm */
+  color: white;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+/* Hiệu ứng khi di chuột qua nút */
+.submit-btn:hover {
+  background-color: #2a4365; /* Màu xanh đậm hơn */
+}

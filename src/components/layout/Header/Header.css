@@ -1,0 +1,127 @@
+.site-header {
+    background-color: var(--bg-white);
+  }
+  .header-top {
+    background-color: var(--bg-white);
+    padding: 24px 0;
+    border-bottom: 1px solid #eee;
+  }
+  .header-top-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+  }
+  .logo img {
+    height: 60px;
+    width: auto;
+  }
+  .header-contact-info {
+    display: flex;
+    gap: 40px;
+  }
+  .contact-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .icon-wrapper {
+    position: relative;
+    width: 48px;
+    height: 48px;
+    background-color: rgba(0, 88, 160, 0.1);
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .icon-wrapper .icon-visible {
+    position: absolute;
+  }
+  .icon-wrapper .icon-hidden {
+    opacity: 0;
+  }
+  .text-wrapper {
+    display: flex;
+    flex-direction: column;
+  }
+  .text-wrapper span {
+    font-size: 12px;
+    color: var(--text-dark);
+  }
+  .text-wrapper strong {
+    font-family: 'Noto Sans', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--primary-blue);
+  }
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+  }
+  .language-switcher {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+  }
+  .social-icons {
+    display: flex;
+    gap: 8px;
+  }
+  .social-icons a, .search-icon {
+    width: 48px;
+    height: 48px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
+    background-color: rgba(0, 88, 160, 0.1);
+  }
+  .social-icons a img[alt="Zalo"] {
+    width: 37px;
+    height: 37px;
+  }
+  .search-icon {
+    background-color: var(--primary-blue);
+  }
+  .header-quick-links {
+    display: flex;
+    justify-content: flex-end;
+    gap: 40px;
+    padding-top: 20px;
+    font-family: 'Noto Sans', sans-serif;
+    font-size: 14px;
+    color: var(--text-dark);
+  }
+  .main-nav {
+    background-color: var(--primary-blue);
+    color: var(--bg-white);
+  }
+  .main-nav .container {
+    display: flex;
+    justify-content: center;
+  }
+  .main-nav ul {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 30px;
+    padding: 17px 0;
+  }
+  .main-nav ul li a {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 700;
+    font-size: 14px;
+  }
+  @media (max-width: 1200px) {
+    .header-contact-info, .header-actions { display: none; }
+    .header-top-container { justify-content: center; }
+  }
+  @media (max-width: 992px) {
+    .main-nav { display: none; } /* Simplified for non-JS implementation */
+    .header-quick-links { justify-content: center; flex-wrap: wrap; }
+  }
