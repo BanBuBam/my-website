@@ -1,17 +1,11 @@
 import React from 'react';
-import Footer from './components/layout/Footer/Footer';
-import Header from './components/layout/Header/Header';
 import AppRoutes from './routes'; // Nhập cấu hình routes
 
 function App() {
+  // Không còn Header và Footer ở đây nữa
   return (
     <div className="App">
-      <Header />
-      <main>
-        {/* Nội dung trang sẽ được render ở đây */}
-        <AppRoutes />
-      </main>
-      <Footer />
+      <AppRoutes />
     </div>
   );
 }
