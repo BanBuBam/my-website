@@ -1,0 +1,120 @@
+/* Tổng thể trang */
+.staff-login-page {
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f8f9fa;
+  overflow: hidden; /* Tránh scroll không cần thiết */
+}
+
+/* --- Cột bên trái --- */
+.login-promo-section {
+  flex-basis: 55%; /* Chiếm 55% chiều rộng */
+  padding: 4rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between; /* Đẩy nội dung và hình minh họa ra xa nhau */
+  color: #333;
+}
+
+.promo-content .logo {
+  width: 150px;
+  margin-bottom: 3rem;
+}
+
+.promo-content h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.promo-content h2 {
+  font-size: 1.5rem;
+  font-weight: 400;
+  margin-bottom: 1.5rem;
+  color: #555;
+}
+
+.promo-content p {
+  font-size: 1rem;
+  line-height: 1.6;
+  max-width: 500px;
+  color: #666;
+}
+
+.illustration {
+  max-width: 350px;
+  align-self: flex-start; /* Canh hình về bên trái */
+}
+
+/* --- Cột bên phải --- */
+.login-form-section {
+  flex-basis: 45%; /* Chiếm 45% chiều rộng */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #f0f2f5;
+}
+
+.login-card {
+  width: 100%;
+  max-width: 400px;
+  background: #ffffff;
+  padding: 3rem;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.login-card h2 {
+  font-size: 1.8rem;
+  font-weight: 600;
+  margin-top: 0;
+  margin-bottom: 1.5rem;
+  text-align: left;
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+  color: #555;
+  font-weight: 500;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 0.8rem 1rem;
+  border: 1px solid #dbe2e9;
+  border-radius: 8px;
+  font-size: 1rem;
+  box-sizing: border-box; /* Đảm bảo padding không làm tăng kích thước */
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: #3a6ea5; /* Màu xanh dương khi focus */
+  box-shadow: 0 0 0 3px rgba(58, 110, 165, 0.2);
+}
+
+.login-button {
+  width: 100%;
+  padding: 0.9rem;
+  border: none;
+  border-radius: 8px;
+  background-color: #3a6ea5; /* Màu xanh dương đậm */
+  color: white;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.login-button:hover {
+  background-color: #2e5a8e; /* Màu đậm hơn khi hover */
+}
