@@ -1,14 +1,12 @@
 import React from 'react';
-import './StaffLoginPage.css'; // Nhập file CSS để tạo kiểu
+import './StaffLoginPage.css';
 
-// Import hình ảnh từ thư mục assets
 import logo from '../../../assets/images/logo-boxdoc.png';
 import illustration from '../../../assets/images/medic-illustration.png';
 
 const StaffLoginPage = () => {
   const handleSubmit = (event) => {
     event.preventDefault();
-    // Xử lý logic đăng nhập ở đây
     console.log('Form submitted');
   };
 

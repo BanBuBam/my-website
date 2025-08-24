@@ -71,8 +71,8 @@ const Header = () => {
           <Link to="/tra-cuu-ket-qua">Tra cứu kết quả</Link>
           <Link to="/hoi-dap">Hỏi đáp</Link>
           <Link to="/tai-ung-dung">Tải ứng dụng</Link>
-          <Link to="/dang-nhap">Đăng nhập</Link>
-          <Link to="/dang-ky">Đăng ký</Link>
+          <Link to="/login">Đăng nhập</Link>
+          <Link to="/register">Đăng ký</Link>
         </div>
       </div>
       <nav className="main-nav">
