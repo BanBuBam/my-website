@@ -1,0 +1,165 @@
+.appointment-status-page {
+  padding: 2rem;
+  background-color: #f4f7f6;
+  min-height: 100%;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.appointment-status-page h1 {
+  font-size: 1.8rem;
+  margin-bottom: 2rem;
+  color: #212529;
+}
+
+.appointment-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1.5rem;
+}
+
+.appointment-card {
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.card-header {
+  padding: 0.75rem 1.25rem;
+  display: flex;
+  justify-content: flex-end;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.status-badge {
+  padding: 0.3rem 0.8rem;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #fff;
+}
+
+
+.status-confirmed { background-color: #0d6efd; } /* Xanh dương */
+.status-pending { background-color: #ffc107; color: #212529; } /* Vàng */
+.status-cancelled { background-color: #dc3545; } /* Đỏ */
+.status-completed { background-color: #6c757d; } /* Xám */
+
+.card-body {
+  padding: 1.25rem;
+  flex-grow: 1;
+}
+
+.specialty {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin: 0 0 0.5rem 0;
+  color: #212529;
+}
+
+.doctor, .datetime {
+  font-size: 0.95rem;
+  color: #6c757d;
+  margin: 0.25rem 0;
+}
+
+.card-footer {
+  padding: 1rem 1.25rem;
+  background-color: #f8f9fa;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.btn-cancel {
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  border: 1px solid #dc3545;
+  background-color: #fff;
+  color: #dc3545;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-cancel:hover {
+  background-color: #dc3545;
+  color: #fff;
+}
+
+.filter-bar {
+  background-color: #fff;
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  margin-bottom: 2rem;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.filter-group label {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #495057;
+}
+
+.status-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.status-buttons button {
+  padding: 0.5rem 1rem;
+  border: 1px solid #ced4da;
+  background-color: #f8f9fa;
+  color: #495057;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: all 0.2s ease;
+}
+
+.status-buttons button:hover {
+  background-color: #e2e6ea;
+}
+
+.status-buttons button.active {
+  background-color: #0d6efd;
+  color: #fff;
+  border-color: #0d6efd;
+}
+
+.date-inputs {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.date-inputs input[type="date"] {
+  padding: 0.5rem;
+  border: 1px solid #ced4da;
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 0.9rem;
+}
+
+.date-inputs span {
+    color: #6c757d;
+}
+
+.no-results {
+    text-align: center;
+    color: #6c757d;
+    padding: 2rem;
+    grid-column: 1 / -1; 
+}

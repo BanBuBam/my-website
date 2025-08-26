@@ -8,6 +8,7 @@ import MainLayout from '../components/layout/MainLayout'; // ✨ NHẬP LAYOUT M
 import HomePage from '../pages/HomePage';
 import LoginPage from '../pages/login/LoginPage';
 import RegisterPage from '../pages/RegisterPage';
+import TrangThaiDatLich from '../pages/dat-lich-kham/trang-thai/TrangThaiDatLich';
 
 // Bộ định tuyến của nhân viên
 import StaffRoutes from '../staff/routes';
@@ -20,6 +21,7 @@ const AppRoutes = () => {
         <Route path="/" element={<HomePage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
+        <Route path="/trang-thai-dat-lich" element={<TrangThaiDatLich />} />
       </Route>
 
       {/* --- CÁC ROUTE TÁCH BIỆT (KHÔNG CÓ HEADER/FOOTER) --- */}
