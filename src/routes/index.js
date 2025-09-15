@@ -9,6 +9,7 @@ import HomePage from '../pages/HomePage';
 import LoginPage from '../pages/login/LoginPage';
 import RegisterPage from '../pages/RegisterPage';
 import TrangThaiDatLich from '../pages/dat-lich-kham/trang-thai/TrangThaiDatLich';
+import DatLichKhamPage from '../pages/dat-lich-kham/dat-lich/DatLichKhamPage';
 
 // Bộ định tuyến của nhân viên
 import StaffRoutes from '../staff/routes';
@@ -22,6 +23,7 @@ const AppRoutes = () => {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/trang-thai-dat-lich" element={<TrangThaiDatLich />} />
+        <Route path="/dat-lich-kham" element={<DatLichKhamPage />} />
       </Route>
 
       {/* --- CÁC ROUTE TÁCH BIỆT (KHÔNG CÓ HEADER/FOOTER) --- */}
