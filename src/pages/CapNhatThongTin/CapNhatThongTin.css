@@ -1,0 +1,284 @@
+/* Container chính */
+.cap-nhat-thong-tin-container {
+  background-color: #f0f4f8;
+  min-height: 80vh;
+  padding: 20px;
+}
+
+.cap-nhat-thong-tin-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  padding: 40px;
+}
+
+/* Header section */
+.header-section {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.header-section h1 {
+  font-size: 32px;
+  font-weight: 700;
+  color: #2c5282;
+  margin-bottom: 10px;
+}
+
+.header-section p {
+  font-size: 16px;
+  color: #666;
+  margin: 0;
+}
+
+/* Form layout */
+.cap-nhat-form {
+  width: 100%;
+}
+
+.form-columns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  margin-bottom: 30px;
+}
+
+/* Form groups */
+.form-group {
+  margin-bottom: 25px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 14px;
+  color: #333;
+  font-weight: 600;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  padding: 12px 15px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 16px;
+  box-sizing: border-box;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: #2c5282;
+  box-shadow: 0 0 0 3px rgba(44, 82, 130, 0.1);
+}
+
+.form-group select {
+  cursor: pointer;
+}
+
+.form-group textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+/* File input styling */
+.file-input {
+  display: none;
+}
+
+.file-input-label {
+  display: block;
+  padding: 12px 15px;
+  border: 2px dashed #ddd;
+  border-radius: 8px;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.3s ease, background-color 0.3s ease;
+  color: #666;
+  font-style: italic;
+}
+
+.file-input-label:hover {
+  border-color: #2c5282;
+  background-color: #f8fafc;
+}
+
+.form-group:has(.file-input) .file-input-label {
+  margin-top: 0;
+}
+
+/* Submit section */
+.submit-section {
+  text-align: center;
+  margin-top: 40px;
+  padding-top: 30px;
+  border-top: 1px solid #e2e8f0;
+}
+
+.cap-nhat-btn {
+  background-color: #2c5282;
+  color: white;
+  border: none;
+  padding: 15px 40px;
+  font-size: 18px;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  min-width: 200px;
+}
+
+.cap-nhat-btn:hover {
+  background-color: #2a4365;
+  transform: translateY(-2px);
+}
+
+.cap-nhat-btn:active {
+  transform: translateY(0);
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .cap-nhat-thong-tin-content {
+    padding: 20px;
+    margin: 10px;
+  }
+  
+  .form-columns {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  
+  .header-section h1 {
+    font-size: 24px;
+  }
+  
+  .header-section p {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .cap-nhat-thong-tin-container {
+    padding: 10px;
+  }
+  
+  .cap-nhat-thong-tin-content {
+    padding: 15px;
+  }
+  
+  .cap-nhat-btn {
+    width: 100%;
+    padding: 12px 20px;
+    font-size: 16px;
+  }
+}
+
+/* Validation styles */
+.form-group input:invalid,
+.form-group select:invalid,
+.form-group textarea:invalid {
+  border-color: #e53e3e;
+}
+
+.form-group input:valid,
+.form-group select:valid,
+.form-group textarea:valid {
+  border-color: #38a169;
+}
+
+/* Required field indicator */
+.form-group label::after {
+  content: "";
+}
+
+.form-group label:has(+ input[required])::after,
+.form-group label:has(+ select[required])::after,
+.form-group label:has(+ textarea[required])::after {
+  content: " *";
+  color: #e53e3e;
+}
+
+/* Placeholder styling */
+.form-group input::placeholder,
+.form-group textarea::placeholder {
+  color: #a0aec0;
+  font-style: italic;
+}
+
+/* Select arrow styling */
+.form-group select {
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 16px;
+  padding-right: 40px;
+  appearance: none;
+}
+
+/* Loading state for submit button */
+.cap-nhat-btn:disabled {
+  background-color: #a0aec0;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.cap-nhat-btn:disabled:hover {
+  background-color: #a0aec0;
+  transform: none;
+}
+
+/* Special styling for address fields */
+.form-group:has(#diaChiCuThe) textarea,
+.form-group:has(#diUng) textarea {
+  min-height: 80px;
+}
+
+/* Grid adjustments for better spacing */
+.column-1,
+.column-2 {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Enhanced file upload area */
+.form-group:has(.file-input) {
+  position: relative;
+}
+
+.file-input-label::before {
+  content: "📁 ";
+  font-size: 18px;
+  margin-right: 8px;
+}
+
+/* Focus states for better accessibility */
+.file-input:focus + .file-input-label {
+  border-color: #2c5282;
+  box-shadow: 0 0 0 3px rgba(44, 82, 130, 0.1);
+}
+
+/* Improved spacing for form groups */
+.form-group:last-child {
+  margin-bottom: 0;
+}
+
+/* Enhanced hover effects */
+.form-group input:hover,
+.form-group select:hover,
+.form-group textarea:hover {
+  border-color: #cbd5e0;
+}
+
+/* Better visual hierarchy */
+.column-1 .form-group:first-child label,
+.column-2 .form-group:first-child label {
+  color: #2c5282;
+  font-weight: 700;
+}

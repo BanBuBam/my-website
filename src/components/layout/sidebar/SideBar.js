@@ -32,6 +32,8 @@ const Sidebar = () => {
         <div className="nav-section quick-actions">
           <ul>
             <li><Link to="/dat-lich-kham">Đặt lịch khám</Link></li>
+            <li><Link to="/cap-nhat-thong-tin">Cập nhật thông tin người dùng</Link></li>
+            <li><Link to="/hoa-don-benh-nhan">Hóa đơn bệnh nhân</Link></li>
             <li><Link to="/trang-thai-dat-lich">Trạng thái đặt lịch</Link></li>
             <li><Link to="/goi-kham">Gói khám</Link></li>
             <li><Link to="/tra-cuu-ket-qua">Tra cứu kết quả</Link></li>

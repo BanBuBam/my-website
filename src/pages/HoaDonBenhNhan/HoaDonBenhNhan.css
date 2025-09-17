@@ -1,0 +1,385 @@
+/* Container chính */
+.hoa-don-benh-nhan-container {
+  background-color: #f0f4f8;
+  min-height: 80vh;
+  padding: 20px;
+}
+
+.hoa-don-content {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Thanh tìm kiếm */
+.search-section {
+  background-color: #ffffff;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+}
+
+.search-bar {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+}
+
+.search-input {
+  flex: 1;
+  padding: 12px 15px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 16px;
+  transition: border-color 0.3s ease;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: #2c5282;
+  box-shadow: 0 0 0 3px rgba(44, 82, 130, 0.1);
+}
+
+.search-btn {
+  background-color: #2c5282;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.search-btn:hover {
+  background-color: #2a4365;
+}
+
+/* Tiêu đề trang */
+.page-title {
+  background-color: #ffffff;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.page-title h1 {
+  font-size: 28px;
+  font-weight: 700;
+  color: #2c5282;
+  margin: 0;
+}
+
+/* Danh sách hóa đơn */
+.invoice-list {
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.invoice-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  background-color: #e6f3ff;
+  border-bottom: 1px solid #ddd;
+  transition: background-color 0.3s ease;
+}
+
+.invoice-item:hover {
+  background-color: #d1ecff;
+}
+
+.invoice-item:last-child {
+  border-bottom: none;
+}
+
+.invoice-info h3 {
+  font-size: 18px;
+  font-weight: 600;
+  color: #2c5282;
+  margin: 0 0 5px 0;
+}
+
+.invoice-info p {
+  font-size: 14px;
+  color: #666;
+  margin: 0;
+}
+
+.view-detail-btn {
+  background-color: #38a169;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.view-detail-btn:hover {
+  background-color: #2f855a;
+}
+
+/* Modal */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.modal-content {
+  background-color: white;
+  border-radius: 12px;
+  max-width: 900px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  border-bottom: 1px solid #e2e8f0;
+  background-color: #f8fafc;
+}
+
+.modal-header h2 {
+  font-size: 24px;
+  font-weight: 700;
+  color: #2c5282;
+  margin: 0;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #666;
+  padding: 0;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.close-btn:hover {
+  color: #333;
+}
+
+.modal-body {
+  padding: 20px;
+}
+
+/* Sections trong modal */
+.section {
+  margin-bottom: 30px;
+}
+
+.section h3 {
+  font-size: 18px;
+  font-weight: 600;
+  color: #2c5282;
+  margin-bottom: 15px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid #e2e8f0;
+}
+
+/* Info grid */
+.info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+}
+
+.info-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.info-item.full-width {
+  grid-column: 1 / -1;
+}
+
+.info-item .label {
+  font-weight: 600;
+  color: #4a5568;
+  font-size: 14px;
+  margin-bottom: 4px;
+}
+
+.info-item .value {
+  color: #2d3748;
+  font-size: 16px;
+}
+
+/* Bảng dịch vụ */
+.services-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+.services-table th,
+.services-table td {
+  border: 1px solid #e2e8f0;
+  padding: 12px 8px;
+  text-align: left;
+}
+
+.services-table th {
+  background-color: #f8fafc;
+  font-weight: 600;
+  color: #2c5282;
+  text-align: center;
+}
+
+.services-table td {
+  text-align: center;
+}
+
+.services-table td:nth-child(2) {
+  text-align: left;
+}
+
+.total-row {
+  background-color: #f0f4f8;
+  font-weight: 600;
+}
+
+.total-label {
+  text-align: right !important;
+  font-weight: 700;
+  color: #2c5282;
+}
+
+.total-amount {
+  font-weight: 700;
+  color: #e53e3e;
+  font-size: 16px;
+}
+
+/* Tổng tiền bằng chữ */
+.total-in-words {
+  background-color: #f8fafc;
+  padding: 15px;
+  border-radius: 8px;
+  text-align: center;
+  font-size: 16px;
+  color: #2c5282;
+}
+
+/* Footer hóa đơn */
+.invoice-footer {
+  margin-top: 20px;
+}
+
+.created-date {
+  text-align: center;
+  margin-bottom: 30px;
+  font-size: 16px;
+  color: #2c5282;
+}
+
+.signatures {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 20px;
+}
+
+.signature-box {
+  text-align: center;
+}
+
+.signature-box h4 {
+  font-size: 14px;
+  font-weight: 600;
+  color: #4a5568;
+  margin-bottom: 10px;
+}
+
+.signature-area {
+  height: 80px;
+  border: 1px dashed #cbd5e0;
+  border-radius: 4px;
+  background-color: #f8fafc;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .hoa-don-benh-nhan-container {
+    padding: 10px;
+  }
+  
+  .search-bar {
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .search-btn {
+    width: 100%;
+  }
+  
+  .invoice-item {
+    flex-direction: column;
+    gap: 15px;
+    text-align: center;
+  }
+  
+  .modal-content {
+    margin: 10px;
+    max-height: 95vh;
+  }
+  
+  .info-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .signatures {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+  
+  .services-table {
+    font-size: 12px;
+  }
+  
+  .services-table th,
+  .services-table td {
+    padding: 8px 4px;
+  }
+}
+
+@media (max-width: 480px) {
+  .page-title h1 {
+    font-size: 20px;
+  }
+  
+  .modal-header h2 {
+    font-size: 18px;
+  }
+  
+  .services-table {
+    font-size: 10px;
+  }
+}
