@@ -65,6 +65,15 @@
 .nav-section:last-child {
   border-bottom: none;
 }
+
+.nav-section h4 {
+  font-size: 14px;
+  font-weight: 700;
+  color: #2c5282;
+  margin: 0 0 15px 0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
 .nav-section ul {
   list-style: none;
   padding: 0;

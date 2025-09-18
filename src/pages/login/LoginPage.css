@@ -78,3 +78,32 @@
 .submit-btn:hover {
   background-color: #2a4365; /* Màu xanh đậm hơn */
 }
+
+/* Nút bị disable */
+.submit-btn:disabled {
+  background-color: #a0aec0;
+  cursor: not-allowed;
+}
+
+.submit-btn:disabled:hover {
+  background-color: #a0aec0;
+}
+
+/* Thông báo lỗi */
+.error-message {
+  background-color: #fed7d7;
+  color: #c53030;
+  padding: 12px 15px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  border: 1px solid #feb2b2;
+  font-size: 14px;
+  text-align: center;
+}
+
+/* Input bị disable */
+.form-group input:disabled {
+  background-color: #f7fafc;
+  cursor: not-allowed;
+  opacity: 0.6;
+}

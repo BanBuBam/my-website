@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import UserInfo from '../../UserInfo/UserInfo';
 import './Header.css';
 import logo from '../../../assets/images/logo.png';
 import phoneIcon from '../../../assets/icons/phone-icon.png';
@@ -15,9 +16,9 @@ const Header = () => {
     <header className="site-header">
       <div className="header-top">
         <div className="container header-top-container">
-          <a href="/" className="logo">
+          <Link to="/" className="logo">
             <img src={logo} alt="Benh vien Phu Yen logo" />
-          </a>
+          </Link>
           <div className="header-contact-info">
             <div className="contact-item">
               {/* merged image */}
@@ -62,6 +63,7 @@ const Header = () => {
             <button className="search-icon" type="button">
               <img src={searchIcon} alt="Search" />
             </button>
+            <UserInfo />
           </div>
         </div>
         <div className="container header-quick-links">
@@ -78,39 +80,39 @@ const Header = () => {
       <nav className="main-nav">
         <div className="container">
           <ul>
-            <li><a href="#">Trang chủ</a></li>
+            <li><Link to="/homepage">Trang chủ</Link></li>
             <li>
-              <a href="#">
+              <Link to="/gioi-thieu">
                 Giới thiệu <img src={arrowDown2} alt="arrow down" />
-              </a>
+              </Link>
             </li>
             <li>
-              <a href="#">
+              <Link to="/chuyen-khoa">
                 Chuyên khoa <img src={arrowDown2} alt="arrow down" />
-              </a>
+              </Link>
             </li>
             <li>
-              <a href="#">
+              <Link to="/chuyen-gia">
                 Chuyên gia - bác sĩ <img src={arrowDown2} alt="arrow down" />
-              </a>
+              </Link>
             </li>
             <li>
-              <a href="#">
+              <Link to="/dich-vu">
                 Dịch vụ y khoa <img src={arrowDown2} alt="arrow down" />
-              </a>
+              </Link>
             </li>
             <li>
-              <a href="#">
+              <Link to="/ho-tro">
                 Hỗ trợ khách hàng <img src={arrowDown2} alt="arrow down" />
-              </a>
+              </Link>
             </li>
             <li>
-              <a href="#">
+              <Link to="/tin-tuc">
                 Tin tức và sự kiện <img src={arrowDown2} alt="arrow down" />
-              </a>
+              </Link>
             </li>
-            <li><a href="#">Tuyển dụng</a></li>
-            <li><a href="#">Liên hệ</a></li>
+            <li><Link to="/tuyen-dung">Tuyển dụng</Link></li>
+            <li><Link to="/lien-he">Liên hệ</Link></li>
           </ul>
         </div>
       </nav>
