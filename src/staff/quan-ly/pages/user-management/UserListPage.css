@@ -1,0 +1,238 @@
+.add-new-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 1.2rem;
+    border: none;
+    border-radius: 8px;
+    background-color: #3b82f6;
+    color: #fff;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.add-new-btn:hover {
+    background-color: #2563eb;
+}
+
+table { 
+    width: 100%; 
+    border-collapse: collapse; 
+}
+
+th, td { 
+    padding: 1rem; 
+    text-align: left; 
+    border-bottom: 1px solid #e5e7eb; 
+}
+
+thead { 
+    background-color: #f9fafb; 
+}
+
+.role-badges { 
+    display: flex; 
+    gap: 0.5rem; 
+    flex-wrap: wrap; 
+}
+
+.role-badge { 
+    background-color: #e0e7ff; 
+    color: #4338ca; 
+    padding: 0.2rem 0.6rem; 
+    border-radius: 12px; 
+    font-size: 0.8rem; 
+}
+
+.status-badge { 
+    padding: 0.2rem 0.6rem; 
+    border-radius: 12px; 
+    font-size: 0.8rem; 
+}
+
+.status-badge.active { 
+    background-color: #dcfce7; 
+    color: #16a34a; 
+}
+
+.status-badge.locked { 
+    background-color: #fee2e2; 
+    color: #b91c1c; 
+}
+
+td .action-buttons { 
+    display: flex; 
+    gap: 0.5rem; 
+}
+
+td .icon-btn { 
+    background: none; 
+    border: none; 
+    font-size: 1.1rem; 
+    cursor: pointer; 
+}
+
+/* --- STYLES FOR THE MODAL --- */
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background-color: #fff;
+    padding: 2rem;
+    border-radius: 12px;
+    width: 100%;
+    max-width: 500px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.modal-header h2 {
+    margin: 0;
+    font-size: 1.5rem;
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #6b7280;
+}
+
+.modal-content .form-group {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 1rem;
+}
+
+.modal-content .form-group label {
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+}
+
+.modal-content .form-group input {
+    padding: 0.75rem;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 1rem;
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+.modal-actions .cancel-btn,
+.modal-actions .save-btn {
+    padding: 0.7rem 1.5rem;
+    border: none;
+    border-radius: 8px;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.modal-actions .cancel-btn {
+    background-color: #e5e7eb;
+}
+
+.modal-actions .save-btn {
+    background-color: #3b82f6;
+    color: #fff;
+}
+
+/* --- STYLES ĐƯỢC CẬP NHẬT CHO REACT-SELECT --- */
+
+.form-group .basic-multi-select {
+    text-align: left;
+}
+
+/* The main input box */
+.select__control {
+    background-color: #fff !important;
+    border: 1px solid #d1d5db !important;
+    border-radius: 8px !important;
+    min-height: 48px;
+    box-shadow: none !important;
+    transition: border-color 0.2s ease;
+}
+
+.select__control:hover {
+    border-color: #a1a1aa !important;
+}
+
+.select__control--is-focused {
+    border-color: #3b82f6 !important;
+    box-shadow: 0 0 0 1px #3b82f6 !important;
+}
+
+/* Placeholder text */
+.select__placeholder {
+    color: #9ca3af !important;
+}
+
+/* The vertical line separator */
+.select__indicator-separator {
+    display: none !important;
+}
+
+/* The dropdown menu */
+.select__menu {
+    margin-top: 4px !important;
+    border-radius: 8px !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
+    overflow: hidden;
+    border: 1px solid #f3f4f6;
+    z-index: 10;
+}
+
+/* Each option in the menu */
+.select__option {
+    padding: 0.75rem 1rem !important;
+    cursor: pointer;
+}
+
+/* When hovering over an option */
+.select__option--is-focused {
+    background-color: #4b5563 !important;
+    color: white !important;
+}
+
+/* The selected option in the list */
+.select__option--is-selected {
+    background-color: #3b82f6 !important;
+    color: white !important;
+}
+
+/* The selected item "tags" */
+.select__multi-value {
+    background-color: #e0e7ff !important;
+    color: #4338ca !important;
+    border-radius: 4px !important;
+}
+
+.select__multi-value__label {
+    color: #4338ca !important;
+}

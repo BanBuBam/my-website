@@ -1,0 +1,27 @@
+.admin-dashboard .page-header {
+    margin-bottom: 1.5rem;
+}
+
+.dashboard-grid {
+    display: grid;
+    /* Creates a grid with 3 columns */
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+}
+
+.chart-card {
+    background-color: #fff;
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+/* Make the first chart larger */
+.chart-card.large {
+    grid-column: span 2;
+}
+
+/* Make the bar chart take the full width of the row */
+.chart-card.full-width {
+    grid-column: 1 / -1;
+}

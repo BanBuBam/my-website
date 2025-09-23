@@ -2,6 +2,7 @@ import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 import StaffLoginPage from './pages/login/StaffLoginPage';
 import LeTanRoutes from './le-tan/routes';
+import AdminRoutes from './quan-ly/routes';
 // Tạm thời không cần ProtectedRoute cho việc test này
 
 const StaffRoutes = () => {
@@ -11,6 +12,7 @@ const StaffRoutes = () => {
       
       {/* Route trực tiếp đến LeTanRoutes, không qua bảo vệ */}
       <Route path="le-tan/*" element={<LeTanRoutes />} />
+      <Route path="admin/*" element={<AdminRoutes />} />
 
     </Routes>
   );
