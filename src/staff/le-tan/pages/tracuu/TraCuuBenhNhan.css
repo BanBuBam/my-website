@@ -1,0 +1,103 @@
+/* --- General Page Styles --- */
+.lookup-page .page-header,
+.details-header {
+  background-color: #fff;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+.page-header h2, .details-header h3 {
+  font-size: 1.8rem;
+  margin: 0;
+}
+.page-header p {
+  margin: 0.25rem 0 0 0;
+  color: #6c757d;
+}
+
+/* --- Search View Styles --- */
+.lookup-container { 
+  background-color: #fff;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  text-align: center;
+  max-width: 900px;
+  margin: 0 auto;
+  width: 100%;
+}
+.search-card { max-width: none; margin: 0 auto 2rem auto; }
+.search-icon-wrapper { width: 64px; height: 64px; margin: 0 auto 1rem; background-color: #f3e8ff; color: #a855f7; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2rem; }
+.search-card h2 { font-size: 1.8rem; margin-bottom: 0.5rem; }
+.search-card .subtitle { color: #6c757d; margin-bottom: 2rem; }
+.lookup-form { display: flex; flex-direction: column; gap: 1rem; text-align: left; }
+.lookup-form .search-button { padding: 0.8rem; margin-top: 0.5rem; border: none; border-radius: 8px; background-color: #8b5cf6; color: #fff; font-size: 1rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 0.5rem; }
+.lookup-types-section { max-width: none; margin: 2rem auto 0 auto; text-align: left; }
+.lookup-types-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+.lookup-type-card { display: flex; align-items: center; gap: 1rem; padding: 1.5rem; border-radius: 12px; }
+.lookup-type-card .type-icon { font-size: 1.5rem; }
+.lookup-type-card strong { display: block; }
+.lookup-type-card span { font-size: 0.9rem; color: #6c757d; }
+.lookup-type-card.blue { background-color: #eff6ff; color: #3b82f6; }
+.lookup-type-card.green { background-color: #f0fdf4; color: #22c55e; }
+.lookup-type-card.purple { background-color: #faf5ff; color: #a855f7; }
+.lookup-type-card.orange { background-color: #fff7ed; color: #f97316; }
+
+/* --- Results View Styles --- */
+.success-banner { background-color: #f0fdf4; color: #15803d; padding: 1rem 1.5rem; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+.success-banner span { display: flex; align-items: center; gap: 0.5rem; }
+.new-search-btn { background-color: #fff; border: 1px solid #dcfce7; color: #16a34a; border-radius: 8px; padding: 0.5rem 1rem; cursor: pointer; font-weight: 500; }
+.results-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem; align-items: flex-start; }
+.results-main, .results-sidebar { display: flex; flex-direction: column; gap: 1.5rem; }
+.patient-header-card { display: flex; justify-content: space-between; align-items: center; }
+.patient-header-card h3 { margin: 0; font-size: 1.5rem; }
+.patient-meta { display: flex; gap: 1rem; color: #6c757d; margin-top: 0.25rem; }
+.patient-meta span { background-color: #f1f5f9; padding: 0.2rem 0.5rem; border-radius: 6px; font-size: 0.8rem; }
+.patient-actions { display: flex; gap: 0.5rem; }
+.patient-actions .btn-secondary, .patient-actions .btn-primary { background: #f1f5f9; border: none; padding: 0.6rem 1rem; border-radius: 8px; font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; }
+.patient-actions .btn-primary { background-color: #3b82f6; color: #fff; }
+.patient-details-card { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
+.detail-group h4 { margin: 0 0 1rem 0; font-size: 1rem; }
+.detail-group span { display: block; margin-bottom: 0.5rem; color: #6c757d; }
+.detail-group span strong { color: #334155; }
+
+.history-card .list-header { display: flex; justify-content: space-between; align-items: center; }
+.history-list { list-style: none; margin: 0; padding: 0; }
+.history-item { display: flex; justify-content: space-between; padding: 1rem 0; border-bottom: 1px solid #f1f5f9; }
+.history-item:last-child { border: none; }
+.history-item .specialty-header { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem; }
+.history-item .specialty { font-weight: 600; }
+.history-item .status { font-size: 0.8rem; font-weight: 500; padding: 0.2rem 0.5rem; border-radius: 12px; }
+.history-item .status.status-hoan-thanh { background-color: #dcfce7; color: #16a34a; }
+.history-item .diagnosis { font-size: 0.9rem; color: #3b82f6; margin-top: 0.25rem; }
+.history-details .doctor, .history-details .reason { font-size: 0.9rem; color: #6c757d; }
+.history-meta { text-align: right; flex-shrink: 0; }
+.history-meta .cost, .history-meta .date { font-size: 0.9rem; color: #6c757d; }
+.history-meta .cost { font-weight: 500; color: #334155; }
+.overview-card .overview-item { display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 0; border-bottom: 1px solid #f1f5f9; }
+.overview-card .overview-item:last-child { border: none; }
+.overview-item span:first-child { font-size: 1.5rem; font-weight: 600; color: #3b82f6; }
+.quick-actions-card button { width: 100%; display: flex; align-items: center; gap: 0.75rem; padding: 0.85rem; margin-bottom: 0.5rem; background: #f8fafc; border: 1px solid #f1f5f9; border-radius: 8px; font-weight: 500; text-align: left; cursor: pointer; color: #334155; font-size: 0.9rem; }
+.quick-actions-card button.primary-action { background-color: #3b82f6; color: #fff; border-color: #3b82f6; }
+
+/* --- Styles for Patient Detail View --- */
+.details-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem; align-items: flex-start; }
+.details-main, .details-sidebar { display: flex; flex-direction: column; gap: 1.5rem; }
+.patient-full-details-card .info-grid-detailed { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+.info-grid-detailed .info-item { padding-bottom: 1rem; border-bottom: 1px solid #f1f5f9; }
+.info-grid-detailed .info-item span { display: block; font-size: 0.9rem; color: #6c757d; margin-bottom: 0.25rem; }
+.info-grid-detailed .info-item strong { font-weight: 500; font-size: 1rem; color: #212529; }
+.info-grid-detailed .info-item.full-span { grid-column: 1 / -1; }
+.actions-tabs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+.tab-button { padding: 0.85rem; display: flex; align-items: center; justify-content: center; gap: 0.5rem; font-size: 1rem; font-weight: 500; border-radius: 8px; background-color: #f1f5f9; color: #475569; border: 1px solid #e5e7eb; cursor: pointer; transition: all 0.2s ease; }
+.tab-button:hover { background-color: #e2e8f0; }
+.tab-button.active { background-color: #3b82f6; color: #fff; border-color: #3b82f6; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2); }
+.insurance-card { display: flex; flex-direction: column; gap: 1rem; }
+.insurance-card .info-item { display: flex; flex-direction: column; }
+.insurance-card .insurance-status.expired { color: #ef4444; background-color: #fee2e2; padding: 0.2rem 0.5rem; border-radius: 12px; font-size: 0.8rem; font-weight: 500; display: inline-block; }
+.btn-secondary.full-width { width: 100%; justify-content: center; }
+.insurance-card button:disabled { background-color: #f1f5f9; color: #9ca3af; cursor: not-allowed; }

@@ -1,0 +1,136 @@
+.receptionist-layout {
+  display: flex;
+  height: 100%; /* Chiếm toàn bộ chiều cao của container cha */
+  background-color: #f4f7f6;
+}
+
+/* --- CSS cho Sidebar --- */
+.receptionist-sidebar {
+  width: 260px;
+  flex-shrink: 0; /* Đảm bảo sidebar không bị co lại */
+  background-color: #fff;
+  border-right: 1px solid #e9ecef;
+  display: flex;
+  flex-direction: column;
+  padding: 1.5rem;
+}
+
+.receptionist-sidebar .sidebar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.receptionist-sidebar .sidebar-header h1 {
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: #212529;
+}
+
+.receptionist-sidebar .sidebar-header img {
+  width: 40px;
+  height: 40px;
+}
+
+.receptionist-sidebar .sidebar-nav ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.receptionist-sidebar .sidebar-nav li a {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.9rem 1rem;
+  margin-bottom: 0.5rem;
+  border-radius: 8px;
+  text-decoration: none;
+  color: #495057;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.receptionist-sidebar .sidebar-nav li a:hover {
+  background-color: #f1f5f9;
+}
+
+.receptionist-sidebar .sidebar-nav li a svg {
+  font-size: 1.3rem;
+}
+
+/* --- ĐỊNH DẠNG CHO MỤC ĐƯỢC CHỌN (ACTIVE) --- */
+.receptionist-sidebar .sidebar-nav li a.active {
+  background-color: #3b82f6; /* Màu xanh dương */
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+/* --- CSS cho khu vực nội dung --- */
+.receptionist-content {
+  flex-grow: 1; /* Chiếm toàn bộ không gian còn lại */
+  padding: 2rem;
+  overflow-y: auto; /* Tự động cuộn khi nội dung dài */
+}
+/* --- THÊM ĐOẠN NÀY VÀO CUỐI FILE --- */
+
+/* Style cho header của mỗi trang bên trong khu vực nội dung */
+.receptionist-content .page-header {
+  background-color: #fff;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem; /* Tạo khoảng cách với nội dung bên dưới */
+}
+
+.receptionist-content .page-header h2 {
+  font-size: 1.8rem;
+  margin: 0;
+  color: #212529;
+}
+
+.receptionist-content .page-header p {
+  margin: 0.25rem 0 0 0;
+  color: #6c757d;
+}
+
+/* Style cho các nút action trong header (nếu có) */
+.receptionist-content .header-actions {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+.receptionist-content .notification-icon {
+  position: relative;
+  font-size: 1.5rem;
+  color: #6c757d;
+  cursor: pointer;
+}
+.receptionist-content .notification-dot {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 8px;
+  height: 8px;
+  background-color: #dc3545;
+  border-radius: 50%;
+  border: 2px solid #fff;
+}
+.receptionist-content .user-profile {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+.receptionist-content .user-profile img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+}
+.receptionist-content .user-profile span {
+  font-weight: 500;
+  color: #212529;
+}
