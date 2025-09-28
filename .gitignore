@@ -17,6 +17,7 @@
 /.idea
 .idea/
 .idea
+/.idea/*
 /.idea/
 # misc
 .DS_Store
