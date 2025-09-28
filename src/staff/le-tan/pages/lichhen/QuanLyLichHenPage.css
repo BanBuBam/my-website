@@ -1,0 +1,190 @@
+.appointment-page {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.action-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.action-bar h3 { margin: 0; font-size: 1.3rem; }
+.action-buttons { display: flex; gap: 1rem; }
+
+.action-btn-secondary, .action-btn-primary {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1.2rem;
+  border: none;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+}
+.action-btn-secondary { background-color: #fff; border: 1px solid #dee2e6; color: #334155; }
+.action-btn-primary { background-color: #3b82f6; color: #fff; }
+
+.filter-card { padding-bottom: 0.5rem; }
+.filter-form {
+  display: flex;
+  align-items: flex-end;
+  gap: 1.5rem;
+}
+.filter-form .form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  flex-grow: 1;
+}
+.filter-form label { font-size: 0.9rem; font-weight: 500; }
+.filter-form input, .filter-form select {
+  padding: 0.6rem;
+  border-radius: 6px;
+  border: 1px solid #ced4da;
+}
+.filter-button {
+  padding: 0.6rem 1.5rem;
+  background-color: #3b82f6;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  height: fit-content;
+}
+
+.stats-container {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem;
+}
+.stat-item {
+  background-color: #fff;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+.stat-value {
+  display: block;
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+.stat-title { color: #6c757d; }
+
+.stat-value.blue { color: #3b82f6; }
+.stat-value.green { color: #22c55e; }
+.stat-value.orange { color: #f97316; }
+.stat-value.red { color: #ef4444; }
+
+.appointment-list-card {
+  padding: 0;
+}
+.list-header, .appointment-row {
+  display: grid;
+  grid-template-columns: 1.5fr 1.5fr 1fr 1fr 1fr 1fr 100px;
+  gap: 1rem;
+  padding: 1rem 1.5rem;
+  align-items: center;
+  border-bottom: 1px solid #f1f5f9;
+}
+.list-header {
+  font-weight: 600;
+  color: #6c757d;
+  font-size: 0.9rem;
+}
+.patient-name { font-weight: 500; }
+.status-badge {
+  padding: 0.2rem 0.6rem;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  text-align: center;
+}
+.status-đã-xác-nhận { background-color: #dcfce7; color: #16a34a; }
+.status-chờ-xác-nhận { background-color: #fff7ed; color: #f97316; }
+.status-đã-hủy { background-color: #fee2e2; color: #ef4444; }
+
+.action-icons { display: flex; gap: 0.5rem; }
+.icon-btn { background: none; border: none; font-size: 1.1rem; cursor: pointer; color: #6c757d; }
+.no-results { padding: 2rem; text-align: center; color: #6c757d; }
+/* --- ADD THESE STYLES FOR CALENDAR VIEW --- */
+
+.calendar-view-container {
+  display: flex;
+  gap: 1.5rem;
+  align-items: flex-start;
+}
+
+.calendar-filters {
+  width: 280px;
+  flex-shrink: 0;
+}
+.calendar-filters .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    width: 100%;
+}
+.calendar-filters .form-group:not(:last-child) {
+    margin-bottom: 1rem;
+}
+.calendar-filters label {
+    font-weight: 500;
+}
+.calendar-filters input, .calendar-filters select {
+    padding: 0.6rem;
+    border-radius: 6px;
+    border: 1px solid #ced4da;
+    width: 100%;
+}
+
+.time-slot-container {
+  flex-grow: 1;
+}
+.time-slot-container h4 {
+    margin-top: 0;
+    margin-bottom: 1.5rem;
+}
+
+.time-slot-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 1rem;
+}
+
+.time-slot-card {
+  background-color: #fff;
+  padding: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  border-left: 4px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.time-slot-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.time-slot-card.empty { border-left-color: #22c55e; /* Green */ }
+.time-slot-card.booked { border-left-color: #3b82f6; /* Blue */ }
+
+.time-slot-card .time {
+  font-weight: 600;
+  font-size: 1.1rem;
+  display: block;
+  margin-bottom: 0.5rem;
+}
+.time-slot-card .status-empty {
+  color: #6c757d;
+  font-size: 0.9rem;
+}
+.time-slot-card .patient-name {
+    font-weight: 500;
+    font-size: 0.9rem;
+    color: #212529;
+}

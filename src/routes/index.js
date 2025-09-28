@@ -13,6 +13,7 @@ import CapNhatThongTin from '../pages/CapNhatThongTin/CapNhatThongTin';
 import HoaDonBenhNhan from '../pages/HoaDonBenhNhan/HoaDonBenhNhan';
 import LichSuKhamChuaBenh from '../pages/LichSuKhamChuaBenh/LichSuKhamChuaBenh';
 import TrangThaiDatLich from '../pages/dat-lich-kham/trang-thai/TrangThaiDatLich';
+import DatLichKhamPage from '../pages/dat-lich-kham/dat-lich/DatLichKhamPage';
 
 // Bộ định tuyến của nhân viên
 import StaffRoutes from '../staff/routes';
@@ -31,6 +32,7 @@ const AppRoutes = () => {
         <Route path="/hoa-don-benh-nhan" element={<HoaDonBenhNhan />} />
         <Route path="/lich-su-kham" element={<LichSuKhamChuaBenh />} />
         <Route path="/trang-thai-dat-lich" element={<TrangThaiDatLich />} />
+        <Route path="/dat-lich-kham" element={<DatLichKhamPage />} />
       </Route>
 
       {/* --- CÁC ROUTE TÁCH BIỆT (KHÔNG CÓ HEADER/FOOTER) --- */}

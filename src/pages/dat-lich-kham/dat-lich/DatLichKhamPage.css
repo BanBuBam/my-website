@@ -1,0 +1,110 @@
+.booking-page-container {
+  padding: 2rem;
+  background-color: #f4f7f6; /* Màu nền xám nhạt cho toàn trang */
+}
+
+.booking-form-wrapper {
+  max-width: 900px;
+  margin: 0 auto;
+  background-color: #fff;
+  padding: 2.5rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.booking-header h1 {
+  font-size: 2rem;
+  color: #212529;
+  margin-bottom: 0.5rem;
+}
+
+.booking-header p {
+  font-size: 1rem;
+  color: #6c757d;
+  margin-bottom: 2.5rem;
+  line-height: 1.6;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* Tạo layout 2 cột */
+  gap: 1.5rem 2rem; /* Khoảng cách giữa các hàng và cột */
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group label {
+  font-size: 0.9rem;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+  color: #495057;
+}
+
+.form-group label.required::after {
+  content: ' *';
+  color: #dc3545; /* Màu đỏ cho dấu sao */
+}
+
+.form-group input[type="text"],
+.form-group input[type="tel"],
+.form-group input[type="email"],
+.form-group input[type="number"],
+.form-group input[type="date"],
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1px solid #ced4da;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-family: inherit;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: #0d6efd;
+  box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.2);
+}
+
+.checkbox-group {
+  flex-direction: row;
+  align-items: center;
+  align-self: center; /* Căn giữa theo chiều dọc trong grid cell */
+  gap: 0.5rem;
+}
+
+.checkbox-group input[type="checkbox"] {
+  width: 1.15em;
+  height: 1.15em;
+}
+
+.form-group.full-width {
+  grid-column: 1 / -1; /* Giúp phần tử chiếm trọn 2 cột */
+}
+
+.form-actions {
+  text-align: center;
+  margin-top: 2.5rem;
+}
+
+.submit-btn {
+  background-color: #8bc34a; /* Màu xanh lá cây */
+  color: #fff;
+  padding: 0.9rem 2.5rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.submit-btn:hover {
+  background-color: #7cb32b;
+}
