@@ -1,0 +1,160 @@
+.examination-page {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.card {
+    background-color: #fff;
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.patient-info-header h3 {
+    margin: 0 0 1.5rem 0;
+    font-size: 1.2rem;
+}
+
+.patient-info-header .info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+    color: #4b5563;
+}
+.info-grid span { font-size: 0.9rem; }
+.info-grid span strong { font-weight: 500; color: #111827; }
+
+.examination-content {
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.tabs-container {
+    display: flex;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.tab-button {
+    background: none;
+    border: none;
+    padding: 1rem;
+    font-size: 1rem;
+    font-weight: 500;
+    color: #6b7280;
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    margin-bottom: -1px;
+    flex: 1;
+    text-align: center;
+    transition: all 0.2s ease;
+}
+
+.tab-button:hover {
+    background-color: #f9fafb;
+    color: #3b82f6;
+}
+
+.tab-button.active {
+    font-weight: 600;
+    background-color: #3b82f6; /* Nền xanh cho tab đang được chọn */
+    color: #fff;              /* Chữ màu trắng để nổi bật */
+    border-bottom-color: #3b82f6;
+}
+
+.tab-content {
+    padding: 2rem 1.5rem;
+}
+
+.tab-pane h4 {
+    margin: 0 0 1.5rem 0;
+    font-size: 1.2rem;
+}
+
+.form-section {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+.form-section .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem 1.5rem;
+}
+.form-section .form-grid.four-cols {
+    grid-template-columns: repeat(4, 1fr);
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+.form-group.full-width {
+    grid-column: 1 / -1;
+}
+.form-group label {
+    font-weight: 500;
+    font-size: 0.9rem;
+    color: #374151;
+}
+.form-group input, .form-group textarea, .form-group select {
+    padding: 0.75rem;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-family: inherit;
+    background-color: #f9fafb;
+}
+.form-group textarea {
+    resize: vertical;
+    min-height: 80px;
+}
+.form-section > .btn-primary {
+    align-self: flex-start;
+    margin-top: 1rem;
+}
+
+.btn-primary {
+    background-color: #3b82f6;
+    color: #fff;
+    padding: 0.7rem 1.5rem;
+    border: none;
+    border-radius: 8px;
+    font-weight: 500;
+    cursor: pointer;
+}
+.btn-primary.green {
+    background-color: #22c55e;
+}
+
+/* Prescription Table Styles */
+.prescription-table {
+    margin-top: 2rem;
+}
+.table-header, .table-row {
+    display: grid;
+    grid-template-columns: 2fr 2fr 1fr 1fr 100px;
+    gap: 1rem;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid #e5e7eb;
+    align-items: center;
+}
+.table-header {
+    font-weight: 600;
+    color: #6b7280;
+}
+.table-row span {
+    color: #111827;
+}
+.empty-state {
+    text-align: center;
+    padding: 2rem;
+    color: #6b7280;
+    background-color: #f9fafb;
+    border-radius: 8px;
+}
+.icon-btn.danger {
+    color: #ef4444;
+}

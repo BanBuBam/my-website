@@ -1,0 +1,49 @@
+.nurse-layout {
+    display: flex;
+    height: 100vh;
+}
+.nurse-sidebar {
+    width: 260px;
+    flex-shrink: 0;
+    background-color: #fff;
+    border-right: 1px solid #e9ecef;
+    display: flex;
+    flex-direction: column;
+    padding: 1.5rem;
+}
+.nurse-sidebar .sidebar-header {
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid #f1f5f9;
+}
+.nurse-sidebar .sidebar-header h1 {
+    font-size: 1.8rem;
+    font-weight: 600;
+    color: #212529;
+    margin: 0;
+}
+.nurse-sidebar .sidebar-nav ul { list-style: none; padding: 0; margin: 0; }
+.nurse-sidebar .sidebar-nav li a {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.9rem 1rem;
+    margin-bottom: 0.5rem;
+    border-radius: 8px;
+    text-decoration: none;
+    color: #495057;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+.nurse-sidebar .sidebar-nav li a:hover { background-color: #f1f5f9; }
+.nurse-sidebar .sidebar-nav li a svg { font-size: 1.3rem; }
+.nurse-sidebar .sidebar-nav li a.active {
+    background-color: #eef2ff;
+    color: #4338ca;
+}
+.nurse-content {
+    flex-grow: 1;
+    padding: 2rem;
+    overflow-y: auto;
+    background-color: #f9fafb;
+}
