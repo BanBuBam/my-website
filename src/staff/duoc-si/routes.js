@@ -7,8 +7,8 @@ import InventoryManagementPage from "./pages/ton-kho/InventoryManagementPage";
 import ImportStockPage from "./pages/nhap-kho/ImportStockPage";
 import StockReceiptPage from "./pages/nhap-kho/StockReceiptPage";
 import PaymentReceiptPage from "./pages/nhap-kho/PaymentReceiptPage";
-import SupplierPage from "./pages/nhap-kho/SupplierPage";
-import CreateSupplierPage from "./pages/nhap-kho/CreateSupplierPage";
+import SupplierPage from "./pages/nha-cung-cap/SupplierPage";
+import CreateSupplierPage from "./pages/nha-cung-cap/CreateSupplierPage";
 
 const PharmacistRoutes = () => {
     return (

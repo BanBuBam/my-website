@@ -4,6 +4,7 @@ import StaffLoginPage from './pages/login/StaffLoginPage';
 import LeTanRoutes from './le-tan/routes';
 import AdminRoutes from './quan-ly/routes';
 import PharmacistRoutes from './duoc-si/routes';
+import FinanceRoutes from "./ke-toan/routes";
 // Tạm thời không cần ProtectedRoute cho việc test này
 
 const StaffRoutes = () => {
@@ -15,7 +16,7 @@ const StaffRoutes = () => {
       <Route path="le-tan/*" element={<LeTanRoutes />} />
       <Route path="admin/*" element={<AdminRoutes />} />
       <Route path="duoc-si/*" element={<PharmacistRoutes />} />
-
+        <Route path="tai-chinh/*" element={<FinanceRoutes/>}/>
     </Routes>
   );
 };
