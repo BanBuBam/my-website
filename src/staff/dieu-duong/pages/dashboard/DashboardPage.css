@@ -1,0 +1,101 @@
+.nurse-dashboard .page-header {
+    background-color: #fff;
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    margin-bottom: 1.5rem;
+}
+.nurse-dashboard .page-header h2 { font-size: 1.8rem; margin: 0; }
+.nurse-dashboard .page-header p { margin: 0.25rem 0 0 0; color: #6c757d; }
+
+.nurse-dashboard .card {
+    background-color: #fff;
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+/* --- UPDATED: Stat Cards Styles --- */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+.stats-card {
+    background-color: #fff;
+    padding: 1.5rem;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+.card-icon {
+    font-size: 1.8rem;
+    padding: 0.8rem;
+    border-radius: 50%;
+}
+.card-icon.blue { background-color: #e0f2fe; color: #0ea5e9; }
+.card-icon.green { background-color: #dcfce7; color: #22c55e; }
+.card-icon.orange { background-color: #fff7ed; color: #f97316; }
+.card-icon.purple { background-color: #f3e8ff; color: #a855f7; }
+
+.card-info {
+    display: flex;
+    flex-direction: column;
+}
+.card-value {
+    font-size: 1.8rem;
+    font-weight: 600;
+    color: #212529;
+}
+.card-title {
+    color: #6c757d;
+    font-size: 0.9rem;
+}
+
+/* Patient List */
+.patient-list-card h3 {
+    margin: 0 0 1.5rem 0;
+    font-size: 1.2rem;
+}
+
+.patient-list {
+    font-size: 0.9rem;
+}
+
+.list-header, .list-row {
+    display: grid;
+    grid-template-columns: 100px 1.5fr 1fr 1fr 1fr 120px;
+    gap: 1rem;
+    padding: 1rem 0;
+    border-bottom: 1px solid #f1f5f9;
+    align-items: center;
+}
+
+.list-header {
+    font-weight: 600;
+    color: #6b7280;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+}
+
+.list-row:last-child {
+    border-bottom: none;
+}
+
+.patient-id {
+    font-weight: 500;
+}
+
+.view-btn {
+    background-color: #3b82f6;
+    color: #fff;
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 6px;
+    font-weight: 500;
+    cursor: pointer;
+    width: 100%;
+}

@@ -1,0 +1,188 @@
+.inpatient-page .page-header {
+    background-color: #fff;
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    margin-bottom: 1.5rem;
+}
+
+.inpatient-page .page-header h2 {
+    font-size: 1.8rem;
+    margin: 0;
+}
+
+.inpatient-page .page-header p {
+    margin: 0.25rem 0 0 0;
+    color: #6c757d;
+}
+
+.inpatient-page .card {
+    background-color: #fff;
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.inpatient-page .card h3 {
+    margin: 0 0 1.5rem 0;
+    font-size: 1.2rem;
+}
+
+/* List Styles */
+.inpatient-list {
+    font-size: 0.9rem;
+}
+.list-header,
+.list-row {
+    display: grid;
+    /* This rule now defines 6 columns to match your 6 JSX elements */
+    grid-template-columns: 100px 1.5fr 1fr 1fr 1fr 120px;
+    gap: 1rem;
+    padding: 1rem 0;
+    border-bottom: 1px solid #f1f5f9;
+    align-items: center;
+}
+
+.list-header {
+    font-weight: 600;
+    color: #6b7280;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+}
+
+.list-row:last-child {
+    border-bottom: none;
+}
+
+.patient-id {
+    font-weight: 500;
+}
+
+.detail-btn {
+    background-color: #3b82f6;
+    color: #fff;
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 6px;
+    font-weight: 500;
+    cursor: pointer;
+    width: 100%;
+}
+
+/* Modal Styles */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background-color: #fff;
+    padding: 2rem;
+    border-radius: 12px;
+    width: 100%;
+    max-width: 700px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.modal-header {
+    padding-bottom: 1rem;
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.modal-header h3 {
+    margin: 0;
+    font-size: 1.5rem;
+}
+
+.modal-info-header {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.info-item span {
+    display: block;
+    color: #64748b;
+    font-size: 0.9rem;
+    margin-bottom: 0.25rem;
+}
+
+.info-item strong {
+    font-weight: 500;
+}
+
+.info-section {
+    margin-bottom: 1.5rem;
+}
+
+.info-section h4 {
+    margin: 0 0 0.75rem 0;
+    font-size: 1.1rem;
+}
+
+.info-box {
+    background-color: #f8fafc;
+    border: 1px solid #f1f5f9;
+    padding: 1rem;
+    border-radius: 8px;
+}
+
+.vitals-box div {
+    margin-bottom: 0.5rem;
+}
+
+.orders-list ul {
+    margin: 0;
+    padding-left: 1.2rem;
+}
+
+.modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+.btn-primary,
+.btn-secondary {
+    padding: 0.7rem 1.5rem;
+    border: none;
+    border-radius: 8px;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.btn-primary {
+    background-color: #3b82f6;
+    color: #fff;
+}
+
+.btn-secondary {
+    background-color: #e2e8f0;
+    color: #475569;
+}
+
+.modal-body .inline-edit,
+.modal-body textarea.info-box {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-family: inherit;
+    background-color: #fff;
+}
+
+.modal-body textarea.info-box {
+    resize: vertical;
+}

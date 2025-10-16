@@ -1,0 +1,324 @@
+.bed-map-page .page-header {
+    background-color: #fff;
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    margin-bottom: 1.5rem;
+}
+
+.bed-map-page .page-header h2 {
+    font-size: 1.8rem;
+    margin: 0;
+}
+
+.bed-map-page .page-header p {
+    margin: 0.25rem 0 0 0;
+    color: #6c757d;
+}
+
+.bed-map-page .card {
+    background-color: #fff;
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.bed-map-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.bed-map-header h3 {
+    margin: 0;
+    font-size: 1.2rem;
+}
+
+.legend {
+    display: flex;
+    gap: 1.5rem;
+    font-size: 0.9rem;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.legend-item .dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+}
+
+.dot.empty {
+    background-color: #22c55e;
+}
+
+.dot.occupied {
+    background-color: #ef4444;
+}
+
+.dot.cleaning {
+    background-color: #f59e0b;
+}
+
+.rooms-container {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.room-section h4 {
+    margin: 0 0 1rem 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.beds-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 1rem;
+}
+
+.bed-card {
+    padding: 1rem;
+    border-radius: 8px;
+    font-weight: 500;
+}
+
+.bed-card.status-occupied {
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.bed-card.status-occupied:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.bed-card-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1.1rem;
+    margin-bottom: 0.75rem;
+}
+
+.bed-icon {
+    font-size: 1.5rem;
+}
+
+.bed-card-body {
+    text-align: center;
+}
+
+.patient-name {
+    display: block;
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+
+.patient-id {
+    display: block;
+    font-size: 0.85rem;
+    opacity: 0.8;
+}
+
+.bed-status-text {
+    font-size: 0.9rem;
+    opacity: 0.8;
+}
+
+.bed-card.status-empty {
+    background-color: #dcfce7;
+    color: #16a34a;
+}
+
+.bed-card.status-occupied {
+    background-color: #fee2e2;
+    color: #b91c1c;
+}
+
+.bed-card.status-cleaning {
+    background-color: #fef9c3;
+    color: #a16207;
+}
+
+/* --- Modal Styles --- */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background-color: #fff;
+    padding: 1.5rem;
+    border-radius: 12px;
+    width: 100%;
+    max-width: 600px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 1rem;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.modal-header h3 {
+    margin: 0;
+    font-size: 1.25rem;
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #6b7280;
+}
+
+.back-button {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: none;
+    border: none;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.info-card {
+    background-color: #f8fafc;
+    border: 1px solid #f1f5f9;
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+}
+
+.info-card h4 {
+    margin: 0 0 1rem 0;
+    font-size: 1.1rem;
+}
+
+.patient-details-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.patient-details-grid span {
+    font-size: 0.9rem;
+}
+
+.patient-details-grid strong {
+    color: #111827;
+}
+
+.orders-list ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.orders-list li {
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.orders-list li:last-child {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+}
+
+.orders-list li span {
+    display: block;
+}
+
+.order-medicine {
+    font-weight: 600;
+    font-size: 1.1rem;
+    color: #1e293b;
+    margin-bottom: 0.25rem;
+}
+
+.order-dosage {
+    color: #475569;
+    margin-bottom: 0.5rem;
+}
+
+.order-meta {
+    font-size: 0.85rem;
+    color: #64748b;
+}
+
+.modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+}
+
+.btn-primary,
+.btn-secondary {
+    padding: 0.7rem 1.5rem;
+    border: none;
+    border-radius: 8px;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.btn-primary {
+    background-color: #3b82f6;
+    color: #fff;
+}
+
+.btn-secondary {
+    background-color: #e2e8f0;
+    color: #475569;
+}
+
+.add-order-form {
+    padding-top: 1.5rem;
+}
+
+.add-order-form .form-group {
+    margin-bottom: 1rem;
+}
+
+.form-group label {
+    display: block;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 1rem;
+}
+
+.add-order-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+}
