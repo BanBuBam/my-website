@@ -1,0 +1,293 @@
+.patient-care-page .page-header {
+    margin-bottom: 1.5rem;
+}
+
+.patient-care-page h2 {
+    font-size: 1.8rem;
+    margin: 0;
+}
+
+.patient-care-layout {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    /* Left sidebar, right content */
+    gap: 1.5rem;
+    align-items: flex-start;
+}
+
+/* Left Sidebar Styles */
+.patient-list-sidebar {
+    background-color: #fff;
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.search-bar {
+    position: relative;
+    margin-bottom: 1.5rem;
+}
+
+.search-bar input {
+    width: 100%;
+    padding: 0.75rem 2.5rem 0.75rem 1rem;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+}
+
+.search-bar svg {
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #6b7280;
+}
+
+.patient-list h4 {
+    margin: 0 0 1rem 0;
+    font-size: 1.1rem;
+}
+
+.patient-list-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-bottom: 0.5rem;
+    border: 1px solid transparent;
+}
+
+.patient-list-item:hover {
+    background-color: #f9fafb;
+}
+
+.patient-list-item.active {
+    background-color: #eef2ff;
+    border-color: #c7d2fe;
+}
+
+.patient-icon {
+    font-size: 1.5rem;
+    color: #6b7280;
+}
+
+.patient-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.patient-info .name {
+    font-weight: 500;
+}
+
+.patient-info .meta {
+    font-size: 0.85rem;
+    color: #6b7280;
+}
+
+/* Right Content Styles */
+.care-details-content {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.care-details-content h3 {
+    margin: 0 0 1rem 0;
+    font-size: 1.5rem;
+}
+
+.care-section {
+    background-color: #fff;
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.section-header h4 {
+    margin: 0;
+    font-size: 1.2rem;
+}
+
+.btn-add-order {
+    background: none;
+    border: none;
+    color: #3b82f6;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.order-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.order-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    background-color: #f8fafc;
+    border-radius: 8px;
+    margin-bottom: 0.75rem;
+}
+
+.order-info span {
+    display: block;
+}
+
+.order-text {
+    font-weight: 600;
+}
+
+.order-detail {
+    font-size: 0.9rem;
+    color: #475569;
+}
+
+.order-doctor {
+    font-size: 0.8rem;
+    color: #9ca3af;
+    margin-top: 0.25rem;
+}
+
+.order-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.icon-btn {
+    background: none;
+    border: 1px solid #d1d5db;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+.icon-btn.success {
+    color: #16a34a;
+    border-color: #16a34a;
+}
+
+.icon-btn.danger {
+    color: #dc3545;
+    border-color: #dc3545;
+}
+
+/* Form Styles */
+.vitals-form,
+.notes-form {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.vitals-form button,
+.notes-form button {
+    grid-column: 1 / -1;
+    justify-self: flex-start;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.form-group.full-width {
+    grid-column: 1 / -1;
+}
+
+.form-group label {
+    font-weight: 500;
+    font-size: 0.9rem;
+}
+
+.form-group input,
+.form-group textarea {
+    padding: 0.75rem;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 1rem;
+    background-color: #f9fafb;
+}
+
+.btn-primary {
+    background-color: #3b82f6;
+    color: #fff;
+    padding: 0.7rem 1.5rem;
+    border: none;
+    border-radius: 8px;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.btn-success {
+    background-color: #22c55e;
+    color: #fff;
+    padding: 0.7rem 1.5rem;
+    border: none;
+    border-radius: 8px;
+    font-weight: 500;
+    cursor: pointer;
+}
+/* --- THÊM CSS CHO DANH SÁCH GHI CHÚ CŨ --- */
+
+.previous-notes-list {
+    margin-bottom: 2rem; /* Khoảng cách với form nhập liệu bên dưới */
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.note-item {
+    background-color: #f8fafc;
+    border: 1px solid #f1f5f9;
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+}
+.note-item:last-child {
+    margin-bottom: 0;
+}
+
+.note-title {
+    display: block;
+    font-weight: 600;
+    color: #1e293b;
+    margin-bottom: 0.5rem;
+}
+
+.note-content {
+    margin: 0 0 1rem 0;
+    color: #475569;
+}
+
+.note-meta {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.8rem;
+    color: #9ca3af;
+}
+
+/* Điều chỉnh lại form ghi chú mới một chút */
+.notes-form {
+    margin-top: 1rem;
+}
