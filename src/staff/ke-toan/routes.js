@@ -11,6 +11,8 @@ import InvoiceListPage from "./pages/danh-sach-hoa-don/InvoiceListPage";
 import InvoiceDetailPage from "./pages/danh-sach-hoa-don/InvoiceDetailPage";
 import PaymentReceiptPage from "./pages/danh-sach-hoa-don/PaymentReceiptPage";
 import RefundPage from "./pages/tam-ung-hoan-vien-phi/RefundPage";
+import FinancialReportPage from "./pages/bao-cao-tai-chinh/FinancialReportPage";
+import RevenueExpensePage from "./pages/quan-ly-thu-chi/RevenueExpensePage";
 
 const FinanceRoutes= () => {
     return (
@@ -29,6 +31,8 @@ const FinanceRoutes= () => {
                 <Route path="chi-tiet-hoa-don" element={<InvoiceDetailPage/>} />
                 <Route path="phieu-thanh-toan" element={<PaymentReceiptPage/>} />
                 <Route path="tam-ung-hoan-vien-phi" element={<RefundPage/>} />
+                <Route path="bao-cao" element={<FinancialReportPage/>} />
+                <Route path="thu-chi" element={<RevenueExpensePage/>} />
             </Route>
         </Routes>
     );

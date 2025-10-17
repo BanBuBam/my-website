@@ -1,14 +1,14 @@
-// src/components/LoginForm.js
+// src/pages/login/LoginPage.js
 
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { authAPI } from '../../services/api';
+import { patientAuthAPI } from '../../services/api';
 import './LoginPage.css'; // Import file CSS
 
 const LoginPage = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    username: '',
+    email: '',
     password: ''
   });
   const [loading, setLoading] = useState(false);
@@ -30,8 +30,8 @@ const LoginPage = () => {
     e.preventDefault();
 
     // Validation cơ bản
-    if (!formData.username || !formData.password) {
-      setError('Vui lòng nhập đầy đủ username và password');
+    if (!formData.email || !formData.password) {
+      setError('Vui lòng nhập đầy đủ email và password');
       return;
     }
 
@@ -40,20 +40,19 @@ const LoginPage = () => {
 
     try {
       // Gọi API đăng nhập
-      const response = await authAPI.login(formData.username, formData.password);
+      const response = await patientAuthAPI.login(formData.email, formData.password);
 
       // Xử lý khi đăng nhập thành công
       console.log('Đăng nhập thành công:', response);
 
-      // Lưu token vào localStorage (nếu API trả về token)
-      if (response.token) {
-        localStorage.setItem('authToken', response.token);
+      // Token đã được lưu tự động trong patientAuthAPI.login
+      // Lưu thêm thông tin user nếu cần
+      if (response.data) {
+        localStorage.setItem('userInfo', JSON.stringify(response.data));
       }
 
-      // Lưu thông tin user (nếu có)
-      if (response.user) {
-        localStorage.setItem('userInfo', JSON.stringify(response.user));
-      }
+      // Trigger event để cập nhật Header
+      window.dispatchEvent(new Event('loginStatusChanged'));
 
       alert('Đăng nhập thành công!');
 
@@ -81,13 +80,13 @@ const LoginPage = () => {
 
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label htmlFor="username">Enter your Username</label>
+            <label htmlFor="email">Enter your Email</label>
             <input
-              type="text"
-              id="username"
-              name="username"
-              placeholder="Username"
-              value={formData.username}
+              type="email"
+              id="email"
+              name="email"
+              placeholder="Email"
+              value={formData.email}
               onChange={handleChange}
               disabled={loading}
             />
@@ -113,6 +112,10 @@ const LoginPage = () => {
           >
             {loading ? 'Đang đăng nhập...' : 'Sign In'}
           </button>
+
+          <div className="form-footer">
+            <a href="/forgot-password" className="forgot-link">Quên mật khẩu?</a>
+          </div>
         </form>
       </div>
     </div>

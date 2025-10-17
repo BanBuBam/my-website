@@ -1,10 +1,10 @@
 // API service để gọi các endpoint
-const BASE_URL = process.env.REACT_APP_BASE_URL || 'http://26.29.198.229:8081/';
+const BASE_URL = process.env.REACT_APP_BASE_URL || 'http://100.99.181.59:8081/';
 
 // Hàm helper để gọi API
 const apiCall = async (endpoint, options = {}) => {
   const url = `${BASE_URL}${endpoint}`;
-  
+
   const defaultOptions = {
     headers: {
       'Content-Type': 'application/json',
@@ -22,7 +22,7 @@ const apiCall = async (endpoint, options = {}) => {
 
   try {
     const response = await fetch(url, config);
-    
+
     // Kiểm tra nếu response không thành công
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
@@ -37,53 +37,127 @@ const apiCall = async (endpoint, options = {}) => {
   }
 };
 
-// API functions
-export const authAPI = {
-  // Đăng nhập
-  login: async (username, password) => {
-    return apiCall('api/v1/patient/auth/login', {
+// Hàm helper để lấy token từ localStorage
+export const getAccessToken = () => localStorage.getItem('accessToken');
+export const getRefreshToken = () => localStorage.getItem('refreshToken');
+
+// Hàm helper để lưu token vào localStorage
+export const saveTokens = (accessToken, refreshToken) => {
+  localStorage.setItem('accessToken', accessToken);
+  localStorage.setItem('refreshToken', refreshToken);
+};
+
+// Hàm helper để xóa token khỏi localStorage
+export const clearTokens = () => {
+  localStorage.removeItem('accessToken');
+  localStorage.removeItem('refreshToken');
+};
+
+// API functions cho bệnh nhân
+export const patientAuthAPI = {
+  // Đăng nhập bệnh nhân
+  login: async (email, password) => {
+    const response = await apiCall('api/v1/patient/auth/login', {
       method: 'POST',
       body: JSON.stringify({
-        username,
+        email,
         password,
       }),
     });
+
+    // Lưu token vào localStorage nếu đăng nhập thành công
+    if (response.data && response.data.accessToken && response.data.refreshToken) {
+      saveTokens(response.data.accessToken, response.data.refreshToken);
+    }
+
+    return response;
   },
 
-  // Đăng ký (nếu cần)
+  // Đăng ký bệnh nhân
   register: async (userData) => {
-    return apiCall('auth/register', {
+    return apiCall('api/v1/patient/auth/register', {
       method: 'POST',
       body: JSON.stringify(userData),
     });
   },
 
-  // Đăng xuất (nếu cần)
+  // Đăng xuất bệnh nhân
   logout: async () => {
-    return apiCall('auth/logout', {
+    clearTokens();
+    return apiCall('api/v1/patient/auth/logout', {
       method: 'POST',
-    });
-  },
-};
-
-// Các API khác có thể thêm vào đây
-export const userAPI = {
-  // Lấy thông tin người dùng
-  getProfile: async (token) => {
-    return apiCall('user/profile', {
-      method: 'GET',
       headers: {
-        'Authorization': `Bearer ${token}`,
+        'Authorization': `Bearer ${getAccessToken()}`,
       },
     });
   },
 
-  // Cập nhật thông tin người dùng
-  updateProfile: async (userData, token) => {
-    return apiCall('user/profile', {
+  // Đổi mật khẩu
+  resetPassword: async (resetData) => {
+    return apiCall('api/v1/patient/auth/reset-password', {
+      method: 'POST',
+      body: JSON.stringify(resetData),
+    });
+  },
+
+  // Quên mật khẩu
+  forgotPassword: async (emailData) => {
+    return apiCall('api/v1/patient/auth/forgot-password', {
+      method: 'POST',
+      body: JSON.stringify(emailData),
+    });
+  },
+
+  // Đổi mật khẩu (khi đã đăng nhập)
+  changePassword: async (passwordData) => {
+    return apiCall('api/v1/patient/auth/change-password', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+      body: JSON.stringify(passwordData),
+    });
+  },
+
+  // Refresh token
+  refreshToken: async () => {
+    const refreshToken = getRefreshToken();
+    if (!refreshToken) {
+      throw new Error('Không tìm thấy refresh token');
+    }
+
+    const response = await apiCall('api/v1/patient/auth/refresh', {
+      method: 'POST',
+      body: JSON.stringify({ refreshToken }),
+    });
+
+    // Lưu accessToken mới
+    if (response.data && response.data.accessToken) {
+      localStorage.setItem('accessToken', response.data.accessToken);
+    }
+
+    return response;
+  },
+};
+
+// API cho bệnh nhân
+export const patientAPI = {
+  // Lấy thông tin bệnh nhân
+  getProfile: async () => {
+    return apiCall('api/v1/patient/profile', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Cập nhật thông tin bệnh nhân
+  updateProfile: async (userData) => {
+    return apiCall('api/v1/patient/profile', {
       method: 'PUT',
       headers: {
-        'Authorization': `Bearer ${token}`,
+        'Authorization': `Bearer ${getAccessToken()}`,
       },
       body: JSON.stringify(userData),
     });
@@ -92,22 +166,22 @@ export const userAPI = {
 
 export const appointmentAPI = {
   // Đặt lịch khám
-  createAppointment: async (appointmentData, token) => {
-    return apiCall('appointments', {
+  createAppointment: async (appointmentData) => {
+    return apiCall('api/v1/patient/appointments', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${token}`,
+        'Authorization': `Bearer ${getAccessToken()}`,
       },
       body: JSON.stringify(appointmentData),
     });
   },
 
   // Lấy danh sách lịch khám
-  getAppointments: async (token) => {
-    return apiCall('appointments', {
+  getAppointments: async () => {
+    return apiCall('api/v1/patient/appointments', {
       method: 'GET',
       headers: {
-        'Authorization': `Bearer ${token}`,
+        'Authorization': `Bearer ${getAccessToken()}`,
       },
     });
   },
@@ -115,21 +189,21 @@ export const appointmentAPI = {
 
 export const bookingAPI = {
   // Lấy danh sách lịch sử khám chữa bệnh
-  getPatientBookings: async (token) => {
+  getPatientBookings: async () => {
     return apiCall('api/v1/patient/bookings', {
       method: 'GET',
       headers: {
-        'Authorization': `Bearer ${token}`,
+        'Authorization': `Bearer ${getAccessToken()}`,
       },
     });
   },
 
   // Lấy chi tiết lần khám
-  getBookingDetail: async (bookingId, token) => {
+  getBookingDetail: async (bookingId) => {
     return apiCall(`api/v1/patient/bookings/${bookingId}`, {
       method: 'GET',
       headers: {
-        'Authorization': `Bearer ${token}`,
+        'Authorization': `Bearer ${getAccessToken()}`,
       },
     });
   },
@@ -137,29 +211,29 @@ export const bookingAPI = {
 
 export const invoiceAPI = {
   // Lấy hóa đơn của bệnh nhân
-  getPatientInvoices: async (patientId, token) => {
-    return apiCall(`invoices/patient/${patientId}`, {
+  getPatientInvoices: async () => {
+    return apiCall('api/v1/patient/invoices', {
       method: 'GET',
       headers: {
-        'Authorization': `Bearer ${token}`,
+        'Authorization': `Bearer ${getAccessToken()}`,
       },
     });
   },
 
   // Tìm kiếm hóa đơn
-  searchInvoices: async (searchTerm, token) => {
-    return apiCall(`invoices/search?q=${encodeURIComponent(searchTerm)}`, {
+  searchInvoices: async (searchTerm) => {
+    return apiCall(`api/v1/patient/invoices/search?q=${encodeURIComponent(searchTerm)}`, {
       method: 'GET',
       headers: {
-        'Authorization': `Bearer ${token}`,
+        'Authorization': `Bearer ${getAccessToken()}`,
       },
     });
   },
 };
 
 export default {
-  authAPI,
-  userAPI,
+  patientAuthAPI,
+  patientAPI,
   appointmentAPI,
   bookingAPI,
   invoiceAPI,

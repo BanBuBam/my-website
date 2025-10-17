@@ -35,6 +35,10 @@ const Sidebar = () => {
             <li><Link to="/login">Đăng nhập</Link></li>
             <li><Link to="/register">Đăng ký</Link></li>
             <li><Link to="/cap-nhat-thong-tin">Cập nhật thông tin</Link></li>
+            <li><Link to="/forgot-password">Quên mật khẩu</Link></li>
+            <li><Link to="/reset-password">Đặt lại mật khẩu</Link></li>
+            <li><Link to="/change-password">Đổi mật khẩu</Link></li>
+            <li><Link to="/refresh-token">Làm mới Token</Link></li>
           </ul>
         </div>
 

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import UserInfo from '../../UserInfo/UserInfo';
 import './Header.css';
@@ -11,7 +11,31 @@ import youtubeIcon from '../../../assets/icons/youtube.png';
 import zaloIcon from '../../../assets/icons/zalo.png';
 import searchIcon from '../../../assets/icons/search.png';
 import arrowDown2 from '../../../assets/icons/arrow-down-2.png';
+
 const Header = () => {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    // Kiểm tra trạng thái đăng nhập
+    const checkLoginStatus = () => {
+      const token = localStorage.getItem('accessToken');
+      setIsLoggedIn(!!token);
+    };
+
+    checkLoginStatus();
+
+    // Lắng nghe sự thay đổi localStorage
+    window.addEventListener('storage', checkLoginStatus);
+
+    // Custom event để cập nhật khi đăng nhập/đăng xuất trong cùng tab
+    window.addEventListener('loginStatusChanged', checkLoginStatus);
+
+    return () => {
+      window.removeEventListener('storage', checkLoginStatus);
+      window.removeEventListener('loginStatusChanged', checkLoginStatus);
+    };
+  }, []);
+
   return (
     <header className="site-header">
       <div className="header-top">
@@ -73,8 +97,12 @@ const Header = () => {
           <Link to="/tra-cuu-ket-qua">Tra cứu kết quả</Link>
           <Link to="/hoi-dap">Hỏi đáp</Link>
           <Link to="/tai-ung-dung">Tải ứng dụng</Link>
-          <Link to="/login">Đăng nhập</Link>
-          <Link to="/register">Đăng ký</Link>
+          {!isLoggedIn && (
+            <>
+              <Link to="/login">Đăng nhập</Link>
+              <Link to="/register">Đăng ký</Link>
+            </>
+          )}
         </div>
       </div>
       <nav className="main-nav">
