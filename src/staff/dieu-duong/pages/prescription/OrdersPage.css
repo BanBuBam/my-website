@@ -1,0 +1,140 @@
+.orders-page .page-header {
+    background-color: #fff;
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    margin-bottom: 1.5rem;
+}
+
+.orders-page .page-header h2 {
+    font-size: 1.8rem;
+    margin: 0;
+}
+
+.orders-page .page-header p {
+    margin: 0.25rem 0 0 0;
+    color: #6c757d;
+}
+
+.orders-page .card {
+    background-color: #fff;
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.orders-page .card h3 {
+    margin: 0 0 1.5rem 0;
+    font-size: 1.2rem;
+}
+
+/* List Styles */
+.orders-list {
+    font-size: 0.9rem;
+}
+
+/* --- UPDATED: Grid now has 7 columns --- */
+.list-header,
+.order-row {
+    display: grid;
+    grid-template-columns: 1fr 1.5fr 1fr 2fr 1.5fr 1.2fr 1.2fr;
+    gap: 1.5rem;
+    padding: 1rem 0;
+    border-bottom: 1px solid #f1f5f9;
+    align-items: center;
+}
+
+.list-header {
+    font-weight: 600;
+    color: #6b7280;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+}
+
+.order-row:last-child {
+    border-bottom: none;
+}
+
+.cell-patient,
+.cell-content {
+    display: flex;
+    flex-direction: column;
+}
+
+.patient-name,
+.content-title {
+    font-weight: 500;
+}
+
+.patient-room,
+.content-detail {
+    font-size: 0.85rem;
+    color: #64748b;
+}
+
+.order-type-badge {
+    padding: 0.3rem 0.8rem;
+    border-radius: 12px;
+    font-weight: 500;
+    font-size: 0.8rem;
+    text-align: center;
+}
+
+.type-thuốc {
+    background-color: #f3e8ff;
+    color: #9333ea;
+}
+
+.type-xét-nghiệm {
+    background-color: #e0f2fe;
+    color: #0284c7;
+}
+
+.type-theo-dõi {
+    background-color: #dcfce7;
+    color: #16a34a;
+}
+
+/* --- NEW: Style for the static status badge --- */
+.status-badge {
+    padding: 0.3rem 0.8rem;
+    border-radius: 12px;
+    font-weight: 500;
+    font-size: 0.8rem;
+    text-align: center;
+}
+
+.status-chờ-thực-hiện {
+    background-color: #fef9c3;
+    color: #a16207;
+}
+
+.status-đang-thực-hiện {
+    background-color: #dcfce7;
+    color: #16a34a;
+}
+
+.status-hoàn-thành {
+    background-color: #e0e7ff;
+    color: #4338ca;
+}
+
+/* --- NEW: Style for the update button --- */
+.update-status-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 6px;
+    font-weight: 500;
+    cursor: pointer;
+    background-color: #3b82f6;
+    color: #fff;
+}
+
+.update-status-btn:disabled {
+    background-color: #e5e7eb;
+    color: #9ca3af;
+    cursor: not-allowed;
+}
