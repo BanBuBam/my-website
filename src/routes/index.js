@@ -7,7 +7,15 @@ import MainLayout from '../components/layout/MainLayout'; // ✨ NHẬP LAYOUT M
 // Các trang public
 import HomePage from '../pages/HomePage';
 import LoginPage from '../pages/login/LoginPage';
-import RegisterPage from '../pages/RegisterPage';
+import RegisterPage from '../pages/register/RegisterPage';
+import ResetPasswordPage from '../pages/reset-password/ResetPasswordPage';
+import ForgotPasswordPage from '../pages/forgot-password/ForgotPasswordPage';
+import ChangePasswordPage from '../pages/change-password/ChangePasswordPage';
+import RefreshTokenPage from '../pages/refresh-token/RefreshTokenPage';
+import DatLichKham from '../pages/dat-lich-kham/DatLichKham';
+import CapNhatThongTin from '../pages/CapNhatThongTin/CapNhatThongTin';
+import HoaDonBenhNhan from '../pages/HoaDonBenhNhan/HoaDonBenhNhan';
+import LichSuKhamChuaBenh from '../pages/LichSuKhamChuaBenh/LichSuKhamChuaBenh';
 import TrangThaiDatLich from '../pages/dat-lich-kham/trang-thai/TrangThaiDatLich';
 import DatLichKhamPage from '../pages/dat-lich-kham/dat-lich/DatLichKhamPage';
 
@@ -18,10 +26,19 @@ const AppRoutes = () => {
   return (
     <Routes>
       {/* --- CÁC ROUTE SỬ DỤNG BỐ CỤC CHÍNH (CÓ HEADER/FOOTER) --- */}
-      <Route element={<MainLayout />}> 
+      <Route element={<MainLayout />}>
         <Route path="/" element={<HomePage />} />
+        <Route path="/homepage" element={<HomePage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
+        <Route path="/reset-password" element={<ResetPasswordPage />} />
+        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+        <Route path="/change-password" element={<ChangePasswordPage />} />
+        <Route path="/refresh-token" element={<RefreshTokenPage />} />
+        <Route path="/dat-lich-kham" element={<DatLichKham />} />
+        <Route path="/cap-nhat-thong-tin" element={<CapNhatThongTin />} />
+        <Route path="/hoa-don-benh-nhan" element={<HoaDonBenhNhan />} />
+        <Route path="/lich-su-kham" element={<LichSuKhamChuaBenh />} />
         <Route path="/trang-thai-dat-lich" element={<TrangThaiDatLich />} />
         <Route path="/dat-lich-kham" element={<DatLichKhamPage />} />
       </Route>

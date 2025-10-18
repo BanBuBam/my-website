@@ -1,0 +1,278 @@
+.invoice-detail-page {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 24px;
+    font-family: Arial, sans-serif;
+    background: white;
+}
+
+/* Action Bar */
+.action-bar {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 24px;
+}
+
+.btn-back,
+.btn-print {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-back {
+    background-color: #6b7280;
+    color: white;
+}
+
+.btn-back:hover {
+    background-color: #4b5563;
+}
+
+.btn-print {
+    background-color: #10b981;
+    color: white;
+}
+
+.btn-print:hover {
+    background-color: #059669;
+}
+
+/* Invoice Header */
+.invoice-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 32px;
+    padding: 20px;
+    background: #f9fafb;
+    border-radius: 8px;
+    border: 1px solid #e5e7eb;
+}
+
+.invoice-header > div {
+    flex: 1;
+    text-align: center;
+}
+
+.hospital-info h4 {
+    margin: 0 0 8px 0;
+    color: #1f2937;
+    font-size: 18px;
+}
+
+.hospital-info p {
+    margin: 4px 0;
+    color: #6b7280;
+    font-size: 14px;
+}
+
+.invoice-title h2 {
+    margin: 0 0 12px 0;
+    color: #2563eb;
+    font-size: 24px;
+}
+
+.invoice-title p {
+    margin: 4px 0;
+    color: #374151;
+    font-size: 14px;
+}
+
+.signature p {
+    margin: 0 0 8px 0;
+    color: #6b7280;
+    font-size: 14px;
+}
+
+.signature-box {
+    width: 100px;
+    height: 80px;
+    border: 1px dashed #d1d5db;
+    margin: 0 auto;
+    border-radius: 4px;
+}
+
+/* Patient Info Section */
+.patient-info-section {
+    margin-bottom: 32px;
+}
+
+.patient-info-section h3 {
+    margin: 0 0 16px 0;
+    color: #1f2937;
+    font-size: 18px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #3b82f6;
+}
+
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    background: #f9fafb;
+    padding: 20px;
+    border-radius: 8px;
+}
+
+.info-item {
+    display: flex;
+    gap: 12px;
+}
+
+.info-item.full-width {
+    grid-column: 1 / -1;
+}
+
+.info-item label {
+    font-weight: 600;
+    color: #374151;
+    min-width: 140px;
+}
+
+.info-item span {
+    color: #1f2937;
+}
+
+/* Service Table */
+.service-table {
+    margin-bottom: 32px;
+}
+
+.service-table h3 {
+    margin: 0 0 16px 0;
+    color: #1f2937;
+    font-size: 18px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #3b82f6;
+}
+
+.service-table table {
+    width: 100%;
+    border-collapse: collapse;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.service-table th,
+.service-table td {
+    border: 1px solid #e5e7eb;
+    padding: 12px;
+    text-align: center;
+}
+
+.service-table th {
+    background: #f3f4f6;
+    color: #1f2937;
+    font-weight: 600;
+}
+
+.service-table td.text-left {
+    text-align: left;
+}
+
+.service-table tbody tr:hover {
+    background: #f9fafb;
+}
+
+.service-table tfoot td {
+    background: #f9fafb;
+    font-size: 14px;
+}
+
+.service-table .total-label {
+    text-align: right;
+    padding-right: 20px;
+}
+
+.service-table .total-value {
+    color: #dc2626;
+    font-size: 18px;
+}
+
+.service-table .total-text {
+    text-align: right;
+    padding-right: 20px;
+    font-style: italic;
+}
+
+.service-table .payment-info {
+    text-align: right;
+    padding-right: 20px;
+    color: #6b7280;
+}
+
+/* Signature Section */
+.signature-section {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    margin-top: 48px;
+    padding-top: 24px;
+    border-top: 1px solid #e5e7eb;
+}
+
+.signature-box-wrapper {
+    text-align: center;
+}
+
+.signature-box-wrapper p {
+    margin: 8px 0;
+    color: #374151;
+}
+
+.signature-box-wrapper .note {
+    font-size: 12px;
+    color: #6b7280;
+    font-style: italic;
+}
+
+/* Print Styles */
+@media print {
+    .action-bar {
+        display: none;
+    }
+
+    .invoice-detail-page {
+        padding: 0;
+    }
+
+    .btn-back,
+    .btn-print {
+        display: none;
+    }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .invoice-header {
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .info-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .info-item.full-width {
+        grid-column: 1;
+    }
+
+    .signature-section {
+        grid-template-columns: 1fr;
+    }
+
+    .service-table {
+        overflow-x: auto;
+    }
+
+    .service-table table {
+        min-width: 600px;
+    }
+}
+

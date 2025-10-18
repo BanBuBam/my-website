@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import UserInfo from '../../UserInfo/UserInfo';
 import './Header.css';
 import logo from '../../../assets/images/logo.png';
 import phoneIcon from '../../../assets/icons/phone-icon.png';
@@ -10,14 +11,38 @@ import youtubeIcon from '../../../assets/icons/youtube.png';
 import zaloIcon from '../../../assets/icons/zalo.png';
 import searchIcon from '../../../assets/icons/search.png';
 import arrowDown2 from '../../../assets/icons/arrow-down-2.png';
+
 const Header = () => {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    // Kiểm tra trạng thái đăng nhập
+    const checkLoginStatus = () => {
+      const token = localStorage.getItem('accessToken');
+      setIsLoggedIn(!!token);
+    };
+
+    checkLoginStatus();
+
+    // Lắng nghe sự thay đổi localStorage
+    window.addEventListener('storage', checkLoginStatus);
+
+    // Custom event để cập nhật khi đăng nhập/đăng xuất trong cùng tab
+    window.addEventListener('loginStatusChanged', checkLoginStatus);
+
+    return () => {
+      window.removeEventListener('storage', checkLoginStatus);
+      window.removeEventListener('loginStatusChanged', checkLoginStatus);
+    };
+  }, []);
+
   return (
     <header className="site-header">
       <div className="header-top">
         <div className="container header-top-container">
-          <a href="/" className="logo">
+          <Link to="/" className="logo">
             <img src={logo} alt="Benh vien Phu Yen logo" />
-          </a>
+          </Link>
           <div className="header-contact-info">
             <div className="contact-item">
               {/* merged image */}
@@ -62,6 +87,7 @@ const Header = () => {
             <button className="search-icon" type="button">
               <img src={searchIcon} alt="Search" />
             </button>
+            <UserInfo />
           </div>
         </div>
         <div className="container header-quick-links">
@@ -71,46 +97,50 @@ const Header = () => {
           <Link to="/tra-cuu-ket-qua">Tra cứu kết quả</Link>
           <Link to="/hoi-dap">Hỏi đáp</Link>
           <Link to="/tai-ung-dung">Tải ứng dụng</Link>
-          <Link to="/login">Đăng nhập</Link>
-          <Link to="/register">Đăng ký</Link>
+          {!isLoggedIn && (
+            <>
+              <Link to="/login">Đăng nhập</Link>
+              <Link to="/register">Đăng ký</Link>
+            </>
+          )}
         </div>
       </div>
       <nav className="main-nav">
         <div className="container">
           <ul>
-            <li><a href="#">Trang chủ</a></li>
+            <li><Link to="/homepage">Trang chủ</Link></li>
             <li>
-              <a href="#">
+              <Link to="/gioi-thieu">
                 Giới thiệu <img src={arrowDown2} alt="arrow down" />
-              </a>
+              </Link>
             </li>
             <li>
-              <a href="#">
+              <Link to="/chuyen-khoa">
                 Chuyên khoa <img src={arrowDown2} alt="arrow down" />
-              </a>
+              </Link>
             </li>
             <li>
-              <a href="#">
+              <Link to="/chuyen-gia">
                 Chuyên gia - bác sĩ <img src={arrowDown2} alt="arrow down" />
-              </a>
+              </Link>
             </li>
             <li>
-              <a href="#">
+              <Link to="/dich-vu">
                 Dịch vụ y khoa <img src={arrowDown2} alt="arrow down" />
-              </a>
+              </Link>
             </li>
             <li>
-              <a href="#">
+              <Link to="/ho-tro">
                 Hỗ trợ khách hàng <img src={arrowDown2} alt="arrow down" />
-              </a>
+              </Link>
             </li>
             <li>
-              <a href="#">
+              <Link to="/tin-tuc">
                 Tin tức và sự kiện <img src={arrowDown2} alt="arrow down" />
-              </a>
+              </Link>
             </li>
-            <li><a href="#">Tuyển dụng</a></li>
-            <li><a href="#">Liên hệ</a></li>
+            <li><Link to="/tuyen-dung">Tuyển dụng</Link></li>
+            <li><Link to="/lien-he">Liên hệ</Link></li>
           </ul>
         </div>
       </nav>

@@ -1,0 +1,380 @@
+/* Container chính */
+.lich-su-kham-container {
+  background-color: #f0f4f8;
+  min-height: 80vh;
+  padding: 20px;
+}
+
+.lich-su-content {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Header */
+.page-header {
+  background-color: #ffffff;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.page-header h1 {
+  font-size: 32px;
+  font-weight: 700;
+  color: #2c5282;
+  margin-bottom: 10px;
+}
+
+.page-header p {
+  font-size: 16px;
+  color: #666;
+  margin: 0;
+}
+
+/* Loading và Error */
+.loading,
+.error-message,
+.no-data {
+  background-color: #ffffff;
+  padding: 40px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  font-size: 16px;
+}
+
+.error-message {
+  background-color: #fed7d7;
+  color: #c53030;
+  border: 1px solid #feb2b2;
+}
+
+.loading {
+  color: #2c5282;
+}
+
+.no-data {
+  color: #666;
+}
+
+/* Danh sách booking */
+.bookings-list {
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.booking-item {
+  display: flex;
+  align-items: center;
+  padding: 20px;
+  border-bottom: 1px solid #e2e8f0;
+  transition: background-color 0.3s ease;
+}
+
+.booking-item:hover {
+  background-color: #f8fafc;
+}
+
+.booking-item:last-child {
+  border-bottom: none;
+}
+
+.booking-status {
+  margin-right: 20px;
+  min-width: 120px;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 20px;
+  color: white;
+  font-size: 12px;
+  font-weight: 600;
+  text-align: center;
+  min-width: 80px;
+}
+
+.status-badge.large {
+  padding: 8px 16px;
+  font-size: 14px;
+  min-width: 100px;
+}
+
+.status-badge.small {
+  padding: 4px 8px;
+  font-size: 11px;
+  min-width: 60px;
+}
+
+.booking-info {
+  flex: 1;
+  margin-right: 20px;
+}
+
+.booking-info h3 {
+  font-size: 18px;
+  font-weight: 600;
+  color: #2c5282;
+  margin: 0 0 8px 0;
+}
+
+.booking-info p {
+  font-size: 14px;
+  color: #666;
+  margin: 0;
+}
+
+.booking-actions {
+  min-width: 120px;
+}
+
+.view-detail-btn {
+  background-color: #38a169;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.view-detail-btn:hover {
+  background-color: #2f855a;
+}
+
+/* Modal */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.modal-content {
+  background-color: white;
+  border-radius: 12px;
+  max-width: 900px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 20px;
+  border-bottom: 1px solid #e2e8f0;
+  background-color: #f8fafc;
+}
+
+.modal-title-section {
+  flex: 1;
+}
+
+.hospital-info {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  font-size: 14px;
+}
+
+.hospital-name {
+  color: #2c5282;
+  font-weight: 600;
+}
+
+.department-name {
+  color: #666;
+  font-weight: 500;
+}
+
+.modal-title-section h2 {
+  font-size: 24px;
+  font-weight: 700;
+  color: #2c5282;
+  margin: 0 0 10px 0;
+}
+
+.booking-status-header {
+  margin-top: 10px;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #666;
+  padding: 0;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 20px;
+}
+
+.close-btn:hover {
+  color: #333;
+}
+
+.modal-loading {
+  padding: 40px;
+  text-align: center;
+  color: #2c5282;
+  font-size: 16px;
+}
+
+.modal-body {
+  padding: 20px;
+}
+
+/* Sections trong modal */
+.section {
+  margin-bottom: 30px;
+}
+
+.section h3 {
+  font-size: 18px;
+  font-weight: 600;
+  color: #2c5282;
+  margin-bottom: 15px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid #e2e8f0;
+}
+
+.booking-code {
+  background-color: #f8fafc;
+  padding: 15px;
+  border-radius: 8px;
+  text-align: center;
+  font-size: 16px;
+  color: #2c5282;
+  border: 1px solid #e2e8f0;
+}
+
+/* Info grid */
+.info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+}
+
+.info-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.info-item .label {
+  font-weight: 600;
+  color: #4a5568;
+  font-size: 14px;
+  margin-bottom: 4px;
+}
+
+.info-item .value {
+  color: #2d3748;
+  font-size: 16px;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .lich-su-kham-container {
+    padding: 10px;
+  }
+  
+  .page-header {
+    padding: 20px;
+  }
+  
+  .page-header h1 {
+    font-size: 24px;
+  }
+  
+  .booking-item {
+    flex-direction: column;
+    gap: 15px;
+    text-align: center;
+  }
+  
+  .booking-status,
+  .booking-info,
+  .booking-actions {
+    margin-right: 0;
+    min-width: auto;
+    width: 100%;
+  }
+  
+  .modal-content {
+    margin: 10px;
+    max-height: 95vh;
+  }
+  
+  .modal-header {
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .hospital-info {
+    flex-direction: column;
+    gap: 5px;
+    text-align: center;
+  }
+  
+  .modal-title-section h2 {
+    font-size: 20px;
+    text-align: center;
+  }
+  
+  .info-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .close-btn {
+    align-self: flex-end;
+    margin-left: 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .page-header h1 {
+    font-size: 20px;
+  }
+  
+  .page-header p {
+    font-size: 14px;
+  }
+  
+  .booking-info h3 {
+    font-size: 16px;
+  }
+  
+  .booking-info p {
+    font-size: 12px;
+  }
+  
+  .view-detail-btn {
+    width: 100%;
+    padding: 12px;
+  }
+  
+  .modal-title-section h2 {
+    font-size: 18px;
+  }
+}

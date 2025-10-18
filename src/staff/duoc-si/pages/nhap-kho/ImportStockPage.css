@@ -1,0 +1,83 @@
+.import-stock-page {
+    padding: 1.5rem;
+}
+
+.page-title {
+    font-size: 1.8rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+}
+
+.search-box {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.search-box input {
+    flex: 1;
+    padding: 0.5rem;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+}
+
+.search-box button {
+    background: #007bff;
+    color: #fff;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.search-box button:hover {
+    background: #0056b3;
+}
+
+.medicine-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.medicine-item {
+    display: flex;
+    justify-content: space-between;
+    background: #f8f9fa;
+    padding: 1rem;
+    border-radius: 8px;
+}
+
+.medicine-info {
+    max-width: 70%;
+}
+
+.medicine-name {
+    font-weight: 600;
+    font-size: 1.1rem;
+    margin-bottom: 0.3rem;
+}
+
+.medicine-meta {
+    font-size: 0.9rem;
+    color: #495057;
+    margin-bottom: 0.3rem;
+}
+
+.medicine-desc {
+    font-size: 0.85rem;
+    color: #6c757d;
+}
+
+.btn-import {
+    background: #28a745;
+    color: #fff;
+    border: none;
+    padding: 0.4rem 0.8rem;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.btn-import:hover {
+    background: #218838;
+}

@@ -29,20 +29,40 @@ const Sidebar = () => {
       </div>
 
       <nav className="sidebar-nav">
-        <div className="nav-section quick-actions">
+        <div className="nav-section user-account">
+          <h4>Tài khoản</h4>
           <ul>
+            <li><Link to="/login">Đăng nhập</Link></li>
+            <li><Link to="/register">Đăng ký</Link></li>
+            <li><Link to="/cap-nhat-thong-tin">Cập nhật thông tin</Link></li>
+            <li><Link to="/forgot-password">Quên mật khẩu</Link></li>
+            <li><Link to="/reset-password">Đặt lại mật khẩu</Link></li>
+            <li><Link to="/change-password">Đổi mật khẩu</Link></li>
+            <li><Link to="/refresh-token">Làm mới Token</Link></li>
+          </ul>
+        </div>
+
+        <div className="nav-section quick-actions">
+          <h4>Dịch vụ khám chữa bệnh</h4>
+          <ul>
+              <li><Link to="/login">Đăng nhập</Link></li>
+              <li><Link to="/register">Đăng ký</Link></li>
+              <li><Link to="/homepage">Trang chủ</Link></li>
+              <li><Link to="/cap-nhat-thong-tin">Cập nhật thông tin</Link></li>
+              <li><Link to="/lich-su-kham">Lịch sử khám</Link></li>
             <li><Link to="/dat-lich-kham">Đặt lịch khám</Link></li>
             <li><Link to="/trang-thai-dat-lich">Trạng thái đặt lịch</Link></li>
+            <li><Link to="/hoa-don-benh-nhan">Hóa đơn bệnh nhân</Link></li>
             <li><Link to="/goi-kham">Gói khám</Link></li>
             <li><Link to="/tra-cuu-ket-qua">Tra cứu kết quả</Link></li>
-            <li><Link to="/lich-su-kham">Lịch sử khám chữa bệnh</Link></li>
             <li><Link to="/thanh-toan">Thanh toán</Link></li>
           </ul>
         </div>
 
         <div className="nav-section main-navigation">
+          <h4>Thông tin bệnh viện</h4>
           <ul>
-            <li><Link to="/">Trang chủ</Link></li>
+            <li><Link to="/homepage">Trang chủ</Link></li>
             <li className={openMenu === 'gioi-thieu' ? 'open' : ''}>
               <div className="menu-item" onClick={() => toggleMenu('gioi-thieu')}>
                 <span>Giới thiệu</span>

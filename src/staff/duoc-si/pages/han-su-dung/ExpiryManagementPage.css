@@ -1,0 +1,420 @@
+.expiry-management-page {
+    padding: 24px;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+/* Page Header */
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.page-header h2 {
+    margin: 0 0 4px 0;
+    color: #1f2937;
+    font-size: 28px;
+}
+
+.page-header p {
+    margin: 0;
+    color: #6b7280;
+    font-size: 14px;
+}
+
+.btn-export {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background-color: #10b981;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-export:hover {
+    background-color: #059669;
+    transform: translateY(-2px);
+}
+
+/* Statistics Section */
+.stats-section {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    margin-bottom: 24px;
+}
+
+.stat-card {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    background: white;
+    padding: 24px;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    border-left: 4px solid #3b82f6;
+}
+
+.stat-card.total {
+    border-left-color: #3b82f6;
+}
+
+.stat-card.expired {
+    border-left-color: #ef4444;
+    background: linear-gradient(135deg, #fff 0%, #fee2e2 100%);
+}
+
+.stat-card.warning {
+    border-left-color: #f59e0b;
+    background: linear-gradient(135deg, #fff 0%, #fef3c7 100%);
+}
+
+.stat-card.safe {
+    border-left-color: #10b981;
+    background: linear-gradient(135deg, #fff 0%, #d1fae5 100%);
+}
+
+.stat-icon {
+    font-size: 40px;
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.stat-content {
+    flex: 1;
+}
+
+.stat-content h3 {
+    margin: 0 0 4px 0;
+    color: #1f2937;
+    font-size: 32px;
+    font-weight: 700;
+}
+
+.stat-content p {
+    margin: 0;
+    color: #6b7280;
+    font-size: 14px;
+}
+
+.stat-value {
+    display: block;
+    margin-top: 4px;
+    color: #ef4444;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+/* Filter Section */
+.filter-section {
+    display: flex;
+    gap: 12px;
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    margin-bottom: 24px;
+}
+
+.search-box {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+}
+
+.search-box svg {
+    color: #9ca3af;
+}
+
+.search-box input {
+    flex: 1;
+    border: none;
+    outline: none;
+    font-size: 14px;
+}
+
+.filter-select {
+    padding: 10px 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 14px;
+    background: white;
+    cursor: pointer;
+    transition: border-color 0.2s;
+}
+
+.filter-select:focus {
+    outline: none;
+    border-color: #3b82f6;
+}
+
+/* Medicine List */
+.medicine-list {
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+    margin-bottom: 24px;
+}
+
+.medicine-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.medicine-table th,
+.medicine-table td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.medicine-table th {
+    background: #f9fafb;
+    color: #374151;
+    font-weight: 600;
+    font-size: 14px;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.medicine-table td {
+    color: #1f2937;
+    font-size: 14px;
+}
+
+.medicine-table td.medicine-name {
+    font-weight: 600;
+    color: #1f2937;
+}
+
+.medicine-table td.batch {
+    color: #8b5cf6;
+    font-weight: 500;
+}
+
+.medicine-table td.quantity {
+    font-weight: 600;
+}
+
+.medicine-table td.expiry-date {
+    font-weight: 600;
+}
+
+.medicine-table td.value {
+    text-align: right;
+    font-weight: 600;
+    color: #10b981;
+}
+
+/* Row colors based on status */
+.medicine-table tbody tr.row-expired {
+    background: #fef2f2;
+}
+
+.medicine-table tbody tr.row-expired:hover {
+    background: #fee2e2;
+}
+
+.medicine-table tbody tr.row-near-expiry {
+    background: #fffbeb;
+}
+
+.medicine-table tbody tr.row-near-expiry:hover {
+    background: #fef3c7;
+}
+
+.medicine-table tbody tr.row-safe:hover {
+    background: #f9fafb;
+}
+
+/* Status Badge */
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 6px 12px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.status-badge.expired {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.status-badge.near-expiry {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.status-badge.safe {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.status-badge svg {
+    font-size: 14px;
+}
+
+/* No Data */
+.no-data {
+    padding: 60px 20px;
+    text-align: center;
+    color: #6b7280;
+}
+
+.no-data p {
+    margin: 0;
+    font-size: 16px;
+}
+
+/* Summary Section */
+.summary-section {
+    display: flex;
+    justify-content: flex-end;
+    gap: 40px;
+    background: white;
+    padding: 20px 24px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.summary-item {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+.summary-item .label {
+    color: #6b7280;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.summary-item .value {
+    color: #1f2937;
+    font-size: 16px;
+    font-weight: 700;
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+    .stats-section {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .filter-section {
+        flex-wrap: wrap;
+    }
+
+    .search-box {
+        flex: 1 1 100%;
+    }
+}
+
+@media (max-width: 768px) {
+    .page-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+    }
+
+    .btn-export {
+        width: 100%;
+    }
+
+    .stats-section {
+        grid-template-columns: 1fr;
+    }
+
+    .filter-section {
+        flex-direction: column;
+    }
+
+    .filter-select {
+        width: 100%;
+    }
+
+    .medicine-list {
+        overflow-x: auto;
+    }
+
+    .medicine-table {
+        min-width: 1200px;
+    }
+
+    .summary-section {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .summary-item {
+        justify-content: space-between;
+    }
+}
+
+/* Print Styles */
+@media print {
+    .page-header button,
+    .filter-section {
+        display: none;
+    }
+
+    .expiry-management-page {
+        padding: 0;
+    }
+
+    .medicine-list,
+    .stats-section,
+    .summary-section {
+        box-shadow: none;
+        page-break-inside: avoid;
+    }
+
+    .medicine-table tbody tr.row-expired {
+        background: #fef2f2 !important;
+    }
+
+    .medicine-table tbody tr.row-near-expiry {
+        background: #fffbeb !important;
+    }
+}
+
+/* Animation */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.stat-card,
+.medicine-table tbody tr {
+    animation: fadeIn 0.3s ease;
+}
+

@@ -1,0 +1,104 @@
+.create-invoice-page {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 24px;
+    font-family: Arial, sans-serif;
+}
+
+.invoice-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 24px;
+    padding: 16px;
+    background: #f9fafb;
+    border-radius: 8px;
+}
+
+.invoice-header div {
+    text-align: center;
+}
+
+.invoice-title h2 {
+    margin-bottom: 4px;
+    color: #2563eb;
+}
+
+.patient-form form {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.patient-form input {
+    padding: 8px;
+    border-radius: 6px;
+    border: 1px solid #ddd;
+}
+
+.service-table table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 24px;
+}
+
+.service-table th,
+.service-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: center;
+}
+
+.service-table th {
+    background: #f3f4f6;
+}
+
+.signature-section {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    margin-bottom: 24px;
+    text-align: center;
+}
+
+.create-btn {
+    text-align: center;
+}
+
+.create-btn button {
+    background-color: #2563eb;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.create-btn button:hover {
+    background-color: #1d4ed8;
+}
+
+/* Popup */
+.popup {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.popup-content {
+    background: white;
+    padding: 24px;
+    border-radius: 10px;
+    text-align: center;
+}
+
+.popup-content button {
+    margin-top: 12px;
+    padding: 6px 16px;
+    background-color: #2563eb;
+    color: white;
+    border: none;
+    border-radius: 6px;
+}
