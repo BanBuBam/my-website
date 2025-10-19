@@ -1,51 +1,185 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { patientAuthAPI } from '../../services/api';
 import './CapNhatThongTin.css';
 
 const CapNhatThongTin = () => {
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+  const [loadingProfile, setLoadingProfile] = useState(true);
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState(false);
+
   // State để quản lý dữ liệu form
   const [formData, setFormData] = useState({
-    ho: '',
-    ten: '',
-    ngaySinh: '',
-    gioiTinh: '',
-    cccd: '',
-    soDienThoai: '',
+    phoneNumber: '',
     email: '',
-    diaChiCuThe: '',
-    xa: '',
-    tinh: '',
-    anhDaiDien: null,
-    tenNguoiLienHe: '',
-    soDienThoaiLienHe: '',
-    nhomMau: '',
-    diUng: '',
-    ngheNghiep: '',
-    tinhTrangHonNhan: ''
+    addressLine: '',
+    wardId: '',
+    emergencyContactName: '',
+    emergencyContactPhone: '',
+    occupation: '',
+    maritalStatus: ''
   });
+
+  // State để lưu thông tin không thể chỉnh sửa
+  const [profileInfo, setProfileInfo] = useState({
+    firstName: '',
+    lastName: '',
+    fullName: '',
+    dateOfBirth: '',
+    gender: '',
+    idCardNumber: '',
+    patientCode: '',
+    bloodType: '',
+    allergies: ''
+  });
+
+  // Lấy thông tin profile khi component mount
+  useEffect(() => {
+    const fetchProfile = async () => {
+      const token = localStorage.getItem('accessToken');
+
+      console.log('Checking token:', token ? 'Token exists' : 'No token');
+
+      if (!token) {
+        setError('Bạn cần đăng nhập để xem thông tin');
+        setLoadingProfile(false);
+        setTimeout(() => {
+          navigate('/login');
+        }, 2000);
+        return;
+      }
+
+      setLoadingProfile(true);
+      setError('');
+
+      try {
+        console.log('Calling getProfile API...');
+        const response = await patientAuthAPI.getProfile();
+        console.log('Profile response:', response);
+
+        if (response && response.data) {
+          const data = response.data;
+
+          // Set thông tin không thể chỉnh sửa
+          setProfileInfo({
+            firstName: data.firstName || '',
+            lastName: data.lastName || '',
+            fullName: data.fullName || '',
+            dateOfBirth: data.dateOfBirth || '',
+            gender: data.gender || '',
+            idCardNumber: data.idCardNumber || '',
+            patientCode: data.patientCode || '',
+            bloodType: data.bloodType || '',
+            allergies: data.allergies || ''
+          });
+
+          // Set thông tin có thể chỉnh sửa
+          setFormData({
+            phoneNumber: data.phoneNumber || '',
+            email: data.email || '',
+            addressLine: data.addressLine || '',
+            wardId: data.wardId ? String(data.wardId) : '',
+            emergencyContactName: data.emergencyContactName || '',
+            emergencyContactPhone: data.emergencyContactPhone || '',
+            occupation: data.occupation || '',
+            maritalStatus: data.maritalStatus || ''
+          });
+        } else {
+          setError('Không nhận được dữ liệu từ server');
+        }
+      } catch (error) {
+        console.error('Lỗi lấy thông tin profile:', error);
+
+        // Kiểm tra loại lỗi
+        if (error.message === 'Failed to fetch') {
+          setError('Không thể kết nối đến server. Vui lòng kiểm tra kết nối mạng hoặc server có đang chạy không.');
+        } else if (error.message.includes('401') || error.message.includes('Unauthorized')) {
+          setError('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.');
+          setTimeout(() => {
+            localStorage.removeItem('accessToken');
+            localStorage.removeItem('refreshToken');
+            navigate('/login');
+          }, 2000);
+        } else {
+          setError(error.message || 'Không thể lấy thông tin. Vui lòng thử lại.');
+        }
+      } finally {
+        setLoadingProfile(false);
+      }
+    };
+
+    fetchProfile();
+  }, [navigate]);
 
   // Hàm xử lý thay đổi input
   const handleChange = (event) => {
-    const { name, value, type, files } = event.target;
-    
-    if (type === 'file') {
-      setFormData(prevState => ({
-        ...prevState,
-        [name]: files[0]
-      }));
-    } else {
-      setFormData(prevState => ({
-        ...prevState,
-        [name]: value
-      }));
-    }
+    const { name, value } = event.target;
+    setFormData(prevState => ({
+      ...prevState,
+      [name]: value
+    }));
+    // Xóa error khi user bắt đầu nhập lại
+    if (error) setError('');
+    if (success) setSuccess(false);
   };
 
   // Hàm xử lý submit form
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    console.log('Cập nhật thông tin với dữ liệu:', formData);
-    alert('Cập nhật thông tin thành công!');
+
+    // Validation
+    if (!formData.phoneNumber || !formData.email || !formData.addressLine) {
+      setError('Vui lòng nhập đầy đủ thông tin bắt buộc');
+      return;
+    }
+
+    setLoading(true);
+    setError('');
+    setSuccess(false);
+
+    try {
+      // Gọi API cập nhật profile
+      const response = await patientAuthAPI.updateProfile(formData);
+      console.log('Cập nhật thành công:', response);
+
+      setSuccess(true);
+      alert(response.message || 'Cập nhật thông tin thành công!');
+
+      // Reload lại thông tin sau khi cập nhật
+      const updatedProfile = await patientAuthAPI.getProfile();
+      if (updatedProfile.data) {
+        const data = updatedProfile.data;
+        setFormData({
+          phoneNumber: data.phoneNumber || '',
+          email: data.email || '',
+          addressLine: data.addressLine || '',
+          wardId: data.wardId || '',
+          emergencyContactName: data.emergencyContactName || '',
+          emergencyContactPhone: data.emergencyContactPhone || '',
+          occupation: data.occupation || '',
+          maritalStatus: data.maritalStatus || ''
+        });
+      }
+
+    } catch (error) {
+      console.error('Lỗi cập nhật thông tin:', error);
+      setError(error.message || 'Cập nhật thông tin thất bại. Vui lòng thử lại.');
+    } finally {
+      setLoading(false);
+    }
   };
+
+  if (loadingProfile) {
+    return (
+      <div className="cap-nhat-thong-tin-container">
+        <div className="cap-nhat-thong-tin-content">
+          <div className="loading-message">Đang tải thông tin...</div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="cap-nhat-thong-tin-container">
@@ -54,89 +188,129 @@ const CapNhatThongTin = () => {
         <div className="header-section">
           <h1>Thông tin người dùng</h1>
           <p>Cập nhật đầy đủ thông tin người dùng</p>
+          {profileInfo.patientCode && (
+            <p className="patient-code">Mã bệnh nhân: <strong>{profileInfo.patientCode}</strong></p>
+          )}
         </div>
+
+        {error && (
+          <div className="error-message">
+            {error}
+          </div>
+        )}
+
+        {success && (
+          <div className="success-message">
+            Cập nhật thông tin thành công!
+          </div>
+        )}
 
         {/* Form cập nhật thông tin */}
         <form onSubmit={handleSubmit} className="cap-nhat-form">
           <div className="form-columns">
-            {/* Cột 1 */}
+            {/* Cột 1 - Thông tin cá nhân (chỉ đọc) */}
             <div className="column-1">
+              <h3 className="section-title">Thông tin cá nhân</h3>
+
               <div className="form-group">
-                <label htmlFor="ho">Họ *</label>
+                <label htmlFor="firstName">Họ và tên đệm</label>
                 <input
                   type="text"
-                  id="ho"
-                  name="ho"
-                  placeholder="Nhập họ"
-                  value={formData.ho}
-                  onChange={handleChange}
-                  required
+                  id="firstName"
+                  name="firstName"
+                  value={profileInfo.firstName}
+                  disabled
+                  className="readonly-input"
                 />
               </div>
 
               <div className="form-group">
-                <label htmlFor="ten">Tên *</label>
+                <label htmlFor="lastName">Tên</label>
                 <input
                   type="text"
-                  id="ten"
-                  name="ten"
-                  placeholder="Nhập tên"
-                  value={formData.ten}
-                  onChange={handleChange}
-                  required
+                  id="lastName"
+                  name="lastName"
+                  value={profileInfo.lastName}
+                  disabled
+                  className="readonly-input"
                 />
               </div>
 
               <div className="form-group">
-                <label htmlFor="ngaySinh">Ngày sinh *</label>
+                <label htmlFor="dateOfBirth">Ngày sinh</label>
                 <input
                   type="date"
-                  id="ngaySinh"
-                  name="ngaySinh"
-                  value={formData.ngaySinh}
-                  onChange={handleChange}
-                  required
+                  id="dateOfBirth"
+                  name="dateOfBirth"
+                  value={profileInfo.dateOfBirth}
+                  disabled
+                  className="readonly-input"
                 />
               </div>
 
               <div className="form-group">
-                <label htmlFor="gioiTinh">Giới tính *</label>
-                <select
-                  id="gioiTinh"
-                  name="gioiTinh"
-                  value={formData.gioiTinh}
-                  onChange={handleChange}
-                  required
-                >
-                  <option value="">Chọn giới tính</option>
-                  <option value="nam">Nam</option>
-                  <option value="nu">Nữ</option>
-                  <option value="khac">Khác</option>
-                </select>
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="cccd">CCCD *</label>
+                <label htmlFor="gender">Giới tính</label>
                 <input
                   type="text"
-                  id="cccd"
-                  name="cccd"
-                  placeholder="Nhập số CCCD"
-                  value={formData.cccd}
-                  onChange={handleChange}
-                  required
+                  id="gender"
+                  name="gender"
+                  value={profileInfo.gender === 'MALE' ? 'Nam' : profileInfo.gender === 'FEMALE' ? 'Nữ' : 'Khác'}
+                  disabled
+                  className="readonly-input"
                 />
               </div>
 
               <div className="form-group">
-                <label htmlFor="soDienThoai">Số điện thoại *</label>
+                <label htmlFor="idCardNumber">CCCD/CMND</label>
+                <input
+                  type="text"
+                  id="idCardNumber"
+                  name="idCardNumber"
+                  value={profileInfo.idCardNumber}
+                  disabled
+                  className="readonly-input"
+                />
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="bloodType">Nhóm máu</label>
+                <input
+                  type="text"
+                  id="bloodType"
+                  name="bloodType"
+                  value={profileInfo.bloodType || 'Chưa cập nhật'}
+                  disabled
+                  className="readonly-input"
+                />
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="allergies">Dị ứng</label>
+                <textarea
+                  id="allergies"
+                  name="allergies"
+                  value={profileInfo.allergies || 'Không có'}
+                  disabled
+                  className="readonly-input"
+                  rows="3"
+                />
+              </div>
+            </div>
+
+            {/* Cột 2 - Thông tin có thể chỉnh sửa */}
+            <div className="column-2">
+              <h3 className="section-title">Thông tin liên hệ</h3>
+
+              <div className="form-group">
+                <label htmlFor="phoneNumber">Số điện thoại *</label>
                 <input
                   type="tel"
-                  id="soDienThoai"
-                  name="soDienThoai"
+                  id="phoneNumber"
+                  name="phoneNumber"
                   placeholder="Nhập số điện thoại"
-                  value={formData.soDienThoai}
+                  value={formData.phoneNumber}
                   onChange={handleChange}
+                  disabled={loading}
                   required
                 />
               </div>
@@ -150,207 +324,95 @@ const CapNhatThongTin = () => {
                   placeholder="Nhập email"
                   value={formData.email}
                   onChange={handleChange}
+                  disabled={loading}
                   required
                 />
               </div>
 
               <div className="form-group">
-                <label htmlFor="diaChiCuThe">Địa chỉ cụ thể *</label>
+                <label htmlFor="addressLine">Địa chỉ cụ thể *</label>
                 <textarea
-                  id="diaChiCuThe"
-                  name="diaChiCuThe"
+                  id="addressLine"
+                  name="addressLine"
                   placeholder="Nhập địa chỉ cụ thể (số nhà, đường...)"
-                  value={formData.diaChiCuThe}
+                  value={formData.addressLine}
                   onChange={handleChange}
+                  disabled={loading}
                   rows="3"
                   required
                 />
               </div>
-            </div>
 
-            {/* Cột 2 */}
-            <div className="column-2">
               <div className="form-group">
-                <label htmlFor="xa">Xã/Phường *</label>
+                <label htmlFor="wardId">Mã phường/xã</label>
+                <input
+                  type="number"
+                  id="wardId"
+                  name="wardId"
+                  placeholder="Nhập mã phường/xã"
+                  value={formData.wardId}
+                  onChange={handleChange}
+                  disabled={loading}
+                />
+              </div>
+
+              <h3 className="section-title">Liên hệ khẩn cấp</h3>
+
+              <div className="form-group">
+                <label htmlFor="emergencyContactName">Tên người liên hệ</label>
                 <input
                   type="text"
-                  id="xa"
-                  name="xa"
-                  placeholder="Nhập xã/phường"
-                  value={formData.xa}
+                  id="emergencyContactName"
+                  name="emergencyContactName"
+                  placeholder="Nhập tên người liên hệ khẩn cấp"
+                  value={formData.emergencyContactName}
                   onChange={handleChange}
-                  required
+                  disabled={loading}
                 />
               </div>
 
               <div className="form-group">
-                <label htmlFor="tinh">Tỉnh/Thành phố *</label>
-                <select
-                  id="tinh"
-                  name="tinh"
-                  value={formData.tinh}
-                  onChange={handleChange}
-                  required
-                >
-                  <option value="">Chọn tỉnh/thành phố</option>
-                  <option value="ha-noi">Hà Nội</option>
-                  <option value="ho-chi-minh">TP. Hồ Chí Minh</option>
-                  <option value="da-nang">Đà Nẵng</option>
-                  <option value="hai-phong">Hải Phòng</option>
-                  <option value="can-tho">Cần Thơ</option>
-                  <option value="an-giang">An Giang</option>
-                  <option value="ba-ria-vung-tau">Bà Rịa - Vũng Tàu</option>
-                  <option value="bac-giang">Bắc Giang</option>
-                  <option value="bac-kan">Bắc Kạn</option>
-                  <option value="bac-lieu">Bạc Liêu</option>
-                  <option value="bac-ninh">Bắc Ninh</option>
-                  <option value="ben-tre">Bến Tre</option>
-                  <option value="binh-dinh">Bình Định</option>
-                  <option value="binh-duong">Bình Dương</option>
-                  <option value="binh-phuoc">Bình Phước</option>
-                  <option value="binh-thuan">Bình Thuận</option>
-                  <option value="ca-mau">Cà Mau</option>
-                  <option value="cao-bang">Cao Bằng</option>
-                  <option value="dak-lak">Đắk Lắk</option>
-                  <option value="dak-nong">Đắk Nông</option>
-                  <option value="dien-bien">Điện Biên</option>
-                  <option value="dong-nai">Đồng Nai</option>
-                  <option value="dong-thap">Đồng Tháp</option>
-                  <option value="gia-lai">Gia Lai</option>
-                  <option value="ha-giang">Hà Giang</option>
-                  <option value="ha-nam">Hà Nam</option>
-                  <option value="ha-tinh">Hà Tĩnh</option>
-                  <option value="hai-duong">Hải Dương</option>
-                  <option value="hau-giang">Hậu Giang</option>
-                  <option value="hoa-binh">Hòa Bình</option>
-                  <option value="hung-yen">Hưng Yên</option>
-                  <option value="khanh-hoa">Khánh Hòa</option>
-                  <option value="kien-giang">Kiên Giang</option>
-                  <option value="kon-tum">Kon Tum</option>
-                  <option value="lai-chau">Lai Châu</option>
-                  <option value="lam-dong">Lâm Đồng</option>
-                  <option value="lang-son">Lạng Sơn</option>
-                  <option value="lao-cai">Lào Cai</option>
-                  <option value="long-an">Long An</option>
-                  <option value="nam-dinh">Nam Định</option>
-                  <option value="nghe-an">Nghệ An</option>
-                  <option value="ninh-binh">Ninh Bình</option>
-                  <option value="ninh-thuan">Ninh Thuận</option>
-                  <option value="phu-tho">Phú Thọ</option>
-                  <option value="phu-yen">Phú Yên</option>
-                  <option value="quang-binh">Quảng Bình</option>
-                  <option value="quang-nam">Quảng Nam</option>
-                  <option value="quang-ngai">Quảng Ngãi</option>
-                  <option value="quang-ninh">Quảng Ninh</option>
-                  <option value="quang-tri">Quảng Trị</option>
-                  <option value="soc-trang">Sóc Trăng</option>
-                  <option value="son-la">Sơn La</option>
-                  <option value="tay-ninh">Tây Ninh</option>
-                  <option value="thai-binh">Thái Bình</option>
-                  <option value="thai-nguyen">Thái Nguyên</option>
-                  <option value="thanh-hoa">Thanh Hóa</option>
-                  <option value="thua-thien-hue">Thừa Thiên Huế</option>
-                  <option value="tien-giang">Tiền Giang</option>
-                  <option value="tra-vinh">Trà Vinh</option>
-                  <option value="tuyen-quang">Tuyên Quang</option>
-                  <option value="vinh-long">Vĩnh Long</option>
-                  <option value="vinh-phuc">Vĩnh Phúc</option>
-                  <option value="yen-bai">Yên Bái</option>
-                </select>
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="anhDaiDien">Ảnh đại diện</label>
-                <input
-                  type="file"
-                  id="anhDaiDien"
-                  name="anhDaiDien"
-                  accept="image/*"
-                  onChange={handleChange}
-                  className="file-input"
-                />
-                <div className="file-input-label">
-                  {formData.anhDaiDien ? formData.anhDaiDien.name : 'Chọn ảnh đại diện'}
-                </div>
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="tenNguoiLienHe">Tên người liên hệ</label>
-                <input
-                  type="text"
-                  id="tenNguoiLienHe"
-                  name="tenNguoiLienHe"
-                  placeholder="Nhập tên người liên hệ"
-                  value={formData.tenNguoiLienHe}
-                  onChange={handleChange}
-                />
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="soDienThoaiLienHe">Số điện thoại người liên hệ</label>
+                <label htmlFor="emergencyContactPhone">Số điện thoại người liên hệ</label>
                 <input
                   type="tel"
-                  id="soDienThoaiLienHe"
-                  name="soDienThoaiLienHe"
+                  id="emergencyContactPhone"
+                  name="emergencyContactPhone"
                   placeholder="Nhập số điện thoại người liên hệ"
-                  value={formData.soDienThoaiLienHe}
+                  value={formData.emergencyContactPhone}
                   onChange={handleChange}
+                  disabled={loading}
                 />
               </div>
 
-              <div className="form-group">
-                <label htmlFor="nhomMau">Nhóm máu</label>
-                <select
-                  id="nhomMau"
-                  name="nhomMau"
-                  value={formData.nhomMau}
-                  onChange={handleChange}
-                >
-                  <option value="">Chọn nhóm máu</option>
-                  <option value="A">A</option>
-                  <option value="B">B</option>
-                  <option value="AB">AB</option>
-                  <option value="O">O</option>
-                </select>
-              </div>
+              <h3 className="section-title">Thông tin khác</h3>
 
               <div className="form-group">
-                <label htmlFor="diUng">Dị ứng</label>
-                <textarea
-                  id="diUng"
-                  name="diUng"
-                  placeholder="Mô tả các loại dị ứng (nếu có)"
-                  value={formData.diUng}
-                  onChange={handleChange}
-                  rows="3"
-                />
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="ngheNghiep">Nghề nghiệp</label>
+                <label htmlFor="occupation">Nghề nghiệp</label>
                 <input
                   type="text"
-                  id="ngheNghiep"
-                  name="ngheNghiep"
+                  id="occupation"
+                  name="occupation"
                   placeholder="Nhập nghề nghiệp"
-                  value={formData.ngheNghiep}
+                  value={formData.occupation}
                   onChange={handleChange}
+                  disabled={loading}
                 />
               </div>
 
               <div className="form-group">
-                <label htmlFor="tinhTrangHonNhan">Tình trạng hôn nhân</label>
+                <label htmlFor="maritalStatus">Tình trạng hôn nhân</label>
                 <select
-                  id="tinhTrangHonNhan"
-                  name="tinhTrangHonNhan"
-                  value={formData.tinhTrangHonNhan}
+                  id="maritalStatus"
+                  name="maritalStatus"
+                  value={formData.maritalStatus}
                   onChange={handleChange}
+                  disabled={loading}
                 >
                   <option value="">Chọn tình trạng hôn nhân</option>
-                  <option value="doc-than">Độc thân</option>
-                  <option value="da-ket-hon">Đã kết hôn</option>
-                  <option value="ly-hon">Ly hôn</option>
-                  <option value="goa">Góa</option>
+                  <option value="Single">Độc thân</option>
+                  <option value="Married">Đã kết hôn</option>
+                  <option value="Divorced">Ly hôn</option>
+                  <option value="Widowed">Góa</option>
                 </select>
               </div>
             </div>
@@ -358,8 +420,8 @@ const CapNhatThongTin = () => {
 
           {/* Nút cập nhật */}
           <div className="submit-section">
-            <button type="submit" className="cap-nhat-btn">
-              Cập nhật thông tin
+            <button type="submit" className="cap-nhat-btn" disabled={loading}>
+              {loading ? 'Đang cập nhật...' : 'Cập nhật thông tin'}
             </button>
           </div>
         </form>

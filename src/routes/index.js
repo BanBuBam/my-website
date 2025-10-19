@@ -12,12 +12,14 @@ import ResetPasswordPage from '../pages/reset-password/ResetPasswordPage';
 import ForgotPasswordPage from '../pages/forgot-password/ForgotPasswordPage';
 import ChangePasswordPage from '../pages/change-password/ChangePasswordPage';
 import RefreshTokenPage from '../pages/refresh-token/RefreshTokenPage';
+import MedicalInfoPage from '../pages/medical-info/MedicalInfoPage';
 import DatLichKham from '../pages/dat-lich-kham/DatLichKham';
 import CapNhatThongTin from '../pages/CapNhatThongTin/CapNhatThongTin';
-import HoaDonBenhNhan from '../pages/HoaDonBenhNhan/HoaDonBenhNhan';
-import LichSuKhamChuaBenh from '../pages/LichSuKhamChuaBenh/LichSuKhamChuaBenh';
+import PatientInvoices from '../pages/PatientInvoices/PatientInvoices';
+import MedicalHistory from '../pages/MedicalHistory/MedicalHistory';
 import TrangThaiDatLich from '../pages/dat-lich-kham/trang-thai/TrangThaiDatLich';
 import DatLichKhamPage from '../pages/dat-lich-kham/dat-lich/DatLichKhamPage';
+import BookAppointment from '../pages/BookAppointment/BookAppointment';
 
 // Bộ định tuyến của nhân viên
 import StaffRoutes from '../staff/routes';
@@ -35,12 +37,14 @@ const AppRoutes = () => {
         <Route path="/forgot-password" element={<ForgotPasswordPage />} />
         <Route path="/change-password" element={<ChangePasswordPage />} />
         <Route path="/refresh-token" element={<RefreshTokenPage />} />
-        <Route path="/dat-lich-kham" element={<DatLichKham />} />
+        <Route path="/medical-info" element={<MedicalInfoPage />} />
+        <Route path="/dat-lich-kham-old" element={<DatLichKham />} />
         <Route path="/cap-nhat-thong-tin" element={<CapNhatThongTin />} />
-        <Route path="/hoa-don-benh-nhan" element={<HoaDonBenhNhan />} />
-        <Route path="/lich-su-kham" element={<LichSuKhamChuaBenh />} />
+        <Route path="/hoa-don-benh-nhan" element={<PatientInvoices />} />
+        <Route path="/lich-su-kham" element={<MedicalHistory />} />
         <Route path="/trang-thai-dat-lich" element={<TrangThaiDatLich />} />
-        <Route path="/dat-lich-kham" element={<DatLichKhamPage />} />
+        <Route path="/dat-lich-kham-page" element={<DatLichKhamPage />} />
+        <Route path="/dat-lich-kham" element={<BookAppointment />} />
       </Route>
 
       {/* --- CÁC ROUTE TÁCH BIỆT (KHÔNG CÓ HEADER/FOOTER) --- */}
