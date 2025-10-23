@@ -1,14 +1,15 @@
 import React from 'react';
 import { NavLink, Outlet } from 'react-router-dom';
 import './ReceptionistLayout.css';
+import StaffAvatarDropdown from '../../../components/StaffAvatarDropdown';
 
 // Đã cập nhật lại danh sách icon import
-import { 
-  FiBarChart2, 
-  FiUserPlus, 
-  FiUserCheck, 
-  FiCalendar, 
-  FiSearch 
+import {
+  FiBarChart2,
+  FiUserPlus,
+  FiUserCheck,
+  FiCalendar,
+  FiSearch
 } from 'react-icons/fi';
 
 const ReceptionistLayout = () => {
@@ -17,7 +18,6 @@ const ReceptionistLayout = () => {
       <aside className="receptionist-sidebar">
         <div className="sidebar-header">
           <h1>Dashboard</h1>
-        
         </div>
         <nav className="sidebar-nav">
           <ul>
@@ -57,7 +57,12 @@ const ReceptionistLayout = () => {
         </nav>
       </aside>
       <main className="receptionist-content">
-        <Outlet />
+        <div className="content-header">
+          <StaffAvatarDropdown />
+        </div>
+        <div className="content-body">
+          <Outlet />
+        </div>
       </main>
     </div>
   );

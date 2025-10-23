@@ -1,5 +1,5 @@
 // API cho Kế toán / Tài chính
-const BASE_URL = process.env.REACT_APP_BASE_URL || 'http://100.99.181.59:8081/';
+const BASE_URL = process.env.REACT_APP_BASE_URL || 'http://100.96.182.10:8081/';
 
 // Hàm helper để gọi API
 const apiCall = async (endpoint, options = {}) => {

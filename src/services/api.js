@@ -303,10 +303,48 @@ export const invoiceAPI = {
   },
 };
 
+// Staff Authentication API
+export const staffAuthAPI = {
+  login: async (username, password) => {
+    return apiCall('api/v1/auth/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ username, password }),
+    });
+  },
+
+  logout: async () => {
+    const token = localStorage.getItem('staffAccessToken');
+    return apiCall('api/v1/auth/logout', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+  },
+};
+
+// Staff Employee API
+export const staffEmployeeAPI = {
+  getEmployeeAccount: async (employeeAccountId) => {
+    const token = localStorage.getItem('staffAccessToken');
+    return apiCall(`api/v1/employee-accounts/${employeeAccountId}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+  },
+};
+
 export default {
   patientAuthAPI,
   patientAPI,
   appointmentAPI,
   bookingAPI,
   invoiceAPI,
+  staffAuthAPI,
+  staffEmployeeAPI,
 };

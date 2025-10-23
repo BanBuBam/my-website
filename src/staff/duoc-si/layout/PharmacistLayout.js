@@ -1,7 +1,21 @@
 import React from 'react';
 import { NavLink, Outlet } from 'react-router-dom';
 import './PharmacistLayout.css';
-import { FiHome, FiPackage, FiFileText, FiBarChart2 } from 'react-icons/fi';
+import {
+    FiHome,
+    FiPackage,
+    FiFileText,
+    FiBarChart2,
+    FiShoppingCart,
+    FiTruck,
+    FiAlertCircle,
+    FiDollarSign,
+    FiUsers,
+    FiCheckCircle,
+    FiList,
+    FiArchive
+} from 'react-icons/fi';
+import StaffAvatarDropdown from '../../components/StaffAvatarDropdown';
 
 const PharmacistLayout = () => {
     return (
@@ -11,90 +25,164 @@ const PharmacistLayout = () => {
                     <h1>Dược sĩ</h1>
                 </div>
                 <nav className="sidebar-nav">
-                    <ul>
-                        <li>
-                            <NavLink to="/staff/duoc-si/dashboard">
-                                <FiHome />
-                                <span>Dashboard</span>
-                            </NavLink>
-                        </li>
-                        <li>
-                            <NavLink to="/staff/duoc-si/cap-phat">
-                                <FiBarChart2 />
-                                <span>Xem danh sách đơn thuốc chờ cấp phát</span>
-                            </NavLink>
-                        </li>
-                        <li>
-                            <NavLink to="/staff/duoc-si/ton-kho">
-                                <FiPackage />
-                                <span>Xem quản lý tồn kho</span>
-                            </NavLink>
-                        </li>
-                        <li>
-                            <NavLink to="/staff/duoc-si/nhap-kho">
-                                <FiBarChart2 />
-                                <span>Nhập kho</span>
-                            </NavLink>
-                        </li>
-                        <li>
-                            <NavLink to="/staff/duoc-si/xuat-kho">
-                                <FiBarChart2 />
-                                <span>Xuất kho</span>
-                            </NavLink>
-                        </li>
-                        <li>
-                            <NavLink to="/staff/duoc-si/han-su-dung">
-                                <FiBarChart2 />
-                                <span>Quản lý Hạn sử dụng</span>
-                            </NavLink>
-                        </li>
-                        <li>
-                            <NavLink to="/staff/duoc-si/phieu-nhap-kho">
-                                <FiBarChart2 />
-                                <span>Phiếu nhập kho</span>
-                            </NavLink>
-                        </li>
-                        <li>
-                            <NavLink to="/staff/duoc-si/phieu-thanh-toan">
-                                <FiBarChart2 />
-                                <span>Thanh toán nhập kho</span>
-                            </NavLink>
-                        </li>
-                        <li>
-                            <NavLink to="/staff/duoc-si/ncc">
-                                <FiBarChart2 />
-                                <span>Xem nhà cung cấp</span>
-                            </NavLink>
-                        </li>
-                        <li>
-                            <NavLink to="/staff/duoc-si/tao-ncc">
-                                <FiBarChart2 />
-                                <span>Tạo cung cấp</span>
-                            </NavLink>
-                        </li>
-                        <li>
-                            <NavLink to="/staff/duoc-si/inventory">
-                                <FiPackage />
-                                <span>Quản lý Kho thuốc</span>
-                            </NavLink>
-                        </li>
-                        <li>
-                            <NavLink to="/staff/duoc-si/prescriptions">
-                                <FiFileText />
-                                <span>Quản lý Đơn thuốc</span>
-                            </NavLink>
-                        </li>
-                        <li>
-                            <NavLink to="/staff/duoc-si/reports">
-                                <FiBarChart2 />
-                                <span>Báo cáo</span>
-                            </NavLink>
-                        </li>
-                    </ul>
+                    {/* Tổng quan */}
+                    <div className="nav-category">
+                        <div className="category-header">Tổng quan</div>
+                        <ul>
+                            <li>
+                                <NavLink to="/staff/duoc-si/dashboard">
+                                    <FiHome />
+                                    <span>Dashboard</span>
+                                </NavLink>
+                            </li>
+                        </ul>
+                    </div>
+
+                    {/* Cấp phát thuốc */}
+                    <div className="nav-category">
+                        <div className="category-header">Cấp phát thuốc</div>
+                        <ul>
+                            <li>
+                                <NavLink to="/staff/duoc-si/cap-phat">
+                                    <FiList />
+                                    <span>Đơn thuốc chờ cấp phát</span>
+                                </NavLink>
+                            </li>
+                            <li>
+                                <NavLink to="/staff/duoc-si/prescriptions">
+                                    <FiFileText />
+                                    <span>Quản lý đơn thuốc</span>
+                                </NavLink>
+                            </li>
+                            <li>
+                                <NavLink to="/staff/duoc-si/lich-su-cap-phat">
+                                    <FiCheckCircle />
+                                    <span>Lịch sử cấp phát</span>
+                                </NavLink>
+                            </li>
+                        </ul>
+                    </div>
+
+                    {/* Quản lý kho */}
+                    <div className="nav-category">
+                        <div className="category-header">Quản lý kho</div>
+                        <ul>
+                            <li>
+                                <NavLink to="/staff/duoc-si/ton-kho">
+                                    <FiPackage />
+                                    <span>Tồn kho</span>
+                                </NavLink>
+                            </li>
+                            <li>
+                                <NavLink to="/staff/duoc-si/inventory">
+                                    <FiArchive />
+                                    <span>Danh mục thuốc</span>
+                                </NavLink>
+                            </li>
+                            <li>
+                                <NavLink to="/staff/duoc-si/han-su-dung">
+                                    <FiAlertCircle />
+                                    <span>Hạn sử dụng</span>
+                                </NavLink>
+                            </li>
+                            <li>
+                                <NavLink to="/staff/duoc-si/canh-bao-ton-kho">
+                                    <FiAlertCircle />
+                                    <span>Cảnh báo tồn kho</span>
+                                </NavLink>
+                            </li>
+                        </ul>
+                    </div>
+
+                    {/* Nhập xuất kho */}
+                    <div className="nav-category">
+                        <div className="category-header">Nhập xuất kho</div>
+                        <ul>
+                            <li>
+                                <NavLink to="/staff/duoc-si/nhap-kho">
+                                    <FiTruck />
+                                    <span>Nhập kho</span>
+                                </NavLink>
+                            </li>
+                            <li>
+                                <NavLink to="/staff/duoc-si/phieu-nhap-kho">
+                                    <FiFileText />
+                                    <span>Phiếu nhập kho</span>
+                                </NavLink>
+                            </li>
+                            <li>
+                                <NavLink to="/staff/duoc-si/xuat-kho">
+                                    <FiShoppingCart />
+                                    <span>Xuất kho</span>
+                                </NavLink>
+                            </li>
+                            <li>
+                                <NavLink to="/staff/duoc-si/phieu-xuat-kho">
+                                    <FiFileText />
+                                    <span>Phiếu xuất kho</span>
+                                </NavLink>
+                            </li>
+                        </ul>
+                    </div>
+
+                    {/* Nhà cung cấp */}
+                    <div className="nav-category">
+                        <div className="category-header">Nhà cung cấp</div>
+                        <ul>
+                            <li>
+                                <NavLink to="/staff/duoc-si/ncc">
+                                    <FiUsers />
+                                    <span>Danh sách nhà cung cấp</span>
+                                </NavLink>
+                            </li>
+                            <li>
+                                <NavLink to="/staff/duoc-si/tao-ncc">
+                                    <FiUsers />
+                                    <span>Thêm nhà cung cấp</span>
+                                </NavLink>
+                            </li>
+                            <li>
+                                <NavLink to="/staff/duoc-si/phieu-thanh-toan">
+                                    <FiDollarSign />
+                                    <span>Thanh toán nhập kho</span>
+                                </NavLink>
+                            </li>
+                        </ul>
+                    </div>
+
+                    {/* Báo cáo */}
+                    <div className="nav-category">
+                        <div className="category-header">Báo cáo</div>
+                        <ul>
+                            <li>
+                                <NavLink to="/staff/duoc-si/reports">
+                                    <FiBarChart2 />
+                                    <span>Báo cáo tổng hợp</span>
+                                </NavLink>
+                            </li>
+                            <li>
+                                <NavLink to="/staff/duoc-si/bao-cao-ton-kho">
+                                    <FiBarChart2 />
+                                    <span>Báo cáo tồn kho</span>
+                                </NavLink>
+                            </li>
+                            <li>
+                                <NavLink to="/staff/duoc-si/bao-cao-nhap-xuat">
+                                    <FiBarChart2 />
+                                    <span>Báo cáo nhập xuất</span>
+                                </NavLink>
+                            </li>
+                        </ul>
+                    </div>
                 </nav>
             </aside>
             <main className="pharmacist-content">
-                <Outlet />
+                <div className="content-header">
+                    <StaffAvatarDropdown />
+                </div>
+                <div className="content-body">
+                    <Outlet />
+                </div>
             </main>
         </div>
     );

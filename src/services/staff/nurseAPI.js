@@ -35,20 +35,20 @@ const apiCall = async (endpoint, options = {}) => {
   }
 };
 
-// Hàm helper để lấy token
-const getAccessToken = () => localStorage.getItem('nurseAccessToken');
-const getRefreshToken = () => localStorage.getItem('nurseRefreshToken');
+// Hàm helper để lấy token (sử dụng staffAccessToken từ login chung)
+const getAccessToken = () => localStorage.getItem('staffAccessToken');
+const getRefreshToken = () => localStorage.getItem('staffRefreshToken');
 
 // Hàm helper để lưu token
 export const saveTokens = (accessToken, refreshToken) => {
-  localStorage.setItem('nurseAccessToken', accessToken);
-  localStorage.setItem('nurseRefreshToken', refreshToken);
+  localStorage.setItem('staffAccessToken', accessToken);
+  localStorage.setItem('staffRefreshToken', refreshToken);
 };
 
 // Hàm helper để xóa token
 export const clearTokens = () => {
-  localStorage.removeItem('nurseAccessToken');
-  localStorage.removeItem('nurseRefreshToken');
+  localStorage.removeItem('staffAccessToken');
+  localStorage.removeItem('staffRefreshToken');
 };
 
 // API Authentication cho Điều dưỡng
@@ -81,7 +81,17 @@ export const nurseAuthAPI = {
 
 // API Dashboard
 export const nurseDashboardAPI = {
-  // Lấy thống kê dashboard
+  // Lấy dashboard data
+  getDashboard: async () => {
+    return apiCall('api/v1/dashboard/nurse', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Lấy thống kê dashboard (legacy)
   getStatistics: async () => {
     return apiCall('api/v1/nurse/dashboard/statistics', {
       method: 'GET',

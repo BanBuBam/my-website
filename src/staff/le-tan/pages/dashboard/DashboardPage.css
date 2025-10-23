@@ -31,13 +31,20 @@
 }
 .notification-dot {
   position: absolute;
-  top: 0;
-  right: 0;
-  width: 8px;
-  height: 8px;
+  top: -4px;
+  right: -4px;
+  min-width: 18px;
+  height: 18px;
   background-color: #dc3545;
-  border-radius: 50%;
-  border: 2px solid #f4f7f6;
+  border-radius: 10px;
+  border: 2px solid #fff;
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
 }
 .user-profile {
   display: flex;
@@ -58,23 +65,30 @@
 .welcome-message {
   background-color: #fff;
   padding: 1.5rem;
-  border-radius: 8px;
+  border-radius: 12px;
   margin-bottom: 1.5rem;
   box-shadow: 0 2px 4px rgba(0,0,0,0.05);
 }
 .welcome-message h3 {
-  margin: 0 0 0.25rem 0;
+  margin: 0 0 0.5rem 0;
   font-size: 1.3rem;
+  color: #212529;
 }
 .welcome-message p {
-  margin: 0;
+  margin: 0.25rem 0;
   color: #6c757d;
+  font-size: 0.95rem;
+}
+.welcome-message .last-updated {
+  font-size: 0.85rem;
+  color: #adb5bd;
+  font-style: italic;
 }
 
 /* Stats Grid */
 .stats-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 1.5rem;
   margin-bottom: 1.5rem;
 }
@@ -239,3 +253,163 @@
 .status.status-hoan-thanh { background-color: #dcfce7; color: #16a34a; }
 .status.status-da-xac-nhan { background-color: #e0f2fe; color: #0ea5e9; }
 .status.status-cho-xu-ly { background-color: #fff7ed; color: #f97316; }
+
+
+/* Loading and Error States */
+.loading-state, .error-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  text-align: center;
+}
+
+.loading-state svg, .error-state svg {
+  font-size: 3rem;
+  color: #3b82f6;
+  margin-bottom: 1rem;
+}
+
+.loading-state .spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.error-state svg {
+  color: #dc3545;
+}
+
+.error-state p {
+  color: #6c757d;
+  margin-bottom: 1rem;
+}
+
+.btn-retry {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  background-color: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.btn-retry:hover {
+  background-color: #2563eb;
+}
+
+/* Stats Detail Section */
+.stats-detail-section {
+  margin-bottom: 1.5rem;
+}
+
+.stats-detail-card {
+  background-color: #fff;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.stats-detail-card h4 {
+  margin: 0 0 1rem 0;
+  font-size: 1.1rem;
+  color: #212529;
+  font-weight: 600;
+}
+
+.stats-detail-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 1rem;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  border-left: 3px solid #e9ecef;
+}
+
+.stat-label {
+  font-size: 0.85rem;
+  color: #6c757d;
+  font-weight: 500;
+}
+
+.stat-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #212529;
+}
+
+.stat-value.green {
+  color: #22c55e;
+}
+
+.stat-value.blue {
+  color: #0ea5e9;
+}
+
+.stat-value.red {
+  color: #dc3545;
+}
+
+/* Alert Item */
+.alert-item .item-icon.warning {
+  background-color: #fff7ed;
+  color: #f97316;
+}
+
+/* Empty State */
+.empty-state {
+  padding: 2rem;
+  text-align: center;
+  color: #6c757d;
+}
+
+.empty-state p {
+  margin: 0;
+  font-style: italic;
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .stats-detail-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .actions-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .activity-section {
+    grid-template-columns: 1fr;
+  }
+
+  .stats-detail-grid {
+    grid-template-columns: 1fr;
+  }
+}
