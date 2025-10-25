@@ -35,6 +35,7 @@ const Sidebar = () => {
             <li><Link to="/login">Đăng nhập</Link></li>
             <li><Link to="/register">Đăng ký</Link></li>
             <li><Link to="/cap-nhat-thong-tin">Cập nhật thông tin</Link></li>
+            <li><Link to="/medical-info">Thông tin y tế</Link></li>
             <li><Link to="/forgot-password">Quên mật khẩu</Link></li>
             <li><Link to="/reset-password">Đặt lại mật khẩu</Link></li>
             <li><Link to="/change-password">Đổi mật khẩu</Link></li>
@@ -45,9 +46,9 @@ const Sidebar = () => {
         <div className="nav-section quick-actions">
           <h4>Dịch vụ khám chữa bệnh</h4>
           <ul>
-              <li><Link to="/login">Đăng nhập</Link></li>
-              <li><Link to="/register">Đăng ký</Link></li>
-              <li><Link to="/homepage">Trang chủ</Link></li>
+              {/*<li><Link to="/login">Đăng nhập</Link></li>*/}
+              {/*<li><Link to="/register">Đăng ký</Link></li>*/}
+              {/*<li><Link to="/homepage">Trang chủ</Link></li>*/}
               <li><Link to="/cap-nhat-thong-tin">Cập nhật thông tin</Link></li>
               <li><Link to="/lich-su-kham">Lịch sử khám</Link></li>
             <li><Link to="/dat-lich-kham">Đặt lịch khám</Link></li>

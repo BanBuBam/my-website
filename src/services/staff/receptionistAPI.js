@@ -35,20 +35,20 @@ const apiCall = async (endpoint, options = {}) => {
   }
 };
 
-// Hàm helper để lấy token
-const getAccessToken = () => localStorage.getItem('receptionistAccessToken');
-const getRefreshToken = () => localStorage.getItem('receptionistRefreshToken');
+// Hàm helper để lấy token (sử dụng staffAccessToken từ login chung)
+const getAccessToken = () => localStorage.getItem('staffAccessToken');
+const getRefreshToken = () => localStorage.getItem('staffRefreshToken');
 
 // Hàm helper để lưu token
 export const saveTokens = (accessToken, refreshToken) => {
-  localStorage.setItem('receptionistAccessToken', accessToken);
-  localStorage.setItem('receptionistRefreshToken', refreshToken);
+  localStorage.setItem('staffAccessToken', accessToken);
+  localStorage.setItem('staffRefreshToken', refreshToken);
 };
 
 // Hàm helper để xóa token
 export const clearTokens = () => {
-  localStorage.removeItem('receptionistAccessToken');
-  localStorage.removeItem('receptionistRefreshToken');
+  localStorage.removeItem('staffAccessToken');
+  localStorage.removeItem('staffRefreshToken');
 };
 
 // API Authentication cho Lễ tân
@@ -82,6 +82,16 @@ export const receptionistAuthAPI = {
 // API Dashboard
 export const receptionistDashboardAPI = {
   // Lấy thống kê dashboard
+  getDashboard: async () => {
+    return apiCall('api/v1/dashboard/receptionist', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Lấy thống kê dashboard (legacy)
   getStatistics: async () => {
     return apiCall('api/v1/receptionist/dashboard/statistics', {
       method: 'GET',

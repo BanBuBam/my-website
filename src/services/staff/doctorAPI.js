@@ -1,5 +1,5 @@
 // API cho Bác sĩ
-const BASE_URL = process.env.REACT_APP_BASE_URL || 'http://100.99.181.59:8081/';
+const BASE_URL = process.env.REACT_APP_BASE_URL || 'http://100.96.182.10:8081/';
 
 // Hàm helper để gọi API
 const apiCall = async (endpoint, options = {}) => {
@@ -35,20 +35,20 @@ const apiCall = async (endpoint, options = {}) => {
   }
 };
 
-// Hàm helper để lấy token
-const getAccessToken = () => localStorage.getItem('doctorAccessToken');
-const getRefreshToken = () => localStorage.getItem('doctorRefreshToken');
+// Hàm helper để lấy token (sử dụng staffAccessToken từ login chung)
+const getAccessToken = () => localStorage.getItem('staffAccessToken');
+const getRefreshToken = () => localStorage.getItem('staffRefreshToken');
 
 // Hàm helper để lưu token
 export const saveTokens = (accessToken, refreshToken) => {
-  localStorage.setItem('doctorAccessToken', accessToken);
-  localStorage.setItem('doctorRefreshToken', refreshToken);
+  localStorage.setItem('staffAccessToken', accessToken);
+  localStorage.setItem('staffRefreshToken', refreshToken);
 };
 
 // Hàm helper để xóa token
 export const clearTokens = () => {
-  localStorage.removeItem('doctorAccessToken');
-  localStorage.removeItem('doctorRefreshToken');
+  localStorage.removeItem('staffAccessToken');
+  localStorage.removeItem('staffRefreshToken');
 };
 
 // API Authentication cho Bác sĩ
@@ -81,7 +81,17 @@ export const doctorAuthAPI = {
 
 // API Dashboard
 export const doctorDashboardAPI = {
-  // Lấy thống kê dashboard
+  // Lấy dashboard data
+  getDashboard: async () => {
+    return apiCall('api/v1/dashboard/doctor', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Lấy thống kê dashboard (legacy)
   getStatistics: async () => {
     return apiCall('api/v1/doctor/dashboard/statistics', {
       method: 'GET',
@@ -218,6 +228,44 @@ export const doctorPrescriptionAPI = {
   },
 };
 
+// API Lịch hẹn
+export const doctorBookingAPI = {
+  // Lấy danh sách lịch hẹn
+  getBookings: async (params = {}) => {
+    const queryParams = new URLSearchParams();
+
+    // Thêm các tham số query nếu có
+    if (params.page !== undefined) queryParams.append('page', params.page);
+    if (params.size !== undefined) queryParams.append('size', params.size);
+    if (params.status) queryParams.append('status', params.status);
+    if (params.bookingSource) queryParams.append('bookingSource', params.bookingSource);
+    if (params.fromDate) queryParams.append('fromDate', params.fromDate);
+    if (params.toDate) queryParams.append('toDate', params.toDate);
+
+    const queryString = queryParams.toString();
+    const endpoint = queryString
+      ? `api/v1/doctor/bookings?${queryString}`
+      : 'api/v1/doctor/bookings';
+
+    return apiCall(endpoint, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Lấy chi tiết lịch hẹn
+  getBookingDetail: async (bookingId) => {
+    return apiCall(`api/v1/doctor/bookings/${bookingId}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+};
+
 export default {
   doctorAuthAPI,
   doctorDashboardAPI,
@@ -225,5 +273,6 @@ export default {
   doctorInpatientAPI,
   doctorLabResultAPI,
   doctorPrescriptionAPI,
+  doctorBookingAPI,
 };
 

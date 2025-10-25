@@ -138,6 +138,37 @@ export const patientAuthAPI = {
 
     return response;
   },
+
+  // Lấy thông tin profile bệnh nhân
+  getProfile: async () => {
+    return apiCall('api/v1/patient/profile', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Cập nhật thông tin profile bệnh nhân
+  updateProfile: async (profileData) => {
+    return apiCall('api/v1/patient/profile', {
+      method: 'PUT',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+      body: JSON.stringify(profileData),
+    });
+  },
+
+  // Lấy thông tin y tế bệnh nhân
+  getMedicalInfo: async () => {
+    return apiCall('api/v1/patient/medical-info', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
 };
 
 // API cho bệnh nhân
@@ -188,9 +219,9 @@ export const appointmentAPI = {
 };
 
 export const bookingAPI = {
-  // Lấy danh sách lịch sử khám chữa bệnh
-  getPatientBookings: async () => {
-    return apiCall('api/v1/patient/bookings', {
+  // Lấy danh sách lịch sử khám chữa bệnh với phân trang
+  getPatientBookings: async (page = 0, size = 10) => {
+    return apiCall(`api/v1/patient/bookings?page=${page}&size=${size}`, {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${getAccessToken()}`,
@@ -202,6 +233,47 @@ export const bookingAPI = {
   getBookingDetail: async (bookingId) => {
     return apiCall(`api/v1/patient/bookings/${bookingId}`, {
       method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Lấy danh sách khoa
+  getDepartments: async () => {
+    return apiCall('api/v1/patient/bookings/departments', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Lấy danh sách bác sĩ theo khoa và ngày
+  getDoctorsByDepartment: async (departmentId, date) => {
+    return apiCall(`api/v1/patient/bookings/departments/${departmentId}/doctors?date=${date}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Tạo lịch hẹn khám
+  createBooking: async (bookingData) => {
+    return apiCall('api/v1/patient/bookings', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+      body: JSON.stringify(bookingData),
+    });
+  },
+
+  // Hủy lịch hẹn khám
+  cancelBooking: async (bookingId, reason) => {
+    return apiCall(`api/v1/patient/bookings/${bookingId}/cancel?reason=${encodeURIComponent(reason)}`, {
+      method: 'PUT',
       headers: {
         'Authorization': `Bearer ${getAccessToken()}`,
       },
@@ -231,10 +303,48 @@ export const invoiceAPI = {
   },
 };
 
+// Staff Authentication API
+export const staffAuthAPI = {
+  login: async (username, password) => {
+    return apiCall('api/v1/auth/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ username, password }),
+    });
+  },
+
+  logout: async () => {
+    const token = localStorage.getItem('staffAccessToken');
+    return apiCall('api/v1/auth/logout', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+  },
+};
+
+// Staff Employee API
+export const staffEmployeeAPI = {
+  getEmployeeAccount: async (employeeAccountId) => {
+    const token = localStorage.getItem('staffAccessToken');
+    return apiCall(`api/v1/employee-accounts/${employeeAccountId}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+  },
+};
+
 export default {
   patientAuthAPI,
   patientAPI,
   appointmentAPI,
   bookingAPI,
   invoiceAPI,
+  staffAuthAPI,
+  staffEmployeeAPI,
 };

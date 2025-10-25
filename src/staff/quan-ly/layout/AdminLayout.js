@@ -2,6 +2,7 @@ import React from 'react';
 import { NavLink, Outlet } from 'react-router-dom';
 import './AdminLayout.css';
 import { FiUsers, FiShield, FiGrid, FiHome } from 'react-icons/fi';
+import StaffAvatarDropdown from '../../components/StaffAvatarDropdown';
 
 const AdminLayout = () => {
     return (
@@ -41,7 +42,12 @@ const AdminLayout = () => {
                 </nav>
             </aside>
             <main className="admin-content">
-                <Outlet />
+                <div className="content-header">
+                    <StaffAvatarDropdown />
+                </div>
+                <div className="content-body">
+                    <Outlet />
+                </div>
             </main>
         </div>
     );

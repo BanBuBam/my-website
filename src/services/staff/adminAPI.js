@@ -35,20 +35,20 @@ const apiCall = async (endpoint, options = {}) => {
   }
 };
 
-// Hàm helper để lấy token
-const getAccessToken = () => localStorage.getItem('adminAccessToken');
-const getRefreshToken = () => localStorage.getItem('adminRefreshToken');
+// Hàm helper để lấy token (sử dụng staffAccessToken từ login chung)
+const getAccessToken = () => localStorage.getItem('staffAccessToken');
+const getRefreshToken = () => localStorage.getItem('staffRefreshToken');
 
 // Hàm helper để lưu token
 export const saveTokens = (accessToken, refreshToken) => {
-  localStorage.setItem('adminAccessToken', accessToken);
-  localStorage.setItem('adminRefreshToken', refreshToken);
+  localStorage.setItem('staffAccessToken', accessToken);
+  localStorage.setItem('staffRefreshToken', refreshToken);
 };
 
 // Hàm helper để xóa token
 export const clearTokens = () => {
-  localStorage.removeItem('adminAccessToken');
-  localStorage.removeItem('adminRefreshToken');
+  localStorage.removeItem('staffAccessToken');
+  localStorage.removeItem('staffRefreshToken');
 };
 
 // API Authentication cho Admin
@@ -81,7 +81,17 @@ export const adminAuthAPI = {
 
 // API Dashboard
 export const adminDashboardAPI = {
-  // Lấy thống kê dashboard
+  // Lấy dashboard data
+  getDashboard: async () => {
+    return apiCall('api/v1/dashboard/manager', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Lấy thống kê dashboard (legacy)
   getStatistics: async () => {
     return apiCall('api/v1/admin/dashboard/statistics', {
       method: 'GET',

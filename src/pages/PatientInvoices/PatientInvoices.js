@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import './HoaDonBenhNhan.css';
+import './PatientInvoices.css';
 
-const HoaDonBenhNhan = () => {
+const PatientInvoices = () => {
   const [searchTerm, setSearchTerm] = useState('Nguyễn Văn A');
   const [showModal, setShowModal] = useState(false);
   const [selectedInvoice, setSelectedInvoice] = useState(null);
@@ -331,4 +331,4 @@ const HoaDonBenhNhan = () => {
   );
 };
 
-export default HoaDonBenhNhan;
+export default PatientInvoices;
