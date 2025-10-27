@@ -1,0 +1,77 @@
+.admission-discharge-page .page-header {
+    background-color: #fff;
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    margin-bottom: 1.5rem;
+}
+.admission-discharge-page .page-header h2 { font-size: 1.8rem; margin: 0; }
+.admission-discharge-page .page-header p { margin: 0.25rem 0 0 0; color: #6c757d; }
+
+.forms-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* Tạo layout 2 cột */
+    gap: 1.5rem;
+}
+
+.form-card {
+    background-color: #fff;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.form-card h3 {
+    margin: 0 0 2rem 0;
+    font-size: 1.2rem;
+    text-align: center;
+}
+
+.form-card form {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+.form-group label {
+    font-weight: 500;
+    font-size: 0.9rem;
+    color: #374151;
+}
+.form-group input, .form-group textarea {
+    padding: 0.75rem;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-family: inherit;
+    background-color: #f9fafb;
+}
+
+.form-group textarea {
+    resize: vertical;
+}
+
+.form-card form .btn {
+    margin-top: auto; /* Đẩy nút bấm xuống cuối card */
+    padding: 0.8rem;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.btn.btn-primary {
+    background-color: #3b82f6;
+    color: #fff;
+}
+.btn.btn-success {
+    background-color: #22c55e;
+    color: #fff;
+}
