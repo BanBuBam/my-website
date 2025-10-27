@@ -13,7 +13,8 @@ import {
     FiTrendingUp,
     FiFolder,
     FiBarChart2,
-    FiEdit3
+    FiEdit3,
+    FiAlertCircle
 } from 'react-icons/fi';
 import StaffAvatarDropdown from '../../components/StaffAvatarDropdown';
 
@@ -158,6 +159,19 @@ const DoctorLayout = () => {
                                 <NavLink to="/staff/bac-si/phieu-phau-thuat">
                                     <FiFileText />
                                     <span>Phiếu phẫu thuật</span>
+                                </NavLink>
+                            </li>
+                        </ul>
+                    </div>
+
+                    {/* Cấp cứu */}
+                    <div className="nav-category">
+                        <div className="category-header">Cấp cứu</div>
+                        <ul>
+                            <li>
+                                <NavLink to="/staff/bac-si/cap-cuu">
+                                    <FiAlertCircle />
+                                    <span>Emergency Encounters</span>
                                 </NavLink>
                             </li>
                         </ul>

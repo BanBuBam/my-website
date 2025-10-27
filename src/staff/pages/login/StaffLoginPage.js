@@ -24,7 +24,8 @@ const StaffLoginPage = () => {
       'LAB_TECH': '/staff/duoc-si/dashboard',
       'RECEPTIONIST': '/staff/le-tan/dashboard',
       'CASHIER': '/staff/ke-toan/dashboard',
-      'MANAGER': '/staff/quan-ly/dashboard',
+      'MANAGER': '/staff/manager/dashboard',
+      'ADMIN': '/staff/admin/dashboard',
     };
 
     return roleRoutes[role] || '/staff/dashboard';

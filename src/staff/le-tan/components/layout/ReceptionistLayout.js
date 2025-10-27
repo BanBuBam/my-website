@@ -9,7 +9,8 @@ import {
   FiUserPlus,
   FiUserCheck,
   FiCalendar,
-  FiSearch
+  FiSearch,
+  FiList
 } from 'react-icons/fi';
 
 const ReceptionistLayout = () => {
@@ -49,6 +50,12 @@ const ReceptionistLayout = () => {
               <NavLink to="/staff/le-tan/tra-cuu">
                 <FiSearch />
                 <span>Tra cứu</span>
+              </NavLink>
+            </li>
+            <li>
+              <NavLink to="/staff/le-tan/booking">
+                <FiList />
+                <span>Danh sách Booking</span>
               </NavLink>
             </li>
             {/* ------------------------------------ */}
