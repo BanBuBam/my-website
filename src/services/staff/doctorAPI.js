@@ -266,6 +266,40 @@ export const doctorBookingAPI = {
   },
 };
 
+// API Emergency Encounter
+export const doctorEmergencyAPI = {
+  // Lấy danh sách emergency encounter theo doctor
+  getEmergencyEncountersByDoctor: async (doctorId) => {
+    return apiCall(`api/v1/emergency/encounters/doctor/${doctorId}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Thêm vital signs cho encounter
+  addVitalSigns: async (encounterId, vitalSignsData) => {
+    return apiCall(`api/v1/encounters/${encounterId}/vitals`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+      body: JSON.stringify(vitalSignsData),
+    });
+  },
+
+  // Lấy danh sách vital signs của encounter
+  getVitalSigns: async (encounterId) => {
+    return apiCall(`api/v1/encounters/${encounterId}/vitals`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+};
+
 export default {
   doctorAuthAPI,
   doctorDashboardAPI,
@@ -274,5 +308,6 @@ export default {
   doctorLabResultAPI,
   doctorPrescriptionAPI,
   doctorBookingAPI,
+  doctorEmergencyAPI,
 };
 

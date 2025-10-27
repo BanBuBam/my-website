@@ -81,9 +81,9 @@ export const adminAuthAPI = {
 
 // API Dashboard
 export const adminDashboardAPI = {
-  // Lấy dashboard data
+  // Lấy dashboard data cho Admin
   getDashboard: async () => {
-    return apiCall('api/v1/dashboard/manager', {
+    return apiCall('api/v1/dashboard/admin', {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${getAccessToken()}`,
@@ -103,8 +103,20 @@ export const adminDashboardAPI = {
 };
 
 // API Quản lý nhân viên
-export const adminStaffAPI = {
+export const adminEmployeeAPI = {
   // Lấy danh sách nhân viên
+  getEmployees: async (params) => {
+    const queryString = params ? new URLSearchParams(params).toString() : '';
+    const endpoint = queryString ? `api/v1/employees?${queryString}` : 'api/v1/employees';
+    return apiCall(endpoint, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Legacy API - Lấy danh sách nhân viên (admin endpoint)
   getStaffList: async (params) => {
     const queryString = new URLSearchParams(params).toString();
     return apiCall(`api/v1/admin/staff?${queryString}`, {
@@ -126,6 +138,18 @@ export const adminStaffAPI = {
   },
 
   // Tạo nhân viên mới
+  createEmployee: async (employeeData) => {
+    return apiCall('api/v1/employees', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(employeeData),
+    });
+  },
+
+  // Legacy API - Tạo nhân viên mới
   createStaff: async (staffData) => {
     return apiCall('api/v1/admin/staff', {
       method: 'POST',
@@ -162,7 +186,7 @@ export const adminStaffAPI = {
 export const adminDepartmentAPI = {
   // Lấy danh sách phòng ban
   getDepartments: async () => {
-    return apiCall('api/v1/admin/departments', {
+    return apiCall('api/v1/departments', {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${getAccessToken()}`,
@@ -189,6 +213,76 @@ export const adminDepartmentAPI = {
         'Authorization': `Bearer ${getAccessToken()}`,
       },
       body: JSON.stringify(departmentData),
+    });
+  },
+};
+
+// API Quản lý phòng khám
+export const adminClinicAPI = {
+  // Lấy danh sách phòng khám
+  getClinics: async () => {
+    return apiCall('api/clinics', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Lấy danh sách bác sĩ theo phòng khám
+  getDoctorsByClinic: async (clinicId) => {
+    return apiCall(`api/clinics/${clinicId}/doctors`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+};
+
+// API Quản lý lịch làm việc bác sĩ
+export const adminDoctorScheduleAPI = {
+  // Lấy danh sách bác sĩ theo role
+  getDoctorsByRole: async (role = 'DOCTOR', page = 0, size = 100) => {
+    return apiCall(`api/v1/employees/role/${role}?page=${page}&size=${size}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Tạo lịch làm việc bác sĩ
+  createDoctorSchedule: async (scheduleData) => {
+    return apiCall('api/v1/doctor-schedules', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(scheduleData),
+    });
+  },
+
+  // Lấy danh sách lịch làm việc bác sĩ
+  getDoctorSchedules: async (params) => {
+    const queryString = params ? new URLSearchParams(params).toString() : '';
+    const endpoint = queryString ? `api/v1/doctor-schedules?${queryString}` : 'api/v1/doctor-schedules';
+    return apiCall(endpoint, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Lấy danh sách lịch làm việc theo bác sĩ
+  getDoctorSchedulesByDoctor: async (doctorId) => {
+    return apiCall(`api/v1/doctor-schedules/doctor/${doctorId}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
     });
   },
 };
@@ -251,12 +345,71 @@ export const adminReportAPI = {
   },
 };
 
+// API Quản lý Role và Permission
+export const adminRoleAPI = {
+  // Lấy tất cả các role
+  getRoles: async () => {
+    return apiCall('api/v1/roles', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Lấy permissions của một role
+  getRolePermissions: async (roleId) => {
+    return apiCall(`api/v1/roles/${roleId}/permissions`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Tạo role mới
+  createRole: async (roleData) => {
+    return apiCall('api/v1/roles', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+      body: JSON.stringify(roleData),
+    });
+  },
+
+  // Cấp quyền cho employee
+  grantPermission: async (employeeId, permissionData) => {
+    return apiCall(`api/v1/employees/${employeeId}/permissions`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+      body: JSON.stringify(permissionData),
+    });
+  },
+
+  // Loại bỏ quyền của employee
+  revokePermission: async (employeeId, permissionId) => {
+    return apiCall(`api/v1/employees/${employeeId}/permissions/${permissionId}`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+};
+
 export default {
   adminAuthAPI,
   adminDashboardAPI,
-  adminStaffAPI,
+  adminEmployeeAPI,
+  adminStaffAPI: adminEmployeeAPI, // Alias for backward compatibility
   adminDepartmentAPI,
+  adminClinicAPI,
+  adminDoctorScheduleAPI,
   adminServiceAPI,
   adminReportAPI,
+  adminRoleAPI,
 };
 

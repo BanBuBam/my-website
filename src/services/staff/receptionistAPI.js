@@ -215,11 +215,125 @@ export const receptionistLookupAPI = {
   },
 };
 
+// API Quản lý Booking
+export const receptionistBookingAPI = {
+  // Tìm kiếm booking theo keyword
+  searchBookings: async (keyword, page = 0, size = 20) => {
+    const params = new URLSearchParams({
+      keyword: keyword,
+      page: page.toString(),
+      size: size.toString()
+    });
+    return apiCall(`api/v1/bookings/search?${params.toString()}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Lấy danh sách booking đang chờ
+  getPendingBookings: async (page = 0, size = 20) => {
+    const params = new URLSearchParams({
+      page: page.toString(),
+      size: size.toString()
+    });
+    return apiCall(`api/v1/bookings/pending?${params.toString()}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Lấy danh sách booking đã xác nhận
+  getConfirmedBookings: async (page = 0, size = 20) => {
+    const params = new URLSearchParams({
+      status: 'CONFIRMED',
+      page: page.toString(),
+      size: size.toString()
+    });
+    return apiCall(`api/v1/bookings?${params.toString()}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Lấy chi tiết booking
+  getBookingDetail: async (bookingId) => {
+    return apiCall(`api/v1/bookings/${bookingId}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Xác nhận booking
+  confirmBooking: async (bookingId) => {
+    return apiCall(`api/v1/bookings/${bookingId}/confirm`, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Lấy encounter từ booking
+  getEncounterByBooking: async (bookingId) => {
+    return apiCall(`api/v1/encounters/booking/${bookingId}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Check-in bệnh nhân
+  checkInPatient: async (encounterId) => {
+    return apiCall(`api/v1/encounters/${encounterId}/checkin`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Discharge encounter
+  dischargeEncounter: async (encounterId, disposition = '') => {
+    const params = new URLSearchParams({
+      disposition: disposition
+    });
+    return apiCall(`api/v1/encounters/${encounterId}/discharge?${params.toString()}`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Cancel encounter
+  cancelEncounter: async (encounterId, reason = '') => {
+    const params = new URLSearchParams({
+      reason: reason
+    });
+    return apiCall(`api/v1/encounters/${encounterId}/cancel?${params.toString()}`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+};
+
 export default {
   receptionistAuthAPI,
   receptionistDashboardAPI,
   receptionistPatientAPI,
   receptionistAppointmentAPI,
   receptionistLookupAPI,
+  receptionistBookingAPI,
 };
 
