@@ -23,7 +23,7 @@ const BookingDetailPage = () => {
     const [cancelling, setCancelling] = useState(false);
     const [showDischargeModal, setShowDischargeModal] = useState(false);
     const [showCancelModal, setShowCancelModal] = useState(false);
-    const [disposition, setDisposition] = useState('');
+    const [disposition, setDisposition] = useState('HOME');
     const [cancelReason, setCancelReason] = useState('');
 
     useEffect(() => {
@@ -131,7 +131,7 @@ const BookingDetailPage = () => {
                 setEncounter(response.data);
                 alert('Discharge encounter thành công!');
                 setShowDischargeModal(false);
-                setDisposition('');
+                setDisposition('HOME');
                 // Refresh booking detail
                 fetchBookingDetail();
             }
@@ -596,15 +596,24 @@ const BookingDetailPage = () => {
                         </div>
                         <div className="modal-body">
                             <div className="form-group">
-                                <label htmlFor="disposition">Disposition (tùy chọn):</label>
-                                <input
-                                    type="text"
+                                <label htmlFor="disposition">Disposition: <span className="required">*</span></label>
+                                <select
                                     id="disposition"
                                     value={disposition}
                                     onChange={(e) => setDisposition(e.target.value)}
-                                    placeholder="Nhập disposition..."
-                                    className="form-input"
-                                />
+                                    className="form-select"
+                                    required
+                                >
+                                    <option value="HOME">HOME - Về nhà</option>
+                                    <option value="TRANSFER">TRANSFER - Chuyển viện</option>
+                                    <option value="ADMITTED">ADMITTED - Nhập viện</option>
+                                    <option value="LEFT_AMA">LEFT_AMA - Tự ý về</option>
+                                    <option value="EXPIRED">EXPIRED - Tử vong</option>
+                                    <option value="OTHER">OTHER - Khác</option>
+                                </select>
+                                <p className="form-help-text">
+                                    Chọn hướng xử lý sau khi discharge bệnh nhân
+                                </p>
                             </div>
                         </div>
                         <div className="modal-footer">

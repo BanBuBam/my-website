@@ -207,15 +207,15 @@ export const doctorLabResultAPI = {
 // API Đơn thuốc
 export const doctorPrescriptionAPI = {
   // Tạo đơn thuốc
-  createPrescription: async (prescriptionData) => {
-    return apiCall('api/v1/doctor/prescriptions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${getAccessToken()}`,
-      },
-      body: JSON.stringify(prescriptionData),
-    });
-  },
+  // createPrescription: async (prescriptionData) => {
+  //   return apiCall('api/v1/doctor/prescriptions', {
+  //     method: 'POST',
+  //     headers: {
+  //       'Authorization': `Bearer ${getAccessToken()}`,
+  //     },
+  //     body: JSON.stringify(prescriptionData),
+  //   });
+  // },
 
   // Lấy danh sách đơn thuốc
   getPrescriptions: async (patientId) => {
@@ -300,6 +300,315 @@ export const doctorEmergencyAPI = {
   },
 };
 
+// API Encounter (thông thường)
+export const doctorEncounterAPI = {
+  // Lấy danh sách encounter theo doctor
+  getEncountersByDoctor: async (doctorId) => {
+    return apiCall(`api/v1/encounters/doctor/${doctorId}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Lấy encounter status
+  getEncounterStatus: async (encounterId) => {
+    return apiCall(`api/v1/encounters/${encounterId}/status`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Thêm vital signs cho encounter
+  addVitalSigns: async (encounterId, vitalSignsData) => {
+    return apiCall(`api/v1/encounters/${encounterId}/vitals`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+      body: JSON.stringify(vitalSignsData),
+    });
+  },
+
+  // Lấy danh sách vital signs của encounter
+  getVitalSigns: async (encounterId) => {
+    return apiCall(`api/v1/encounters/${encounterId}/vitals`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Tạo clinical note (y lệnh) cho encounter
+  createClinicalNote: async (encounterId, noteData) => {
+    return apiCall(`api/v1/encounters/${encounterId}/notes`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+      body: JSON.stringify(noteData),
+    });
+  },
+
+  // Lấy danh sách clinical notes của encounter
+  getClinicalNotes: async (encounterId) => {
+    return apiCall(`api/v1/encounters/${encounterId}/notes`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Cập nhật clinical note
+  updateClinicalNote: async (noteId, noteData) => {
+    return apiCall(`api/v1/notes/${noteId}`, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+      body: JSON.stringify(noteData),
+    });
+  },
+
+  // Ký clinical note
+  signClinicalNote: async (noteId) => {
+    return apiCall(`api/v1/notes/${noteId}/sign`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Tạo prescription cho encounter
+  createPrescription: async (encounterId, prescriptionData) => {
+    return apiCall(`api/v1/encounters/${encounterId}/prescriptions`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+      body: JSON.stringify(prescriptionData),
+    });
+  },
+
+  // Lấy danh sách prescriptions của encounter
+  getPrescriptions: async (encounterId) => {
+    return apiCall(`api/v1/encounters/${encounterId}/prescriptions`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Lấy danh sách medical tests
+  getMedicalTests: async () => {
+    return apiCall('api/v1/medical-tests', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Tạo lab test order cho encounter
+  createLabTestOrder: async (encounterId, orderData) => {
+    return apiCall(`api/v1/encounters/${encounterId}/lab-orders`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+      body: JSON.stringify(orderData),
+    });
+  },
+
+  // Lấy danh sách lab test orders của encounter
+  getLabTestOrders: async (encounterId) => {
+    return apiCall(`api/v1/encounters/${encounterId}/lab-orders`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Collect specimen cho lab test order
+  collectSpecimen: async (labTestOrderId) => {
+    return apiCall(`api/v1/lab-orders/${labTestOrderId}/collect-specimen`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Receive specimen cho lab test order
+  receiveSpecimen: async (labTestOrderId) => {
+    return apiCall(`api/v1/lab-orders/${labTestOrderId}/receive-specimen`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Lấy chi tiết prescription
+  getPrescriptionDetail: async (prescriptionId) => {
+    return apiCall(`api/v1/prescriptions/${prescriptionId}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Ký đơn thuốc
+  signPrescription: async (prescriptionId) => {
+    return apiCall(`api/v1/prescriptions/${prescriptionId}/sign`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Lấy danh sách prescriptions của encounter
+  // getPrescriptions: async (encounterId) => {
+  //   return apiCall(`api/v1/encounters/${encounterId}/prescriptions`, {
+  //     method: 'GET',
+  //     headers: {
+  //       'Authorization': `Bearer ${getAccessToken()}`,
+  //     },
+  //   });
+  // },
+
+  // Tạo imaging order cho encounter
+  createImagingOrder: async (encounterId, orderData) => {
+    return apiCall(`api/v1/encounters/${encounterId}/imaging-orders`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+      body: JSON.stringify(orderData),
+    });
+  },
+
+  // Lấy danh sách imaging orders của encounter
+  getImagingOrders: async (encounterId) => {
+    return apiCall(`api/v1/encounters/${encounterId}/imaging-orders`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Schedule imaging exam
+  scheduleImagingExam: async (imagingOrderId, scheduleData) => {
+    return apiCall(`api/v1/imaging-orders/${imagingOrderId}/schedule`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+      body: JSON.stringify(scheduleData),
+    });
+  },
+
+  // Start imaging exam
+  startImagingExam: async (orderId, radiologistId) => {
+    return apiCall(`api/v1/imaging-orders/${orderId}/start-exam`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+      body: JSON.stringify({ radiologistId }),
+    });
+  },
+
+  // Complete imaging exam
+  completeImagingExam: async (imagingOrderId) => {
+    return apiCall(`api/v1/imaging-orders/${imagingOrderId}/complete-exam`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Report imaging results
+  reportImagingResults: async (imagingOrderId, reportData) => {
+    return apiCall(`api/v1/imaging-orders/${imagingOrderId}/report`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+      body: JSON.stringify(reportData),
+    });
+  },
+};
+
+// API ICD Diseases
+export const icdDiseaseAPI = {
+  // Lấy danh sách ICD diseases
+  getICDDiseases: async () => {
+    return apiCall('api/icd-diseases', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+};
+
+// API Services
+export const serviceAPI = {
+  // Lấy danh sách services với pagination
+  getServices: async (page = 0, size = 100, sort = []) => {
+    const params = new URLSearchParams({
+      page: page.toString(),
+      size: size.toString(),
+    });
+
+    if (sort && sort.length > 0) {
+      sort.forEach(s => params.append('sort', s));
+    }
+
+    return apiCall(`api/services?${params.toString()}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+};
+
+// API Medicines
+export const medicineAPI = {
+  // Lấy danh sách medicines
+  getMedicines: async (page = 0, size = 100, sort = ['medicineName,asc']) => {
+    const params = new URLSearchParams({
+      page: page.toString(),
+      size: size.toString(),
+    });
+
+    if (sort && sort.length > 0) {
+      sort.forEach(s => params.append('sort', s));
+    }
+
+    return apiCall(`api/v1/medicines?${params.toString()}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+};
+
 export default {
   doctorAuthAPI,
   doctorDashboardAPI,
@@ -309,5 +618,9 @@ export default {
   doctorPrescriptionAPI,
   doctorBookingAPI,
   doctorEmergencyAPI,
+  doctorEncounterAPI,
+  icdDiseaseAPI,
+  serviceAPI,
+  medicineAPI,
 };
 

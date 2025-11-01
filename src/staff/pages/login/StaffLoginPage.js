@@ -21,7 +21,8 @@ const StaffLoginPage = () => {
     const roleRoutes = {
       'DOCTOR': '/staff/bac-si/dashboard',
       'NURSE': '/staff/dieu-duong/dashboard',
-      'LAB_TECH': '/staff/duoc-si/dashboard',
+      'LAB_TECH': '/staff/ky-thuat-vien/dashboard',
+      'PHARMACIST': '/staff/duoc-si/dashboard',
       'RECEPTIONIST': '/staff/le-tan/dashboard',
       'CASHIER': '/staff/ke-toan/dashboard',
       'MANAGER': '/staff/manager/dashboard',

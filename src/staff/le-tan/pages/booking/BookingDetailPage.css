@@ -575,17 +575,20 @@
 }
 
 .form-input,
-.form-textarea {
+.form-textarea,
+.form-select {
     width: 100%;
     padding: 0.75rem;
     border: 1px solid #d1d5db;
     border-radius: 8px;
     font-size: 0.875rem;
     transition: all 0.2s;
+    font-family: inherit;
 }
 
 .form-input:focus,
-.form-textarea:focus {
+.form-textarea:focus,
+.form-select:focus {
     outline: none;
     border-color: #3b82f6;
     box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
@@ -593,7 +596,18 @@
 
 .form-textarea {
     resize: vertical;
-    font-family: inherit;
+}
+
+.form-select {
+    background-color: white;
+    cursor: pointer;
+}
+
+.form-help-text {
+    margin-top: 0.5rem;
+    font-size: 0.75rem;
+    color: #6b7280;
+    font-style: italic;
 }
 
 .btn-primary,

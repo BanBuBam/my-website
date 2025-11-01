@@ -142,6 +142,7 @@ const CreateDoctorSchedulePage = () => {
         setLoading(true);
         setError('');
         setSuccess('');
+        
 
         try {
             const scheduleData = {
@@ -161,6 +162,7 @@ const CreateDoctorSchedulePage = () => {
 
             if (response && response.data) {
                 setSuccess('Tạo lịch làm việc bác sĩ thành công!');
+                navigate('/staff/admin/doctor-schedules');
                 setTimeout(() => {
                     navigate('/staff/admin/doctor-schedules');
                 }, 1500);
