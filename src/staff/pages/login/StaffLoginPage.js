@@ -25,8 +25,8 @@ const StaffLoginPage = () => {
       'PHARMACIST': '/staff/duoc-si/dashboard',
       'RECEPTIONIST': '/staff/le-tan/dashboard',
       'CASHIER': '/staff/ke-toan/dashboard',
-      'MANAGER': '/staff/manager/dashboard',
-      'ADMIN': '/staff/admin/dashboard',
+      'MANAGER': '/staff/quan-ly/dashboard',
+      'ADMIN': '/staff/hr/dashboard',
     };
 
     return roleRoutes[role] || '/staff/dashboard';
@@ -43,9 +43,27 @@ const StaffLoginPage = () => {
       if (response && response.data) {
         const { accesstoken, refreshtoken, claims, employeeAccountId } = response.data;
 
-        // Store tokens in localStorage
-        localStorage.setItem('staffAccessToken', accesstoken);
-        localStorage.setItem('staffRefreshToken', refreshtoken);
+        // Get the first role
+        const role = claims.roles && claims.roles.length > 0 ? claims.roles[0] : null;
+
+        // Store tokens based on role
+        if (role === 'ADMIN') {
+          // HR/Admin uses hrAccessToken
+          localStorage.setItem('hrAccessToken', accesstoken);
+          localStorage.setItem('hrRefreshToken', refreshtoken);
+        } else if (role === 'CASHIER') {
+          // Finance uses financeAccessToken
+          localStorage.setItem('financeAccessToken', accesstoken);
+          localStorage.setItem('financeRefreshToken', refreshtoken);
+        } else if (role === 'LAB_TECH') {
+          // Pharmacist uses pharmacistAccessToken
+          localStorage.setItem('pharmacistAccessToken', accesstoken);
+          localStorage.setItem('pharmacistRefreshToken', refreshtoken);
+        } else {
+          // Other roles use staffAccessToken
+          localStorage.setItem('staffAccessToken', accesstoken);
+          localStorage.setItem('staffRefreshToken', refreshtoken);
+        }
 
         // Store user info and employeeAccountId
         localStorage.setItem('staffUserInfo', JSON.stringify(claims));
