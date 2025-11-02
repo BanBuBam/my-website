@@ -230,6 +230,288 @@
   100% { transform: rotate(360deg); }
 }
 
+/* Filter Section */
+.filter-section {
+  background: #fff;
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.filter-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid #e9ecef;
+}
+
+.filter-header svg {
+  width: 20px;
+  height: 20px;
+  color: #007bff;
+}
+
+.filter-header h3 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #2c3e50;
+  margin: 0;
+  flex: 1;
+}
+
+.btn-reset {
+  padding: 0.5rem 1rem;
+  background-color: #6c757d;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.btn-reset:hover {
+  background-color: #5a6268;
+}
+
+.filter-controls {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.filter-group label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #495057;
+}
+
+.filter-group select,
+.filter-group input {
+  padding: 0.625rem;
+  border: 1px solid #ced4da;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  transition: border-color 0.2s ease;
+}
+
+.filter-group select:focus,
+.filter-group input:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+}
+
+/* Statistics Cards */
+.stats-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.stat-card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.stat-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.stat-icon svg {
+  width: 28px;
+  height: 28px;
+  color: #fff;
+}
+
+.stat-info h4 {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #6c757d;
+  margin: 0 0 0.5rem 0;
+}
+
+.stat-value {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #2c3e50;
+  margin: 0;
+}
+
+/* Table Enhancements */
+.table-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.inline-spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid #f3f3f3;
+  border-top: 2px solid #007bff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+.table-wrapper {
+  overflow-x: auto;
+}
+
+.doctor-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.doctor-info strong {
+  color: #2c3e50;
+}
+
+.doctor-info small {
+  color: #6c757d;
+  font-size: 0.8125rem;
+}
+
+.date-badge {
+  display: inline-block;
+  padding: 0.375rem 0.75rem;
+  background-color: #e3f2fd;
+  color: #1976d2;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.time-range {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #495057;
+  font-size: 0.875rem;
+}
+
+.time-range.break {
+  color: #6c757d;
+}
+
+.slot-duration {
+  display: inline-block;
+  padding: 0.25rem 0.625rem;
+  background-color: #fff3cd;
+  color: #856404;
+  border-radius: 4px;
+  font-size: 0.8125rem;
+  font-weight: 500;
+}
+
+.status-badge.today {
+  background-color: #d1ecf1;
+  color: #0c5460;
+  margin-left: 0.5rem;
+}
+
+.status-badge.past {
+  background-color: #e2e3e5;
+  color: #383d41;
+  margin-left: 0.5rem;
+}
+
+.btn-icon.btn-view {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+}
+
+.btn-icon.btn-view:hover {
+  background-color: #2e7d32;
+  color: #fff;
+}
+
+.no-data {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.no-data svg {
+  color: #adb5bd;
+}
+
+.no-data p {
+  margin: 0;
+}
+
+/* Available Slots Modal */
+.available-slots-modal {
+  max-width: 800px;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.slots-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.slot-card {
+  background: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  padding: 1rem;
+  transition: all 0.2s ease;
+}
+
+.slot-card:hover {
+  background: #e9ecef;
+  border-color: #007bff;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 123, 255, 0.15);
+}
+
+.slot-time {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+  color: #2c3e50;
+  margin-bottom: 0.5rem;
+}
+
+.slot-time svg {
+  width: 16px;
+  height: 16px;
+  color: #007bff;
+}
+
+.slot-info {
+  font-size: 0.875rem;
+  color: #6c757d;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .page-header {
@@ -237,12 +519,24 @@
     gap: 1rem;
   }
 
-  .table-container {
+  .filter-controls {
+    grid-template-columns: 1fr;
+  }
+
+  .stats-cards {
+    grid-template-columns: 1fr;
+  }
+
+  .table-wrapper {
     overflow-x: auto;
   }
 
   .schedule-table {
-    min-width: 800px;
+    min-width: 1000px;
+  }
+
+  .slots-grid {
+    grid-template-columns: 1fr;
   }
 }
 

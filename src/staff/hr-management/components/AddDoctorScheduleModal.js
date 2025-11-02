@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import './AddDoctorScheduleModal.css';
-import { hrEmployeeAPI } from '../../../services/staff/hrAPI';
+import { hrDoctorScheduleAPI } from '../../../services/staff/hrAPI';
 
 const AddDoctorScheduleModal = ({ isOpen, onClose, onSubmit }) => {
   const [formData, setFormData] = useState({
     doctorEmployeeId: '',
-    clinicId: '1',
+    clinicId: '',
     scheduleDate: '',
     startTime: '08:00',
     endTime: '17:00',
@@ -17,26 +17,83 @@ const AddDoctorScheduleModal = ({ isOpen, onClose, onSubmit }) => {
   });
 
   const [doctors, setDoctors] = useState([]);
+  const [clinics, setClinics] = useState([]);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
-      fetchDoctors();
+      fetchClinics();
+      // Reset doctors when modal opens
+      setDoctors([]);
+      setFormData(prev => ({
+        ...prev,
+        doctorEmployeeId: '',
+        clinicId: ''
+      }));
     }
   }, [isOpen]);
 
-  const fetchDoctors = async () => {
+  // Fetch doctors when clinic is selected
+  useEffect(() => {
+    if (formData.clinicId) {
+      fetchDoctorsByClinic(formData.clinicId);
+    } else {
+      setDoctors([]);
+      setFormData(prev => ({
+        ...prev,
+        doctorEmployeeId: ''
+      }));
+    }
+  }, [formData.clinicId]);
+
+  const fetchDoctorsByClinic = async (clinicId) => {
     try {
-      const response = await hrEmployeeAPI.searchByRole('DOCTOR');
-      console.log('Doctors response:', response);
-      
-      if (response.data) {
-        const doctorList = Array.isArray(response.data) ? response.data : [response.data];
-        setDoctors(doctorList);
+      const response = await hrDoctorScheduleAPI.getDoctorsByClinic(clinicId);
+      console.log('Doctors by clinic response:', response);
+
+      // Handle different response structures
+      let doctorList = [];
+      if (response.data && Array.isArray(response.data)) {
+        doctorList = response.data;
+      } else if (Array.isArray(response)) {
+        doctorList = response;
+      } else if (response.content && Array.isArray(response.content)) {
+        doctorList = response.content;
+      } else if (response.data && response.data.content && Array.isArray(response.data.content)) {
+        doctorList = response.data.content;
+      }
+
+      console.log('Doctors in clinic count:', doctorList.length);
+      console.log('Doctors in clinic:', doctorList);
+      setDoctors(doctorList);
+    } catch (err) {
+      console.error('Error fetching doctors by clinic:', err);
+      alert('Không thể tải danh sách bác sĩ trong phòng khám này');
+      setDoctors([]);
+    }
+  };
+
+  const fetchClinics = async () => {
+    try {
+      const response = await hrDoctorScheduleAPI.getClinics();
+      console.log('Clinics response:', response);
+
+      // API returns paginated structure with content array
+      if (response.content && Array.isArray(response.content)) {
+        console.log('Clinics count:', response.content.length);
+        console.log('Clinics list:', response.content);
+        setClinics(response.content);
+      } else if (response.data && response.data.content && Array.isArray(response.data.content)) {
+        console.log('Clinics count:', response.data.content.length);
+        console.log('Clinics list:', response.data.content);
+        setClinics(response.data.content);
+      } else if (Array.isArray(response)) {
+        console.log('Response is array:', response);
+        setClinics(response);
       }
     } catch (err) {
-      console.error('Error fetching doctors:', err);
-      alert('Không thể tải danh sách bác sĩ');
+      console.error('Error fetching clinics:', err);
+      alert('Không thể tải danh sách phòng khám');
     }
   };
 
@@ -60,15 +117,29 @@ const AddDoctorScheduleModal = ({ isOpen, onClose, onSubmit }) => {
         return;
       }
 
+      if (!formData.clinicId) {
+        alert('Vui lòng chọn phòng khám');
+        setLoading(false);
+        return;
+      }
+
       if (!formData.scheduleDate) {
         alert('Vui lòng chọn ngày làm việc');
         setLoading(false);
         return;
       }
 
+      // Find selected doctor to get employeeCode
+      const selectedDoctor = doctors.find(doc => doc.id === parseInt(formData.doctorEmployeeId));
+      if (!selectedDoctor) {
+        alert('Không tìm thấy thông tin bác sĩ');
+        setLoading(false);
+        return;
+      }
+
       // Build request data
       const requestData = {
-        doctorEmployeeId: parseInt(formData.doctorEmployeeId),
+        doctorEmployeeCode: selectedDoctor.employeeCode,
         clinicId: parseInt(formData.clinicId),
         scheduleDate: formData.scheduleDate,
         startTime: formData.startTime + ':00',
@@ -81,12 +152,16 @@ const AddDoctorScheduleModal = ({ isOpen, onClose, onSubmit }) => {
       };
 
       console.log('Submitting schedule data:', requestData);
-      await onSubmit(requestData);
+      console.log('Form data before submit:', formData);
+      console.log('Selected doctor:', selectedDoctor);
+
+      const result = await onSubmit(requestData);
+      console.log('Submit result:', result);
       
       // Reset form
       setFormData({
         doctorEmployeeId: '',
-        clinicId: '1',
+        clinicId: '',
         scheduleDate: '',
         startTime: '08:00',
         endTime: '17:00',
@@ -120,23 +195,6 @@ const AddDoctorScheduleModal = ({ isOpen, onClose, onSubmit }) => {
           <div className="modal-body">
             <div className="form-row">
               <div className="form-group">
-                <label>Bác sĩ <span className="required">*</span></label>
-                <select
-                  name="doctorEmployeeId"
-                  value={formData.doctorEmployeeId}
-                  onChange={handleChange}
-                  required
-                >
-                  <option value="">-- Chọn bác sĩ --</option>
-                  {doctors.map(doctor => (
-                    <option key={doctor.id} value={doctor.id}>
-                      {doctor.employeeCode} - {doctor.person?.lastName} {doctor.person?.firstName}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div className="form-group">
                 <label>Phòng khám <span className="required">*</span></label>
                 <select
                   name="clinicId"
@@ -144,11 +202,36 @@ const AddDoctorScheduleModal = ({ isOpen, onClose, onSubmit }) => {
                   onChange={handleChange}
                   required
                 >
-                  <option value="1">Phòng khám 1</option>
-                  <option value="2">Phòng khám 2</option>
-                  <option value="3">Phòng khám 3</option>
-                  <option value="4">Phòng khám 4</option>
-                  <option value="5">Phòng khám 5</option>
+                  <option value="">-- Chọn phòng khám --</option>
+                  {clinics.map(clinic => (
+                    <option key={clinic.clinicId} value={clinic.clinicId}>
+                      {clinic.clinicName}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="form-group">
+                <label>Bác sĩ <span className="required">*</span></label>
+                <select
+                  name="doctorEmployeeId"
+                  value={formData.doctorEmployeeId}
+                  onChange={handleChange}
+                  required
+                  disabled={!formData.clinicId}
+                >
+                  <option value="">
+                    {!formData.clinicId
+                      ? '-- Vui lòng chọn phòng khám trước --'
+                      : doctors.length === 0
+                        ? '-- Không có bác sĩ trong phòng khám này --'
+                        : '-- Chọn bác sĩ --'}
+                  </option>
+                  {doctors.map(doctor => (
+                    <option key={doctor.id} value={doctor.id}>
+                      {doctor.employeeCode} - {doctor.fullName}
+                    </option>
+                  ))}
                 </select>
               </div>
             </div>
