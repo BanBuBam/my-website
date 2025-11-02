@@ -1,0 +1,64 @@
+/* Lab Test Order Page */
+.lab-test-order-page {
+    padding: 24px;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.lab-test-order-page .page-header {
+    margin-bottom: 24px;
+}
+
+.lab-test-order-page .header-content {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.lab-test-order-page .header-icon {
+    font-size: 36px;
+    color: #3b82f6;
+}
+
+.lab-test-order-page .page-header h1 {
+    margin: 0;
+    font-size: 28px;
+    color: #1a1a1a;
+}
+
+.lab-test-order-page .page-header p {
+    margin: 4px 0 0 0;
+    color: #666;
+    font-size: 14px;
+}
+
+.lab-test-order-page .page-content {
+    background: white;
+    padding: 60px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.lab-test-order-page .placeholder-card {
+    text-align: center;
+    padding: 40px;
+}
+
+.lab-test-order-page .placeholder-icon {
+    font-size: 64px;
+    color: #9ca3af;
+    margin-bottom: 20px;
+}
+
+.lab-test-order-page .placeholder-card h3 {
+    margin: 0 0 12px 0;
+    font-size: 24px;
+    color: #1a1a1a;
+}
+
+.lab-test-order-page .placeholder-card p {
+    margin: 0;
+    color: #6b7280;
+    font-size: 16px;
+}
+

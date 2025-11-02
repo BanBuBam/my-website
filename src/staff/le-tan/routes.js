@@ -9,6 +9,7 @@ import TiepNhanPage from './pages/tiepnhan/TiepNhanBenhNhan';
 import TraCuuBenhNhan from './pages/tracuu/TraCuuBenhNhan';
 import BookingListPage from './pages/booking/BookingListPage';
 import BookingDetailPage from './pages/booking/BookingDetailPage';
+import PaymentPage from './pages/payment/PaymentPage';
 
 const LeTanRoutes = () => {
   return (
@@ -22,6 +23,7 @@ const LeTanRoutes = () => {
         <Route path="tra-cuu" element={<TraCuuBenhNhan />} />
         <Route path="booking/:bookingId" element={<BookingDetailPage />} />
         <Route path="booking" element={<BookingListPage />} />
+        <Route path="payment" element={<PaymentPage />} />
       </Route>
     </Routes>
   );

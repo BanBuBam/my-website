@@ -75,17 +75,54 @@ const DoctorLayout = () => {
                                 </NavLink>
                             </li>
                             <li>
-                                <NavLink to="/staff/bac-si/ke-don-thuoc">
-                                    <FiEdit3 />
-                                    <span>Kê đơn thuốc</span>
+                                <NavLink to="/staff/bac-si/encounters">
+                                    <FiUsers />
+                                    <span>Quản lý Encounters</span>
                                 </NavLink>
                             </li>
                             <li>
-                                <NavLink to="/staff/bac-si/chi-dinh-cls">
+                                <NavLink to="/staff/bac-si/encounter-vital">
                                     <FiActivity />
-                                    <span>Chỉ định xét nghiệm/CLS</span>
+                                    <span>Vital Signs</span>
                                 </NavLink>
                             </li>
+                            <li>
+                                <NavLink to="/staff/bac-si/clinical-notes">
+                                    <FiFileText />
+                                    <span>Clinical Notes</span>
+                                </NavLink>
+                            </li>
+                            <li>
+                                <NavLink to="/staff/bac-si/lab-test-order">
+                                    <FiClipboard />
+                                    <span>Lab Test Order</span>
+                                </NavLink>
+                            </li>
+                            <li>
+                                <NavLink to="/staff/bac-si/imaging-order">
+                                    <FiFileText />
+                                    <span>Imaging Order</span>
+                                </NavLink>
+                            </li>
+                            <li>
+                                <NavLink to="/staff/bac-si/prescription">
+                                    <FiEdit3 />
+                                    <span>Prescription</span>
+                                </NavLink>
+                            </li>
+                            
+                            {/*<li>*/}
+                            {/*    <NavLink to="/staff/bac-si/ke-don-thuoc">*/}
+                            {/*        <FiEdit3 />*/}
+                            {/*        <span>Kê đơn thuốc</span>*/}
+                            {/*    </NavLink>*/}
+                            {/*</li>*/}
+                            {/*<li>*/}
+                            {/*    <NavLink to="/staff/bac-si/chi-dinh-cls">*/}
+                            {/*        <FiActivity />*/}
+                            {/*        <span>Chỉ định xét nghiệm/CLS</span>*/}
+                            {/*    </NavLink>*/}
+                            {/*</li>*/}
                         </ul>
                     </div>
 

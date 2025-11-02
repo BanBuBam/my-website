@@ -328,6 +328,50 @@ export const receptionistBookingAPI = {
   },
 };
 
+// API Quản lý Payment
+export const receptionistPaymentAPI = {
+  // Tạo invoice cho encounter
+  generateInvoice: async (invoiceData) => {
+    return apiCall('api/payments/generate-invoice', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+      body: JSON.stringify(invoiceData),
+    });
+  },
+
+  // Lấy invoice theo encounter ID
+  getInvoiceByEncounter: async (encounterId) => {
+    return apiCall(`api/invoices/encounter/${encounterId}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Lấy chi tiết invoice
+  getInvoiceDetail: async (invoiceId) => {
+    return apiCall(`api/invoices/${invoiceId}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Lấy danh sách items của invoice
+  getInvoiceItems: async (invoiceId) => {
+    return apiCall(`api/invoice-items/invoice/${invoiceId}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+};
+
 export default {
   receptionistAuthAPI,
   receptionistDashboardAPI,
@@ -335,5 +379,6 @@ export default {
   receptionistAppointmentAPI,
   receptionistLookupAPI,
   receptionistBookingAPI,
+  receptionistPaymentAPI,
 };
 

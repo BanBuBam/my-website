@@ -10,7 +10,8 @@ import {
   FiUserCheck,
   FiCalendar,
   FiSearch,
-  FiList
+  FiList,
+  FiDollarSign
 } from 'react-icons/fi';
 
 const ReceptionistLayout = () => {
@@ -58,8 +59,14 @@ const ReceptionistLayout = () => {
                 <span>Danh sách Booking</span>
               </NavLink>
             </li>
+            <li>
+              <NavLink to="/staff/le-tan/payment">
+                <FiDollarSign />
+                <span>Thanh toán</span>
+              </NavLink>
+            </li>
             {/* ------------------------------------ */}
-            
+
           </ul>
         </nav>
       </aside>
