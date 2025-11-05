@@ -1002,6 +1002,76 @@ export const hrWorkShiftAPI = {
     });
   },
 
+  // Lấy ca làm việc theo mã ca
+  getWorkShiftByCode: async (code) => {
+    return apiCall(`api/v1/work-shifts/code/${code}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Lấy ca làm việc đang active
+  getActiveWorkShifts: async () => {
+    return apiCall('api/v1/work-shifts/active', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Lấy ca làm việc theo department
+  getWorkShiftsByDepartment: async (departmentId) => {
+    return apiCall(`api/v1/work-shifts/department/${departmentId}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Lấy ca làm việc theo shift type
+  getWorkShiftsByType: async (shiftType) => {
+    return apiCall(`api/v1/work-shifts/type/${shiftType}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Lấy ca làm việc hiện tại
+  getCurrentWorkShifts: async () => {
+    return apiCall('api/v1/work-shifts/current', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Lấy ca làm việc cuối tuần
+  getWeekendWorkShifts: async () => {
+    return apiCall('api/v1/work-shifts/weekend', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Lấy ca làm việc ngày lễ
+  getHolidayWorkShifts: async () => {
+    return apiCall('api/v1/work-shifts/holiday', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
   // Tạo ca làm việc mới
   createWorkShift: async (shiftData) => {
     return apiCall('api/v1/work-shifts', {
