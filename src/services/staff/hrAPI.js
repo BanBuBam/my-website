@@ -126,28 +126,45 @@ export const clearTokens = () => {
 // API Authentication cho HR
 export const hrAuthAPI = {
   // Đăng nhập
-  login: async (email, password) => {
-    const response = await apiCall('api/v1/hr/auth/login', {
+  login: async (username, password) => {
+    const response = await apiCall('api/v1/auth/login', {
       method: 'POST',
-      body: JSON.stringify({ email, password }),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ username, password }),
     });
-    
-    if (response.data && response.data.accessToken && response.data.refreshToken) {
-      saveTokens(response.data.accessToken, response.data.refreshToken);
+
+    // Lưu token vào localStorage nếu đăng nhập thành công
+    if (response.data && response.data.accesstoken && response.data.refreshtoken) {
+      saveTokens(response.data.accesstoken, response.data.refreshtoken);
     }
-    
+
     return response;
   },
 
   // Đăng xuất
   logout: async () => {
-    clearTokens();
-    return apiCall('api/v1/hr/auth/logout', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${getAccessToken()}`,
-      },
-    });
+    const token = getAccessToken();
+
+    try {
+      const response = await apiCall('api/v1/auth/logout', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      // Clear tokens after successful logout
+      clearTokens();
+
+      return response;
+    } catch (error) {
+      // Clear tokens even if logout API fails
+      clearTokens();
+      throw error;
+    }
   },
 };
 
