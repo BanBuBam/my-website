@@ -1,15 +1,15 @@
 import React from 'react';
 import { NavLink, Outlet } from 'react-router-dom';
 import './HRLayout.css';
-import { 
-  FiHome, 
-  FiUsers, 
-  FiUserCheck, 
-  FiCalendar, 
-  FiClock, 
+import {
+  FiHome,
+  FiUsers,
+  FiUserCheck,
+  FiCalendar,
+  FiClock,
   FiGrid,
   FiActivity,
-  FiFileText 
+  FiFileText
 } from 'react-icons/fi';
 import StaffAvatarDropdown from '../../components/StaffAvatarDropdown';
 

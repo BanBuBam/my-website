@@ -758,7 +758,7 @@ export const hrEmployeeScheduleAPI = {
   // Lấy lịch ca làm việc
   getEmployeeSchedules: async (params = {}) => {
     const queryString = new URLSearchParams(params).toString();
-    return apiCall(`api/v1/hr/employee-schedules${queryString ? `?${queryString}` : ''}`, {
+    return apiCall(`api/v1/employee-schedules${queryString ? `?${queryString}` : ''}`, {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${getAccessToken()}`,
@@ -768,18 +768,29 @@ export const hrEmployeeScheduleAPI = {
 
   // Tạo lịch ca làm việc
   createEmployeeSchedule: async (scheduleData) => {
-    return apiCall('api/v1/hr/employee-schedules', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${getAccessToken()}`,
-      },
-      body: JSON.stringify(scheduleData),
-    });
+    console.log('Creating employee schedule with data:', scheduleData);
+    console.log('JSON stringified:', JSON.stringify(scheduleData, null, 2));
+
+    try {
+      const response = await apiCall('api/v1/employee-schedules', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${getAccessToken()}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(scheduleData),
+      });
+      console.log('createEmployeeSchedule API response:', response);
+      return response;
+    } catch (error) {
+      console.error('createEmployeeSchedule API error:', error);
+      throw error;
+    }
   },
 
   // Cập nhật lịch ca làm việc
   updateEmployeeSchedule: async (id, scheduleData) => {
-    return apiCall(`api/v1/hr/employee-schedules/${id}`, {
+    return apiCall(`api/v1/employee-schedules/${id}`, {
       method: 'PUT',
       headers: {
         'Authorization': `Bearer ${getAccessToken()}`,
@@ -790,8 +801,178 @@ export const hrEmployeeScheduleAPI = {
 
   // Xóa lịch ca làm việc
   deleteEmployeeSchedule: async (id) => {
-    return apiCall(`api/v1/hr/employee-schedules/${id}`, {
+    return apiCall(`api/v1/employee-schedules/${id}`, {
       method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Xác nhận lịch làm việc
+  confirmSchedule: async (id) => {
+    return apiCall(`api/v1/employee-schedules/${id}/confirm`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Check-in
+  checkIn: async (id) => {
+    return apiCall(`api/v1/employee-schedules/${id}/check-in`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Bắt đầu nghỉ giải lao
+  startBreak: async (id) => {
+    return apiCall(`api/v1/employee-schedules/${id}/start-break`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Kết thúc nghỉ giải lao
+  endBreak: async (id) => {
+    return apiCall(`api/v1/employee-schedules/${id}/end-break`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Check-out
+  checkOut: async (id) => {
+    return apiCall(`api/v1/employee-schedules/${id}/check-out`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Lấy lịch làm việc theo nhân viên và ngày
+  getScheduleByEmployeeAndDate: async (employeeId, date) => {
+    return apiCall(`api/v1/employee-schedules/employee/${employeeId}/date/${date}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Lấy lịch làm việc theo nhân viên và khoảng thời gian
+  getScheduleByEmployeeAndDateRange: async (employeeId, startDate, endDate) => {
+    return apiCall(`api/v1/employee-schedules/employee/${employeeId}/date-range?startDate=${startDate}&endDate=${endDate}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Lấy lịch làm việc hôm nay theo nhân viên
+  getTodayScheduleByEmployee: async (employeeId) => {
+    return apiCall(`api/v1/employee-schedules/employee/${employeeId}/today`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Lấy lịch làm việc theo ca và ngày
+  getScheduleByShiftAndDate: async (shiftId, date) => {
+    return apiCall(`api/v1/employee-schedules/shift/${shiftId}/date/${date}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Lấy lịch làm đang có theo id nhân viên
+  getActiveScheduleByEmployee: async (employeeId) => {
+    return apiCall(`api/v1/employee-schedules/employee/${employeeId}/active`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Lấy lịch overtime của nhân viên theo id
+  getOvertimeScheduleByEmployee: async (employeeId) => {
+    return apiCall(`api/v1/employee-schedules/employee/${employeeId}/overtime`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Tính giờ làm việc trong tháng của nhân viên
+  getEmployeeWorkHoursByMonth: async (employeeId, year, month) => {
+    return apiCall(`api/v1/employee-schedules/employee/${employeeId}/work-hours/${year}/${month}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Tính giờ tăng ca theo tháng của nhân viên
+  getEmployeeOvertimeHoursByMonth: async (employeeId, year, month) => {
+    return apiCall(`api/v1/employee-schedules/employee/${employeeId}/overtime-hours/${year}/${month}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Lấy lịch làm đang có theo id nhân viên
+  getActiveScheduleByEmployee: async (employeeId) => {
+    return apiCall(`api/v1/employee-schedules/employee/${employeeId}/active`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Lấy lịch overtime của nhân viên theo id
+  getOvertimeScheduleByEmployee: async (employeeId) => {
+    return apiCall(`api/v1/employee-schedules/employee/${employeeId}/overtime`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Tính giờ làm việc trong tháng của nhân viên
+  getEmployeeWorkHours: async (employeeId, year, month) => {
+    return apiCall(`api/v1/employee-schedules/employee/${employeeId}/work-hours/${year}/${month}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Tính giờ tăng ca theo tháng của nhân viên
+  getEmployeeOvertimeHours: async (employeeId, year, month) => {
+    return apiCall(`api/v1/employee-schedules/employee/${employeeId}/overtime-hours/${year}/${month}`, {
+      method: 'GET',
       headers: {
         'Authorization': `Bearer ${getAccessToken()}`,
       },
@@ -803,7 +984,87 @@ export const hrEmployeeScheduleAPI = {
 export const hrWorkShiftAPI = {
   // Lấy danh sách ca làm việc
   getWorkShifts: async () => {
-    return apiCall('api/v1/hr/work-shifts', {
+    return apiCall('api/v1/work-shifts', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Lấy chi tiết ca làm việc theo ID
+  getWorkShiftById: async (id) => {
+    return apiCall(`api/v1/work-shifts/${id}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Lấy ca làm việc theo mã ca
+  getWorkShiftByCode: async (code) => {
+    return apiCall(`api/v1/work-shifts/code/${code}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Lấy ca làm việc đang active
+  getActiveWorkShifts: async () => {
+    return apiCall('api/v1/work-shifts/active', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Lấy ca làm việc theo department
+  getWorkShiftsByDepartment: async (departmentId) => {
+    return apiCall(`api/v1/work-shifts/department/${departmentId}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Lấy ca làm việc theo shift type
+  getWorkShiftsByType: async (shiftType) => {
+    return apiCall(`api/v1/work-shifts/type/${shiftType}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Lấy ca làm việc hiện tại
+  getCurrentWorkShifts: async () => {
+    return apiCall('api/v1/work-shifts/current', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Lấy ca làm việc cuối tuần
+  getWeekendWorkShifts: async () => {
+    return apiCall('api/v1/work-shifts/weekend', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Lấy ca làm việc ngày lễ
+  getHolidayWorkShifts: async () => {
+    return apiCall('api/v1/work-shifts/holiday', {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${getAccessToken()}`,
@@ -813,7 +1074,7 @@ export const hrWorkShiftAPI = {
 
   // Tạo ca làm việc mới
   createWorkShift: async (shiftData) => {
-    return apiCall('api/v1/hr/work-shifts', {
+    return apiCall('api/v1/work-shifts', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${getAccessToken()}`,
@@ -824,7 +1085,7 @@ export const hrWorkShiftAPI = {
 
   // Cập nhật ca làm việc
   updateWorkShift: async (id, shiftData) => {
-    return apiCall(`api/v1/hr/work-shifts/${id}`, {
+    return apiCall(`api/v1/work-shifts/${id}`, {
       method: 'PUT',
       headers: {
         'Authorization': `Bearer ${getAccessToken()}`,
@@ -835,7 +1096,7 @@ export const hrWorkShiftAPI = {
 
   // Xóa ca làm việc
   deleteWorkShift: async (id) => {
-    return apiCall(`api/v1/hr/work-shifts/${id}`, {
+    return apiCall(`api/v1/work-shifts/${id}`, {
       method: 'DELETE',
       headers: {
         'Authorization': `Bearer ${getAccessToken()}`,
