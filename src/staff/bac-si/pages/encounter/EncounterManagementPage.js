@@ -1,20 +1,35 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './EncounterManagementPage.css';
 import {
     FiRefreshCw, FiUser, FiClock, FiActivity, FiCalendar,
-    FiAlertCircle, FiCheckCircle, FiMapPin, FiFileText
+    FiAlertCircle, FiCheckCircle, FiMapPin, FiFileText, FiSearch, FiFilter,
+    FiEye, FiX, FiHeart, FiEdit, FiCamera, FiPlusCircle
 } from 'react-icons/fi';
 import { doctorEncounterAPI } from '../../../../services/staff/doctorAPI';
 
 const EncounterManagementPage = () => {
+    const navigate = useNavigate();
     const [encounters, setEncounters] = useState([]);
+    const [allEncounters, setAllEncounters] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+
+    // Filter states
+    const [searchName, setSearchName] = useState('');
+    const [filterDate, setFilterDate] = useState('');
+    const [filterType, setFilterType] = useState('ALL');
+    const [filterStatus, setFilterStatus] = useState('ALL');
 
     // Load encounters on component mount
     useEffect(() => {
         fetchEncounters();
     }, []);
+
+    // Apply filters when filter states change
+    useEffect(() => {
+        applyFilters();
+    }, [searchName, filterDate, filterType, filterStatus, allEncounters]);
 
     const fetchEncounters = async () => {
         try {
@@ -32,6 +47,7 @@ const EncounterManagementPage = () => {
             const response = await doctorEncounterAPI.getEncountersByDoctor(doctorId);
 
             if (response && response.data) {
+                setAllEncounters(response.data);
                 setEncounters(response.data);
             }
         } catch (err) {
@@ -40,6 +56,55 @@ const EncounterManagementPage = () => {
         } finally {
             setLoading(false);
         }
+    };
+
+    const applyFilters = () => {
+        let filtered = [...allEncounters];
+
+        // Filter by name
+        if (searchName.trim()) {
+            filtered = filtered.filter(encounter =>
+                encounter.patientName?.toLowerCase().includes(searchName.toLowerCase())
+            );
+        }
+
+        // Filter by date
+        if (filterDate) {
+            filtered = filtered.filter(encounter => {
+                if (!encounter.startDatetime) return false;
+
+                try {
+                    const encounterDate = new Date(encounter.startDatetime);
+                    // Check if date is valid
+                    if (isNaN(encounterDate.getTime())) return false;
+
+                    const encounterDateStr = encounterDate.toISOString().split('T')[0];
+                    return encounterDateStr === filterDate;
+                } catch (error) {
+                    console.error('Error parsing date:', error);
+                    return false;
+                }
+            });
+        }
+
+        // Filter by type
+        if (filterType !== 'ALL') {
+            filtered = filtered.filter(encounter => encounter.encounterType === filterType);
+        }
+
+        // Filter by status
+        if (filterStatus !== 'ALL') {
+            filtered = filtered.filter(encounter => encounter.status === filterStatus);
+        }
+
+        setEncounters(filtered);
+    };
+
+    const handleResetFilters = () => {
+        setSearchName('');
+        setFilterDate('');
+        setFilterType('ALL');
+        setFilterStatus('ALL');
     };
 
     const formatDateTime = (dateTimeString) => {
@@ -56,8 +121,11 @@ const EncounterManagementPage = () => {
 
     const getStatusBadge = (status) => {
         const statusMap = {
+            'ARRIVED': { class: 'badge-arrived', icon: <FiCheckCircle />, text: 'Đã đến' },
+            'PLANNED': { class: 'badge-planned', icon: <FiCalendar />, text: 'Đã lên lịch' },
             'CHECKED_IN': { class: 'badge-checked-in', icon: <FiCheckCircle />, text: 'Đã check-in' },
             'IN_PROGRESS': { class: 'badge-in-progress', icon: <FiActivity />, text: 'Đang khám' },
+            'FINISHED': { class: 'badge-finished', icon: <FiCheckCircle />, text: 'Đã hoàn thành' },
             'COMPLETED': { class: 'badge-completed', icon: <FiCheckCircle />, text: 'Hoàn thành' },
             'CANCELLED': { class: 'badge-cancelled', icon: <FiAlertCircle />, text: 'Đã hủy' },
             'DISCHARGED': { class: 'badge-discharged', icon: <FiCheckCircle />, text: 'Đã xuất viện' },
@@ -82,6 +150,10 @@ const EncounterManagementPage = () => {
         return typeMap[type] || type;
     };
 
+    const handleViewDetail = (encounter) => {
+        navigate(`/staff/bac-si/encounter-detail/${encounter.encounterId}`);
+    };
+
     return (
         <div className="encounter-management-page">
             {/* Page Header */}
@@ -95,6 +167,76 @@ const EncounterManagementPage = () => {
                     {loading ? 'Đang tải...' : 'Làm mới'}
                 </button>
             </div>
+
+            {/* Filter Section */}
+            {!loading && allEncounters.length > 0 && (
+                <div className="filter-section">
+                    <div className="filter-header">
+                        <FiFilter />
+                        <h3>Bộ lọc</h3>
+                    </div>
+                    <div className="filter-controls">
+                        <div className="filter-group">
+                            <label>Tìm theo tên bệnh nhân</label>
+                            <div className="search-input">
+                                <FiSearch />
+                                <input
+                                    type="text"
+                                    placeholder="Nhập tên bệnh nhân..."
+                                    value={searchName}
+                                    onChange={(e) => setSearchName(e.target.value)}
+                                />
+                            </div>
+                        </div>
+                        <div className="filter-group">
+                            <label>Lọc theo ngày</label>
+                            <input
+                                type="date"
+                                value={filterDate}
+                                onChange={(e) => setFilterDate(e.target.value)}
+                            />
+                        </div>
+                        <div className="filter-group">
+                            <label>Phân loại</label>
+                            <select
+                                value={filterType}
+                                onChange={(e) => setFilterType(e.target.value)}
+                            >
+                                <option value="ALL">Tất cả</option>
+                                <option value="OUTPATIENT">Ngoại trú</option>
+                                <option value="INPATIENT">Nội trú</option>
+                                <option value="EMERGENCY">Cấp cứu</option>
+                            </select>
+                        </div>
+                        <div className="filter-group">
+                            <label>Trạng thái</label>
+                            <select
+                                value={filterStatus}
+                                onChange={(e) => setFilterStatus(e.target.value)}
+                            >
+                                <option value="ALL">Tất cả</option>
+                                <option value="ARRIVED">Đã đến</option>
+                                <option value="PLANNED">Đã lên lịch</option>
+                                <option value="CHECKED_IN">Đã check-in</option>
+                                <option value="IN_PROGRESS">Đang khám</option>
+                                <option value="FINISHED">Đã hoàn thành</option>
+                                <option value="COMPLETED">Hoàn thành</option>
+                                <option value="CANCELLED">Đã hủy</option>
+                                <option value="DISCHARGED">Đã xuất viện</option>
+                            </select>
+                        </div>
+                        <div className="filter-group">
+                            <label>&nbsp;</label>
+                            <button className="btn-reset-filter" onClick={handleResetFilters}>
+                                Đặt lại
+                            </button>
+                        </div>
+                    </div>
+                    <div className="filter-summary">
+                        <span>Hiển thị {encounters.length} / {allEncounters.length} encounters</span>
+                    </div>
+                </div>
+            )}
 
             {/* Error Message */}
             {error && (
@@ -112,11 +254,22 @@ const EncounterManagementPage = () => {
                 </div>
             )}
 
-            {/* Encounters List */}
-            {!loading && encounters.length === 0 && !error && (
+            {/* Empty State */}
+            {!loading && encounters.length === 0 && allEncounters.length === 0 && !error && (
                 <div className="empty-state">
                     <FiFileText />
                     <p>Không có encounter nào</p>
+                </div>
+            )}
+
+            {/* No Results After Filter */}
+            {!loading && encounters.length === 0 && allEncounters.length > 0 && (
+                <div className="empty-state">
+                    <FiFileText />
+                    <p>Không tìm thấy encounter nào phù hợp với bộ lọc</p>
+                    <button className="btn-reset-filter" onClick={handleResetFilters}>
+                        Đặt lại bộ lọc
+                    </button>
                 </div>
             )}
 
@@ -213,6 +366,13 @@ const EncounterManagementPage = () => {
                                         </span>
                                     )}
                                 </div>
+                                <button
+                                    className="btn-view-detail"
+                                    onClick={() => handleViewDetail(encounter)}
+                                >
+                                    <FiEye />
+                                    Xem chi tiết
+                                </button>
                             </div>
                         </div>
                     ))}
@@ -246,6 +406,8 @@ const EncounterManagementPage = () => {
                     </div>
                 </div>
             )}
+
+
         </div>
     );
 };

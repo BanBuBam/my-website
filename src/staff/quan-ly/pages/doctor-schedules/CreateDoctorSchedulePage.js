@@ -162,10 +162,10 @@ const CreateDoctorSchedulePage = () => {
 
             if (response && response.data) {
                 setSuccess('Tạo lịch làm việc bác sĩ thành công!');
-                navigate('/staff/admin/doctor-schedules');
+                // Chờ 2 giây để hiển thị thông báo trước khi chuyển trang
                 setTimeout(() => {
                     navigate('/staff/admin/doctor-schedules');
-                }, 1500);
+                }, 2000);
             }
         } catch (err) {
             console.error('Error creating doctor schedule:', err);

@@ -25,6 +25,7 @@ const StaffRoutes = () => {
       <Route path="dieu-duong/*" element={<NurseRoutes />} />
       <Route path="ky-thuat-vien/*" element={<LabTechnicianRoutes />} />
       <Route path="hr/*" element={<HRRoutes />} />
+      <Route path="admin/*" element={<AdminRoutes />} />
 
     </Routes>
   );

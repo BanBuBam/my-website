@@ -35,27 +35,26 @@ const apiCall = async (endpoint, options = {}) => {
   }
 };
 
-// Hàm helper để lấy token (sử dụng staffAccessToken từ login chung)
-const getAccessToken = () => localStorage.getItem('staffAccessToken');
-const getRefreshToken = () => localStorage.getItem('staffRefreshToken');
+const getAccessToken = () => localStorage.getItem('hrAccessToken');
+const getRefreshToken = () => localStorage.getItem('hrRefreshToken');
 
 // Hàm helper để lưu token
 export const saveTokens = (accessToken, refreshToken) => {
-  localStorage.setItem('staffAccessToken', accessToken);
-  localStorage.setItem('staffRefreshToken', refreshToken);
+  localStorage.setItem('hrAccessToken', accessToken);
+  localStorage.setItem('hrRefreshToken', refreshToken);
 };
 
 // Hàm helper để xóa token
 export const clearTokens = () => {
-  localStorage.removeItem('staffAccessToken');
-  localStorage.removeItem('staffRefreshToken');
+  localStorage.removeItem('hrAccessToken');
+  localStorage.removeItem('hrRefreshToken');
 };
 
 // API Authentication cho Admin
 export const adminAuthAPI = {
   // Đăng nhập
   login: async (email, password) => {
-    const response = await apiCall('api/v1/admin/auth/login', {
+    const response = await apiCall('api/v1/auth/login', {
       method: 'POST',
       body: JSON.stringify({ email, password }),
     });
@@ -70,7 +69,7 @@ export const adminAuthAPI = {
   // Đăng xuất
   logout: async () => {
     clearTokens();
-    return apiCall('api/v1/admin/auth/logout', {
+    return apiCall('api/v1/auth/logout', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${getAccessToken()}`,
@@ -400,6 +399,86 @@ export const adminRoleAPI = {
   },
 };
 
+// API Quản lý yêu cầu nhập viện (Admission Requests)
+export const adminAdmissionRequestAPI = {
+  // Tạo yêu cầu nhập viện
+  createAdmissionRequest: async (requestData) => {
+    return apiCall('api/v1/admission-requests', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+      body: JSON.stringify(requestData),
+    });
+  },
+
+  // Lấy danh sách yêu cầu chờ xác nhận
+  getPendingRequests: async () => {
+    return apiCall('api/v1/admission-requests/pending', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Lấy danh sách yêu cầu cấp cứu
+  getEmergencyRequests: async () => {
+    return apiCall('api/v1/admission-requests/emergency', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Lấy danh sách yêu cầu ưu tiên cao
+  getHighPriorityRequests: async () => {
+    return apiCall('api/v1/admission-requests/high-priority', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Lấy yêu cầu theo encounter ID
+  getRequestByEncounter: async (encounterId) => {
+    return apiCall(`api/v1/admission-requests/encounter/${encounterId}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Phê duyệt yêu cầu nhập viện
+  approveRequest: async (admissionRequestId, approvalNotes) => {
+    const params = new URLSearchParams();
+    if (approvalNotes) params.append('approvalNotes', approvalNotes);
+
+    return apiCall(`api/v1/admission-requests/${admissionRequestId}/approve?${params.toString()}`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Từ chối yêu cầu nhập viện
+  rejectRequest: async (admissionRequestId, rejectionNotes) => {
+    const params = new URLSearchParams();
+    if (rejectionNotes) params.append('rejectionNotes', rejectionNotes);
+
+    return apiCall(`api/v1/admission-requests/${admissionRequestId}/reject?${params.toString()}`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+};
+
 export default {
   adminAuthAPI,
   adminDashboardAPI,
@@ -411,5 +490,6 @@ export default {
   adminServiceAPI,
   adminReportAPI,
   adminRoleAPI,
+  adminAdmissionRequestAPI,
 };
 

@@ -1,0 +1,3611 @@
+{
+	"info": {
+		"_postman_id": "d1f387a3-359d-4696-8d43-509114c698b6",
+		"name": "🏥 OUTPATIENT WORKFLOW - Complete End-to-End",
+		"description": "Complete outpatient workflow supporting 2 real-world scenarios\n\n**WORKFLOW 1 - With Lab/Imaging (Complex Case):**\n\n1. Check-in → ARRIVED\n    \n2. Record Vital Signs → IN_PROGRESS\n    \n3. Create Clinical Note (DRAFT) - Initial assessment\n    \n4. Order Lab Tests (OPTIONAL)\n    \n5. Order Imaging (OPTIONAL)\n    \n6. Perform Lab Tests → Get Results\n    \n7. Perform Imaging → Get Results\n    \n8. Update Clinical Note with results\n    \n9. Sign Clinical Note → FINISHED\n    \n10. Create & Sign Prescription\n    \n11. Payment\n    \n12. Discharge → COMPLETED\n    \n\n**WORKFLOW 2 - Without Lab/Imaging (Simple Case):**\n\n1. Check-in → ARRIVED\n    \n2. Record Vital Signs → IN_PROGRESS\n    \n3. Create Clinical Note (DRAFT) - Clinical examination\n    \n4. Sign Clinical Note → FINISHED\n    \n5. Create & Sign Prescription\n    \n6. Payment\n    \n7. Discharge → COMPLETED\n    \n\n**Workflow Steps:**  \n0\\. Setup - Authentication (3 requests)\n\n1. Patient Booking (2 requests)\n    \n2. Receptionist Confirm Booking (5 requests)\n    \n3. Patient Check-in (3 requests)\n    \n4. Doctor - Record Vital Signs (2 requests)\n    \n5. Doctor - Clinical Note (4 requests) ⭐ MUST CREATE FIRST\n    \n6. Doctor - Lab Test Orders (6 requests) - OPTIONAL for Workflow 1\n    \n7. Doctor - Imaging Orders (6 requests) - OPTIONAL for Workflow 1\n    \n8. Doctor - Prescription (2 requests)\n    \n9. Receptionist - Payment (5 requests)\n    \n10. Receptionist - Discharge (2 requests)\n    \n\n**Total Requests:** 40\n\n**Key Features:**  \n✅ Clinical Note created BEFORE Lab/Imaging orders (proper medical workflow)  \n✅ Lab and Imaging are OPTIONAL - skip for simple cases  \n✅ Auto-trigger: Vital Signs → IN_PROGRESS, Clinical Note Signed → FINISHED  \n✅ Search bookings by patient name/code  \n✅ Auto-save all IDs for workflow continuity\n\n**Base URL:** [http://localhost:8080](http://localhost:8080)  \n**Version:** 4.0  \n**Date:** 2025-10-23",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "49252465",
+		"_collection_link": "https://trinitycare2003-8685101.postman.co/workspace/Care-Trinity's-Workspace~acea7da0-436e-4567-8436-cfb6136c2cea/collection/49252465-d1f387a3-359d-4696-8d43-509114c698b6?action=share&source=collection_link&creator=49252465"
+	},
+	"item": [
+		{
+			"name": "0️⃣ Setup - Authentication",
+			"item": [
+				{
+					"name": "0.1 Login as Patient",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    var jsonData = pm.response.json();",
+									"    if (jsonData.data && jsonData.data.token) {",
+									"        pm.environment.set('patient_token', jsonData.data.token);",
+									"        pm.environment.set('access_token', jsonData.data.token);",
+									"        console.log('✅ Patient token saved');",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"linhthuc486239A@gmail.com\",\n  \"password\": \"123456\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/patient/auth/login",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"patient",
+								"auth",
+								"login"
+							]
+						},
+						"description": "Login as patient to get access token"
+					},
+					"response": []
+				},
+				{
+					"name": "0.2 Login as Receptionist",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    var jsonData = pm.response.json();",
+									"    if (jsonData.data && jsonData.data.token) {",
+									"        pm.environment.set('receptionist_token', jsonData.data.token);",
+									"        console.log('✅ Receptionist token saved');",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"reception1\",\n    \"password\": \"Password123!\"\n}\n"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/auth/login",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"auth",
+								"login"
+							]
+						},
+						"description": "Login as receptionist to get access token"
+					},
+					"response": []
+				},
+				{
+					"name": "0.3 Login as Doctor",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    var jsonData = pm.response.json();",
+									"    if (jsonData.data && jsonData.data.token) {",
+									"        pm.environment.set('doctor_token', jsonData.data.token);",
+									"        console.log('✅ Doctor token saved');",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    // \"username\": \"nguyenvsanf\",\n    \"username\": \"doctor3\",\n    \"password\": \"Password123!\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/auth/login",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"auth",
+								"login"
+							]
+						},
+						"description": "Login as doctor to get access token"
+					},
+					"response": [
+						{
+							"name": "0.3 Login as Doctor",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    // \"username\": \"nguyenvsanf\",\n    \"username\": \"doctor3\",\n    \"password\": \"Password123!\"\n}"
+								},
+								"url": {
+									"raw": "{{baseUrl}}/api/v1/auth/login",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"auth",
+										"login"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Vary",
+									"value": "Access-Control-Request-Method"
+								},
+								{
+									"key": "Vary",
+									"value": "Access-Control-Request-Headers"
+								},
+								{
+									"key": "X-Content-Type-Options",
+									"value": "nosniff"
+								},
+								{
+									"key": "X-XSS-Protection",
+									"value": "0"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, no-store, max-age=0, must-revalidate"
+								},
+								{
+									"key": "Pragma",
+									"value": "no-cache"
+								},
+								{
+									"key": "Expires",
+									"value": "0"
+								},
+								{
+									"key": "X-Frame-Options",
+									"value": "DENY"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Date",
+									"value": "Thu, 30 Oct 2025 08:09:45 GMT"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=60"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"message\": \"Login successful\",\n    \"status\": \"OK\",\n    \"data\": {\n        \"employeeAccountId\": 110,\n        \"claims\": {\n            \"employeeId\": 106,\n            \"employeeCode\": \"DOC00629797\",\n            \"fullName\": \"Quang Hải Đăng Nguyễn\",\n            \"department\": \"General Medicine\",\n            \"specialization\": \"Bệnh viện\",\n            \"tokenType\": \"ACCESS_TOKEN\",\n            \"roles\": [\n                \"DOCTOR\"\n            ]\n        },\n        \"accesstoken\": \"eyJhbGciOiJIUzI1NiJ9.eyJyb2xlcyI6WyJET0NUT1IiXSwiZW1wbG95ZWVJZCI6MTA2LCJzZXNzaW9uSWQiOiJzZXNzaW9uXzExMF8xNzYxODExNzg1NDM4IiwidG9rZW5UeXBlIjoiQUNDRVNTX1RPS0VOIiwidXNlcklkIjoxMTAsInN1YiI6ImRvY3RvcjMiLCJpc3MiOiJIb3NwaXRhbC1TeXN0ZW0iLCJpYXQiOjE3NjE4MTE3ODUsImV4cCI6MTc2MjE3MTc4NX0._gpJqH9JYyLgQNG0lMe6TdOgf7_pX1HgYWQ6_ZU3liI\",\n        \"refreshtoken\": \"eyJhbGciOiJIUzI1NiJ9.eyJlbXBsb3llZUlkIjoxMDYsImVtcGxveWVlQ29kZSI6IkRPQzAwNjI5Nzk3IiwiZnVsbE5hbWUiOiJRdWFuZyBI4bqjaSDEkMSDbmcgTmd1eeG7hW4iLCJkZXBhcnRtZW50IjoiR2VuZXJhbCBNZWRpY2luZSIsInNwZWNpYWxpemF0aW9uIjoiQuG7h25oIHZp4buHbiIsInRva2VuVHlwZSI6IlJFRlJFU0hfVE9LRU4iLCJzdWIiOiJkb2N0b3IzIiwiaXNzIjoiSG9zcGl0YWwtU3lzdGVtIiwiaWF0IjoxNzYxODExNzg1LCJleHAiOjE3NjI0MTY1ODV9.DyR_CTW2VlCDN3Mht9chJwoueUmoiFq1aRmtwlhS7cE\"\n    },\n    \"code\": 200\n}"
+						}
+					]
+				},
+				{
+					"name": "0.4 Login as Lab Technician",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    // \"username\": \"nguyenvsanf\",\r\n    \"username\": \"labtech1\",\r\n    \"password\": \"Password123!\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/auth/login",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "Authentication for different user roles"
+		},
+		{
+			"name": "1️⃣ Patient - Create Booking",
+			"item": [
+				{
+					"name": "1.1 Get Available Slots",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    var jsonData = pm.response.json();",
+									"    if (jsonData.data && jsonData.data.length > 0) {",
+									"        var firstSlot = jsonData.data[0];",
+									"        pm.environment.set('doctor_employee_id', firstSlot.employeeId);",
+									"        pm.environment.set('slot_datetime', firstSlot.startTime);",
+									"        console.log('✅ Doctor ID and slot saved');",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{patient_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/patient/bookings/available-slots?departmentId=1&date=2025-10-25",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"patient",
+								"bookings",
+								"available-slots"
+							],
+							"query": [
+								{
+									"key": "departmentId",
+									"value": "1"
+								},
+								{
+									"key": "date",
+									"value": "2025-10-25"
+								}
+							]
+						},
+						"description": "Get available time slots for booking"
+					},
+					"response": []
+				},
+				{
+					"name": "1.2 Create Booking",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    var jsonData = pm.response.json();",
+									"    if (jsonData.data && jsonData.data.bookingId) {",
+									"        pm.environment.set('booking_id', jsonData.data.bookingId);",
+									"        console.log('✅ Booking ID saved:', jsonData.data.bookingId);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{patient_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"doctorEmployeeId\": 3,\n    \"scheduledDatetime\": \"2025-10-25T09:00:00\",\n    \"reason\": \"Khám tổng quát\",\n    \"symptoms\": \"Đau đầu, chóng mặt\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/patient/bookings",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"patient",
+								"bookings"
+							]
+						},
+						"description": "Patient creates booking (status: PENDING)"
+					},
+					"response": []
+				}
+			],
+			"description": "Patient creates appointment booking"
+		},
+		{
+			"name": "2️⃣ Receptionist - Confirm Booking",
+			"item": [
+				{
+					"name": "2.1 Search Bookings by Patient Name",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    var jsonData = pm.response.json();",
+									"    if (jsonData.data && jsonData.data.content && jsonData.data.content.length > 0) {",
+									"        var firstBooking = jsonData.data.content[0];",
+									"        pm.environment.set('booking_id', firstBooking.bookingId);",
+									"        console.log('✅ Found booking ID:', firstBooking.bookingId);",
+									"        console.log('   Patient:', firstBooking.patientName);",
+									"        console.log('   Status:', firstBooking.status);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{receptionist_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/bookings/search?keyword=Trần&page=0&size=20",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"bookings",
+								"search"
+							],
+							"query": [
+								{
+									"key": "keyword",
+									"value": "Trần",
+									"description": "Search by patient name or patient code"
+								},
+								{
+									"key": "page",
+									"value": "0"
+								},
+								{
+									"key": "size",
+									"value": "20"
+								}
+							]
+						},
+						"description": "Search bookings by patient name or patient code (real-world scenario - receptionist doesn't know booking ID)"
+					},
+					"response": [
+						{
+							"name": "2.1 Search Bookings by Patient Name",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/api/v1/bookings/search?keyword=Trần&page=0&size=20",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"bookings",
+										"search"
+									],
+									"query": [
+										{
+											"key": "keyword",
+											"value": "Trần",
+											"description": "Search by patient name or patient code"
+										},
+										{
+											"key": "page",
+											"value": "0"
+										},
+										{
+											"key": "size",
+											"value": "20"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Vary",
+									"value": "Access-Control-Request-Method"
+								},
+								{
+									"key": "Vary",
+									"value": "Access-Control-Request-Headers"
+								},
+								{
+									"key": "X-Content-Type-Options",
+									"value": "nosniff"
+								},
+								{
+									"key": "X-XSS-Protection",
+									"value": "0"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, no-store, max-age=0, must-revalidate"
+								},
+								{
+									"key": "Pragma",
+									"value": "no-cache"
+								},
+								{
+									"key": "Expires",
+									"value": "0"
+								},
+								{
+									"key": "X-Frame-Options",
+									"value": "DENY"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Date",
+									"value": "Sun, 26 Oct 2025 08:39:37 GMT"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=60"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"message\": \"Booking search completed successfully\",\n    \"status\": \"OK\",\n    \"data\": {\n        \"content\": [\n            {\n                \"bookingId\": 228,\n                \"patient\": {\n                    \"patientId\": 323,\n                    \"patientCode\": \"P087539111\",\n                    \"fullName\": \"Trần Thị Thục  Linh\",\n                    \"phoneNumber\": \"0351234567\",\n                    \"email\": \"linhthuc486239A@gmail.com\"\n                },\n                \"doctor\": {\n                    \"employeeId\": 30,\n                    \"employeeCode\": \"E0029\",\n                    \"fullName\": \"Emp No029\",\n                    \"specialization\": \"Internal Medicine\",\n                    \"phoneNumber\": \"0907100029\"\n                },\n                \"department\": {\n                    \"departmentId\": 4,\n                    \"departmentName\": \"Obstetrics\",\n                    \"hospitalName\": \"Hospital\"\n                },\n                \"scheduledDatetime\": \"2025-10-27T13:50:00\",\n                \"bookingSource\": \"ONLINE\",\n                \"status\": \"CONFIRMED\",\n                \"statusDescription\": \"Đã xác nhận\",\n                \"cancellationReason\": null,\n                \"createdAt\": \"2025-10-26T13:43:58.695487\",\n                \"updatedAt\": \"2025-10-26T13:47:28.510243\"\n            },\n            {\n                \"bookingId\": 229,\n                \"patient\": {\n                    \"patientId\": 324,\n                    \"patientCode\": \"P432866078\",\n                    \"fullName\": \"Nguyễn Trần Thế Anh\",\n                    \"phoneNumber\": \"0357760120\",\n                    \"email\": \"tphamquang227dang@gmail.com\"\n                },\n                \"doctor\": {\n                    \"employeeId\": 106,\n                    \"employeeCode\": \"DOC00629797\",\n                    \"fullName\": \"Quang Hải Đăng Nguyễn\",\n                    \"specialization\": \"Bệnh viện\",\n                    \"phoneNumber\": \"0801120520\"\n                },\n                \"department\": {\n                    \"departmentId\": 1,\n                    \"departmentName\": \"General Medicine\",\n                    \"hospitalName\": \"Hospital\"\n                },\n                \"scheduledDatetime\": \"2025-10-27T13:50:00\",\n                \"bookingSource\": \"ONLINE\",\n                \"status\": \"CONFIRMED\",\n                \"statusDescription\": \"Đã xác nhận\",\n                \"cancellationReason\": null,\n                \"createdAt\": \"2025-10-26T13:49:38.852997\",\n                \"updatedAt\": \"2025-10-26T14:12:07.022488\"\n            },\n            {\n                \"bookingId\": 230,\n                \"patient\": {\n                    \"patientId\": 324,\n                    \"patientCode\": \"P432866078\",\n                    \"fullName\": \"Nguyễn Trần Thế Anh\",\n                    \"phoneNumber\": \"0357760120\",\n                    \"email\": \"tphamquang227dang@gmail.com\"\n                },\n                \"doctor\": {\n                    \"employeeId\": 34,\n                    \"employeeCode\": \"E0033\",\n                    \"fullName\": \"Emp No033\",\n                    \"specialization\": \"Internal Medicine\",\n                    \"phoneNumber\": \"0907100033\"\n                },\n                \"department\": {\n                    \"departmentId\": 3,\n                    \"departmentName\": \"Pediatrics\",\n                    \"hospitalName\": \"Hospital\"\n                },\n                \"scheduledDatetime\": \"2025-10-27T10:40:00\",\n                \"bookingSource\": \"ONLINE\",\n                \"status\": \"CONFIRMED\",\n                \"statusDescription\": \"Đã xác nhận\",\n                \"cancellationReason\": null,\n                \"createdAt\": \"2025-10-26T14:26:21.51551\",\n                \"updatedAt\": \"2025-10-26T15:26:53.597119\"\n            },\n            {\n                \"bookingId\": 226,\n                \"patient\": {\n                    \"patientId\": 323,\n                    \"patientCode\": \"P087539111\",\n                    \"fullName\": \"Trần Thị Thục  Linh\",\n                    \"phoneNumber\": \"0351234567\",\n                    \"email\": \"linhthuc486239A@gmail.com\"\n                },\n                \"doctor\": {\n                    \"employeeId\": 2,\n                    \"employeeCode\": \"E0001\",\n                    \"fullName\": \"Emp No001\",\n                    \"specialization\": \"Internal Medicine\",\n                    \"phoneNumber\": \"0907100001\"\n                },\n                \"department\": {\n                    \"departmentId\": 1,\n                    \"departmentName\": \"General Medicine\",\n                    \"hospitalName\": \"Hospital\"\n                },\n                \"scheduledDatetime\": \"2025-10-22T14:00:00\",\n                \"bookingSource\": \"ONLINE\",\n                \"status\": \"CANCELLED\",\n                \"statusDescription\": \"Đã hủy\",\n                \"cancellationReason\": \"Auto-cancelled: No confirmation within 24 hours\",\n                \"createdAt\": \"2025-10-19T15:25:03.12767\",\n                \"updatedAt\": \"2025-10-21T02:00:00.172035\"\n            },\n            {\n                \"bookingId\": 227,\n                \"patient\": {\n                    \"patientId\": 323,\n                    \"patientCode\": \"P087539111\",\n                    \"fullName\": \"Trần Thị Thục  Linh\",\n                    \"phoneNumber\": \"0351234567\",\n                    \"email\": \"linhthuc486239A@gmail.com\"\n                },\n                \"doctor\": {\n                    \"employeeId\": 2,\n                    \"employeeCode\": \"E0001\",\n                    \"fullName\": \"Emp No001\",\n                    \"specialization\": \"Internal Medicine\",\n                    \"phoneNumber\": \"0907100001\"\n                },\n                \"department\": {\n                    \"departmentId\": 1,\n                    \"departmentName\": \"General Medicine\",\n                    \"hospitalName\": \"Hospital\"\n                },\n                \"scheduledDatetime\": \"2025-10-22T13:00:00\",\n                \"bookingSource\": \"ONLINE\",\n                \"status\": \"CANCELLED\",\n                \"statusDescription\": \"Đã hủy\",\n                \"cancellationReason\": \"kljhgfyuhkjhnbvfguyjbnhgjnm\",\n                \"createdAt\": \"2025-10-21T09:49:27.466075\",\n                \"updatedAt\": \"2025-10-21T09:50:35.6726\"\n            },\n            {\n                \"bookingId\": 225,\n                \"patient\": {\n                    \"patientId\": 323,\n                    \"patientCode\": \"P087539111\",\n                    \"fullName\": \"Trần Thị Thục  Linh\",\n                    \"phoneNumber\": \"0351234567\",\n                    \"email\": \"linhthuc486239A@gmail.com\"\n                },\n                \"doctor\": {\n                    \"employeeId\": 14,\n                    \"employeeCode\": \"E0013\",\n                    \"fullName\": \"Emp No013\",\n                    \"specialization\": \"Internal Medicine\",\n                    \"phoneNumber\": \"0907100013\"\n                },\n                \"department\": {\n                    \"departmentId\": 3,\n                    \"departmentName\": \"Pediatrics\",\n                    \"hospitalName\": \"Hospital\"\n                },\n                \"scheduledDatetime\": \"2025-10-21T12:30:00\",\n                \"bookingSource\": \"ONLINE\",\n                \"status\": \"CANCELLED\",\n                \"statusDescription\": \"Đã hủy\",\n                \"cancellationReason\": \"Auto-cancelled: No confirmation within 24 hours\",\n                \"createdAt\": \"2025-10-19T15:23:39.033529\",\n                \"updatedAt\": \"2025-10-21T02:00:00.172035\"\n            },\n            {\n                \"bookingId\": 224,\n                \"patient\": {\n                    \"patientId\": 323,\n                    \"patientCode\": \"P087539111\",\n                    \"fullName\": \"Trần Thị Thục  Linh\",\n                    \"phoneNumber\": \"0351234567\",\n                    \"email\": \"linhthuc486239A@gmail.com\"\n                },\n                \"doctor\": {\n                    \"employeeId\": 18,\n                    \"employeeCode\": \"E0017\",\n                    \"fullName\": \"Emp No017\",\n                    \"specialization\": \"Internal Medicine\",\n                    \"phoneNumber\": \"0907100017\"\n                },\n                \"department\": {\n                    \"departmentId\": 2,\n                    \"departmentName\": \"Orthopedics\",\n                    \"hospitalName\": \"Hospital\"\n                },\n                \"scheduledDatetime\": \"2025-10-20T08:30:00\",\n                \"bookingSource\": \"ONLINE\",\n                \"status\": \"CANCELLED\",\n                \"statusDescription\": \"Đã hủy\",\n                \"cancellationReason\": \"đi khám chỗ khác, chờ chỗ này lâu quá\",\n                \"createdAt\": \"2025-10-19T14:52:08.608194\",\n                \"updatedAt\": \"2025-10-19T15:16:47.130935\"\n            }\n        ],\n        \"pageable\": {\n            \"pageNumber\": 0,\n            \"pageSize\": 20,\n            \"sort\": {\n                \"empty\": false,\n                \"unsorted\": false,\n                \"sorted\": true\n            },\n            \"offset\": 0,\n            \"unpaged\": false,\n            \"paged\": true\n        },\n        \"last\": true,\n        \"totalPages\": 1,\n        \"totalElements\": 7,\n        \"first\": true,\n        \"size\": 20,\n        \"number\": 0,\n        \"sort\": {\n            \"empty\": false,\n            \"unsorted\": false,\n            \"sorted\": true\n        },\n        \"numberOfElements\": 7,\n        \"empty\": false\n    },\n    \"code\": 200\n}"
+						}
+					]
+				},
+				{
+					"name": "2.2 Get Pending Bookings",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{receptionist_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/bookings/pending",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"bookings",
+								"pending"
+							]
+						},
+						"description": "Get all pending bookings waiting for confirmation"
+					},
+					"response": []
+				},
+				{
+					"name": "2.3 Get Booking Details",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{receptionist_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/bookings/{{booking_id}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"bookings",
+								"{{booking_id}}"
+							]
+						},
+						"description": "Get booking details by ID"
+					},
+					"response": []
+				},
+				{
+					"name": "2.4 Confirm Booking",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    console.log('✅ Booking confirmed - Encounter auto-created');",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{receptionist_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/bookings/{{booking_id}}/confirm",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"bookings",
+								"{{booking_id}}",
+								"confirm"
+							]
+						},
+						"description": "Confirm booking → Auto-create Encounter (PLANNED)"
+					},
+					"response": []
+				},
+				{
+					"name": "2.5 Get Encounter by Booking",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    var jsonData = pm.response.json();",
+									"    if (jsonData.data && jsonData.data.encounterId) {",
+									"        pm.environment.set('encounter_id', jsonData.data.encounterId);",
+									"        console.log('✅ Encounter ID saved:', jsonData.data.encounterId);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{receptionist_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/encounters/booking/{{booking_id}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"encounters",
+								"booking",
+								"{{booking_id}}"
+							]
+						},
+						"description": "Get encounter created from booking"
+					},
+					"response": [
+						{
+							"name": "2.5 Get Encounter by Booking",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/api/v1/encounters/booking/{{booking_id}}",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"encounters",
+										"booking",
+										"{{booking_id}}"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Vary",
+									"value": "Access-Control-Request-Method"
+								},
+								{
+									"key": "Vary",
+									"value": "Access-Control-Request-Headers"
+								},
+								{
+									"key": "X-Content-Type-Options",
+									"value": "nosniff"
+								},
+								{
+									"key": "X-XSS-Protection",
+									"value": "0"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, no-store, max-age=0, must-revalidate"
+								},
+								{
+									"key": "Pragma",
+									"value": "no-cache"
+								},
+								{
+									"key": "Expires",
+									"value": "0"
+								},
+								{
+									"key": "X-Frame-Options",
+									"value": "DENY"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Date",
+									"value": "Sun, 26 Oct 2025 08:40:19 GMT"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=60"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"message\": \"Encounter retrieved successfully.\",\n    \"status\": \"OK\",\n    \"data\": {\n        \"encounterId\": 323,\n        \"patientId\": 324,\n        \"patientName\": \"Nguyễn Trần Thế Anh\",\n        \"patientCode\": \"P432866078\",\n        \"encounterType\": \"OUTPATIENT\",\n        \"status\": \"PLANNED\",\n        \"startDatetime\": \"2025-10-27T10:40:00\",\n        \"endDatetime\": null,\n        \"departmentId\": 3,\n        \"departmentName\": \"Pediatrics\",\n        \"bookingId\": 230,\n        \"visitType\": null,\n        \"location\": null,\n        \"disposition\": null,\n        \"version\": 0,\n        \"createdByEmployeeId\": 126,\n        \"createdByEmployeeName\": \"Đình Ban Nguyễn\",\n        \"createdAt\": \"2025-10-26T15:26:53.640861\",\n        \"updatedAt\": \"2025-10-26T15:26:53.640871\",\n        \"nextPossibleActions\": [\n            \"CHECK_IN\"\n        ],\n        \"statusDescription\": \"Patient scheduled, waiting for check-in\",\n        \"canCheckIn\": true,\n        \"canDischarge\": false,\n        \"canCancel\": false\n    },\n    \"code\": 200\n}"
+						},
+						{
+							"name": "2.5 Get Encounter by Booking",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/api/v1/encounters/booking/{{booking_id}}",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"encounters",
+										"booking",
+										"{{booking_id}}"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Vary",
+									"value": "Access-Control-Request-Method"
+								},
+								{
+									"key": "Vary",
+									"value": "Access-Control-Request-Headers"
+								},
+								{
+									"key": "X-Content-Type-Options",
+									"value": "nosniff"
+								},
+								{
+									"key": "X-XSS-Protection",
+									"value": "0"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, no-store, max-age=0, must-revalidate"
+								},
+								{
+									"key": "Pragma",
+									"value": "no-cache"
+								},
+								{
+									"key": "Expires",
+									"value": "0"
+								},
+								{
+									"key": "X-Frame-Options",
+									"value": "DENY"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Date",
+									"value": "Sun, 26 Oct 2025 09:40:12 GMT"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=60"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"message\": \"Encounter retrieved successfully.\",\n    \"status\": \"OK\",\n    \"data\": {\n        \"encounterId\": 324,\n        \"patientId\": 324,\n        \"patientName\": \"Nguyễn Trần Thế Anh\",\n        \"patientCode\": \"P432866078\",\n        \"encounterType\": \"OUTPATIENT\",\n        \"status\": \"PLANNED\",\n        \"startDatetime\": \"2025-10-26T17:20:00\",\n        \"endDatetime\": null,\n        \"departmentId\": 5,\n        \"departmentName\": \"Emergency\",\n        \"bookingId\": 232,\n        \"visitType\": null,\n        \"location\": null,\n        \"disposition\": null,\n        \"version\": 0,\n        \"createdByEmployeeId\": 126,\n        \"createdByEmployeeName\": \"Đình Ban Nguyễn\",\n        \"createdAt\": \"2025-10-26T16:17:45.612432\",\n        \"updatedAt\": \"2025-10-26T16:17:45.612445\",\n        \"nextPossibleActions\": [\n            \"CHECK_IN\"\n        ],\n        \"statusDescription\": \"Patient scheduled, waiting for check-in\",\n        \"canCheckIn\": true,\n        \"canDischarge\": false,\n        \"canCancel\": false\n    },\n    \"code\": 200\n}"
+						}
+					]
+				},
+				{
+					"name": "Get Booking Detail",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{receptionist_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/bookings/{{booking_id}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"bookings",
+								"{{booking_id}}"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "Receptionist confirms booking and auto-creates encounter"
+		},
+		{
+			"name": "3️⃣ Receptionist - Check-in Patient",
+			"item": [
+				{
+					"name": "3.1 Get Confirmed Bookings",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{receptionist_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/bookings?status=CONFIRMED",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"bookings"
+							],
+							"query": [
+								{
+									"key": "status",
+									"value": "CONFIRMED"
+								}
+							]
+						},
+						"description": "Get all confirmed bookings ready for check-in"
+					},
+					"response": []
+				},
+				{
+					"name": "3.2 Check-in Patient",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    console.log('✅ Patient checked in - Encounter status: ARRIVED');",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{receptionist_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/encounters/{{encounter_id}}/checkin",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"encounters",
+								"{{encounter_id}}",
+								"checkin"
+							]
+						},
+						"description": "Check-in patient → Encounter: PLANNED → ARRIVED"
+					},
+					"response": [
+						{
+							"name": "3.2 Check-in Patient",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/api/v1/encounters/{{encounter_id}}/checkin",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"encounters",
+										"{{encounter_id}}",
+										"checkin"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Vary",
+									"value": "Access-Control-Request-Method"
+								},
+								{
+									"key": "Vary",
+									"value": "Access-Control-Request-Headers"
+								},
+								{
+									"key": "X-Content-Type-Options",
+									"value": "nosniff"
+								},
+								{
+									"key": "X-XSS-Protection",
+									"value": "0"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, no-store, max-age=0, must-revalidate"
+								},
+								{
+									"key": "Pragma",
+									"value": "no-cache"
+								},
+								{
+									"key": "Expires",
+									"value": "0"
+								},
+								{
+									"key": "X-Frame-Options",
+									"value": "DENY"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Date",
+									"value": "Sun, 26 Oct 2025 09:50:11 GMT"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=60"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"message\": \"Patient checked in successfully.\",\n    \"status\": \"OK\",\n    \"data\": {\n        \"encounterId\": 324,\n        \"patientId\": 324,\n        \"patientName\": \"Nguyễn Trần Thế Anh\",\n        \"patientCode\": \"P432866078\",\n        \"encounterType\": \"OUTPATIENT\",\n        \"status\": \"ARRIVED\",\n        \"startDatetime\": \"2025-10-26T16:50:11.744865\",\n        \"endDatetime\": null,\n        \"departmentId\": 5,\n        \"departmentName\": \"Emergency\",\n        \"bookingId\": 232,\n        \"visitType\": null,\n        \"location\": null,\n        \"disposition\": null,\n        \"version\": 0,\n        \"createdByEmployeeId\": 126,\n        \"createdByEmployeeName\": \"Đình Ban Nguyễn\",\n        \"createdAt\": \"2025-10-26T16:17:45.612432\",\n        \"updatedAt\": \"2025-10-26T16:17:45.612445\",\n        \"nextPossibleActions\": [\n            \"START_EXAMINATION\",\n            \"CANCEL\"\n        ],\n        \"statusDescription\": \"Patient checked in, waiting for examination\",\n        \"canCheckIn\": false,\n        \"canDischarge\": false,\n        \"canCancel\": true\n    },\n    \"code\": 200\n}"
+						}
+					]
+				},
+				{
+					"name": "3.3 Verify Encounter Status",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{receptionist_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/encounters/{{encounter_id}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"encounters",
+								"{{encounter_id}}"
+							]
+						},
+						"description": "Verify encounter status is ARRIVED"
+					},
+					"response": []
+				}
+			],
+			"description": "Receptionist checks in patient when they arrive"
+		},
+		{
+			"name": "4️⃣ Doctor - Record Vital Signs",
+			"item": [
+				{
+					"name": "Get Encounter for Test",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{adminToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/encounters/{{encounter_id}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"encounters",
+								"{{encounter_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Encounter by Doctor",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{doctorToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/encounters/doctor/{{doctorId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"encounters",
+								"doctor",
+								"{{doctorId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "4.1 Record Vital Signs",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    var jsonData = pm.response.json();",
+									"    if (jsonData.data && jsonData.data.vitalSignId) {",
+									"        pm.environment.set('vital_sign_id', jsonData.data.vitalSignId);",
+									"        console.log('✅ Vital signs recorded, ID:', jsonData.data.vitalSignId);",
+									"        console.log('Temperature:', jsonData.data.temperature, '°C');",
+									"        console.log('Blood Pressure:', jsonData.data.bloodPressureSystolic + '/' + jsonData.data.bloodPressureDiastolic, 'mmHg');",
+									"        console.log('Heart Rate:', jsonData.data.heartRate, 'bpm');",
+									"        console.log('SpO2:', jsonData.data.spO2, '%');",
+									"        console.log('BMI:', jsonData.data.bmi);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{doctor_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"temperature\": 36.8,\n    \"heartRate\": 75,\n    \"bloodPressureSystolic\": 120,\n    \"bloodPressureDiastolic\": 80,\n    \"spO2\": 98,\n    \"respiratoryRate\": 16,\n    \"heightCm\": 170,\n    \"weightKg\": 65,\n    \"painScore\": 2,\n    \"notes\": \"Chỉ số sinh tồn bình thường\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/encounters/{{encounter_id}}/vitals",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"encounters",
+								"{{encounter_id}}",
+								"vitals"
+							]
+						},
+						"description": "Record vital signs → Auto-trigger: Encounter ARRIVED → IN_PROGRESS"
+					},
+					"response": [
+						{
+							"name": "4.1 Record Vital Signs",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"temperature\": 36.8,\n    \"heartRate\": 75,\n    \"bloodPressureSystolic\": 120,\n    \"bloodPressureDiastolic\": 80,\n    \"spO2\": 98,\n    \"respiratoryRate\": 16,\n    \"heightCm\": 170,\n    \"weightKg\": 65,\n    \"painScore\": 2,\n    \"notes\": \"Chỉ số sinh tồn bình thường\"\n}"
+								},
+								"url": {
+									"raw": "{{baseUrl}}/api/v1/encounters/{{encounter_id}}/vitals",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"encounters",
+										"{{encounter_id}}",
+										"vitals"
+									]
+								}
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Vary",
+									"value": "Access-Control-Request-Method"
+								},
+								{
+									"key": "Vary",
+									"value": "Access-Control-Request-Headers"
+								},
+								{
+									"key": "X-Content-Type-Options",
+									"value": "nosniff"
+								},
+								{
+									"key": "X-XSS-Protection",
+									"value": "0"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, no-store, max-age=0, must-revalidate"
+								},
+								{
+									"key": "Pragma",
+									"value": "no-cache"
+								},
+								{
+									"key": "Expires",
+									"value": "0"
+								},
+								{
+									"key": "X-Frame-Options",
+									"value": "DENY"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 27 Oct 2025 07:56:30 GMT"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=60"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"message\": \"Vital signs recorded successfully.\",\n    \"status\": \"CREATED\",\n    \"data\": {\n        \"vitalSignId\": 310,\n        \"encounterId\": 324,\n        \"recorderEmployeeId\": 101,\n        \"recorderEmployeeName\": null,\n        \"recordDatetime\": \"2025-10-27T14:56:30.072229\",\n        \"temperature\": 36.8,\n        \"heartRate\": 75,\n        \"bloodPressureSystolic\": 120,\n        \"bloodPressureDiastolic\": 80,\n        \"spO2\": 98,\n        \"respiratoryRate\": 16,\n        \"heightCm\": 170,\n        \"weightKg\": 65,\n        \"bmi\": 22.49,\n        \"painScore\": 2,\n        \"abnormalFlags\": null,\n        \"notes\": \"Chỉ số sinh tồn bình thường\",\n        \"version\": 0,\n        \"updatedAt\": \"2025-10-27T14:56:30.075901\"\n    },\n    \"code\": 201\n}"
+						}
+					]
+				},
+				{
+					"name": "4.2 Get Vital Signs",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{doctor_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/encounters/{{encounter_id}}/vitals",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"encounters",
+								"{{encounter_id}}",
+								"vitals"
+							]
+						},
+						"description": "Get all vital signs for encounter"
+					},
+					"response": []
+				},
+				{
+					"name": "Check encounter status",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{adminToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "",
+								"value": "",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/encounters/{{encounter_id}}/status",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"encounters",
+								"{{encounter_id}}",
+								"status"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Check encounter status Copy",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/encounters/{{encounter_id}}/status",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"encounters",
+								"{{encounter_id}}",
+								"status"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "Doctor/Nurse records vital signs (temperature, BP, heart rate, SpO2, etc.)"
+		},
+		{
+			"name": "6️⃣ Doctor - Lab Test Orders (OPTIONAL)",
+			"item": [
+				{
+					"name": "Get All Medical Test for Encounter",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/medical-tests",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"medical-tests"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Lab Order for Encounter",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{labtechToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/encounters/{{encounter_id}}/lab-orders",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"encounters",
+								"{{encounter_id}}",
+								"lab-orders"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "6.1 Create Lab Test Order",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    var jsonData = pm.response.json();",
+									"    if (jsonData.data && jsonData.data.labTestOrderId) {",
+									"        pm.environment.set('lab_order_id', jsonData.data.labTestOrderId);",
+									"        console.log('✅ Lab order ID saved:', jsonData.data.labTestOrderId);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{doctor_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "// {\n//   \"medicalTestIds\": [\n//     4\n//   ],\n//   \"notes\": \"Tạo thử\",\n//   \"urgencyLevel\": \"STAT\",\n//   \"specimenType\": \"URINE\",\n//   \"clinicalInfo\": \"no\",\n//   \"priorityNotes\": \"string\"\n// }\n\n{\n  \"medicalTestIds\": [17, 23, 24],\n  \"urgencyLevel\": \"ROUTINE\",\n  \"specimenType\": \"BLOOD\",\n  \"clinicalInfo\": \"Khám sức khỏe định kỳ\",\n  \"notes\": \"Bệnh nhân nhịn ăn từ 8 giờ tối hôm qua\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/encounters/{{encounter_id}}/lab-orders",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"encounters",
+								"{{encounter_id}}",
+								"lab-orders"
+							]
+						},
+						"description": "Doctor orders lab tests (status: ORDERED)"
+					},
+					"response": []
+				},
+				{
+					"name": "6.2 Collect Specimen",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{doctor_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/lab-orders/{{lab_order_id}}/collect-specimen",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"lab-orders",
+								"{{lab_order_id}}",
+								"collect-specimen"
+							]
+						},
+						"description": "Nurse collects specimen (status: SPECIMEN_COLLECTED)"
+					},
+					"response": []
+				},
+				{
+					"name": "6.3 Receive Specimen",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{doctor_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/lab-orders/{{lab_order_id}}/receive-specimen",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"lab-orders",
+								"{{lab_order_id}}",
+								"receive-specimen"
+							]
+						},
+						"description": "Lab receives specimen (status: SPECIMEN_RECEIVED)"
+					},
+					"response": []
+				},
+				{
+					"name": "6.4 Enter Lab Results (for Lab Technician)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    var jsonData = pm.response.json();",
+									"    if (jsonData.data && jsonData.data.results && jsonData.data.results.length > 0) {",
+									"        pm.environment.set('lab_result_id', jsonData.data.results[0].labTestResultId);",
+									"        console.log('✅ Lab result ID saved');",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{doctor_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "// {\n//     \"results\": [\n//         {\n//             \"medicalTestId\": 11,\n//             \"resultValue\": \"5.2\",\n//             \"unit\": \"million/uL\",\n//             \"referenceRange\": \"4.5-5.5\",\n//             \"isAbnormal\": false\n//         }\n//     ]\n// }\n\n{\n  \"resultValue\": \"string\",\n  \"unit\": \"string\",\n  \"referenceRange\": \"string\",\n  \"notes\": \"string\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/lab-results/{{lab_result_id}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"lab-results",
+								"{{lab_result_id}}"
+							]
+						},
+						"description": "Lab technician enters results (status: RESULTED)"
+					},
+					"response": []
+				},
+				{
+					"name": "6.5 Verify Lab Results",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{doctor_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/lab-results/{{lab_result_id}}/verify",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"lab-results",
+								"{{lab_result_id}}",
+								"verify"
+							]
+						},
+						"description": "Doctor verifies results (status: VERIFIED)"
+					},
+					"response": []
+				},
+				{
+					"name": "6.6 Get Lab Results",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{doctor_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/lab-orders/{{lab_order_id}}/results",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"lab-orders",
+								"{{lab_order_id}}",
+								"results"
+							]
+						},
+						"description": "Get all lab results for order"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Pending Lab Results",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/lab-results/pending",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"lab-results",
+								"pending"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "New Request",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/api/v1/lab-results/pending",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"lab-results",
+										"pending"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Vary",
+									"value": "Access-Control-Request-Method"
+								},
+								{
+									"key": "Vary",
+									"value": "Access-Control-Request-Headers"
+								},
+								{
+									"key": "X-Content-Type-Options",
+									"value": "nosniff"
+								},
+								{
+									"key": "X-XSS-Protection",
+									"value": "0"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, no-store, max-age=0, must-revalidate"
+								},
+								{
+									"key": "Pragma",
+									"value": "no-cache"
+								},
+								{
+									"key": "Expires",
+									"value": "0"
+								},
+								{
+									"key": "X-Frame-Options",
+									"value": "DENY"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Date",
+									"value": "Fri, 31 Oct 2025 05:46:58 GMT"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=60"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"message\": \"Pending lab results retrieved successfully.\",\n    \"status\": \"OK\",\n    \"data\": [\n        {\n            \"labTestResultId\": 11,\n            \"labTestOrderId\": 130,\n            \"medicalTestId\": 13,\n            \"testName\": \"D-Dimer\",\n            \"resultValue\": null,\n            \"unit\": null,\n            \"referenceRange\": null,\n            \"notes\": null,\n            \"createdByEmployeeId\": 2,\n            \"createdByEmployeeName\": \"Emp No001\",\n            \"createdAt\": \"2025-09-06T13:58:41.224587\"\n        },\n        {\n            \"labTestResultId\": 12,\n            \"labTestOrderId\": 130,\n            \"medicalTestId\": 12,\n            \"testName\": \"C-Reactive Protein (CRP)\",\n            \"resultValue\": null,\n            \"unit\": null,\n            \"referenceRange\": null,\n            \"notes\": null,\n            \"createdByEmployeeId\": 2,\n            \"createdByEmployeeName\": \"Emp No001\",\n            \"createdAt\": \"2025-09-06T13:58:41.227464\"\n        },\n        {\n            \"labTestResultId\": 13,\n            \"labTestOrderId\": 131,\n            \"medicalTestId\": 13,\n            \"testName\": \"D-Dimer\",\n            \"resultValue\": null,\n            \"unit\": null,\n            \"referenceRange\": null,\n            \"notes\": null,\n            \"createdByEmployeeId\": 2,\n            \"createdByEmployeeName\": \"Emp No001\",\n            \"createdAt\": \"2025-09-06T17:39:49.575411\"\n        },\n        {\n            \"labTestResultId\": 14,\n            \"labTestOrderId\": 131,\n            \"medicalTestId\": 12,\n            \"testName\": \"C-Reactive Protein (CRP)\",\n            \"resultValue\": null,\n            \"unit\": null,\n            \"referenceRange\": null,\n            \"notes\": null,\n            \"createdByEmployeeId\": 2,\n            \"createdByEmployeeName\": \"Emp No001\",\n            \"createdAt\": \"2025-09-06T17:39:49.578009\"\n        },\n        {\n            \"labTestResultId\": 15,\n            \"labTestOrderId\": 133,\n            \"medicalTestId\": 11,\n            \"testName\": \"HbA1c\",\n            \"resultValue\": null,\n            \"unit\": null,\n            \"referenceRange\": null,\n            \"notes\": null,\n            \"createdByEmployeeId\": 86,\n            \"createdByEmployeeName\": \"Admin Hospital\",\n            \"createdAt\": \"2025-09-11T11:57:15.5752\"\n        },\n        {\n            \"labTestResultId\": 16,\n            \"labTestOrderId\": 133,\n            \"medicalTestId\": 12,\n            \"testName\": \"C-Reactive Protein (CRP)\",\n            \"resultValue\": null,\n            \"unit\": null,\n            \"referenceRange\": null,\n            \"notes\": null,\n            \"createdByEmployeeId\": 86,\n            \"createdByEmployeeName\": \"Admin Hospital\",\n            \"createdAt\": \"2025-09-11T11:57:15.58057\"\n        },\n        {\n            \"labTestResultId\": 139,\n            \"labTestOrderId\": 154,\n            \"medicalTestId\": 17,\n            \"testName\": \"Complete Blood Count (CBC)\",\n            \"resultValue\": null,\n            \"unit\": null,\n            \"referenceRange\": null,\n            \"notes\": null,\n            \"createdByEmployeeId\": 121,\n            \"createdByEmployeeName\": \"Đình Ban Nguyễn\",\n            \"createdAt\": \"2025-10-30T19:56:37.534575\"\n        },\n        {\n            \"labTestResultId\": 140,\n            \"labTestOrderId\": 154,\n            \"medicalTestId\": 23,\n            \"testName\": \"Blood Glucose (Fasting)\",\n            \"resultValue\": null,\n            \"unit\": null,\n            \"referenceRange\": null,\n            \"notes\": null,\n            \"createdByEmployeeId\": 121,\n            \"createdByEmployeeName\": \"Đình Ban Nguyễn\",\n            \"createdAt\": \"2025-10-30T19:56:37.541246\"\n        },\n        {\n            \"labTestResultId\": 141,\n            \"labTestOrderId\": 154,\n            \"medicalTestId\": 24,\n            \"testName\": \"HbA1c\",\n            \"resultValue\": null,\n            \"unit\": null,\n            \"referenceRange\": null,\n            \"notes\": null,\n            \"createdByEmployeeId\": 121,\n            \"createdByEmployeeName\": \"Đình Ban Nguyễn\",\n            \"createdAt\": \"2025-10-30T19:56:37.542312\"\n        },\n        {\n            \"labTestResultId\": 142,\n            \"labTestOrderId\": 155,\n            \"medicalTestId\": 17,\n            \"testName\": \"Complete Blood Count (CBC)\",\n            \"resultValue\": null,\n            \"unit\": null,\n            \"referenceRange\": null,\n            \"notes\": null,\n            \"createdByEmployeeId\": 106,\n            \"createdByEmployeeName\": \"Quang Hải Đăng Nguyễn\",\n            \"createdAt\": \"2025-10-30T20:19:47.185255\"\n        },\n        {\n            \"labTestResultId\": 143,\n            \"labTestOrderId\": 155,\n            \"medicalTestId\": 23,\n            \"testName\": \"Blood Glucose (Fasting)\",\n            \"resultValue\": null,\n            \"unit\": null,\n            \"referenceRange\": null,\n            \"notes\": null,\n            \"createdByEmployeeId\": 106,\n            \"createdByEmployeeName\": \"Quang Hải Đăng Nguyễn\",\n            \"createdAt\": \"2025-10-30T20:19:47.188001\"\n        },\n        {\n            \"labTestResultId\": 144,\n            \"labTestOrderId\": 155,\n            \"medicalTestId\": 24,\n            \"testName\": \"HbA1c\",\n            \"resultValue\": null,\n            \"unit\": null,\n            \"referenceRange\": null,\n            \"notes\": null,\n            \"createdByEmployeeId\": 106,\n            \"createdByEmployeeName\": \"Quang Hải Đăng Nguyễn\",\n            \"createdAt\": \"2025-10-30T20:19:47.190848\"\n        },\n        {\n            \"labTestResultId\": 145,\n            \"labTestOrderId\": 156,\n            \"medicalTestId\": 17,\n            \"testName\": \"Complete Blood Count (CBC)\",\n            \"resultValue\": null,\n            \"unit\": null,\n            \"referenceRange\": null,\n            \"notes\": null,\n            \"createdByEmployeeId\": 106,\n            \"createdByEmployeeName\": \"Quang Hải Đăng Nguyễn\",\n            \"createdAt\": \"2025-10-30T20:20:51.325034\"\n        },\n        {\n            \"labTestResultId\": 146,\n            \"labTestOrderId\": 156,\n            \"medicalTestId\": 23,\n            \"testName\": \"Blood Glucose (Fasting)\",\n            \"resultValue\": null,\n            \"unit\": null,\n            \"referenceRange\": null,\n            \"notes\": null,\n            \"createdByEmployeeId\": 106,\n            \"createdByEmployeeName\": \"Quang Hải Đăng Nguyễn\",\n            \"createdAt\": \"2025-10-30T20:20:51.32843\"\n        },\n        {\n            \"labTestResultId\": 147,\n            \"labTestOrderId\": 156,\n            \"medicalTestId\": 24,\n            \"testName\": \"HbA1c\",\n            \"resultValue\": null,\n            \"unit\": null,\n            \"referenceRange\": null,\n            \"notes\": null,\n            \"createdByEmployeeId\": 106,\n            \"createdByEmployeeName\": \"Quang Hải Đăng Nguyễn\",\n            \"createdAt\": \"2025-10-30T20:20:51.330439\"\n        },\n        {\n            \"labTestResultId\": 148,\n            \"labTestOrderId\": 157,\n            \"medicalTestId\": 17,\n            \"testName\": \"Complete Blood Count (CBC)\",\n            \"resultValue\": null,\n            \"unit\": null,\n            \"referenceRange\": null,\n            \"notes\": null,\n            \"createdByEmployeeId\": 106,\n            \"createdByEmployeeName\": \"Quang Hải Đăng Nguyễn\",\n            \"createdAt\": \"2025-10-30T20:21:16.616491\"\n        },\n        {\n            \"labTestResultId\": 149,\n            \"labTestOrderId\": 157,\n            \"medicalTestId\": 23,\n            \"testName\": \"Blood Glucose (Fasting)\",\n            \"resultValue\": null,\n            \"unit\": null,\n            \"referenceRange\": null,\n            \"notes\": null,\n            \"createdByEmployeeId\": 106,\n            \"createdByEmployeeName\": \"Quang Hải Đăng Nguyễn\",\n            \"createdAt\": \"2025-10-30T20:21:16.617653\"\n        },\n        {\n            \"labTestResultId\": 150,\n            \"labTestOrderId\": 157,\n            \"medicalTestId\": 24,\n            \"testName\": \"HbA1c\",\n            \"resultValue\": null,\n            \"unit\": null,\n            \"referenceRange\": null,\n            \"notes\": null,\n            \"createdByEmployeeId\": 106,\n            \"createdByEmployeeName\": \"Quang Hải Đăng Nguyễn\",\n            \"createdAt\": \"2025-10-30T20:21:16.618589\"\n        },\n        {\n            \"labTestResultId\": 151,\n            \"labTestOrderId\": 158,\n            \"medicalTestId\": 31,\n            \"testName\": \"ALT (SGPT)\",\n            \"resultValue\": null,\n            \"unit\": null,\n            \"referenceRange\": null,\n            \"notes\": null,\n            \"createdByEmployeeId\": 106,\n            \"createdByEmployeeName\": \"Quang Hải Đăng Nguyễn\",\n            \"createdAt\": \"2025-10-31T11:54:42.958834\"\n        }\n    ],\n    \"code\": 200\n}"
+						}
+					]
+				},
+				{
+					"name": "Get Pending Verification",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\": \"cashier1\",\r\n     \"password\": \"Password123!\"\r\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/lab-results/pending-verification",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"lab-results",
+								"pending-verification"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "Doctor orders lab tests (OPTIONAL - only if needed for diagnosis)"
+		},
+		{
+			"name": "7️⃣ Doctor - Imaging Orders (OPTIONAL)",
+			"item": [
+				{
+					"name": "get all service",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/services",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"services"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Cancel Imaging order",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{doctor_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"encounterId\": 330,\n  \"imagingType\": \"CT\",\n  \"bodyPart\": \"HEAD\",\n  \"laterality\": \"RIGHT\",\n  \"clinicalIndication\": \"string\",\n  \"clinicalQuestion\": \"string\",\n  \"contrastUsed\": true,\n  \"contrastType\": \"string\",\n  \"contrastVolumeMl\": 0,\n  \"contrastRoute\": \"string\",\n  \"patientWeightKg\": 0,\n  \"creatinineLevel\": 0,\n  \"allergies\": \"string\",\n  \"urgencyLevel\": \"URGENT\",\n  \"priority\": \"HIGH\",\n  \"serviceId\": 12,\n  \"notes\": \"string\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/imaging-orders/{{imaging_order_id}}/cancel?cancellationReason=Không có gì",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"imaging-orders",
+								"{{imaging_order_id}}",
+								"cancel"
+							],
+							"query": [
+								{
+									"key": "cancellationReason",
+									"value": "Không có gì"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "7.1 Create Imaging Order",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    var jsonData = pm.response.json();",
+									"    if (jsonData.data && jsonData.data.id) {",
+									"        pm.environment.set('imaging_order_id', jsonData.data.id);",
+									"        console.log('✅ Imaging order ID saved:', jsonData.data.id);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{doctor_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"encounterId\": 330,\n  \"imagingType\": \"CT\",\n  \"bodyPart\": \"HEAD\",\n  \"laterality\": \"RIGHT\",\n  \"clinicalIndication\": \"string\",\n  \"clinicalQuestion\": \"string\",\n  \"contrastUsed\": true,\n  \"contrastType\": \"string\",\n  \"contrastVolumeMl\": 0,\n  \"contrastRoute\": \"string\",\n  \"patientWeightKg\": 0,\n  \"creatinineLevel\": 0,\n  \"allergies\": \"string\",\n  \"urgencyLevel\": \"URGENT\",\n  \"priority\": \"HIGH\",\n  \"serviceId\": 12,\n  \"notes\": \"string\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/encounters/{{encounter_id}}/imaging-orders",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"encounters",
+								"{{encounter_id}}",
+								"imaging-orders"
+							]
+						},
+						"description": "Doctor orders imaging study (status: ORDERED)"
+					},
+					"response": []
+				},
+				{
+					"name": "7.2 Schedule Imaging Exam",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{doctor_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"scheduledDatetime\": \"2025-01-25T14:00:00\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/imaging-orders/{{imaging_order_id}}/schedule?scheduledDatetime=2025-11-04T08:00:00&scheduledRoom=XRAY_ROOM&estimatedDurationMinutes=30",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"imaging-orders",
+								"{{imaging_order_id}}",
+								"schedule"
+							],
+							"query": [
+								{
+									"key": "scheduledDatetime",
+									"value": "2025-11-04T08:00:00"
+								},
+								{
+									"key": "scheduledRoom",
+									"value": "XRAY_ROOM"
+								},
+								{
+									"key": "estimatedDurationMinutes",
+									"value": "30"
+								}
+							]
+						},
+						"description": "Schedule imaging exam (status: SCHEDULED)"
+					},
+					"response": []
+				},
+				{
+					"name": "7.3 Start Imaging Exam",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{doctor_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/imaging-orders/{{imaging_order_id}}/start-exam?radiologistId=3",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"imaging-orders",
+								"{{imaging_order_id}}",
+								"start-exam"
+							],
+							"query": [
+								{
+									"key": "radiologistId",
+									"value": "3"
+								}
+							]
+						},
+						"description": "Technician starts exam (status: IN_PROGRESS)"
+					},
+					"response": []
+				},
+				{
+					"name": "7.4 Complete Imaging Exam",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{doctor_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"pacsStudyInstanceUid\": \"1.2.840.113619.2.55.3.12345\",\n    \"pacsAccessionNumber\": \"ACC12345\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/imaging-orders/{{imaging_order_id}}/complete-exam",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"imaging-orders",
+								"{{imaging_order_id}}",
+								"complete-exam"
+							]
+						},
+						"description": "Complete exam (status: COMPLETED)"
+					},
+					"response": []
+				},
+				{
+					"name": "7.5 Report Imaging Results",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{doctor_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"findings\": \"Phổi trong sạch, không thấy tổn thương\",\n    \"impression\": \"Bình thường\",\n    \"recommendations\": \"Không cần theo dõi thêm\",\n    \"isCriticalResult\": false\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/imaging-orders/{{imaging_order_id}}/report",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"imaging-orders",
+								"{{imaging_order_id}}",
+								"report"
+							]
+						},
+						"description": "Radiologist reports results (status: REPORTED)"
+					},
+					"response": []
+				},
+				{
+					"name": "7.6 Get Imaging Results",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{doctor_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/imaging-orders/{{imaging_order_id}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"imaging-orders",
+								"{{imaging_order_id}}"
+							]
+						},
+						"description": "Get imaging order details and results"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Department (Radiologist)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{doctor_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/departments",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"departments"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Radiologist",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"reception1\",\n    \"password\": \"Password123!\"\n}\n"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/employees/department/6/role/DOCTOR",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"employees",
+								"department",
+								"6",
+								"role",
+								"DOCTOR"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "Doctor orders imaging studies (OPTIONAL - only if needed for diagnosis)"
+		},
+		{
+			"name": "8️⃣ Doctor - Prescription",
+			"item": [
+				{
+					"name": "Get All Medicine",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/medicines",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"medicines"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "New Request",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/api/v1/medicines",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"medicines"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Vary",
+									"value": "Access-Control-Request-Method"
+								},
+								{
+									"key": "Vary",
+									"value": "Access-Control-Request-Headers"
+								},
+								{
+									"key": "X-Content-Type-Options",
+									"value": "nosniff"
+								},
+								{
+									"key": "X-XSS-Protection",
+									"value": "0"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, no-store, max-age=0, must-revalidate"
+								},
+								{
+									"key": "Pragma",
+									"value": "no-cache"
+								},
+								{
+									"key": "Expires",
+									"value": "0"
+								},
+								{
+									"key": "X-Frame-Options",
+									"value": "DENY"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Date",
+									"value": "Wed, 29 Oct 2025 09:24:14 GMT"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=60"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"content\": [\n        {\n            \"medicineId\": 16,\n            \"medicineName\": \"Aspirin 325mg Tablet\",\n            \"sku\": null,\n            \"manufacturer\": null,\n            \"unit\": null,\n            \"description\": null,\n            \"storageConditions\": null,\n            \"routeOfAdministration\": null,\n            \"maxDailyDose\": null,\n            \"contraindications\": null,\n            \"drugClass\": null,\n            \"barcode\": null,\n            \"barcodeType\": \"EAN13\",\n            \"ndcCode\": null,\n            \"registrationNumber\": null,\n            \"createdAt\": \"2025-09-04T03:47:47.838844\",\n            \"updatedAt\": null\n        },\n        {\n            \"medicineId\": 13,\n            \"medicineName\": \"Aspirin 81mg Tablet\",\n            \"sku\": \"ASA081\",\n            \"manufacturer\": \"ABC Pharma\",\n            \"unit\": \"tablet\",\n            \"description\": \"Antiplatelet\",\n            \"storageConditions\": \"< 30C\",\n            \"routeOfAdministration\": null,\n            \"maxDailyDose\": null,\n            \"contraindications\": null,\n            \"drugClass\": null,\n            \"barcode\": null,\n            \"barcodeType\": \"EAN13\",\n            \"ndcCode\": null,\n            \"registrationNumber\": null,\n            \"createdAt\": \"2025-08-13T09:14:26.941542\",\n            \"updatedAt\": \"2025-09-04T03:47:47.838844\"\n        },\n        {\n            \"medicineId\": 17,\n            \"medicineName\": \"Clopidogrel 75mg Tablet\",\n            \"sku\": null,\n            \"manufacturer\": null,\n            \"unit\": null,\n            \"description\": null,\n            \"storageConditions\": null,\n            \"routeOfAdministration\": null,\n            \"maxDailyDose\": null,\n            \"contraindications\": null,\n            \"drugClass\": null,\n            \"barcode\": null,\n            \"barcodeType\": \"EAN13\",\n            \"ndcCode\": null,\n            \"registrationNumber\": null,\n            \"createdAt\": \"2025-09-04T03:47:47.838844\",\n            \"updatedAt\": null\n        },\n        {\n            \"medicineId\": 18,\n            \"medicineName\": \"Digoxin 0.25mg Tablet\",\n            \"sku\": null,\n            \"manufacturer\": null,\n            \"unit\": null,\n            \"description\": null,\n            \"storageConditions\": null,\n            \"routeOfAdministration\": null,\n            \"maxDailyDose\": null,\n            \"contraindications\": null,\n            \"drugClass\": null,\n            \"barcode\": null,\n            \"barcodeType\": \"EAN13\",\n            \"ndcCode\": null,\n            \"registrationNumber\": null,\n            \"createdAt\": \"2025-09-04T03:47:47.838844\",\n            \"updatedAt\": null\n        },\n        {\n            \"medicineId\": 12,\n            \"medicineName\": \"Ibuprofen 400mg Tablet\",\n            \"sku\": \"IBU400\",\n            \"manufacturer\": \"ABC Pharma\",\n            \"unit\": \"tablet\",\n            \"description\": \"NSAID\",\n            \"storageConditions\": \"< 30C\",\n            \"routeOfAdministration\": null,\n            \"maxDailyDose\": null,\n            \"contraindications\": null,\n            \"drugClass\": null,\n            \"barcode\": null,\n            \"barcodeType\": \"EAN13\",\n            \"ndcCode\": null,\n            \"registrationNumber\": null,\n            \"createdAt\": \"2025-08-13T09:14:26.941542\",\n            \"updatedAt\": \"2025-09-04T03:47:47.838844\"\n        },\n        {\n            \"medicineId\": 14,\n            \"medicineName\": \"Omeprazole 20mg Capsule\",\n            \"sku\": \"OME20\",\n            \"manufacturer\": \"Gastro Co\",\n            \"unit\": \"capsule\",\n            \"description\": \"PPI\",\n            \"storageConditions\": \"Dry\",\n            \"routeOfAdministration\": null,\n            \"maxDailyDose\": null,\n            \"contraindications\": null,\n            \"drugClass\": null,\n            \"barcode\": null,\n            \"barcodeType\": \"EAN13\",\n            \"ndcCode\": null,\n            \"registrationNumber\": null,\n            \"createdAt\": \"2025-08-13T09:14:26.941542\",\n            \"updatedAt\": \"2025-09-04T03:47:47.838844\"\n        },\n        {\n            \"medicineId\": 11,\n            \"medicineName\": \"Paracetamol 500mg Tablet\",\n            \"sku\": \"PARA500\",\n            \"manufacturer\": \"ABC Pharma\",\n            \"unit\": \"tablet\",\n            \"description\": \"Analgesic/antipyretic\",\n            \"storageConditions\": \"< 30C\",\n            \"routeOfAdministration\": null,\n            \"maxDailyDose\": null,\n            \"contraindications\": null,\n            \"drugClass\": null,\n            \"barcode\": null,\n            \"barcodeType\": \"EAN13\",\n            \"ndcCode\": null,\n            \"registrationNumber\": null,\n            \"createdAt\": \"2025-08-13T09:14:26.941542\",\n            \"updatedAt\": \"2025-09-04T03:47:47.838844\"\n        },\n        {\n            \"medicineId\": 15,\n            \"medicineName\": \"Warfarin 5mg Tablet\",\n            \"sku\": null,\n            \"manufacturer\": null,\n            \"unit\": null,\n            \"description\": null,\n            \"storageConditions\": null,\n            \"routeOfAdministration\": null,\n            \"maxDailyDose\": null,\n            \"contraindications\": null,\n            \"drugClass\": null,\n            \"barcode\": null,\n            \"barcodeType\": \"EAN13\",\n            \"ndcCode\": null,\n            \"registrationNumber\": null,\n            \"createdAt\": \"2025-09-04T03:47:47.838844\",\n            \"updatedAt\": null\n        }\n    ],\n    \"pageable\": {\n        \"pageNumber\": 0,\n        \"pageSize\": 20,\n        \"sort\": {\n            \"empty\": false,\n            \"unsorted\": false,\n            \"sorted\": true\n        },\n        \"offset\": 0,\n        \"paged\": true,\n        \"unpaged\": false\n    },\n    \"last\": true,\n    \"totalPages\": 1,\n    \"totalElements\": 8,\n    \"first\": true,\n    \"size\": 20,\n    \"number\": 0,\n    \"sort\": {\n        \"empty\": false,\n        \"unsorted\": false,\n        \"sorted\": true\n    },\n    \"numberOfElements\": 8,\n    \"empty\": false\n}"
+						}
+					]
+				},
+				{
+					"name": "Get Active Medicine",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/medical-supplies/medicines/active?page=1&size=10&sort=medicineName,asc",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"medical-supplies",
+								"medicines",
+								"active"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "size",
+									"value": "10"
+								},
+								{
+									"key": "sort",
+									"value": "medicineName,asc"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Prescription for Encounter",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/encounters/{{encounter_id}}/prescriptions",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"encounters",
+								"{{encounter_id}}",
+								"prescriptions"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Get Prescription for Encounter",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/api/v1/encounters/{{encounter_id}}/prescriptions",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"encounters",
+										"{{encounter_id}}",
+										"prescriptions"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Vary",
+									"value": "Access-Control-Request-Method"
+								},
+								{
+									"key": "Vary",
+									"value": "Access-Control-Request-Headers"
+								},
+								{
+									"key": "X-Content-Type-Options",
+									"value": "nosniff"
+								},
+								{
+									"key": "X-XSS-Protection",
+									"value": "0"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, no-store, max-age=0, must-revalidate"
+								},
+								{
+									"key": "Pragma",
+									"value": "no-cache"
+								},
+								{
+									"key": "Expires",
+									"value": "0"
+								},
+								{
+									"key": "X-Frame-Options",
+									"value": "DENY"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Date",
+									"value": "Wed, 29 Oct 2025 09:24:25 GMT"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=60"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"message\": \"Prescriptions for encounter retrieved successfully.\",\n    \"status\": \"OK\",\n    \"data\": [\n        {\n            \"prescriptionId\": 188,\n            \"encounterId\": 326,\n            \"prescriptionDate\": \"2025-10-27\",\n            \"createdByEmployeeId\": 106,\n            \"createdByEmployeeName\": \"Quang Hải Đăng Nguyễn\",\n            \"status\": \"DRAFT\",\n            \"signedAt\": null,\n            \"signedByEmployeeId\": null,\n            \"signedByEmployeeName\": null,\n            \"dispensedAt\": null,\n            \"dispensedByEmployeeId\": null,\n            \"dispensedByEmployeeName\": null,\n            \"version\": 0,\n            \"createdAt\": \"2025-10-27T21:56:56.464953\",\n            \"updatedAt\": \"2025-10-27T21:56:56.464957\",\n            \"items\": []\n        }\n    ],\n    \"code\": 200\n}"
+						}
+					]
+				},
+				{
+					"name": "8.1 Create Prescription",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    var jsonData = pm.response.json();",
+									"    if (jsonData.data && jsonData.data.prescriptionId) {",
+									"        pm.environment.set('prescription_id', jsonData.data.prescriptionId);",
+									"        console.log('✅ Prescription ID saved:', jsonData.data.prescriptionId);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{doctor_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"prescriptionDate\": \"2025-01-25\",\n    \"items\": [\n        {\n            \"medicineId\": 1,\n            \"dosage\": \"500mg\",\n            \"quantity\": 20,\n            \"notes\": \"Uống sau ăn, ngày 2 lần\"\n        },\n        {\n            \"medicineId\": 2,\n            \"dosage\": \"10mg\",\n            \"quantity\": 10,\n            \"notes\": \"Uống trước khi ngủ\"\n        }\n    ]\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/encounters/{{encounter_id}}/prescriptions",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"encounters",
+								"{{encounter_id}}",
+								"prescriptions"
+							]
+						},
+						"description": "Doctor creates prescription (status: DRAFT)"
+					},
+					"response": []
+				},
+				{
+					"name": "8.2 Sign Prescription",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{doctor_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/prescriptions/{{prescription_id}}/sign",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"prescriptions",
+								"{{prescription_id}}",
+								"sign"
+							]
+						},
+						"description": "Doctor signs prescription (status: SIGNED)"
+					},
+					"response": []
+				},
+				{
+					"name": "Get An Prescription",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/prescriptions/{{prescription_id}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"prescriptions",
+								"{{prescription_id}}"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "Doctor creates and signs prescription"
+		},
+		{
+			"name": "5️⃣ Doctor - Clinical Note (Y lệnh khám)",
+			"item": [
+				{
+					"name": "Get All Icd Disease",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/icd-diseases",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"icd-diseases"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Clinic Note for Encounter",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}} /api/v1/encounters/{{encounter_id}}/notes",
+							"host": [
+								"{{baseUrl}} "
+							],
+							"path": [
+								"api",
+								"v1",
+								"encounters",
+								"{{encounter_id}}",
+								"notes"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "5.1 Create Clinical Note",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    var jsonData = pm.response.json();",
+									"    if (jsonData.data && jsonData.data.clinicalNoteId) {",
+									"        pm.environment.set('clinical_note_id', jsonData.data.clinicalNoteId);",
+									"        console.log('✅ Clinical note ID saved:', jsonData.data.clinicalNoteId);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{doctor_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"diagnosis\": \"string\",\n  \"icdDiseaseId\": 1,\n  \"noteType\": \"string\",\n  \"notes\": \"string\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/encounters/{{encounter_id}}/notes",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"encounters",
+								"{{encounter_id}}",
+								"notes"
+							]
+						},
+						"description": "Doctor creates clinical note (status: DRAFT)"
+					},
+					"response": []
+				},
+				{
+					"name": "5.2 Update Clinical Note",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{doctor_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"diagnosis\": \"string\",\n  \"icdDiseaseId\": 10,\n  \"noteType\": \"string\",\n  \"notes\": \"string\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/notes/{{clinical_note_id}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"notes",
+								"{{clinical_note_id}}"
+							]
+						},
+						"description": "Doctor updates clinical note"
+					},
+					"response": [
+						{
+							"name": "5.2 Update Clinical Note",
+							"originalRequest": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"diagnosis\": \"string\",\n  \"icdDiseaseId\": 10,\n  \"noteType\": \"string\",\n  \"notes\": \"string\"\n}"
+								},
+								"url": {
+									"raw": "{{baseUrl}}/api/v1/notes/{{clinical_note_id}}",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"notes",
+										"{{clinical_note_id}}"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Vary",
+									"value": "Access-Control-Request-Method"
+								},
+								{
+									"key": "Vary",
+									"value": "Access-Control-Request-Headers"
+								},
+								{
+									"key": "X-Content-Type-Options",
+									"value": "nosniff"
+								},
+								{
+									"key": "X-XSS-Protection",
+									"value": "0"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, no-store, max-age=0, must-revalidate"
+								},
+								{
+									"key": "Pragma",
+									"value": "no-cache"
+								},
+								{
+									"key": "Expires",
+									"value": "0"
+								},
+								{
+									"key": "X-Frame-Options",
+									"value": "DENY"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Date",
+									"value": "Wed, 29 Oct 2025 14:33:25 GMT"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=60"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"message\": \"Clinical note updated successfully.\",\n    \"status\": \"OK\",\n    \"data\": {\n        \"clinicalNoteId\": 234,\n        \"encounterId\": 329,\n        \"diagnosis\": \"string\",\n        \"icdDiseaseId\": 10,\n        \"icdCode\": \"A00\",\n        \"diseaseName\": \"Cholera\",\n        \"status\": \"DRAFT\",\n        \"signedAt\": null,\n        \"signedByEmployeeId\": null,\n        \"signedByEmployeeName\": null,\n        \"amendmentOfNoteId\": null,\n        \"noteType\": \"string\",\n        \"notes\": \"string\",\n        \"version\": 0,\n        \"createdByEmployeeId\": 106,\n        \"createdByEmployeeName\": \"Quang Hải Đăng Nguyễn\",\n        \"createdAt\": \"2025-10-29T21:32:16.948772\",\n        \"updatedByEmployeeId\": 106,\n        \"updatedByEmployeeName\": null,\n        \"updatedAt\": \"2025-10-29T21:32:16.948783\"\n    },\n    \"code\": 200\n}"
+						}
+					]
+				},
+				{
+					"name": "5.3 Sign Clinical Note",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    console.log('✅ Clinical note signed - Encounter auto-updated to FINISHED');",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{doctor_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/notes/{{clinical_note_id}}/sign",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"notes",
+								"{{clinical_note_id}}",
+								"sign"
+							]
+						},
+						"description": "Doctor signs note → Auto: Encounter FINISHED"
+					},
+					"response": []
+				},
+				{
+					"name": "5.4 Verify Encounter Status",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{doctor_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/encounters/{{encounter_id}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"encounters",
+								"{{encounter_id}}"
+							]
+						},
+						"description": "Verify encounter status is FINISHED"
+					},
+					"response": []
+				}
+			],
+			"description": "Doctor creates clinical note FIRST before ordering lab/imaging"
+		},
+		{
+			"name": "9️⃣ Receptionist - Payment",
+			"item": [
+				{
+					"name": "9.1 Generate Invoice",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    var jsonData = pm.response.json();",
+									"    if (jsonData.data && jsonData.data.invoiceId) {",
+									"        pm.environment.set('invoice_id', jsonData.data.invoiceId);",
+									"        console.log('✅ Invoice ID saved:', jsonData.data.invoiceId);",
+									"        console.log('Total amount:', jsonData.data.totalAmount);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{receptionist_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"encounterId\": 330,\n    \"healthInsuranceId\": 12,\n    \"notes\": \"string\",\n    \"includePendingItems\": true\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/payments/generate-invoice",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"payments",
+								"generate-invoice"
+							]
+						},
+						"description": "Generate invoice - Auto-include all fees (consultation, lab, imaging, medicine)"
+					},
+					"response": []
+				},
+				{
+					"name": "9.2 Get Invoice Details",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{receptionist_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/invoices/{{invoice_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"invoices",
+								"{{invoice_id}}"
+							]
+						},
+						"description": "Get invoice details including total amount"
+					},
+					"response": []
+				},
+				{
+					"name": "9.3 Get Invoice Items",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{receptionist_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/invoices/{{invoice_id}}/items",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"invoices",
+								"{{invoice_id}}",
+								"items"
+							]
+						},
+						"description": "Get all invoice items (services, medicines, etc.)"
+					},
+					"response": []
+				},
+				{
+					"name": "9.4 Process Payment",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    console.log('✅ Payment processed - Invoice status updated to PAID');",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{receptionist_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"patientId\": 25,\n    \"invoiceId\": {{invoice_id}},\n    \"transactionType\": \"PAYMENT\",\n    \"amount\": 500000,\n    \"paymentMethod\": \"CASH\",\n    \"notes\": \"Thanh toán tiền mặt\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/transactions/process-payment",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"transactions",
+								"process-payment"
+							]
+						},
+						"description": "Process payment → Invoice status: PAID"
+					},
+					"response": []
+				},
+				{
+					"name": "9.5 Verify Payment Status",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{receptionist_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/invoices/{{invoice_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"invoices",
+								"{{invoice_id}}"
+							]
+						},
+						"description": "Verify invoice status is PAID"
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Invoice",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/invoices",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"invoices"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "Receptionist generates invoice and processes payment"
+		},
+		{
+			"name": "🔟 Receptionist - Discharge",
+			"item": [
+				{
+					"name": "10.1 Discharge Patient",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    console.log('✅ Patient discharged - Encounter status: COMPLETED');",
+									"    console.log('✅ Booking status: COMPLETED');",
+									"    console.log('🎉 OUTPATIENT WORKFLOW COMPLETE!');",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{doctor_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/encounters/{{encounter_id}}/discharge?disposition=HOME",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"encounters",
+								"{{encounter_id}}",
+								"discharge"
+							],
+							"query": [
+								{
+									"key": "disposition",
+									"value": "HOME"
+								}
+							]
+						},
+						"description": "Discharge patient → Encounter: COMPLETED, Booking: COMPLETED"
+					},
+					"response": [
+						{
+							"name": "10.1 Discharge Patient",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/api/v1/encounters/{{encounter_id}}/discharge?disposition=HOME",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"encounters",
+										"{{encounter_id}}",
+										"discharge"
+									],
+									"query": [
+										{
+											"key": "disposition",
+											"value": "HOME"
+										}
+									]
+								}
+							},
+							"status": "Bad Request",
+							"code": 400,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Vary",
+									"value": "Access-Control-Request-Method"
+								},
+								{
+									"key": "Vary",
+									"value": "Access-Control-Request-Headers"
+								},
+								{
+									"key": "X-Content-Type-Options",
+									"value": "nosniff"
+								},
+								{
+									"key": "X-XSS-Protection",
+									"value": "0"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, no-store, max-age=0, must-revalidate"
+								},
+								{
+									"key": "Pragma",
+									"value": "no-cache"
+								},
+								{
+									"key": "Expires",
+									"value": "0"
+								},
+								{
+									"key": "X-Frame-Options",
+									"value": "DENY"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Date",
+									"value": "Wed, 05 Nov 2025 08:51:49 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"timestamp\": \"2025-11-05T15:51:49.003052\",\n    \"status\": 400,\n    \"error\": \"Business Logic Error\",\n    \"message\": \"Discharge validation failed:\\nCannot discharge: Unable to verify payment status. Please contact billing department.\",\n    \"path\": null\n}"
+						}
+					]
+				},
+				{
+					"name": "10.2 Verify Final Status (Reload)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{receptionist_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/encounters/{{encounter_id}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"encounters",
+								"{{encounter_id}}"
+							]
+						},
+						"description": "Verify encounter status is COMPLETED"
+					},
+					"response": []
+				}
+			],
+			"description": "Receptionist discharges patient after payment"
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{doctor_token}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"requests": {},
+				"exec": [
+					"if (!pm.environment.get('base_url')) {",
+					"    pm.environment.set('base_url', 'http://localhost:8080');",
+					"}"
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"requests": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": ""
+		},
+		{
+			"key": "baseUrl",
+			"value": ""
+		},
+		{
+			"key": "patient_token",
+			"value": ""
+		},
+		{
+			"key": "receptionist_token",
+			"value": ""
+		},
+		{
+			"key": "access_token",
+			"value": ""
+		},
+		{
+			"key": "booking_id",
+			"value": ""
+		},
+		{
+			"key": "encounter_id",
+			"value": ""
+		},
+		{
+			"key": "doctor_token",
+			"value": ""
+		},
+		{
+			"key": "doctorId",
+			"value": ""
+		},
+		{
+			"key": "doctorToken",
+			"value": ""
+		},
+		{
+			"key": "adminToken",
+			"value": "",
+			"type": "default"
+		},
+		{
+			"key": "prescription_id",
+			"value": "",
+			"type": "default"
+		},
+		{
+			"key": "clinical_note_id",
+			"value": "",
+			"type": "default"
+		},
+		{
+			"key": "lab_result_id",
+			"value": "",
+			"type": "default"
+		},
+		{
+			"key": "invoice_id",
+			"value": "",
+			"type": "default"
+		},
+		{
+			"key": "imaging_order_id",
+			"value": "",
+			"type": "default"
+		},
+		{
+			"key": "labtechToken",
+			"value": "",
+			"type": "default"
+		},
+		{
+			"key": "lab_order_id",
+			"value": "",
+			"type": "default"
+		}
+	]
+}

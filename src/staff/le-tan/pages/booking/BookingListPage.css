@@ -151,6 +151,59 @@
     cursor: not-allowed;
 }
 
+/* Filter Section */
+.filter-section {
+    background: #f9fafb;
+    padding: 1.25rem;
+    border-radius: 8px;
+    margin-top: 1.5rem;
+}
+
+.filter-label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 0.75rem;
+}
+
+.filter-buttons {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.filter-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.625rem 1rem;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    background: white;
+    color: #6b7280;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.filter-btn:hover {
+    border-color: #3b82f6;
+    color: #3b82f6;
+    background: #eff6ff;
+}
+
+.filter-btn.active {
+    border-color: #3b82f6;
+    background: #3b82f6;
+    color: white;
+}
+
+.filter-btn svg {
+    font-size: 1rem;
+}
+
 /* Stats Grid */
 .stats-grid {
     display: grid;

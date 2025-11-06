@@ -183,11 +183,55 @@ export const nurseMedicationAPI = {
   },
 };
 
+// API Quản lý yêu cầu nhập viện (Admission Requests)
+export const nurseAdmissionRequestAPI = {
+  // Lấy danh sách yêu cầu đã xác nhận (APPROVED)
+  getApprovedRequests: async () => {
+    return apiCall('api/v1/admission-requests/status/APPROVED', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Lấy danh sách yêu cầu cấp cứu
+  getEmergencyRequests: async () => {
+    return apiCall('api/v1/admission-requests/emergency', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Lấy danh sách yêu cầu ưu tiên cao
+  getHighPriorityRequests: async () => {
+    return apiCall('api/v1/admission-requests/high-priority', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Lấy danh sách yêu cầu chờ lâu
+  getLongWaitingRequests: async () => {
+    return apiCall('api/v1/admission-requests/long-waiting', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+};
+
 export default {
   nurseAuthAPI,
   nurseDashboardAPI,
   nursePatientCareAPI,
   nurseVitalSignsAPI,
   nurseMedicationAPI,
+  nurseAdmissionRequestAPI,
 };
 

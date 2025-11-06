@@ -484,15 +484,15 @@ const EncounterVitalPage = () => {
                         <button className="btn-view-vital" onClick={handleViewVitalSigns}>
                             <FiList /> Xem Vital Signs
                         </button>
-                        <button className="btn-add-note" onClick={handleAddClinicalNote}>
-                            <FiFileText /> Tạo Y lệnh
-                        </button>
-                        <button className="btn-view-note" onClick={handleViewClinicalNotes}>
-                            <FiEdit /> Xem Y lệnh
-                        </button>
-                        <button className="btn-add-prescription" onClick={handleAddPrescription}>
-                            <FiShoppingCart /> Kê đơn thuốc
-                        </button>
+                        {/*<button className="btn-add-note" onClick={handleAddClinicalNote}>*/}
+                        {/*    <FiFileText /> Tạo Y lệnh*/}
+                        {/*</button>*/}
+                        {/*<button className="btn-view-note" onClick={handleViewClinicalNotes}>*/}
+                        {/*    <FiEdit /> Xem Y lệnh*/}
+                        {/*</button>*/}
+                        {/*<button className="btn-add-prescription" onClick={handleAddPrescription}>*/}
+                        {/*    <FiShoppingCart /> Kê đơn thuốc*/}
+                        {/*</button>*/}
                     </div>
                 </div>
             )}

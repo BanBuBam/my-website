@@ -55,7 +55,7 @@ export const clearTokens = () => {
 export const doctorAuthAPI = {
   // Đăng nhập
   login: async (email, password) => {
-    const response = await apiCall('api/v1/doctor/auth/login', {
+    const response = await apiCall('api/v1/auth/login', {
       method: 'POST',
       body: JSON.stringify({ email, password }),
     });
@@ -70,7 +70,7 @@ export const doctorAuthAPI = {
   // Đăng xuất
   logout: async () => {
     clearTokens();
-    return apiCall('api/v1/doctor/auth/logout', {
+    return apiCall('api/v1/auth/logout', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${getAccessToken()}`,
@@ -312,6 +312,16 @@ export const doctorEncounterAPI = {
     });
   },
 
+  // Lấy chi tiết encounter
+  getEncounterDetail: async (encounterId) => {
+    return apiCall(`api/v1/encounters/${encounterId}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
   // Lấy encounter status
   getEncounterStatus: async (encounterId) => {
     return apiCall(`api/v1/encounters/${encounterId}/status`, {
@@ -437,26 +447,6 @@ export const doctorEncounterAPI = {
     });
   },
 
-  // Collect specimen cho lab test order
-  collectSpecimen: async (labTestOrderId) => {
-    return apiCall(`api/v1/lab-orders/${labTestOrderId}/collect-specimen`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${getAccessToken()}`,
-      },
-    });
-  },
-
-  // Receive specimen cho lab test order
-  receiveSpecimen: async (labTestOrderId) => {
-    return apiCall(`api/v1/lab-orders/${labTestOrderId}/receive-specimen`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${getAccessToken()}`,
-      },
-    });
-  },
-
   // Lấy chi tiết prescription
   getPrescriptionDetail: async (prescriptionId) => {
     return apiCall(`api/v1/prescriptions/${prescriptionId}`, {
@@ -508,25 +498,50 @@ export const doctorEncounterAPI = {
     });
   },
 
+  // Lấy chi tiết imaging order
+  getImagingOrderDetail: async (imagingOrderId) => {
+    return apiCall(`api/v1/imaging-orders/${imagingOrderId}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
   // Schedule imaging exam
   scheduleImagingExam: async (imagingOrderId, scheduleData) => {
-    return apiCall(`api/v1/imaging-orders/${imagingOrderId}/schedule`, {
+    const params = new URLSearchParams({
+      scheduledDatetime: scheduleData.scheduledDatetime,
+      scheduledRoom: scheduleData.scheduledRoom,
+      estimatedDurationMinutes: scheduleData.estimatedDurationMinutes
+    });
+
+    return apiCall(`api/v1/imaging-orders/${imagingOrderId}/schedule?${params.toString()}`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${getAccessToken()}`,
       },
-      body: JSON.stringify(scheduleData),
+    });
+  },
+
+  // Get radiologists (department 6, role DOCTOR)
+  getRadiologists: async () => {
+    return apiCall('api/v1/employees/department/6/role/DOCTOR', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
     });
   },
 
   // Start imaging exam
   startImagingExam: async (orderId, radiologistId) => {
-    return apiCall(`api/v1/imaging-orders/${orderId}/start-exam`, {
+    return apiCall(`api/v1/imaging-orders/${orderId}/start-exam?radiologistId=${radiologistId}`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${getAccessToken()}`,
       },
-      body: JSON.stringify({ radiologistId }),
+      // body: JSON.stringify({ radiologistId }),
     });
   },
 
@@ -578,7 +593,8 @@ export const serviceAPI = {
       sort.forEach(s => params.append('sort', s));
     }
 
-    return apiCall(`api/services?${params.toString()}`, {
+    // return apiCall(`api/services?${params.toString()}`, {
+    return apiCall(`api/services`, {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${getAccessToken()}`,
@@ -609,6 +625,86 @@ export const medicineAPI = {
   },
 };
 
+// API Admission Requests (Yêu cầu nhập viện)
+export const admissionRequestAPI = {
+  // Tạo yêu cầu nhập viện
+  createAdmissionRequest: async (requestData) => {
+    return apiCall('api/v1/admission-requests', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+      body: JSON.stringify(requestData),
+    });
+  },
+
+  // Lấy danh sách yêu cầu chờ xác nhận
+  getPendingRequests: async () => {
+    return apiCall('api/v1/admission-requests/pending', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Lấy danh sách yêu cầu cấp cứu
+  getEmergencyRequests: async () => {
+    return apiCall('api/v1/admission-requests/emergency', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Lấy danh sách yêu cầu ưu tiên cao
+  getHighPriorityRequests: async () => {
+    return apiCall('api/v1/admission-requests/high-priority', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Lấy yêu cầu theo encounter ID
+  getRequestByEncounter: async (encounterId) => {
+    return apiCall(`api/v1/admission-requests/encounter/${encounterId}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Phê duyệt yêu cầu nhập viện
+  approveRequest: async (admissionRequestId, approvalNotes) => {
+    const params = new URLSearchParams();
+    if (approvalNotes) params.append('approvalNotes', approvalNotes);
+
+    return apiCall(`api/v1/admission-requests/${admissionRequestId}/approve?${params.toString()}`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Từ chối yêu cầu nhập viện
+  rejectRequest: async (admissionRequestId, rejectionNotes) => {
+    const params = new URLSearchParams();
+    if (rejectionNotes) params.append('rejectionNotes', rejectionNotes);
+
+    return apiCall(`api/v1/admission-requests/${admissionRequestId}/reject?${params.toString()}`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+};
+
 export default {
   doctorAuthAPI,
   doctorDashboardAPI,
@@ -622,5 +718,6 @@ export default {
   icdDiseaseAPI,
   serviceAPI,
   medicineAPI,
+  admissionRequestAPI,
 };
 

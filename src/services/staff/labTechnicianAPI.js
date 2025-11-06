@@ -36,19 +36,52 @@ const apiCall = async (endpoint, options = {}) => {
 };
 
 // Hàm helper để lấy token (sử dụng staffAccessToken từ login chung)
-const getAccessToken = () => localStorage.getItem('staffAccessToken');
-const getRefreshToken = () => localStorage.getItem('staffRefreshToken');
+const getAccessToken = () => localStorage.getItem('labtechAccessToken');
+const getRefreshToken = () => localStorage.getItem('labtechRefreshToken');
 
 // Hàm helper để lưu token
 export const saveTokens = (accessToken, refreshToken) => {
-  localStorage.setItem('staffAccessToken', accessToken);
-  localStorage.setItem('staffRefreshToken', refreshToken);
+  localStorage.setItem('labtechAccessToken', accessToken);
+  localStorage.setItem('labtechRefreshToken', refreshToken);
 };
 
 // Hàm helper để xóa token
 export const clearTokens = () => {
-  localStorage.removeItem('staffAccessToken');
-  localStorage.removeItem('staffRefreshToken');
+  localStorage.removeItem('labtechAccessToken');
+  localStorage.removeItem('labtechRefreshToken');
+};
+
+// API Lab Test Orders
+export const labTechnicianOrderAPI = {
+  // Lấy danh sách lab test orders của encounter
+  getLabTestOrders: async (encounterId) => {
+    return apiCall(`api/v1/encounters/${encounterId}/lab-orders`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Collect specimen cho lab test order
+  collectSpecimen: async (labTestOrderId) => {
+    return apiCall(`api/v1/lab-orders/${labTestOrderId}/collect-specimen`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Receive specimen cho lab test order
+  receiveSpecimen: async (labTestOrderId) => {
+    return apiCall(`api/v1/lab-orders/${labTestOrderId}/receive-specimen`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
 };
 
 // API Lab Test Results
@@ -96,6 +129,7 @@ export const labTechnicianResultAPI = {
 };
 
 export default {
+  labTechnicianOrderAPI,
   labTechnicianResultAPI,
 };
 
