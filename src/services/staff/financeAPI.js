@@ -55,7 +55,7 @@ export const clearTokens = () => {
 export const financeAuthAPI = {
   // Đăng nhập
   login: async (email, password) => {
-    const response = await apiCall('api/v1/finance/auth/login', {
+    const response = await apiCall('api/v1/auth/login', {
       method: 'POST',
       body: JSON.stringify({ email, password }),
     });
@@ -70,7 +70,7 @@ export const financeAuthAPI = {
   // Đăng xuất
   logout: async () => {
     clearTokens();
-    return apiCall('api/v1/finance/auth/logout', {
+    return apiCall('api/v1/auth/logout', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${getAccessToken()}`,

@@ -126,7 +126,7 @@ export const clearTokens = () => {
 // API Authentication cho HR
 export const hrAuthAPI = {
   // Đăng nhập
-  login: async (username, password) => {
+  login: async (email, password) => {
     const response = await apiCall('api/v1/auth/login', {
       method: 'POST',
       headers: {
@@ -145,26 +145,13 @@ export const hrAuthAPI = {
 
   // Đăng xuất
   logout: async () => {
-    const token = getAccessToken();
-
-    try {
-      const response = await apiCall('api/v1/auth/logout', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      });
-
-      // Clear tokens after successful logout
-      clearTokens();
-
-      return response;
-    } catch (error) {
-      // Clear tokens even if logout API fails
-      clearTokens();
-      throw error;
-    }
+    clearTokens();
+    return apiCall('api/v1/auth/logout', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
   },
 };
 
@@ -957,24 +944,24 @@ export const hrEmployeeScheduleAPI = {
   },
 
   // Lấy lịch làm đang có theo id nhân viên
-  getActiveScheduleByEmployee: async (employeeId) => {
-    return apiCall(`api/v1/employee-schedules/employee/${employeeId}/active`, {
-      method: 'GET',
-      headers: {
-        'Authorization': `Bearer ${getAccessToken()}`,
-      },
-    });
-  },
+  // getActiveScheduleByEmployee: async (employeeId) => {
+  //   return apiCall(`api/v1/employee-schedules/employee/${employeeId}/active`, {
+  //     method: 'GET',
+  //     headers: {
+  //       'Authorization': `Bearer ${getAccessToken()}`,
+  //     },
+  //   });
+  // },
 
   // Lấy lịch overtime của nhân viên theo id
-  getOvertimeScheduleByEmployee: async (employeeId) => {
-    return apiCall(`api/v1/employee-schedules/employee/${employeeId}/overtime`, {
-      method: 'GET',
-      headers: {
-        'Authorization': `Bearer ${getAccessToken()}`,
-      },
-    });
-  },
+  // getOvertimeScheduleByEmployee: async (employeeId) => {
+  //   return apiCall(`api/v1/employee-schedules/employee/${employeeId}/overtime`, {
+  //     method: 'GET',
+  //     headers: {
+  //       'Authorization': `Bearer ${getAccessToken()}`,
+  //     },
+  //   });
+  // },
 
   // Tính giờ làm việc trong tháng của nhân viên
   getEmployeeWorkHours: async (employeeId, year, month) => {
