@@ -1,0 +1,538 @@
+.encounter-management-page {
+    padding: 0;
+}
+
+/* Page Header */
+.encounter-management-page .page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    background: white;
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.encounter-management-page .page-header h2 {
+    font-size: 1.75rem;
+    font-weight: 600;
+    color: #1f2937;
+    margin: 0 0 0.5rem 0;
+}
+
+.encounter-management-page .page-header p {
+    color: #6b7280;
+    margin: 0;
+    font-size: 0.875rem;
+}
+
+.encounter-management-page .btn-refresh {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    background: #3b82f6;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.encounter-management-page .btn-refresh:hover:not(:disabled) {
+    background: #2563eb;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.encounter-management-page .btn-refresh:disabled {
+    background: #9ca3af;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.encounter-management-page .spinning {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Error Message */
+.encounter-management-page .error-message {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem 1.25rem;
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    border-radius: 8px;
+    color: #991b1b;
+    margin-bottom: 1.5rem;
+}
+
+.encounter-management-page .error-message svg {
+    font-size: 1.25rem;
+    flex-shrink: 0;
+}
+
+/* Loading State */
+.encounter-management-page .loading-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 4rem 2rem;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.encounter-management-page .loading-state svg {
+    font-size: 3rem;
+    color: #3b82f6;
+    margin-bottom: 1rem;
+}
+
+.encounter-management-page .loading-state p {
+    color: #6b7280;
+    font-size: 1rem;
+}
+
+/* Filter Section */
+.encounter-management-page .filter-section {
+    min-width: fit-content;
+    background: white;
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    margin-bottom: 1.5rem;
+}
+
+.encounter-management-page .filter-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.encounter-management-page .filter-header svg {
+    font-size: 1.125rem;
+    color: #3b82f6;
+}
+
+.encounter-management-page .filter-header h3 {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #1f2937;
+}
+
+.encounter-management-page .filter-controls {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-end;
+}
+
+.encounter-management-page .filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    flex: 1;
+}
+
+.encounter-management-page .filter-group:first-child {
+    flex: 2;
+}
+
+.encounter-management-page .filter-group label {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #374151;
+}
+
+.encounter-management-page .search-input {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.encounter-management-page .search-input svg {
+    position: absolute;
+    left: 0.75rem;
+    color: #9ca3af;
+    font-size: 1rem;
+}
+
+.encounter-management-page .search-input input {
+    width: 100%;
+    padding: 0.625rem 0.75rem 0.625rem 2.5rem;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    transition: border-color 0.2s;
+}
+
+.encounter-management-page .search-input input:focus {
+    outline: none;
+    border-color: #3b82f6;
+}
+
+.encounter-management-page .filter-group input[type="date"],
+.encounter-management-page .filter-group select {
+    padding: 0.625rem 0.75rem;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    transition: border-color 0.2s;
+}
+
+.encounter-management-page .filter-group input[type="date"]:focus,
+.encounter-management-page .filter-group select:focus {
+    outline: none;
+    border-color: #3b82f6;
+}
+
+.encounter-management-page .btn-reset-filter {
+    padding: 0.625rem 1.25rem;
+    background: #f3f4f6;
+    color: #374151;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+}
+
+.encounter-management-page .btn-reset-filter:hover {
+    background: #e5e7eb;
+    border-color: #9ca3af;
+}
+
+.encounter-management-page .filter-summary {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid #e5e7eb;
+    font-size: 0.875rem;
+    color: #6b7280;
+}
+
+/* Empty State */
+.encounter-management-page .empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 4rem 2rem;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    gap: 1rem;
+}
+
+.encounter-management-page .empty-state svg {
+    font-size: 4rem;
+    color: #d1d5db;
+}
+
+.encounter-management-page .empty-state p {
+    color: #6b7280;
+    font-size: 1rem;
+    margin: 0;
+}
+
+/* Encounters Grid */
+.encounter-management-page .encounters-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+/* Encounter Card */
+.encounter-management-page .encounter-card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.encounter-management-page .encounter-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    border-color: #3b82f6;
+}
+
+.encounter-management-page .encounter-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.25rem;
+    background: #f9fafb;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.encounter-management-page .encounter-id {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.encounter-management-page .encounter-id .label {
+    font-size: 0.875rem;
+    color: #6b7280;
+    font-weight: 500;
+}
+
+.encounter-management-page .encounter-id .value {
+    font-size: 1rem;
+    color: #1f2937;
+    font-weight: 700;
+}
+
+/* Status Badge */
+.encounter-management-page .status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.375rem 0.875rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.encounter-management-page .badge-arrived {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+.encounter-management-page .badge-planned {
+    background: #e0e7ff;
+    color: #4338ca;
+}
+
+.encounter-management-page .badge-checked-in {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+.encounter-management-page .badge-in-progress {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.encounter-management-page .badge-finished {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.encounter-management-page .badge-completed {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.encounter-management-page .badge-cancelled {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.encounter-management-page .badge-discharged {
+    background: #e0e7ff;
+    color: #4338ca;
+}
+
+.encounter-management-page .badge-default {
+    background: #f3f4f6;
+    color: #374151;
+}
+
+/* Encounter Body */
+.encounter-management-page .encounter-body {
+    padding: 1.25rem;
+}
+
+.encounter-management-page .patient-info {
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #f3f4f6;
+}
+
+.encounter-management-page .info-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.encounter-management-page .info-row .icon {
+    font-size: 1.5rem;
+    color: #3b82f6;
+    flex-shrink: 0;
+}
+
+.encounter-management-page .info-content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.encounter-management-page .patient-name {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #1f2937;
+}
+
+.encounter-management-page .patient-code {
+    font-size: 0.875rem;
+    color: #6b7280;
+}
+
+/* Encounter Details */
+.encounter-management-page .encounter-details {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+}
+
+.encounter-management-page .detail-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+}
+
+.encounter-management-page .detail-item.full-width {
+    grid-column: 1 / -1;
+}
+
+.encounter-management-page .detail-item .icon {
+    font-size: 1rem;
+    color: #6b7280;
+    margin-top: 0.125rem;
+    flex-shrink: 0;
+}
+
+.encounter-management-page .detail-label {
+    font-size: 0.875rem;
+    color: #6b7280;
+    font-weight: 500;
+    margin-right: 0.5rem;
+}
+
+.encounter-management-page .detail-value {
+    font-size: 0.875rem;
+    color: #1f2937;
+    font-weight: 500;
+}
+
+/* Encounter Footer */
+.encounter-management-page .encounter-footer {
+    padding: 1rem 1.25rem;
+    background: #f9fafb;
+    border-top: 1px solid #e5e7eb;
+}
+
+.encounter-management-page .footer-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.encounter-management-page .created-by,
+.encounter-management-page .booking-id {
+    font-size: 0.75rem;
+    color: #6b7280;
+}
+
+/* Summary Section */
+.encounter-management-page .summary-section {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.5rem;
+}
+
+.encounter-management-page .summary-card {
+    background: white;
+    padding: 1.25rem;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.encounter-management-page .summary-label {
+    font-size: 0.875rem;
+    color: #6b7280;
+    font-weight: 500;
+}
+
+.encounter-management-page .summary-value {
+    font-size: 2rem;
+    color: #1f2937;
+    font-weight: 700;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+    .encounter-management-page .encounters-grid {
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    }
+
+    .encounter-management-page .summary-section {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .encounter-management-page .filter-controls {
+        flex-wrap: wrap;
+    }
+
+    .encounter-management-page .filter-group {
+        flex: 1 1 calc(50% - 0.5rem);
+        min-width: 200px;
+    }
+}
+
+@media (max-width: 768px) {
+    .encounter-management-page .page-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+
+    .encounter-management-page .btn-refresh {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .encounter-management-page .encounters-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .encounter-management-page .summary-section {
+        grid-template-columns: 1fr;
+    }
+
+    .encounter-management-page .filter-controls {
+        flex-direction: column;
+    }
+
+    .encounter-management-page .filter-group {
+        flex: 1 1 100%;
+        width: 100%;
+    }
+}
+

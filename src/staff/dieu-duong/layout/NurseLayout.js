@@ -70,6 +70,12 @@ const NurseLayout = () => {
                         <div className="category-header">Nhập xuất viện</div>
                         <ul>
                             <li>
+                                <NavLink to="/staff/dieu-duong/yeu-cau-nhap-vien">
+                                    <FiClipboard />
+                                    <span>Yêu cầu nhập viện</span>
+                                </NavLink>
+                            </li>
+                            <li>
                                 <NavLink to="/staff/dieu-duong/nhap-vien">
                                     <FiLogIn />
                                     <span>Nhập viện</span>

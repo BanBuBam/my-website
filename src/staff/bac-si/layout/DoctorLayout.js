@@ -13,7 +13,8 @@ import {
     FiTrendingUp,
     FiFolder,
     FiBarChart2,
-    FiEdit3
+    FiEdit3,
+    FiAlertCircle
 } from 'react-icons/fi';
 import StaffAvatarDropdown from '../../components/StaffAvatarDropdown';
 
@@ -74,17 +75,54 @@ const DoctorLayout = () => {
                                 </NavLink>
                             </li>
                             <li>
-                                <NavLink to="/staff/bac-si/ke-don-thuoc">
-                                    <FiEdit3 />
-                                    <span>Kê đơn thuốc</span>
+                                <NavLink to="/staff/bac-si/encounters">
+                                    <FiUsers />
+                                    <span>Quản lý Encounters</span>
                                 </NavLink>
                             </li>
                             <li>
-                                <NavLink to="/staff/bac-si/chi-dinh-cls">
+                                <NavLink to="/staff/bac-si/encounter-vital">
                                     <FiActivity />
-                                    <span>Chỉ định xét nghiệm/CLS</span>
+                                    <span>Vital Signs</span>
                                 </NavLink>
                             </li>
+                            <li>
+                                <NavLink to="/staff/bac-si/clinical-notes">
+                                    <FiFileText />
+                                    <span>Clinical Notes</span>
+                                </NavLink>
+                            </li>
+                            <li>
+                                <NavLink to="/staff/bac-si/lab-test-order">
+                                    <FiClipboard />
+                                    <span>Lab Test Order</span>
+                                </NavLink>
+                            </li>
+                            <li>
+                                <NavLink to="/staff/bac-si/imaging-order">
+                                    <FiFileText />
+                                    <span>Imaging Order</span>
+                                </NavLink>
+                            </li>
+                            <li>
+                                <NavLink to="/staff/bac-si/prescription">
+                                    <FiEdit3 />
+                                    <span>Prescription</span>
+                                </NavLink>
+                            </li>
+                            
+                            {/*<li>*/}
+                            {/*    <NavLink to="/staff/bac-si/ke-don-thuoc">*/}
+                            {/*        <FiEdit3 />*/}
+                            {/*        <span>Kê đơn thuốc</span>*/}
+                            {/*    </NavLink>*/}
+                            {/*</li>*/}
+                            {/*<li>*/}
+                            {/*    <NavLink to="/staff/bac-si/chi-dinh-cls">*/}
+                            {/*        <FiActivity />*/}
+                            {/*        <span>Chỉ định xét nghiệm/CLS</span>*/}
+                            {/*    </NavLink>*/}
+                            {/*</li>*/}
                         </ul>
                     </div>
 
@@ -92,6 +130,12 @@ const DoctorLayout = () => {
                     <div className="nav-category">
                         <div className="category-header">Bệnh nhân nội trú</div>
                         <ul>
+                            <li>
+                                <NavLink to="/staff/bac-si/yeu-cau-nhap-vien">
+                                    <FiClipboard />
+                                    <span>Quản lý yêu cầu nhập viện</span>
+                                </NavLink>
+                            </li>
                             <li>
                                 <NavLink to="/staff/bac-si/benh-nhan-noi-tru">
                                     <FiUsers />
@@ -158,6 +202,19 @@ const DoctorLayout = () => {
                                 <NavLink to="/staff/bac-si/phieu-phau-thuat">
                                     <FiFileText />
                                     <span>Phiếu phẫu thuật</span>
+                                </NavLink>
+                            </li>
+                        </ul>
+                    </div>
+
+                    {/* Cấp cứu */}
+                    <div className="nav-category">
+                        <div className="category-header">Cấp cứu</div>
+                        <ul>
+                            <li>
+                                <NavLink to="/staff/bac-si/cap-cuu">
+                                    <FiAlertCircle />
+                                    <span>Emergency Encounters</span>
                                 </NavLink>
                             </li>
                         </ul>

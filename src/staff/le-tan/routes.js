@@ -5,8 +5,11 @@ import ReceptionistLayout from './components/layout/ReceptionistLayout';
 import LeTanDashboardPage from './pages/dashboard/DashboardPage';
 import TimKiemPage from './pages/timkiem/TimKiemBenhNhan';
 import QuanLyLichHenPage from './pages/lichhen/QuanLyLichHenPage';
-import TiepNhanPage from './pages/tiepnhan/TiepNhanBenhNhan'; 
-import TraCuuBenhNhan from './pages/tracuu/TraCuuBenhNhan'; 
+import TiepNhanPage from './pages/tiepnhan/TiepNhanBenhNhan';
+import TraCuuBenhNhan from './pages/tracuu/TraCuuBenhNhan';
+import BookingListPage from './pages/booking/BookingListPage';
+import BookingDetailPage from './pages/booking/BookingDetailPage';
+import PaymentPage from './pages/payment/PaymentPage';
 
 const LeTanRoutes = () => {
   return (
@@ -14,11 +17,13 @@ const LeTanRoutes = () => {
       <Route element={<ReceptionistLayout />}>
         <Route index element={<LeTanDashboardPage />} />
         <Route path="dashboard" element={<LeTanDashboardPage />} />
-        <Route path="tim-kiem" element={<TimKiemPage />} /> {/* <-- ADD THE NEW ROUTE */}
-         <Route path="lich-hen" element={<QuanLyLichHenPage />} />
-         <Route path="tiep-nhan" element={<TiepNhanPage />} />
-          <Route path="tra-cuu" element={<TraCuuBenhNhan />} />
-        {/* ... other routes ... */}
+        <Route path="tim-kiem" element={<TimKiemPage />} />
+        <Route path="lich-hen" element={<QuanLyLichHenPage />} />
+        <Route path="tiep-nhan" element={<TiepNhanPage />} />
+        <Route path="tra-cuu" element={<TraCuuBenhNhan />} />
+        <Route path="booking/:bookingId" element={<BookingDetailPage />} />
+        <Route path="booking" element={<BookingListPage />} />
+        <Route path="payment" element={<PaymentPage />} />
       </Route>
     </Routes>
   );

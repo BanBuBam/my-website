@@ -7,6 +7,7 @@ import AdmissionPage from './pages/inout/AdmissionPage';
 import PatientCarePage from './pages/patientcare/PatientCarePage';
 import BedTransferPage from './pages/bedtransfer/BedTransferPage';
 import OrdersPage from './pages/prescription/OrdersPage';
+import AdmissionRequestPage from './pages/inpatient/AdmissionRequestPage';
 
 const NurseRoutes = () => {
     return (
@@ -15,6 +16,7 @@ const NurseRoutes = () => {
                 <Route index element={<NurseDashboardPage />} />
                 <Route path="dashboard" element={<NurseDashboardPage />} />
                 <Route path="so-do-giuong" element={<BedMapPage />} />
+                <Route path="yeu-cau-nhap-vien" element={<AdmissionRequestPage />} />
                 <Route path="nhap-xuat-vien" element={<AdmissionPage />} />
                 <Route path="cham-soc" element={<PatientCarePage />} />
                 <Route path="chuyen-giuong" element={<BedTransferPage />} />
