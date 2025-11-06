@@ -108,6 +108,126 @@
     font-size: 1rem;
 }
 
+/* Filter Section */
+.encounter-management-page .filter-section {
+    min-width: fit-content;
+    background: white;
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    margin-bottom: 1.5rem;
+}
+
+.encounter-management-page .filter-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.encounter-management-page .filter-header svg {
+    font-size: 1.125rem;
+    color: #3b82f6;
+}
+
+.encounter-management-page .filter-header h3 {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #1f2937;
+}
+
+.encounter-management-page .filter-controls {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-end;
+}
+
+.encounter-management-page .filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    flex: 1;
+}
+
+.encounter-management-page .filter-group:first-child {
+    flex: 2;
+}
+
+.encounter-management-page .filter-group label {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #374151;
+}
+
+.encounter-management-page .search-input {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.encounter-management-page .search-input svg {
+    position: absolute;
+    left: 0.75rem;
+    color: #9ca3af;
+    font-size: 1rem;
+}
+
+.encounter-management-page .search-input input {
+    width: 100%;
+    padding: 0.625rem 0.75rem 0.625rem 2.5rem;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    transition: border-color 0.2s;
+}
+
+.encounter-management-page .search-input input:focus {
+    outline: none;
+    border-color: #3b82f6;
+}
+
+.encounter-management-page .filter-group input[type="date"],
+.encounter-management-page .filter-group select {
+    padding: 0.625rem 0.75rem;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    transition: border-color 0.2s;
+}
+
+.encounter-management-page .filter-group input[type="date"]:focus,
+.encounter-management-page .filter-group select:focus {
+    outline: none;
+    border-color: #3b82f6;
+}
+
+.encounter-management-page .btn-reset-filter {
+    padding: 0.625rem 1.25rem;
+    background: #f3f4f6;
+    color: #374151;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+}
+
+.encounter-management-page .btn-reset-filter:hover {
+    background: #e5e7eb;
+    border-color: #9ca3af;
+}
+
+.encounter-management-page .filter-summary {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid #e5e7eb;
+    font-size: 0.875rem;
+    color: #6b7280;
+}
+
 /* Empty State */
 .encounter-management-page .empty-state {
     display: flex;
@@ -118,17 +238,18 @@
     background: white;
     border-radius: 12px;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    gap: 1rem;
 }
 
 .encounter-management-page .empty-state svg {
     font-size: 4rem;
     color: #d1d5db;
-    margin-bottom: 1rem;
 }
 
 .encounter-management-page .empty-state p {
     color: #6b7280;
     font-size: 1rem;
+    margin: 0;
 }
 
 /* Encounters Grid */
@@ -193,6 +314,16 @@
     font-weight: 600;
 }
 
+.encounter-management-page .badge-arrived {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+.encounter-management-page .badge-planned {
+    background: #e0e7ff;
+    color: #4338ca;
+}
+
 .encounter-management-page .badge-checked-in {
     background: #dbeafe;
     color: #1e40af;
@@ -201,6 +332,11 @@
 .encounter-management-page .badge-in-progress {
     background: #fef3c7;
     color: #92400e;
+}
+
+.encounter-management-page .badge-finished {
+    background: #d1fae5;
+    color: #065f46;
 }
 
 .encounter-management-page .badge-completed {
@@ -359,6 +495,15 @@
     .encounter-management-page .summary-section {
         grid-template-columns: repeat(2, 1fr);
     }
+
+    .encounter-management-page .filter-controls {
+        flex-wrap: wrap;
+    }
+
+    .encounter-management-page .filter-group {
+        flex: 1 1 calc(50% - 0.5rem);
+        min-width: 200px;
+    }
 }
 
 @media (max-width: 768px) {
@@ -379,6 +524,15 @@
 
     .encounter-management-page .summary-section {
         grid-template-columns: 1fr;
+    }
+
+    .encounter-management-page .filter-controls {
+        flex-direction: column;
+    }
+
+    .encounter-management-page .filter-group {
+        flex: 1 1 100%;
+        width: 100%;
     }
 }
 

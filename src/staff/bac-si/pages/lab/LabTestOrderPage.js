@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './LabTestOrderPage.css';
 import {
     FiSearch, FiUser, FiClock, FiActivity, FiPlus, FiList, FiX,
-    FiAlertCircle, FiCheckCircle, FiFileText, FiClipboard, FiDroplet
+    FiAlertCircle, FiCheckCircle, FiFileText, FiClipboard
 } from 'react-icons/fi';
 import { doctorEncounterAPI } from '../../../../services/staff/doctorAPI';
 
@@ -166,44 +166,6 @@ const LabTestOrderPage = () => {
             alert(err.message || 'Không thể tạo lab test order');
         } finally {
             setSubmitting(false);
-        }
-    };
-
-    const handleCollectSpecimen = async (labTestOrderId) => {
-        if (!window.confirm('Bạn có chắc chắn muốn thu thập mẫu cho lab order này?')) {
-            return;
-        }
-
-        try {
-            const response = await doctorEncounterAPI.collectSpecimen(labTestOrderId);
-
-            if (response && response.data) {
-                alert('Thu thập mẫu thành công!');
-                // Refresh lab orders list
-                handleViewLabOrders();
-            }
-        } catch (err) {
-            console.error('Error collecting specimen:', err);
-            alert(err.message || 'Không thể thu thập mẫu');
-        }
-    };
-
-    const handleReceiveSpecimen = async (labTestOrderId) => {
-        if (!window.confirm('Bạn có chắc chắn muốn nhận mẫu cho lab order này?')) {
-            return;
-        }
-
-        try {
-            const response = await doctorEncounterAPI.receiveSpecimen(labTestOrderId);
-
-            if (response && response.data) {
-                alert('Nhận mẫu thành công!');
-                // Refresh lab orders list
-                handleViewLabOrders();
-            }
-        } catch (err) {
-            console.error('Error receiving specimen:', err);
-            alert(err.message || 'Không thể nhận mẫu');
         }
     };
 
@@ -580,26 +542,6 @@ const LabTestOrderPage = () => {
                                                     </div>
                                                 )}
                                             </div>
-                                            {(order.status === 'PENDING' || order.status === 'COLLECTED') && (
-                                                <div className="order-footer">
-                                                    {order.status === 'PENDING' && (
-                                                        <button
-                                                            className="btn-collect-specimen"
-                                                            onClick={() => handleCollectSpecimen(order.labTestOrderId)}
-                                                        >
-                                                            <FiDroplet /> Thu thập mẫu
-                                                        </button>
-                                                    )}
-                                                    {order.status === 'COLLECTED' && (
-                                                        <button
-                                                            className="btn-receive-specimen"
-                                                            onClick={() => handleReceiveSpecimen(order.labTestOrderId)}
-                                                        >
-                                                            <FiCheckCircle /> Nhận mẫu
-                                                        </button>
-                                                    )}
-                                                </div>
-                                            )}
                                         </div>
                                     ))}
                                 </div>

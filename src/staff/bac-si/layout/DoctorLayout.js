@@ -131,6 +131,12 @@ const DoctorLayout = () => {
                         <div className="category-header">Bệnh nhân nội trú</div>
                         <ul>
                             <li>
+                                <NavLink to="/staff/bac-si/yeu-cau-nhap-vien">
+                                    <FiClipboard />
+                                    <span>Quản lý yêu cầu nhập viện</span>
+                                </NavLink>
+                            </li>
+                            <li>
                                 <NavLink to="/staff/bac-si/benh-nhan-noi-tru">
                                     <FiUsers />
                                     <span>Danh sách bệnh nhân</span>

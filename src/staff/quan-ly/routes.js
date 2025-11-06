@@ -8,6 +8,7 @@ import CreateEmployeePage from './pages/employees/CreateEmployeePage';
 import DoctorScheduleListPage from './pages/doctor-schedules/DoctorScheduleListPage';
 import CreateDoctorSchedulePage from './pages/doctor-schedules/CreateDoctorSchedulePage';
 import RoleListPage from './pages/roles/RoleListPage';
+import AdmissionRequestPage from './pages/inpatient/AdmissionRequestPage';
 
 const AdminRoutes = () => {
     return (
@@ -44,6 +45,9 @@ const AdminRoutes = () => {
 
                 {/* Availability */}
                 <Route path="availability" element={<div>Trang Tình trạng Sẵn sàng</div>} />
+
+                {/* Admission Requests */}
+                <Route path="yeu-cau-nhap-vien" element={<AdmissionRequestPage />} />
 
                 {/* Leaves */}
                 <Route path="leaves" element={<div>Trang Danh sách Nghỉ phép</div>} />

@@ -3,7 +3,8 @@ import { NavLink, Outlet } from 'react-router-dom';
 import './AdminLayout.css';
 import {
     FiUsers, FiShield, FiGrid, FiHome, FiUserCheck, FiCalendar,
-    FiClock, FiCheckSquare, FiUmbrella, FiChevronDown, FiChevronRight
+    FiClock, FiCheckSquare, FiUmbrella, FiChevronDown, FiChevronRight,
+    FiClipboard
 } from 'react-icons/fi';
 import StaffAvatarDropdown from '../../components/StaffAvatarDropdown';
 
@@ -127,6 +128,14 @@ const AdminLayout = () => {
                             <NavLink to="/staff/admin/availability">
                                 <FiGrid />
                                 <span>Tình trạng Sẵn sàng</span>
+                            </NavLink>
+                        </li>
+
+                        {/* Quản lý Yêu cầu Nhập viện */}
+                        <li>
+                            <NavLink to="/staff/admin/yeu-cau-nhap-vien">
+                                <FiClipboard />
+                                <span>Yêu cầu Nhập viện</span>
                             </NavLink>
                         </li>
 

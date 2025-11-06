@@ -22,6 +22,10 @@ const BookingListPage = () => {
     const [totalPages, setTotalPages] = useState(0);
     const [totalElements, setTotalElements] = useState(0);
 
+    // Filter states
+    const [statusFilter, setStatusFilter] = useState('ALL');
+    const [allSearchResults, setAllSearchResults] = useState([]);
+
     // Fetch bookings based on active tab
     useEffect(() => {
         if (activeTab === 'pending') {
@@ -75,7 +79,7 @@ const BookingListPage = () => {
 
     const handleSearch = async (e) => {
         if (e) e.preventDefault();
-        
+
         if (!searchKeyword.trim()) {
             setError('Vui lòng nhập từ khóa tìm kiếm');
             return;
@@ -85,9 +89,12 @@ const BookingListPage = () => {
             setLoading(true);
             setError(null);
             const response = await receptionistBookingAPI.searchBookings(searchKeyword, currentPage, pageSize);
-            
+
             if (response && response.data) {
-                setBookings(response.data.content || []);
+                const results = response.data.content || [];
+                setAllSearchResults(results);
+                setStatusFilter('ALL');
+                setBookings(results);
                 setTotalPages(response.data.totalPages || 0);
                 setTotalElements(response.data.totalElements || 0);
             }
@@ -95,8 +102,20 @@ const BookingListPage = () => {
             console.error('Error searching bookings:', err);
             setError(err.message || 'Không thể tìm kiếm booking');
             setBookings([]);
+            setAllSearchResults([]);
         } finally {
             setLoading(false);
+        }
+    };
+
+    // Filter bookings by status
+    const handleStatusFilterChange = (status) => {
+        setStatusFilter(status);
+        if (status === 'ALL') {
+            setBookings(allSearchResults);
+        } else {
+            const filtered = allSearchResults.filter(b => b.status === status);
+            setBookings(filtered);
         }
     };
 
@@ -116,6 +135,8 @@ const BookingListPage = () => {
         setSearchKeyword('');
         setCurrentPage(0);
         setError(null);
+        setStatusFilter('ALL');
+        setAllSearchResults([]);
     };
 
     const handlePageChange = (newPage) => {
@@ -240,6 +261,51 @@ const BookingListPage = () => {
                             {loading ? 'Đang tìm...' : 'Tìm kiếm'}
                         </button>
                     </form>
+
+                    {/* Status Filter - Show after search results */}
+                    {allSearchResults.length > 0 && (
+                        <div className="filter-section">
+                            <label className="filter-label">Lọc theo trạng thái:</label>
+                            <div className="filter-buttons">
+                                <button
+                                    className={`filter-btn ${statusFilter === 'ALL' ? 'active' : ''}`}
+                                    onClick={() => handleStatusFilterChange('ALL')}
+                                >
+                                    Tất cả ({allSearchResults.length})
+                                </button>
+                                <button
+                                    className={`filter-btn ${statusFilter === 'PENDING' ? 'active' : ''}`}
+                                    onClick={() => handleStatusFilterChange('PENDING')}
+                                >
+                                    <FiClock /> Chờ xác nhận ({allSearchResults.filter(b => b.status === 'PENDING').length})
+                                </button>
+                                <button
+                                    className={`filter-btn ${statusFilter === 'CONFIRMED' ? 'active' : ''}`}
+                                    onClick={() => handleStatusFilterChange('CONFIRMED')}
+                                >
+                                    <FiCheckCircle /> Đã xác nhận ({allSearchResults.filter(b => b.status === 'CONFIRMED').length})
+                                </button>
+                                <button
+                                    className={`filter-btn ${statusFilter === 'CANCELLED' ? 'active' : ''}`}
+                                    onClick={() => handleStatusFilterChange('CANCELLED')}
+                                >
+                                    <FiXCircle /> Đã hủy ({allSearchResults.filter(b => b.status === 'CANCELLED').length})
+                                </button>
+                                <button
+                                    className={`filter-btn ${statusFilter === 'COMPLETED' ? 'active' : ''}`}
+                                    onClick={() => handleStatusFilterChange('COMPLETED')}
+                                >
+                                    <FiCheckCircle /> Hoàn thành ({allSearchResults.filter(b => b.status === 'COMPLETED').length})
+                                </button>
+                                <button
+                                    className={`filter-btn ${statusFilter === 'NO_SHOW' ? 'active' : ''}`}
+                                    onClick={() => handleStatusFilterChange('NO_SHOW')}
+                                >
+                                    <FiAlertCircle /> Không đến ({allSearchResults.filter(b => b.status === 'NO_SHOW').length})
+                                </button>
+                            </div>
+                        </div>
+                    )}
                 </div>
             )}
 

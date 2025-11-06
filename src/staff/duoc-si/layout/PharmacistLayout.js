@@ -36,6 +36,14 @@ const PharmacistLayout = () => {
                                 </NavLink>
                             </li>
                         </ul>
+                        <ul>
+                            <li>
+                                <NavLink to="/staff/duoc-si/thuoc">
+                                    <FiList />
+                                    <span>Danh sách thuốc</span>
+                                </NavLink>
+                            </li>
+                        </ul>
                     </div>
 
                     {/* Cấp phát thuốc */}

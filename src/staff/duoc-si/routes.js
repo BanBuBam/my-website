@@ -11,6 +11,7 @@ import SupplierPage from "./pages/nha-cung-cap/SupplierPage";
 import CreateSupplierPage from "./pages/nha-cung-cap/CreateSupplierPage";
 import ExportStockPage from "./pages/xuat-kho/ExportStockPage";
 import ExpiryManagementPage from "./pages/han-su-dung/ExpiryManagementPage";
+import MedicineManagementPage from "./pages/thuoc/MedicineManagementPage";
 
 const PharmacistRoutes = () => {
     return (
@@ -28,6 +29,7 @@ const PharmacistRoutes = () => {
                 <Route path="tao-ncc" element={<CreateSupplierPage />} />
                 <Route path="xuat-kho" element={<ExportStockPage />} />
                 <Route path="han-su-dung" element={<ExpiryManagementPage />} />
+                <Route path="thuoc" element={<MedicineManagementPage />} />
                 <Route path="inventory" element={<div>Trang Quản lý Kho thuốc</div>} />
                 <Route path="prescriptions" element={<div>Trang Quản lý Đơn thuốc</div>} />
                 <Route path="reports" element={<div>Trang Báo cáo</div>} />

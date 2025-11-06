@@ -31,6 +31,8 @@ const ImagingOrderPage = () => {
     const [showStartExamModal, setShowStartExamModal] = useState(false);
     const [selectedOrderForStart, setSelectedOrderForStart] = useState(null);
     const [radiologistId, setRadiologistId] = useState('');
+    const [radiologists, setRadiologists] = useState([]);
+    const [loadingRadiologists, setLoadingRadiologists] = useState(false);
 
     // Report modal states
     const [showReportModal, setShowReportModal] = useState(false);
@@ -45,6 +47,11 @@ const ImagingOrderPage = () => {
         numberOfImages: '',
         imageStorageLocation: ''
     });
+
+    // Detail modal states
+    const [showDetailModal, setShowDetailModal] = useState(false);
+    const [selectedOrderDetail, setSelectedOrderDetail] = useState(null);
+    const [loadingDetail, setLoadingDetail] = useState(false);
 
     const [orderFormData, setOrderFormData] = useState({
         imagingType: '',
@@ -73,8 +80,17 @@ const ImagingOrderPage = () => {
     const loadServices = async () => {
         try {
             const response = await serviceAPI.getServices(0, 100);
-            if (response.data && response.data.content) {
+            console.log('Services response:', response);
+
+            if (response && response.content) {
+                // Response trả về trực tiếp có content
+                setServices(response.content);
+            } else if (response && response.data && response.data.content) {
+                // Response có data wrapper
                 setServices(response.data.content);
+            } else if (response && Array.isArray(response)) {
+                // Response là array trực tiếp
+                setServices(response);
             }
         } catch (err) {
             console.error('Error loading services:', err);
@@ -233,10 +249,25 @@ const ImagingOrderPage = () => {
     };
 
     // Start exam handlers
-    const handleOpenStartExamModal = (order) => {
+    const handleOpenStartExamModal = async (order) => {
         setSelectedOrderForStart(order);
         setRadiologistId('');
         setShowStartExamModal(true);
+
+        // Fetch radiologists
+        setLoadingRadiologists(true);
+        try {
+            const response = await doctorEncounterAPI.getRadiologists();
+            console.log('Radiologists Response:', response);
+            if (response && response.data) {
+                setRadiologists(response.data);
+            }
+        } catch (err) {
+            console.error('Error fetching radiologists:', err);
+            setRadiologists([]);
+        } finally {
+            setLoadingRadiologists(false);
+        }
     };
 
     const handleStartExamSubmit = async (e) => {
@@ -275,6 +306,25 @@ const ImagingOrderPage = () => {
             }
         } catch (err) {
             alert('Lỗi: ' + (err.message || 'Không thể hoàn thành exam'));
+        }
+    };
+
+    // Detail handlers
+    const handleViewDetail = async (order) => {
+        setShowDetailModal(true);
+        setLoadingDetail(true);
+        setSelectedOrderDetail(null);
+
+        try {
+            const response = await doctorEncounterAPI.getImagingOrderDetail(order.imagingOrderId);
+            if (response.data) {
+                setSelectedOrderDetail(response.data);
+            }
+        } catch (err) {
+            console.error('Error loading imaging order detail:', err);
+            alert('Lỗi: ' + (err.message || 'Không thể tải chi tiết imaging order'));
+        } finally {
+            setLoadingDetail(false);
         }
     };
 
@@ -786,6 +836,12 @@ const ImagingOrderPage = () => {
                                             </div>
                                             <div className="order-actions">
                                                 <button
+                                                    className="btn-action btn-detail"
+                                                    onClick={() => handleViewDetail(order)}
+                                                >
+                                                    <FiFileText /> Chi tiết
+                                                </button>
+                                                <button
                                                     className="btn-action btn-schedule"
                                                     onClick={() => handleOpenScheduleModal(order)}
                                                 >
@@ -909,22 +965,33 @@ const ImagingOrderPage = () => {
                                     />
                                 </div>
                                 <div className="form-group">
-                                    <label>Radiologist ID <span className="required">*</span></label>
-                                    <input
-                                        type="number"
-                                        value={radiologistId}
-                                        onChange={(e) => setRadiologistId(e.target.value)}
-                                        className="form-control"
-                                        placeholder="Nhập Radiologist ID"
-                                        required
-                                    />
+                                    <label>Chọn Radiologist <span className="required">*</span></label>
+                                    {loadingRadiologists ? (
+                                        <div className="loading-select">
+                                            <span>Đang tải danh sách radiologist...</span>
+                                        </div>
+                                    ) : (
+                                        <select
+                                            value={radiologistId}
+                                            onChange={(e) => setRadiologistId(e.target.value)}
+                                            className="form-control"
+                                            required
+                                        >
+                                            <option value="">-- Chọn Radiologist --</option>
+                                            {radiologists.map((radiologist) => (
+                                                <option key={radiologist.employeeId} value={radiologist.employeeId}>
+                                                    {radiologist.fullName} - {radiologist.employeeCode} ({radiologist.specialization})
+                                                </option>
+                                            ))}
+                                        </select>
+                                    )}
                                 </div>
                             </div>
                             <div className="modal-footer">
                                 <button type="button" className="btn-cancel" onClick={() => setShowStartExamModal(false)}>
                                     Hủy
                                 </button>
-                                <button type="submit" className="btn-submit" disabled={submitting}>
+                                <button type="submit" className="btn-submit" disabled={submitting || loadingRadiologists}>
                                     {submitting ? 'Đang xử lý...' : 'Bắt đầu'}
                                 </button>
                             </div>
@@ -1047,6 +1114,293 @@ const ImagingOrderPage = () => {
                                 </button>
                             </div>
                         </form>
+                    </div>
+                </div>
+            )}
+
+            {/* Detail Modal */}
+            {showDetailModal && (
+                <div className="modal-overlay" onClick={() => setShowDetailModal(false)}>
+                    <div className="modal-content detail-modal" onClick={(e) => e.stopPropagation()}>
+                        <div className="modal-header">
+                            <h3>Chi tiết Imaging Order</h3>
+                            <button className="modal-close" onClick={() => setShowDetailModal(false)}>
+                                <FiX />
+                            </button>
+                        </div>
+                        <div className="modal-body">
+                            {loadingDetail ? (
+                                <div className="loading-state">
+                                    <p>Đang tải chi tiết...</p>
+                                </div>
+                            ) : selectedOrderDetail ? (
+                                <div className="detail-content">
+                                    {/* Thông tin cơ bản */}
+                                    <div className="detail-section">
+                                        <h4>Thông tin cơ bản</h4>
+                                        <div className="detail-grid">
+                                            <div className="detail-item">
+                                                <label>Imaging Order ID:</label>
+                                                <span>{selectedOrderDetail.imagingOrderId}</span>
+                                            </div>
+                                            <div className="detail-item">
+                                                <label>Encounter ID:</label>
+                                                <span>{selectedOrderDetail.encounterId}</span>
+                                            </div>
+                                            <div className="detail-item">
+                                                <label>Bệnh nhân:</label>
+                                                <span>{selectedOrderDetail.patientName} (ID: {selectedOrderDetail.patientId})</span>
+                                            </div>
+                                            <div className="detail-item">
+                                                <label>Bác sĩ chỉ định:</label>
+                                                <span>{selectedOrderDetail.orderedByDoctorName}</span>
+                                            </div>
+                                            <div className="detail-item">
+                                                <label>Loại chụp:</label>
+                                                <span>{selectedOrderDetail.imagingTypeDisplay}</span>
+                                            </div>
+                                            <div className="detail-item">
+                                                <label>Bộ phận:</label>
+                                                <span>{selectedOrderDetail.bodyPart}</span>
+                                            </div>
+                                            <div className="detail-item">
+                                                <label>Vị trí:</label>
+                                                <span>{selectedOrderDetail.laterality || 'N/A'}</span>
+                                            </div>
+                                            <div className="detail-item">
+                                                <label>Trạng thái:</label>
+                                                <span className={`status-badge status-${selectedOrderDetail.status?.toLowerCase()}`}>
+                                                    {selectedOrderDetail.status}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Thông tin lâm sàng */}
+                                    <div className="detail-section">
+                                        <h4>Thông tin lâm sàng</h4>
+                                        <div className="detail-grid">
+                                            <div className="detail-item full-width">
+                                                <label>Chỉ định lâm sàng:</label>
+                                                <span>{selectedOrderDetail.clinicalIndication || 'N/A'}</span>
+                                            </div>
+                                            <div className="detail-item full-width">
+                                                <label>Câu hỏi lâm sàng:</label>
+                                                <span>{selectedOrderDetail.clinicalQuestion || 'N/A'}</span>
+                                            </div>
+                                            <div className="detail-item">
+                                                <label>Cân nặng BN:</label>
+                                                <span>{selectedOrderDetail.patientWeightKg ? `${selectedOrderDetail.patientWeightKg} kg` : 'N/A'}</span>
+                                            </div>
+                                            <div className="detail-item">
+                                                <label>Creatinine:</label>
+                                                <span>{selectedOrderDetail.creatinineLevel || 'N/A'}</span>
+                                            </div>
+                                            <div className="detail-item full-width">
+                                                <label>Dị ứng:</label>
+                                                <span>{selectedOrderDetail.allergies || 'Không'}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Thuốc cản quang */}
+                                    {selectedOrderDetail.contrastUsed && (
+                                        <div className="detail-section">
+                                            <h4>Thuốc cản quang</h4>
+                                            <div className="detail-grid">
+                                                <div className="detail-item">
+                                                    <label>Loại:</label>
+                                                    <span>{selectedOrderDetail.contrastType || 'N/A'}</span>
+                                                </div>
+                                                <div className="detail-item">
+                                                    <label>Thể tích:</label>
+                                                    <span>{selectedOrderDetail.contrastVolumeMl ? `${selectedOrderDetail.contrastVolumeMl} ml` : 'N/A'}</span>
+                                                </div>
+                                                <div className="detail-item">
+                                                    <label>Đường dùng:</label>
+                                                    <span>{selectedOrderDetail.contrastRoute || 'N/A'}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {/* Lịch hẹn */}
+                                    {selectedOrderDetail.scheduledDatetime && (
+                                        <div className="detail-section">
+                                            <h4>Thông tin lịch hẹn</h4>
+                                            <div className="detail-grid">
+                                                <div className="detail-item">
+                                                    <label>Ngày giờ:</label>
+                                                    <span>{new Date(selectedOrderDetail.scheduledDatetime).toLocaleString('vi-VN')}</span>
+                                                </div>
+                                                <div className="detail-item">
+                                                    <label>Phòng:</label>
+                                                    <span>{selectedOrderDetail.scheduledRoom || 'N/A'}</span>
+                                                </div>
+                                                <div className="detail-item">
+                                                    <label>Thời lượng dự kiến:</label>
+                                                    <span>{selectedOrderDetail.estimatedDurationMinutes ? `${selectedOrderDetail.estimatedDurationMinutes} phút` : 'N/A'}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {/* Thông tin thực hiện */}
+                                    {selectedOrderDetail.radiologistName && (
+                                        <div className="detail-section">
+                                            <h4>Thông tin thực hiện</h4>
+                                            <div className="detail-grid">
+                                                <div className="detail-item">
+                                                    <label>Bác sĩ X-quang:</label>
+                                                    <span>{selectedOrderDetail.radiologistName}</span>
+                                                </div>
+                                                <div className="detail-item">
+                                                    <label>Kỹ thuật viên:</label>
+                                                    <span>{selectedOrderDetail.technicianName || 'N/A'}</span>
+                                                </div>
+                                                <div className="detail-item">
+                                                    <label>Bắt đầu:</label>
+                                                    <span>{selectedOrderDetail.examStartDatetime ? new Date(selectedOrderDetail.examStartDatetime).toLocaleString('vi-VN') : 'N/A'}</span>
+                                                </div>
+                                                <div className="detail-item">
+                                                    <label>Kết thúc:</label>
+                                                    <span>{selectedOrderDetail.examEndDatetime ? new Date(selectedOrderDetail.examEndDatetime).toLocaleString('vi-VN') : 'N/A'}</span>
+                                                </div>
+                                                <div className="detail-item">
+                                                    <label>Thời lượng thực tế:</label>
+                                                    <span>{selectedOrderDetail.actualDurationMinutes ? `${selectedOrderDetail.actualDurationMinutes} phút` : 'N/A'}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {/* Kết quả */}
+                                    {selectedOrderDetail.findings && (
+                                        <div className="detail-section">
+                                            <h4>Kết quả</h4>
+                                            <div className="detail-grid">
+                                                <div className="detail-item full-width">
+                                                    <label>Findings:</label>
+                                                    <span>{selectedOrderDetail.findings}</span>
+                                                </div>
+                                                <div className="detail-item full-width">
+                                                    <label>Impression:</label>
+                                                    <span>{selectedOrderDetail.impression || 'N/A'}</span>
+                                                </div>
+                                                <div className="detail-item full-width">
+                                                    <label>Recommendations:</label>
+                                                    <span>{selectedOrderDetail.recommendations || 'N/A'}</span>
+                                                </div>
+                                                <div className="detail-item">
+                                                    <label>Kết quả nghiêm trọng:</label>
+                                                    <span>{selectedOrderDetail.isCriticalResult ? 'Có' : 'Không'}</span>
+                                                </div>
+                                                {selectedOrderDetail.reportedByRadiologistName && (
+                                                    <>
+                                                        <div className="detail-item">
+                                                            <label>Báo cáo bởi:</label>
+                                                            <span>{selectedOrderDetail.reportedByRadiologistName}</span>
+                                                        </div>
+                                                        <div className="detail-item">
+                                                            <label>Thời gian báo cáo:</label>
+                                                            <span>{new Date(selectedOrderDetail.reportedAt).toLocaleString('vi-VN')}</span>
+                                                        </div>
+                                                    </>
+                                                )}
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {/* PACS Info */}
+                                    {selectedOrderDetail.pacsStudyInstanceUid && (
+                                        <div className="detail-section">
+                                            <h4>Thông tin PACS</h4>
+                                            <div className="detail-grid">
+                                                <div className="detail-item">
+                                                    <label>Study Instance UID:</label>
+                                                    <span>{selectedOrderDetail.pacsStudyInstanceUid}</span>
+                                                </div>
+                                                <div className="detail-item">
+                                                    <label>Accession Number:</label>
+                                                    <span>{selectedOrderDetail.pacsAccessionNumber || 'N/A'}</span>
+                                                </div>
+                                                <div className="detail-item">
+                                                    <label>Số lượng hình ảnh:</label>
+                                                    <span>{selectedOrderDetail.numberOfImages || 'N/A'}</span>
+                                                </div>
+                                                <div className="detail-item">
+                                                    <label>Vị trí lưu trữ:</label>
+                                                    <span>{selectedOrderDetail.imageStorageLocation || 'N/A'}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {/* Chi phí */}
+                                    <div className="detail-section">
+                                        <h4>Chi phí</h4>
+                                        <div className="detail-grid">
+                                            <div className="detail-item">
+                                                <label>Dịch vụ:</label>
+                                                <span>{selectedOrderDetail.serviceName}</span>
+                                            </div>
+                                            <div className="detail-item">
+                                                <label>Giá dịch vụ:</label>
+                                                <span>{selectedOrderDetail.actualPrice?.toLocaleString('vi-VN')} đ</span>
+                                            </div>
+                                            <div className="detail-item">
+                                                <label>Phí cản quang:</label>
+                                                <span>{selectedOrderDetail.contrastFee?.toLocaleString('vi-VN')} đ</span>
+                                            </div>
+                                            <div className="detail-item">
+                                                <label>Phí phụ thu:</label>
+                                                <span>{selectedOrderDetail.additionalFees?.toLocaleString('vi-VN')} đ</span>
+                                            </div>
+                                            <div className="detail-item">
+                                                <label>Tổng chi phí:</label>
+                                                <span>{selectedOrderDetail.totalCost?.toLocaleString('vi-VN')} đ</span>
+                                            </div>
+                                            <div className="detail-item">
+                                                <label>Giảm giá:</label>
+                                                <span>{selectedOrderDetail.discountAmount?.toLocaleString('vi-VN')} đ</span>
+                                            </div>
+                                            <div className="detail-item">
+                                                <label><strong>Thành tiền:</strong></label>
+                                                <span><strong>{selectedOrderDetail.finalAmount?.toLocaleString('vi-VN')} đ</strong></span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Thời gian */}
+                                    <div className="detail-section">
+                                        <h4>Thời gian</h4>
+                                        <div className="detail-grid">
+                                            <div className="detail-item">
+                                                <label>Ngày tạo:</label>
+                                                <span>{new Date(selectedOrderDetail.createdAt).toLocaleString('vi-VN')}</span>
+                                            </div>
+                                            <div className="detail-item">
+                                                <label>Cập nhật lần cuối:</label>
+                                                <span>{new Date(selectedOrderDetail.updatedAt).toLocaleString('vi-VN')}</span>
+                                            </div>
+                                            <div className="detail-item">
+                                                <label>Ngày chỉ định:</label>
+                                                <span>{new Date(selectedOrderDetail.orderedAt).toLocaleString('vi-VN')}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            ) : (
+                                <div className="empty-state">
+                                    <p>Không có dữ liệu</p>
+                                </div>
+                            )}
+                        </div>
+                        <div className="modal-footer">
+                            <button type="button" className="btn-cancel" onClick={() => setShowDetailModal(false)}>
+                                Đóng
+                            </button>
+                        </div>
                     </div>
                 </div>
             )}
