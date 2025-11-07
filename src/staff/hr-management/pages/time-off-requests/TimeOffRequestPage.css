@@ -1,3 +1,6 @@
+/* Import Unified Filter Styles */
+@import '../shared/FilterSection.css';
+
 .time-off-request-page {
   width: 100%;
   padding: 24px;
