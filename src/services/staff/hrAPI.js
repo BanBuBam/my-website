@@ -132,7 +132,7 @@ export const hrAuthAPI = {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ username, password }),
+      body: JSON.stringify({ email, password }),
     });
 
     // Lưu token vào localStorage nếu đăng nhập thành công
@@ -159,7 +159,7 @@ export const hrAuthAPI = {
 export const hrDashboardAPI = {
   // Lấy dashboard data
   getDashboard: async () => {
-    return apiCall('api/v1/hr/dashboard', {
+    return apiCall('api/v1/dashboard/hr', {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${getAccessToken()}`,
@@ -169,7 +169,7 @@ export const hrDashboardAPI = {
 
   // Lấy thống kê
   getStatistics: async () => {
-    return apiCall('api/v1/hr/dashboard/statistics', {
+    return apiCall('api/v1/dashboard/hr/statistics', {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${getAccessToken()}`,
