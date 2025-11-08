@@ -1132,6 +1132,28 @@ export const hrEmployeeStatusAPI = {
       body: JSON.stringify(statusData),
     });
   },
+
+  // Tạo tình trạng sẵn sàng làm việc (Employee Availability)
+  createEmployeeAvailability: async (availabilityData) => {
+    console.log('Creating employee availability with data:', availabilityData);
+    console.log('JSON stringified:', JSON.stringify(availabilityData, null, 2));
+
+    try {
+      const response = await apiCall('api/v1/employee-availability', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${getAccessToken()}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(availabilityData),
+      });
+      console.log('createEmployeeAvailability API response:', response);
+      return response;
+    } catch (error) {
+      console.error('createEmployeeAvailability API error:', error);
+      throw error;
+    }
+  },
 };
 
 // API Nghỉ phép (Time Off Request)
