@@ -132,7 +132,7 @@ export const hrAuthAPI = {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ username, password }),
+      body: JSON.stringify({ email, password }),
     });
 
     // Lưu token vào localStorage nếu đăng nhập thành công
@@ -159,7 +159,7 @@ export const hrAuthAPI = {
 export const hrDashboardAPI = {
   // Lấy dashboard data
   getDashboard: async () => {
-    return apiCall('api/v1/hr/dashboard', {
+    return apiCall('api/v1/dashboard/hr', {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${getAccessToken()}`,
@@ -169,7 +169,7 @@ export const hrDashboardAPI = {
 
   // Lấy thống kê
   getStatistics: async () => {
-    return apiCall('api/v1/hr/dashboard/statistics', {
+    return apiCall('api/v1/dashboard/hr/statistics', {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${getAccessToken()}`,
@@ -1131,6 +1131,28 @@ export const hrEmployeeStatusAPI = {
       },
       body: JSON.stringify(statusData),
     });
+  },
+
+  // Tạo tình trạng sẵn sàng làm việc (Employee Availability)
+  createEmployeeAvailability: async (availabilityData) => {
+    console.log('Creating employee availability with data:', availabilityData);
+    console.log('JSON stringified:', JSON.stringify(availabilityData, null, 2));
+
+    try {
+      const response = await apiCall('api/v1/employee-availability', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${getAccessToken()}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(availabilityData),
+      });
+      console.log('createEmployeeAvailability API response:', response);
+      return response;
+    } catch (error) {
+      console.error('createEmployeeAvailability API error:', error);
+      throw error;
+    }
   },
 };
 

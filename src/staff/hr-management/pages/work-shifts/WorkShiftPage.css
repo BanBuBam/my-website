@@ -1,3 +1,6 @@
+/* Import Unified Filter Styles */
+@import '../shared/FilterSection.css';
+
 .work-shift-page {
   width: 100%;
 }

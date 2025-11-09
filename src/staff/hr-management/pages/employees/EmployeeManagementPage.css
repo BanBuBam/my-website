@@ -1,3 +1,6 @@
+/* Import Unified Filter Styles */
+@import '../shared/FilterSection.css';
+
 .employee-management-page {
   width: 100%;
 }
