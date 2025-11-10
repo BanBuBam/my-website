@@ -7,14 +7,17 @@ import {
 import './AdmissionRequestPage.css';
 
 const AdmissionRequestPage = () => {
-    const [activeTab, setActiveTab] = useState('pending');
+    const [activeTab, setActiveTab] = useState('create');
     const [requests, setRequests] = useState([]);
     const [filteredRequests, setFilteredRequests] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [encounterId, setEncounterId] = useState('');
-
+    
+    // State mới để giữ encounter được chọn
+    const [selectedEncounter, setSelectedEncounter] = useState(null);
+    
     // Filters
     const [patientNameFilter, setPatientNameFilter] = useState('');
     const [approvalDateFilter, setApprovalDateFilter] = useState('');
@@ -37,6 +40,10 @@ const AdmissionRequestPage = () => {
         try {
             let response;
             switch (activeTab) {
+                // TAB MỚI
+                case 'create':
+                    response = await admissionRequestAPI.getFinishedOutpatientEncounters();
+                    break;
                 case 'pending':
                     response = await admissionRequestAPI.getPendingRequests();
                     break;
@@ -80,7 +87,7 @@ const AdmissionRequestPage = () => {
         }
 
         // Filter by approval date
-        if (approvalDateFilter) {
+        if (approvalDateFilter && activeTab !== 'create') {
             filtered = filtered.filter(req => {
                 if (!req.approvedAt) return false;
                 const approvalDate = new Date(req.approvedAt).toISOString().split('T')[0];
@@ -124,7 +131,32 @@ const AdmissionRequestPage = () => {
         setPatientNameFilter('');
         setApprovalDateFilter('');
     };
-
+    
+    // Hàm mới: Mở modal khi click "Tạo yêu cầu" từ EncounterCard
+    const handleCreateRequest = (encounter) => {
+        setSelectedEncounter(encounter);
+        setShowCreateModal(true);
+    };
+    
+    // Hàm mới: Đóng modal và reset encounter
+    const handleCloseModal = () => {
+        setShowCreateModal(false);
+        setSelectedEncounter(null);
+    };
+    
+    // Hàm mới: Xử lý khi tạo thành công
+    const handleCreateSuccess = () => {
+        handleCloseModal();
+        if (activeTab === 'create') {
+            // Tải lại danh sách encounter (để loại bỏ encounter đã tạo)
+            fetchRequests();
+        } else if (activeTab !== 'search') {
+            fetchRequests();
+        }
+        // Có thể tự động chuyển sang tab 'pending'
+        setActiveTab('pending');
+    };
+    
     const getStatusBadgeClass = (status) => {
         const statusMap = {
             'PENDING': 'status-pending',
@@ -202,10 +234,17 @@ const AdmissionRequestPage = () => {
                     >
                         <FiSearch /> Tìm theo Encounter
                     </button>
+                    {/* TAB MỚI */}
+                    <button
+                        className={`tab ${activeTab === 'create' ? 'active' : ''}`}
+                        onClick={() => setActiveTab('create')}
+                    >
+                        <FiPlus /> Tạo Yêu Cầu (Từ Encounter)
+                    </button>
                 </div>
-                <button className="btn-create" onClick={() => setShowCreateModal(true)}>
-                    <FiPlus /> Tạo yêu cầu
-                </button>
+                {/*<button className="btn-create" onClick={() => setShowCreateModal(true)}>*/}
+                {/*    <FiPlus /> Tạo yêu cầu*/}
+                {/*</button>*/}
             </div>
 
             {/* Search by Encounter */}
@@ -241,14 +280,17 @@ const AdmissionRequestPage = () => {
                             onChange={(e) => setPatientNameFilter(e.target.value)}
                         />
                     </div>
-                    <div className="filter-group">
-                        <label>Ngày phê duyệt:</label>
-                        <input
-                            type="date"
-                            value={approvalDateFilter}
-                            onChange={(e) => setApprovalDateFilter(e.target.value)}
-                        />
-                    </div>
+                    {/* Chỉ hiện filter ngày khi không ở tab 'create' */}
+                    {activeTab !== 'create' && (
+                        <div className="filter-group">
+                            <label>Ngày phê duyệt:</label>
+                            <input
+                                type="date"
+                                value={approvalDateFilter}
+                                onChange={(e) => setApprovalDateFilter(e.target.value)}
+                            />
+                        </div>
+                    )}
                     {(patientNameFilter || approvalDateFilter) && (
                         <button className="btn-clear-filter" onClick={resetFilters}>
                             <FiX /> Xóa bộ lọc
@@ -271,9 +313,23 @@ const AdmissionRequestPage = () => {
                         </div>
                     ) : (
                         <div className="requests-grid">
-                            {filteredRequests.map(request => (
-                                <RequestCard key={request.admissionRequestId} request={request} />
-                            ))}
+                            {/*{filteredRequests.map(request => (*/}
+                            {/*    <RequestCard key={request.admissionRequestId} request={request} />*/}
+                            {/*))}*/}
+                            {/* LOGIC RENDER CÓ ĐIỀU KIỆN */}
+                            {activeTab === 'create' ? (
+                                filteredRequests.map(encounter => (
+                                    <EncounterCard
+                                        key={encounter.encounterId}
+                                        encounter={encounter}
+                                        onCreateClick={() => handleCreateRequest(encounter)}
+                                    />
+                                ))
+                            ) : (
+                                filteredRequests.map(request => (
+                                    <RequestCard key={request.admissionRequestId} request={request} />
+                                ))
+                            )}
                         </div>
                     )}
                 </div>
@@ -281,21 +337,81 @@ const AdmissionRequestPage = () => {
 
             {/* Create Modal */}
             {showCreateModal && (
+                // <CreateAdmissionRequestModal
+                //     onClose={() => setShowCreateModal(false)}
+                //     onSuccess={() => {
+                //         setShowCreateModal(false);
+                //         if (activeTab !== 'search') {
+                //             fetchRequests();
+                //         }
+                //     }}
+                // />
                 <CreateAdmissionRequestModal
-                    onClose={() => setShowCreateModal(false)}
-                    onSuccess={() => {
-                        setShowCreateModal(false);
-                        if (activeTab !== 'search') {
-                            fetchRequests();
-                        }
-                    }}
+                    encounter={selectedEncounter} // Truyền encounter vào modal
+                    onClose={handleCloseModal}
+                    onSuccess={handleCreateSuccess}
                 />
             )}
         </div>
     );
 };
 
-
+// COMPONENT MỚI: Encounter Card
+const EncounterCard = ({ encounter, onCreateClick }) => {
+    const formatDate = (dateString) => {
+        if (!dateString) return '-';
+        const date = new Date(dateString);
+        return date.toLocaleString('vi-VN', {
+            year: 'numeric', month: '2-digit', day: '2-digit',
+            hour: '2-digit', minute: '2-digit'
+        });
+    };
+    
+    return (
+        <div className="request-card">
+            <div className="card-header">
+                <div className="card-title">
+                    <h3>{encounter.patientName}</h3>
+                    <span className="patient-code">{encounter.patientCode}</span>
+                </div>
+                <div className="card-badges">
+                    <span className="badge status-admitted">ĐÃ HOÀN THÀNH</span>
+                </div>
+            </div>
+            
+            <div className="card-body">
+                <div className="info-grid">
+                    <div className="info-item">
+                        <label>Encounter ID:</label>
+                        <span>{encounter.encounterId}</span>
+                    </div>
+                    <div className="info-item">
+                        <label>Khoa:</label>
+                        <span>{encounter.departmentName}</span>
+                    </div>
+                    <div className="info-item">
+                        <label>Bác sĩ tạo:</label>
+                        <span>{encounter.createdByEmployeeName}</span>
+                    </div>
+                    <div className="info-item">
+                        <label>Thời gian bắt đầu:</label>
+                        <span>{formatDate(encounter.startDatetime)}</span>
+                    </div>
+                    <div className="info-item">
+                        <label>Mô tả trạng thái:</label>
+                        <span>{encounter.statusDescription || encounter.status}</span>
+                    </div>
+                </div>
+            </div>
+            {/* Thêm phần actions vào card */}
+            <div className="card-actions">
+                <button className="btn-create-request" onClick={onCreateClick}>
+                    <FiPlus /> Tạo Yêu Cầu Nhập Viện
+                </button>
+            </div>
+        </div>
+    );
+};
 
 // Request Card Component
 const RequestCard = ({ request }) => {
@@ -448,18 +564,18 @@ const RequestCard = ({ request }) => {
 };
 
 // Create Modal Component
-const CreateAdmissionRequestModal = ({ onClose, onSuccess }) => {
+const CreateAdmissionRequestModal = ({ onClose, onSuccess, encounter }) => {
     const [loading, setLoading] = useState(false);
     const [formData, setFormData] = useState({
-        encounterId: '',
+        encounterId: encounter ? encounter.encounterId : '',
         admissionType: 'ELECTIVE',
         priorityLevel: 3,
         admissionDiagnosis: '',
         specialRequirements: '',
         bedTypeRequired: 'GENERAL',
-        requestedDepartmentId: '',
-        requestedByEmployeeId: '',
-        expectedAdmissionDate: '',
+        requestedDepartmentId: encounter ? encounter.departmentId : '', // Điền sẵn khoa
+        requestedByEmployeeId: encounter ? encounter.createdByEmployeeId : '', // Điền sẵn BS
+        expectedAdmissionDate: new Date().toISOString().split('T')[0], // Đặt ngày mặc định
         estimatedLengthOfStay: 7,
         isolationRequired: false,
         requiresIcu: false,
@@ -469,6 +585,19 @@ const CreateAdmissionRequestModal = ({ onClose, onSuccess }) => {
         insuranceVerified: false,
         consentFormSigned: false,
     });
+    
+    // Tự động cập nhật form nếu encounter thay đổi (mặc dù modal sẽ re-render)
+    useEffect(() => {
+        if (encounter) {
+            setFormData(prev => ({
+                ...prev,
+                encounterId: encounter.encounterId,
+                requestedDepartmentId: encounter.departmentId || '',
+                // Tự động điền chẩn đoán từ encounter nếu có (bạn cần thêm trường này vào API)
+                // admissionDiagnosis: encounter.diagnosis || '',
+            }));
+        }
+    }, [encounter]);
 
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
@@ -520,6 +649,8 @@ const CreateAdmissionRequestModal = ({ onClose, onSuccess }) => {
                                 value={formData.encounterId}
                                 onChange={handleChange}
                                 required
+                                readOnly={!!encounter} // Không cho sửa nếu đã chọn từ encounter
+                                style={!!encounter ? { backgroundColor: '#f3f4f6' } : {}}
                             />
                         </div>
 
@@ -622,7 +753,8 @@ const CreateAdmissionRequestModal = ({ onClose, onSuccess }) => {
                         <div className="form-group">
                             <label>Mức độ theo dõi:</label>
                             <select name="monitoringLevel" value={formData.monitoringLevel} onChange={handleChange}>
-                                <option value="STANDARD">Tiêu chuẩn</option>
+                                <option value="BASIC">Tiêu chuẩn</option>
+                                <option value="INTERMEDIATE">Trung bình</option>
                                 <option value="INTENSIVE">Tích cực</option>
                                 <option value="CRITICAL">Nguy kịch</option>
                             </select>

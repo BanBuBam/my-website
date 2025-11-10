@@ -220,7 +220,7 @@ export const adminDepartmentAPI = {
 export const adminClinicAPI = {
   // Lấy danh sách phòng khám
   getClinics: async () => {
-    return apiCall('api/clinics', {
+    return apiCall('api/v1/clinics', {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${getAccessToken()}`,
@@ -230,7 +230,7 @@ export const adminClinicAPI = {
 
   // Lấy danh sách bác sĩ theo phòng khám
   getDoctorsByClinic: async (clinicId) => {
-    return apiCall(`api/clinics/${clinicId}/doctors`, {
+    return apiCall(`api/v1/clinics/${clinicId}/doctors`, {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${getAccessToken()}`,

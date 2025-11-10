@@ -5,6 +5,7 @@ import {
     FiCheckCircle, FiClipboard, FiX, FiCalendar
 } from 'react-icons/fi';
 import './AdmissionRequestPage.css';
+import {useNavigate} from "react-router-dom";
 
 const AdmissionRequestPage = () => {
     const [activeTab, setActiveTab] = useState('approved');
@@ -12,6 +13,7 @@ const AdmissionRequestPage = () => {
     const [filteredRequests, setFilteredRequests] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+    const navigate = useNavigate();
 
     // Filters
     const [patientNameFilter, setPatientNameFilter] = useState('');
@@ -87,6 +89,12 @@ const AdmissionRequestPage = () => {
     const resetFilters = () => {
         setPatientNameFilter('');
         setApprovalDateFilter('');
+    };
+    
+    const handleViewDetail = (requestId) => {
+        // Điều hướng đến trang chi tiết
+        // URL này phải khớp với route bạn định nghĩa
+        navigate(`/staff/dieu-duong/yeu-cau-nhap-vien/${requestId}`);
     };
 
     return (
@@ -176,6 +184,10 @@ const AdmissionRequestPage = () => {
                                 <RequestCard
                                     key={request.admissionRequestId}
                                     request={request}
+                                    // Truyền hàm xử lý click vào card
+                                    onCardClick={() => handleViewDetail(request.admissionRequestId)}
+                                    // Truyền hàm refresh khi hoàn thành
+                                    onComplete={fetchRequests}
                                 />
                             ))}
                         </div>
@@ -187,7 +199,9 @@ const AdmissionRequestPage = () => {
 };
 
 // Request Card Component
-const RequestCard = ({ request }) => {
+const RequestCard = ({ request, onCardClick, onComplete }) => {
+    const [isCompleting, setIsCompleting] = useState(false);
+
     const getStatusBadgeClass = (status) => {
         const statusMap = {
             'PENDING': 'status-pending',
@@ -225,8 +239,29 @@ const RequestCard = ({ request }) => {
         return date.toLocaleDateString('vi-VN');
     };
 
+    const handleCompleteClick = async (e) => {
+        e.stopPropagation(); // Ngăn không cho click vào card
+
+        if (!window.confirm(`Xác nhận hoàn thành yêu cầu nhập viện cho bệnh nhân ${request.patientName}?`)) {
+            return;
+        }
+
+        setIsCompleting(true);
+        try {
+            await nurseAdmissionRequestAPI.completeAdmissionRequest(request.admissionRequestId);
+            alert('Hoàn thành yêu cầu nhập viện thành công!');
+            if (onComplete) {
+                onComplete(); // Gọi callback để refresh danh sách
+            }
+        } catch (error) {
+            alert(`Lỗi: ${error.message || 'Không thể hoàn thành yêu cầu'}`);
+        } finally {
+            setIsCompleting(false);
+        }
+    };
+
     return (
-        <div className="request-card">
+        <div className="request-card clickable" onClick={onCardClick}>
             <div className="card-header">
                 <div className="card-title">
                     <h3>#{request.admissionRequestId} - {request.patientName}</h3>
@@ -242,6 +277,19 @@ const RequestCard = ({ request }) => {
                     {request.isEmergency && <span className="badge badge-emergency">CẤP CỨU</span>}
                 </div>
             </div>
+
+            {/* Nút hoàn thành - chỉ hiển thị khi đã gán giường và chưa hoàn thành */}
+            {request.hasBedAssigned && !request.isCompleted && (
+                <div className="card-actions">
+                    <button
+                        className="btn-complete"
+                        onClick={handleCompleteClick}
+                        disabled={isCompleting}
+                    >
+                        <FiCheckCircle /> {isCompleting ? 'Đang xử lý...' : 'Hoàn thành'}
+                    </button>
+                </div>
+            )}
 
             <div className="card-body">
                 <div className="info-grid">

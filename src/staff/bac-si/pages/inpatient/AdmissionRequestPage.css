@@ -699,3 +699,43 @@
     }
 }
 
+/* Thêm vào cuối file AdmissionRequestPage.css */
+
+/* Card Actions (cho EncounterCard) */
+.admission-request-page .card-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid #e5e7eb;
+}
+
+.admission-request-page .btn-create-request {
+    flex: 1;
+    padding: 10px 16px;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.2s;
+    background: #10b981;
+    color: white;
+}
+
+.admission-request-page .btn-create-request:hover {
+    background: #059669;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+/* Thay đổi nhỏ cho tab để chứa text dài hơn */
+.admission-request-page .tab {
+    white-space: nowrap; /* Ngăn tab bị vỡ dòng */
+}
+
+

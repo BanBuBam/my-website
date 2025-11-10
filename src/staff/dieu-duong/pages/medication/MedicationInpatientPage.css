@@ -1,0 +1,185 @@
+/* -- Trang chung -- */
+.medication-page {
+    padding: 24px;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+/* Header */
+.med-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding-bottom: 24px;
+    margin-bottom: 24px;
+    border-bottom: 2px solid #e5e7eb;
+}
+
+.med-header .btn-back {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    background: #f3f4f6;
+    border: none;
+    border-radius: 8px;
+    color: #374151;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.med-header .btn-back:hover { background: #e5e7eb; }
+.med-header .header-content h1 { margin: 0; font-size: 24px; }
+.med-header .header-content p { margin: 4px 0 0 0; color: #666; }
+
+/* -- Loading, Error, No-data -- */
+.med-loading, .med-error, .med-no-data {
+    text-align: center;
+    padding: 60px;
+    font-size: 16px;
+    color: #666;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
+}
+.med-error { color: #ef4444; }
+.med-no-data svg { font-size: 48px; color: #d1d5db; margin-bottom: 16px; }
+
+/* -- Danh sách thẻ thuốc -- */
+.med-list-container {
+    background: #f9fafb;
+    padding: 24px;
+    border-radius: 12px;
+}
+
+.med-list-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 20px;
+}
+
+/* -- Thẻ thuốc -- */
+.med-card {
+    background: #fff;
+    border-radius: 12px;
+    border-left: 5px solid;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+}
+
+.med-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    border-bottom: 1px solid #f3f4f6;
+}
+
+.med-time {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    color: #111827;
+}
+
+.med-status-badge {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+/* -- Trạng thái thẻ -- */
+.med-card.status-pending { border-color: #3b82f6; } /* Xanh dương */
+.med-status-badge.status-pending { background-color: #dbeafe; color: #1e40af; }
+
+.med-card.status-overdue { border-color: #ef4444; } /* Đỏ */
+.med-status-badge.status-overdue { background-color: #fee2e2; color: #991b1b; }
+
+.med-card.status-completed { border-color: #10b981; } /* Xanh lá */
+.med-status-badge.status-completed { background-color: #d1fae5; color: #065f46; }
+
+/* Thân thẻ */
+.med-card-body {
+    padding: 16px;
+}
+.med-name {
+    margin: 0 0 16px 0;
+    font-size: 18px;
+    color: #111827;
+}
+.med-details {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+.med-detail-item {
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+}
+.med-detail-item label {
+    color: #6b7280;
+    font-weight: 500;
+}
+.med-detail-item span {
+    color: #111827;
+    font-weight: 500;
+    text-align: right;
+}
+
+/* Chân thẻ */
+.med-card-footer {
+    padding: 12px 16px;
+    background-color: #f9fafb;
+    border-top: 1px solid #f3f4f6;
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+}
+
+.med-card-footer.actions {
+    display: flex;
+    gap: 12px;
+}
+
+.btn-action {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 16px;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.btn-action.btn-skip { background-color: #f3f4f6; color: #6b7280; }
+.btn-action.btn-skip:hover { background-color: #e5e7eb; }
+.btn-action.btn-administer { background-color: #10b981; color: white; }
+.btn-action.btn-administer:hover { background-color: #059669; }
+
+.med-card-footer.completed-info {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+.completed-info .info-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: #4b5563;
+}
+.completed-info .info-item svg { color: #065f46; }
+.completed-info .info-item.notes { flex-direction: column; align-items: flex-start; }
+.completed-info .info-item.notes label { font-weight: 600; }
+.completed-info .info-item.notes p { margin: 4px 0 0 0; font-size: 13px; font-style: italic; }
