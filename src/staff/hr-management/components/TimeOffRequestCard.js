@@ -30,8 +30,11 @@ const TimeOffRequestCard = ({
       SICK_LEAVE: 'Nghỉ ốm',
       PERSONAL_LEAVE: 'Nghỉ cá nhân',
       MATERNITY_LEAVE: 'Nghỉ thai sản',
+      MATERNITY: 'Nghỉ thai sản',
       UNPAID_LEAVE: 'Nghỉ không lương',
       EMERGENCY_LEAVE: 'Nghỉ khẩn cấp',
+      EMERGENCY: 'Nghỉ khẩn cấp',
+      STUDY_LEAVE: 'Nghỉ học tập',
     };
     return typeMap[type] || type;
   };
@@ -40,11 +43,14 @@ const TimeOffRequestCard = ({
   const isPending = request.status === 'PENDING';
   const isApproved = request.status === 'APPROVED';
 
+  // Support both requestType and leaveType
+  const leaveType = request.requestType || request.leaveType;
+
   return (
     <div className="card">
       <div className="cardHeader">
         <div className="headerLeft">
-          <h3 className="title">{getLeaveTypeLabel(request.leaveType)}</h3>
+          <h3 className="title">{getLeaveTypeLabel(leaveType)}</h3>
           <span
             className="statusBadge"
             style={{ color: status.color, backgroundColor: status.bgColor }}
@@ -84,10 +90,17 @@ const TimeOffRequestCard = ({
           </div>
         )}
 
-        {!request.isPaid && (
+        {(request.isPaidLeave === false || request.isPaid === false) && (
           <div className="infoRow">
             <span className="label">Lương:</span>
             <span className="value">Không lương</span>
+          </div>
+        )}
+
+        {request.employeeName && (
+          <div className="infoRow">
+            <span className="label">Nhân viên:</span>
+            <span className="value">{request.employeeName}</span>
           </div>
         )}
       </div>
@@ -114,7 +127,7 @@ const TimeOffRequestCard = ({
                 </button>
                 <button
                   className="deleteBtn"
-                  onClick={() => onDelete?.(request.id)}
+                  onClick={() => onDelete?.(request.requestId || request.id)}
                   title="Xóa"
                 >
                   <FiTrash2 size={16} />
@@ -144,7 +157,7 @@ const TimeOffRequestCard = ({
             {isApproved && userRole === 'employee' && (
               <button
                 className="withdrawBtn"
-                onClick={() => onWithdraw?.(request.id)}
+                onClick={() => onWithdraw?.(request.requestId || request.id)}
                 title="Rút lại"
               >
                 Rút lại

@@ -1154,6 +1154,129 @@ export const hrEmployeeStatusAPI = {
       throw error;
     }
   },
+
+  // Lấy tình trạng sẵn sàng theo mã nhân viên
+  getEmployeeAvailabilityById: async (employeeId) => {
+    console.log('Fetching employee availability for employee ID:', employeeId);
+    try {
+      const response = await apiCall(`api/v1/employee-availability/employee/${employeeId}`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${getAccessToken()}`,
+        },
+      });
+      console.log('getEmployeeAvailabilityById API response:', response);
+      return response;
+    } catch (error) {
+      console.error('getEmployeeAvailabilityById API error:', error);
+      throw error;
+    }
+  },
+
+  // Lấy tình trạng sẵn sàng theo mã nhân viên và khoảng thời gian
+  getEmployeeAvailabilityByDateRange: async (employeeId, startDate, endDate) => {
+    console.log('Fetching employee availability for employee ID:', employeeId, 'from', startDate, 'to', endDate);
+    try {
+      const response = await apiCall(
+        `api/v1/employee-availability/employee/${employeeId}/date-range?startDate=${startDate}&endDate=${endDate}`,
+        {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${getAccessToken()}`,
+          },
+        }
+      );
+      console.log('getEmployeeAvailabilityByDateRange API response:', response);
+      return response;
+    } catch (error) {
+      console.error('getEmployeeAvailabilityByDateRange API error:', error);
+      throw error;
+    }
+  },
+
+  // Lấy tất cả nhân viên sẵn sàng trong một ngày cụ thể
+  getAvailableEmployeesByDate: async (date) => {
+    console.log('Fetching available employees for date:', date);
+    try {
+      const response = await apiCall(
+        `api/v1/employee-availability/date/${date}/available`,
+        {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${getAccessToken()}`,
+          },
+        }
+      );
+      console.log('getAvailableEmployeesByDate API response:', response);
+      return response;
+    } catch (error) {
+      console.error('getAvailableEmployeesByDate API error:', error);
+      throw error;
+    }
+  },
+
+  // Lấy tất cả nhân viên không sẵn sàng trong một ngày cụ thể
+  getUnavailableEmployeesByDate: async (date) => {
+    console.log('Fetching unavailable employees for date:', date);
+    try {
+      const response = await apiCall(
+        `api/v1/employee-availability/date/${date}/unavailable`,
+        {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${getAccessToken()}`,
+          },
+        }
+      );
+      console.log('getUnavailableEmployeesByDate API response:', response);
+      return response;
+    } catch (error) {
+      console.error('getUnavailableEmployeesByDate API error:', error);
+      throw error;
+    }
+  },
+
+  // Lấy tất cả lịch ưu tiên (preferred availability)
+  getPreferredAvailability: async () => {
+    console.log('Fetching preferred availability');
+    try {
+      const response = await apiCall(
+        `api/v1/employee-availability/preferred`,
+        {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${getAccessToken()}`,
+          },
+        }
+      );
+      console.log('getPreferredAvailability API response:', response);
+      return response;
+    } catch (error) {
+      console.error('getPreferredAvailability API error:', error);
+      throw error;
+    }
+  },
+
+  // Lấy tất cả lịch lặp lại (recurring availability)
+  getRecurringAvailability: async () => {
+    console.log('Fetching recurring availability');
+    try {
+      const response = await apiCall(
+        `api/v1/employee-availability/recurring`,
+        {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${getAccessToken()}`,
+          },
+        }
+      );
+      console.log('getRecurringAvailability API response:', response);
+      return response;
+    } catch (error) {
+      console.error('getRecurringAvailability API error:', error);
+      throw error;
+    }
+  },
 };
 
 // API Nghỉ phép (Time Off Request)
@@ -1353,10 +1476,29 @@ export const hrTimeOffAPI = {
     });
   },
 
-  // Lấy danh sách nhân viên đang nghỉ phép
+  // Lấy danh sách nhân viên đang nghỉ phép theo ngày
   getEmployeesOnLeave: async (date) => {
-    const params = new URLSearchParams({ date }).toString();
-    return apiCall(`api/v1/time-off-requests/employees-on-leave?${params}`, {
+    return apiCall(`api/v1/time-off-requests/date/${date}/employees-on-leave`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Lấy tổng số ngày nghỉ phép của nhân viên trong năm
+  getEmployeeLeaveBalance: async (employeeId, year) => {
+    return apiCall(`api/v1/time-off-requests/employee/${employeeId}/balance/${year}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Lấy số ngày nghỉ phép theo loại
+  getEmployeeLeaveBalanceByType: async (employeeId, year, leaveType) => {
+    return apiCall(`api/v1/time-off-requests/employee/${employeeId}/balance/${year}/type/${leaveType}`, {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${getAccessToken()}`,
