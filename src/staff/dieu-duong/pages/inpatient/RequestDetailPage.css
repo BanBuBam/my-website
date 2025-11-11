@@ -1,0 +1,222 @@
+/* Tương ứng với file RequestDetailPage.js */
+.request-detail-page {
+    padding: 24px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* Header */
+.request-detail-page .detail-header {
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding-bottom: 16px;
+    border-bottom: 2px solid #e5e7eb;
+}
+
+.request-detail-page .btn-back {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    background: #f3f4f6;
+    border: none;
+    border-radius: 8px;
+    color: #374151;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.request-detail-page .btn-back:hover {
+    background: #e5e7eb;
+}
+
+.request-detail-page .header-content h1 {
+    margin: 0;
+    font-size: 24px;
+    color: #1a1a1a;
+}
+
+.request-detail-page .header-content p {
+    margin: 4px 0 0 0;
+    color: #666;
+    font-size: 14px;
+}
+
+/* Loading & Error */
+.detail-loading, .detail-error {
+    text-align: center;
+    padding: 60px;
+    font-size: 18px;
+    color: #666;
+}
+.detail-error {
+    color: #ef4444;
+}
+
+/* Section chung */
+.request-detail-page .detail-section {
+    background: white;
+    padding: 24px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
+    margin-bottom: 24px;
+}
+
+.request-detail-page .detail-section h3 {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 18px;
+    color: #10b981;
+    margin: 0 0 20px 0;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+/* Section trạng thái */
+.request-detail-page .status-section {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.request-detail-page .info-item-lg {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+.request-detail-page .info-item-lg label {
+    font-size: 13px;
+    color: #6b7280;
+    font-weight: 500;
+    text-transform: uppercase;
+}
+.request-detail-page .info-item-lg span {
+    font-size: 18px;
+    font-weight: 600;
+    color: #111827;
+}
+
+/* Badge (sao chép từ AdmissionRequestPage.css) */
+.request-detail-page .badge {
+    padding: 4px 10px; border-radius: 6px; font-size: 11px;
+    font-weight: 600; text-transform: uppercase;
+}
+.request-detail-page .status-approved { background: #dbeafe; color: #1e40af; }
+.request-detail-page .status-pending { background: #fef3c7; color: #92400e; }
+.request-detail-page .status-bed-assigned { background: #d1fae5; color: #065f46; }
+.request-detail-page .priority-critical { background: #ef4444; color: white; }
+.request-detail-page .priority-high { background: #f97316; color: white; }
+.request-detail-page .priority-medium { background: #fbbf24; color: #78350f; }
+.request-detail-page .badge-emergency { background: #dc2626; color: white; }
+
+/* Bố cục cột */
+.request-detail-page .detail-columns {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+}
+
+/* Info Grid */
+.request-detail-page .info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+}
+
+.request-detail-page .info-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.request-detail-page .info-item label {
+    font-size: 12px;
+    color: #6b7280;
+    font-weight: 500;
+}
+
+.request-detail-page .info-item span {
+    font-size: 14px;
+    color: #111827;
+}
+
+.request-detail-page .info-item-full {
+    margin-top: 12px;
+}
+.request-detail-page .info-item-full label {
+    font-size: 12px;
+    color: #6b7280;
+    font-weight: 500;
+}
+.request-detail-page .info-item-full span,
+.request-detail-page .info-item-full p {
+    display: block;
+    font-size: 14px;
+    color: #111827;
+    margin: 4px 0 0 0;
+    background: #f9fafb;
+    padding: 8px 12px;
+    border-radius: 6px;
+}
+
+/* Yêu cầu đặc biệt */
+.request-detail-page .requirements-badges {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-top: 16px;
+}
+
+.request-detail-page .req-badge {
+    padding: 4px 12px;
+    background: #10b981;
+    color: white;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+    .request-detail-page .detail-columns {
+        grid-template-columns: 1fr;
+    }
+}
+@media (max-width: 600px) {
+    .request-detail-page .info-grid {
+        grid-template-columns: 1fr;
+    }
+    .request-detail-page .status-section {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}
+
+/* Thêm vào file RequestDetailPage.css */
+.request-detail-page .detail-header .btn-assign-bed {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background: #10b981; /* Màu xanh lá cây chủ đạo */
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-left: auto; /* Đẩy nút sang phải */
+}
+.request-detail-page .detail-header .btn-assign-bed:hover {
+    background: #059669;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
