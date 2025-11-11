@@ -1,21 +1,36 @@
 import React, { useState, useEffect } from 'react';
 import './TimeOffRequestPage.css';
-import { hrTimeOffAPI } from '../../../../services/staff/hrAPI';
-import { FiPlus, FiFilter, FiSearch } from 'react-icons/fi';
+import { hrTimeOffAPI, hrEmployeeAPI } from '../../../../services/staff/hrAPI';
+import { FiPlus, FiFilter } from 'react-icons/fi';
 import AddTimeOffRequestModal from '../../components/AddTimeOffRequestModal';
 import EditTimeOffRequestModal from '../../components/EditTimeOffRequestModal';
 import TimeOffRequestDetailModal from '../../components/TimeOffRequestDetailModal';
 import TimeOffRequestCard from '../../components/TimeOffRequestCard';
-import LeaveBalanceWidget from '../../components/LeaveBalanceWidget';
 
 const TimeOffRequestPage = () => {
-  const [requests, setRequests] = useState([]);
+  const [allRequests, setAllRequests] = useState([]); // Lưu tất cả đơn để tính số lượng
+  const [requests, setRequests] = useState([]); // Đơn hiển thị theo tab
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [activeTab, setActiveTab] = useState('all');
-  const [searchTerm, setSearchTerm] = useState('');
   const [filterLeaveType, setFilterLeaveType] = useState('');
   const [filterDateRange, setFilterDateRange] = useState({ start: '', end: '' });
+  const [useServerDateFilter, setUseServerDateFilter] = useState(false); // Sử dụng API filter hay client filter
+  const [currentLeavesCount, setCurrentLeavesCount] = useState(0); // Số lượng đơn đang nghỉ từ API
+  const [upcomingLeavesCount, setUpcomingLeavesCount] = useState(0); // Số lượng đơn sắp tới từ API
+
+  // State cho chức năng xem nhân viên đang nghỉ theo ngày
+  const [selectedDate, setSelectedDate] = useState('');
+  const [employeesOnLeave, setEmployeesOnLeave] = useState([]);
+  const [loadingEmployees, setLoadingEmployees] = useState(false);
+  const [employeeDetails, setEmployeeDetails] = useState({}); // Lưu thông tin chi tiết nhân viên
+
+  // State cho chức năng hiển thị số ngày nghỉ phép
+  const [selectedEmployeeId, setSelectedEmployeeId] = useState('');
+  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+  const [leaveBalance, setLeaveBalance] = useState(null);
+  const [leaveBalanceByType, setLeaveBalanceByType] = useState({});
+  const [loadingBalance, setLoadingBalance] = useState(false);
 
   // Modal states
   const [showAddModal, setShowAddModal] = useState(false);
@@ -34,57 +49,357 @@ const TimeOffRequestPage = () => {
     }
   });
 
+  // Load tất cả dữ liệu một lần khi component mount
   useEffect(() => {
-    fetchRequests();
-  }, [activeTab]);
+    fetchAllRequests();
+    fetchCurrentLeavesCount(); // Lấy số lượng đơn đang nghỉ
+    fetchUpcomingLeavesCount(); // Lấy số lượng đơn sắp tới
+  }, []);
 
-  const fetchRequests = async () => {
+  // Lọc dữ liệu theo tab khi activeTab thay đổi
+  useEffect(() => {
+    filterRequestsByTab();
+  }, [activeTab, allRequests]);
+
+  // Khi thay đổi date range filter, nếu bật server filter thì gọi API
+  useEffect(() => {
+    if (useServerDateFilter && filterDateRange.start && filterDateRange.end) {
+      fetchRequestsByDateRange();
+    } else if (!useServerDateFilter) {
+      fetchAllRequests();
+    }
+  }, [useServerDateFilter, filterDateRange.start, filterDateRange.end]);
+
+  const fetchAllRequests = async () => {
     setLoading(true);
     setError('');
     try {
-      let response;
+      const response = await hrTimeOffAPI.getTimeOffRequests();
+      console.log('Fetch all requests response:', response);
 
-      switch (activeTab) {
-        case 'pending':
-          response = await hrTimeOffAPI.getPendingRequests();
-          break;
-        case 'approved':
-          response = await hrTimeOffAPI.getApprovedRequests();
-          break;
-        case 'current':
-          response = await hrTimeOffAPI.getCurrentLeaves();
-          break;
-        case 'upcoming':
-          response = await hrTimeOffAPI.getUpcomingLeaves();
-          break;
-        default:
-          response = await hrTimeOffAPI.getTimeOffRequests();
+      let data = [];
+      // API trả về mảng trực tiếp hoặc object với data property
+      if (Array.isArray(response)) {
+        data = response;
+      } else if (response.success && response.data) {
+        data = response.data;
+      } else if (response.data && Array.isArray(response.data)) {
+        data = response.data;
       }
 
-      if (response.success) {
-        setRequests(response.data || []);
-      } else {
-        setError(response.error || 'Lỗi khi tải dữ liệu');
-      }
+      setAllRequests(data);
+      setRequests(data); // Mặc định hiển thị tất cả
     } catch (err) {
       setError('Lỗi khi tải dữ liệu: ' + err.message);
       console.error('Error fetching requests:', err);
+      setAllRequests([]);
+      setRequests([]);
     } finally {
       setLoading(false);
     }
+  };
+
+  const fetchCurrentLeavesCount = async () => {
+    try {
+      const response = await hrTimeOffAPI.getCurrentLeaves();
+      console.log('Current leaves count response:', response);
+
+      let data = [];
+      if (Array.isArray(response)) {
+        data = response;
+      } else if (response.success && response.data) {
+        data = response.data;
+      } else if (response.data && Array.isArray(response.data)) {
+        data = response.data;
+      }
+
+      setCurrentLeavesCount(data.length);
+    } catch (err) {
+      console.error('Error fetching current leaves count:', err);
+      setCurrentLeavesCount(0);
+    }
+  };
+
+  const fetchUpcomingLeavesCount = async () => {
+    try {
+      const response = await hrTimeOffAPI.getUpcomingLeaves();
+      console.log('Upcoming leaves count response:', response);
+
+      let data = [];
+      if (Array.isArray(response)) {
+        data = response;
+      } else if (response.success && response.data) {
+        data = response.data;
+      } else if (response.data && Array.isArray(response.data)) {
+        data = response.data;
+      }
+
+      setUpcomingLeavesCount(data.length);
+    } catch (err) {
+      console.error('Error fetching upcoming leaves count:', err);
+      setUpcomingLeavesCount(0);
+    }
+  };
+
+  const fetchEmployeesOnLeave = async (date) => {
+    if (!date) {
+      setEmployeesOnLeave([]);
+      setEmployeeDetails({});
+      return;
+    }
+
+    setLoadingEmployees(true);
+    try {
+      const response = await hrTimeOffAPI.getEmployeesOnLeave(date);
+      console.log('Employees on leave response:', response);
+
+      let data = [];
+      if (Array.isArray(response)) {
+        data = response;
+      } else if (response.success && response.data) {
+        data = response.data;
+      } else if (response.data && Array.isArray(response.data)) {
+        data = response.data;
+      }
+
+      setEmployeesOnLeave(data);
+
+      // Lấy thông tin chi tiết cho từng nhân viên
+      const details = {};
+      for (const employeeId of data) {
+        try {
+          const empResponse = await hrEmployeeAPI.getEmployeeById(employeeId);
+          console.log('Employee details for ID', employeeId, ':', empResponse);
+
+          // Xử lý response có thể có cấu trúc khác nhau
+          let empData = null;
+          if (empResponse.success && empResponse.data) {
+            empData = empResponse.data;
+          } else if (empResponse.data) {
+            empData = empResponse.data;
+          } else {
+            empData = empResponse;
+          }
+
+          details[employeeId] = empData;
+        } catch (err) {
+          console.error('Error fetching employee details for ID', employeeId, ':', err);
+          details[employeeId] = null;
+        }
+      }
+      setEmployeeDetails(details);
+    } catch (err) {
+      console.error('Error fetching employees on leave:', err);
+      setEmployeesOnLeave([]);
+      setEmployeeDetails({});
+    } finally {
+      setLoadingEmployees(false);
+    }
+  };
+
+  // Fetch tổng số ngày nghỉ phép
+  const fetchLeaveBalance = async (empId, year) => {
+    if (!empId || !year) {
+      setLeaveBalance(null);
+      return;
+    }
+
+    setLoadingBalance(true);
+    try {
+      const response = await hrTimeOffAPI.getEmployeeLeaveBalance(empId, year);
+      console.log('Leave balance response:', response);
+
+      let balance = null;
+      if (response.success && response.data !== undefined) {
+        balance = response.data;
+      } else if (response.data !== undefined) {
+        balance = response.data;
+      } else if (typeof response === 'number') {
+        balance = response;
+      }
+
+      setLeaveBalance(balance);
+    } catch (err) {
+      console.error('Error fetching leave balance:', err);
+      setLeaveBalance(null);
+    } finally {
+      setLoadingBalance(false);
+    }
+  };
+
+  // Fetch số ngày nghỉ phép theo từng loại
+  const fetchLeaveBalanceByType = async (empId, year) => {
+    if (!empId || !year) {
+      setLeaveBalanceByType({});
+      return;
+    }
+
+    const leaveTypes = [
+      'ANNUAL_LEAVE',
+      'SICK_LEAVE',
+      'MATERNITY',
+      'PATERNITY',
+      'PERSONAL_LEAVE',
+      'STUDY_LEAVE',
+      'EMERGENCY',
+      'BEREAVEMENT'
+    ];
+
+    const balances = {};
+    for (const type of leaveTypes) {
+      try {
+        const response = await hrTimeOffAPI.getEmployeeLeaveBalanceByType(empId, year, type);
+        console.log(`Leave balance for ${type}:`, response);
+
+        let balance = null;
+        if (response.success && response.data !== undefined) {
+          balance = response.data;
+        } else if (response.data !== undefined) {
+          balance = response.data;
+        } else if (typeof response === 'number') {
+          balance = response;
+        }
+
+        balances[type] = balance;
+      } catch (err) {
+        console.error(`Error fetching leave balance for ${type}:`, err);
+        balances[type] = null;
+      }
+    }
+
+    setLeaveBalanceByType(balances);
+  };
+
+  // Fetch cả tổng và chi tiết khi thay đổi nhân viên hoặc năm
+  const handleFetchLeaveBalances = () => {
+    if (selectedEmployeeId && selectedYear) {
+      fetchLeaveBalance(selectedEmployeeId, selectedYear);
+      fetchLeaveBalanceByType(selectedEmployeeId, selectedYear);
+    }
+  };
+
+  const fetchRequestsByDateRange = async () => {
+    if (!filterDateRange.start || !filterDateRange.end) {
+      return;
+    }
+
+    setLoading(true);
+    setError('');
+    try {
+      const response = await hrTimeOffAPI.getTimeOffRequestsByDateRange(
+        employeeId,
+        filterDateRange.start,
+        filterDateRange.end
+      );
+      console.log('Fetch requests by date range response:', response);
+
+      let data = [];
+      if (Array.isArray(response)) {
+        data = response;
+      } else if (response.success && response.data) {
+        data = response.data;
+      } else if (response.data && Array.isArray(response.data)) {
+        data = response.data;
+      }
+
+      setAllRequests(data);
+      setRequests(data);
+    } catch (err) {
+      setError('Lỗi khi tải dữ liệu theo khoảng thời gian: ' + err.message);
+      console.error('Error fetching requests by date range:', err);
+      setAllRequests([]);
+      setRequests([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const filterRequestsByTab = async () => {
+    if (activeTab === 'current') {
+      // Gọi API riêng cho tab "Đang nghỉ"
+      setLoading(true);
+      try {
+        const response = await hrTimeOffAPI.getCurrentLeaves();
+        console.log('Current leaves response:', response);
+
+        let data = [];
+        if (Array.isArray(response)) {
+          data = response;
+        } else if (response.success && response.data) {
+          data = response.data;
+        } else if (response.data && Array.isArray(response.data)) {
+          data = response.data;
+        }
+
+        setRequests(data);
+      } catch (err) {
+        console.error('Error fetching current leaves:', err);
+        setRequests([]);
+      } finally {
+        setLoading(false);
+      }
+      return;
+    }
+
+    if (activeTab === 'upcoming') {
+      // Gọi API riêng cho tab "Sắp tới"
+      setLoading(true);
+      try {
+        const response = await hrTimeOffAPI.getUpcomingLeaves();
+        console.log('Upcoming leaves response:', response);
+
+        let data = [];
+        if (Array.isArray(response)) {
+          data = response;
+        } else if (response.success && response.data) {
+          data = response.data;
+        } else if (response.data && Array.isArray(response.data)) {
+          data = response.data;
+        }
+
+        setRequests(data);
+      } catch (err) {
+        console.error('Error fetching upcoming leaves:', err);
+        setRequests([]);
+      } finally {
+        setLoading(false);
+      }
+      return;
+    }
+
+    // Logic cũ cho các tab khác
+    if (!allRequests || allRequests.length === 0) {
+      setRequests([]);
+      return;
+    }
+
+    let filtered = [];
+
+    switch (activeTab) {
+      case 'pending':
+        filtered = allRequests.filter(r => r.status === 'PENDING');
+        break;
+      case 'approved':
+        filtered = allRequests.filter(r => r.status === 'APPROVED');
+        break;
+      default:
+        filtered = allRequests;
+    }
+
+    setRequests(filtered);
   };
 
   const handleApprove = async (request) => {
     const note = prompt('Nhập ghi chú phê duyệt (tùy chọn):');
     if (note !== null) {
       try {
-        const response = await hrTimeOffAPI.approveTimeOffRequest(request.id, note);
-        if (response.success) {
-          alert('Phê duyệt thành công');
-          fetchRequests();
-        } else {
-          alert('Lỗi: ' + response.error);
-        }
+        const requestId = request.requestId || request.id;
+        const response = await hrTimeOffAPI.approveTimeOffRequest(requestId, note);
+        console.log('Approve response:', response);
+        alert('Phê duyệt thành công');
+        fetchAllRequests(); // Reload tất cả dữ liệu
+        fetchCurrentLeavesCount(); // Reload số lượng đơn đang nghỉ
+        fetchUpcomingLeavesCount(); // Reload số lượng đơn sắp tới
       } catch (err) {
         alert('Lỗi khi phê duyệt: ' + err.message);
       }
@@ -95,13 +410,13 @@ const TimeOffRequestPage = () => {
     const reason = prompt('Nhập lý do từ chối:');
     if (reason) {
       try {
-        const response = await hrTimeOffAPI.rejectTimeOffRequest(request.id, reason);
-        if (response.success) {
-          alert('Từ chối thành công');
-          fetchRequests();
-        } else {
-          alert('Lỗi: ' + response.error);
-        }
+        const requestId = request.requestId || request.id;
+        const response = await hrTimeOffAPI.rejectTimeOffRequest(requestId, reason);
+        console.log('Reject response:', response);
+        alert('Từ chối thành công');
+        fetchAllRequests(); // Reload tất cả dữ liệu
+        fetchCurrentLeavesCount(); // Reload số lượng đơn đang nghỉ
+        fetchUpcomingLeavesCount(); // Reload số lượng đơn sắp tới
       } catch (err) {
         alert('Lỗi khi từ chối: ' + err.message);
       }
@@ -112,12 +427,11 @@ const TimeOffRequestPage = () => {
     if (window.confirm('Bạn có chắc chắn muốn rút lại đơn này?')) {
       try {
         const response = await hrTimeOffAPI.withdrawTimeOffRequest(requestId);
-        if (response.success) {
-          alert('Rút lại thành công');
-          fetchRequests();
-        } else {
-          alert('Lỗi: ' + response.error);
-        }
+        console.log('Withdraw response:', response);
+        alert('Rút lại thành công');
+        fetchAllRequests(); // Reload tất cả dữ liệu
+        fetchCurrentLeavesCount(); // Reload số lượng đơn đang nghỉ
+        fetchUpcomingLeavesCount(); // Reload số lượng đơn sắp tới
       } catch (err) {
         alert('Lỗi khi rút lại: ' + err.message);
       }
@@ -128,12 +442,11 @@ const TimeOffRequestPage = () => {
     if (window.confirm('Bạn có chắc chắn muốn xóa đơn này?')) {
       try {
         const response = await hrTimeOffAPI.deleteTimeOffRequest(requestId);
-        if (response.success) {
-          alert('Xóa thành công');
-          fetchRequests();
-        } else {
-          alert('Lỗi: ' + response.error);
-        }
+        console.log('Delete response:', response);
+        alert('Xóa thành công');
+        fetchAllRequests(); // Reload tất cả dữ liệu
+        fetchCurrentLeavesCount(); // Reload số lượng đơn đang nghỉ
+        fetchUpcomingLeavesCount(); // Reload số lượng đơn sắp tới
       } catch (err) {
         alert('Lỗi khi xóa: ' + err.message);
       }
@@ -144,34 +457,38 @@ const TimeOffRequestPage = () => {
   const filteredRequests = requests.filter(req => {
     let match = true;
 
-    if (searchTerm) {
-      match = match && (
-        req.reason?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        req.employeeName?.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-    }
-
     if (filterLeaveType) {
-      match = match && req.leaveType === filterLeaveType;
+      const reqType = req.requestType || req.leaveType;
+      // Hỗ trợ cả tên cũ và mới của các loại nghỉ phép
+      const normalizedReqType = reqType === 'MATERNITY' ? 'MATERNITY_LEAVE' :
+                                 reqType === 'EMERGENCY' ? 'EMERGENCY_LEAVE' : reqType;
+      const normalizedFilterType = filterLeaveType === 'MATERNITY' ? 'MATERNITY_LEAVE' :
+                                    filterLeaveType === 'EMERGENCY' ? 'EMERGENCY_LEAVE' : filterLeaveType;
+      match = match && normalizedReqType === normalizedFilterType;
     }
 
-    if (filterDateRange.start) {
-      match = match && new Date(req.startDate) >= new Date(filterDateRange.start);
-    }
+    // Client-side date filter chỉ áp dụng khi KHÔNG dùng server filter
+    // (vì server filter đã lọc rồi)
+    if (!useServerDateFilter) {
+      if (filterDateRange.start) {
+        match = match && new Date(req.startDate) >= new Date(filterDateRange.start);
+      }
 
-    if (filterDateRange.end) {
-      match = match && new Date(req.endDate) <= new Date(filterDateRange.end);
+      if (filterDateRange.end) {
+        match = match && new Date(req.endDate) <= new Date(filterDateRange.end);
+      }
     }
 
     return match;
   });
 
+  // Tính số lượng từ allRequests (không thay đổi khi chuyển tab)
   const statusCounts = {
-    all: requests.length,
-    pending: requests.filter(r => r.status === 'PENDING').length,
-    approved: requests.filter(r => r.status === 'APPROVED').length,
-    current: requests.filter(r => r.status === 'APPROVED' && new Date(r.startDate) <= new Date() && new Date(r.endDate) >= new Date()).length,
-    upcoming: requests.filter(r => r.status === 'APPROVED' && new Date(r.startDate) > new Date()).length,
+    all: allRequests.length,
+    pending: allRequests.filter(r => r.status === 'PENDING').length,
+    approved: allRequests.filter(r => r.status === 'APPROVED').length,
+    current: currentLeavesCount, // Sử dụng số lượng từ API
+    upcoming: upcomingLeavesCount, // Sử dụng số lượng từ API
   };
 
   if (loading) {
@@ -220,17 +537,7 @@ const TimeOffRequestPage = () => {
           </div>
 
           <div className="filter-section">
-            <div className="search-box">
-              <FiSearch />
-              <input
-                type="text"
-                placeholder="Tìm kiếm theo lý do hoặc tên nhân viên..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
-            </div>
-
-            <div className="filter-controls">
+            <div className="filter-row">
               <select
                 value={filterLeaveType}
                 onChange={(e) => setFilterLeaveType(e.target.value)}
@@ -243,42 +550,179 @@ const TimeOffRequestPage = () => {
                 <option value="MATERNITY_LEAVE">Nghỉ thai sản</option>
                 <option value="UNPAID_LEAVE">Nghỉ không lương</option>
                 <option value="EMERGENCY_LEAVE">Nghỉ khẩn cấp</option>
+                <option value="STUDY_LEAVE">Nghỉ học tập</option>
               </select>
 
-              <input
-                type="date"
-                value={filterDateRange.start}
-                onChange={(e) => setFilterDateRange({ ...filterDateRange, start: e.target.value })}
-                className="filter-date"
-                placeholder="Từ ngày"
-              />
+              <div className="date-range-filter">
+                <label className="filter-label">
+                  <input
+                    type="checkbox"
+                    checked={useServerDateFilter}
+                    onChange={(e) => setUseServerDateFilter(e.target.checked)}
+                    className="filter-checkbox"
+                  />
+                  <span>Lọc theo khoảng thời gian</span>
+                </label>
 
-              <input
-                type="date"
-                value={filterDateRange.end}
-                onChange={(e) => setFilterDateRange({ ...filterDateRange, end: e.target.value })}
-                className="filter-date"
-                placeholder="Đến ngày"
-              />
+                {useServerDateFilter && (
+                  <div className="date-inputs">
+                    <input
+                      type="date"
+                      value={filterDateRange.start}
+                      onChange={(e) => setFilterDateRange({ ...filterDateRange, start: e.target.value })}
+                      className="filter-date"
+                    />
+                    <span className="date-separator">đến</span>
+                    <input
+                      type="date"
+                      value={filterDateRange.end}
+                      onChange={(e) => setFilterDateRange({ ...filterDateRange, end: e.target.value })}
+                      className="filter-date"
+                    />
+                  </div>
+                )}
+              </div>
 
               <button
                 className="btn-reset"
                 onClick={() => {
-                  setSearchTerm('');
                   setFilterLeaveType('');
                   setFilterDateRange({ start: '', end: '' });
+                  setUseServerDateFilter(false);
                 }}
               >
+                <FiFilter />
                 Xóa Bộ Lọc
               </button>
             </div>
+          </div>
+
+          {/* Section xem nhân viên đang nghỉ theo ngày */}
+          <div className="employees-on-leave-section">
+            <h3>Xem nhân viên đang nghỉ theo ngày</h3>
+            <div className="date-picker-row">
+              <input
+                type="date"
+                value={selectedDate}
+                onChange={(e) => {
+                  setSelectedDate(e.target.value);
+                  fetchEmployeesOnLeave(e.target.value);
+                }}
+                className="filter-date"
+              />
+              {loadingEmployees && <span className="loading-text">Đang tải...</span>}
+            </div>
+            {employeesOnLeave.length > 0 && (
+              <div className="employees-list">
+                <p className="employees-count">
+                  Có <strong>{employeesOnLeave.length}</strong> nhân viên đang nghỉ vào ngày {selectedDate}
+                </p>
+                <div className="employee-ids">
+                  {employeesOnLeave.map((employeeId, index) => {
+                    const employee = employeeDetails[employeeId];
+                    let displayName = `ID: ${employeeId}`;
+
+                    if (employee) {
+                      // Lấy tên từ person object hoặc trực tiếp từ employee
+                      const firstName = employee.person?.firstName || employee.firstName || '';
+                      const lastName = employee.person?.lastName || employee.lastName || '';
+
+                      if (firstName || lastName) {
+                        displayName = `${lastName} ${firstName}`.trim();
+                      }
+                    }
+
+                    return (
+                      <span key={index} className="employee-id-badge">
+                        {displayName}
+                      </span>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+            {selectedDate && !loadingEmployees && employeesOnLeave.length === 0 && (
+              <p className="no-employees">Không có nhân viên nào đang nghỉ vào ngày này</p>
+            )}
+          </div>
+
+          {/* Section hiển thị số ngày nghỉ phép của nhân viên */}
+          <div className="leave-balance-section">
+            <h3>Thống kê số ngày nghỉ phép của nhân viên</h3>
+            <div className="balance-controls">
+              <input
+                type="number"
+                placeholder="Nhập ID nhân viên"
+                value={selectedEmployeeId}
+                onChange={(e) => setSelectedEmployeeId(e.target.value)}
+                className="employee-id-input"
+              />
+              <select
+                value={selectedYear}
+                onChange={(e) => setSelectedYear(parseInt(e.target.value))}
+                className="year-select"
+              >
+                {[2023, 2024, 2025, 2026, 2027].map(year => (
+                  <option key={year} value={year}>{year}</option>
+                ))}
+              </select>
+              <button
+                className="btn-search-balance"
+                onClick={handleFetchLeaveBalances}
+                disabled={!selectedEmployeeId || loadingBalance}
+              >
+                {loadingBalance ? 'Đang tải...' : 'Xem thống kê'}
+              </button>
+            </div>
+
+            {leaveBalance !== null && (
+              <div className="balance-results">
+                <div className="total-balance-card">
+                  <div className="balance-header">
+                    <h4>Tổng số ngày nghỉ phép năm {selectedYear}</h4>
+                  </div>
+                  <div className="balance-value">
+                    <span className="balance-number">{leaveBalance}</span>
+                    <span className="balance-unit">ngày</span>
+                  </div>
+                </div>
+
+                <div className="balance-by-type">
+                  <h4>Chi tiết theo loại nghỉ phép</h4>
+                  <div className="balance-type-grid">
+                    {[
+                      { type: 'ANNUAL_LEAVE', label: 'Nghỉ phép năm', icon: '📅' },
+                      { type: 'SICK_LEAVE', label: 'Nghỉ ốm', icon: '🤒' },
+                      { type: 'MATERNITY', label: 'Nghỉ thai sản', icon: '🤱' },
+                      { type: 'PATERNITY', label: 'Nghỉ chăm con', icon: '👨‍👧' },
+                      { type: 'PERSONAL_LEAVE', label: 'Nghỉ cá nhân', icon: '🏠' },
+                      { type: 'STUDY_LEAVE', label: 'Nghỉ học tập', icon: '📚' },
+                      { type: 'EMERGENCY', label: 'Nghỉ khẩn cấp', icon: '🚨' },
+                      { type: 'BEREAVEMENT', label: 'Nghỉ tang', icon: '🕊️' },
+                    ].map(({ type, label, icon }) => (
+                      <div key={type} className="balance-type-card">
+                        <div className="type-icon">{icon}</div>
+                        <div className="type-info">
+                          <div className="type-label">{label}</div>
+                          <div className="type-value">
+                            {leaveBalanceByType[type] !== null && leaveBalanceByType[type] !== undefined
+                              ? `${leaveBalanceByType[type]} ngày`
+                              : 'Đang tải...'}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
 
           <div className="requests-list">
             {filteredRequests.length > 0 ? (
               filteredRequests.map(request => (
                 <TimeOffRequestCard
-                  key={request.id}
+                  key={request.requestId || request.id}
                   request={request}
                   onView={() => {
                     setSelectedRequest(request);
@@ -303,24 +747,20 @@ const TimeOffRequestPage = () => {
             )}
           </div>
         </div>
-
-        <div className="sidebar">
-          <LeaveBalanceWidget employeeId={employeeId} year={new Date().getFullYear()} />
-        </div>
       </div>
 
       {/* Modals */}
       <AddTimeOffRequestModal
         isOpen={showAddModal}
         onClose={() => setShowAddModal(false)}
-        onSuccess={fetchRequests}
+        onSuccess={fetchAllRequests}
         employeeId={employeeId}
       />
 
       <EditTimeOffRequestModal
         isOpen={showEditModal}
         onClose={() => setShowEditModal(false)}
-        onSuccess={fetchRequests}
+        onSuccess={fetchAllRequests}
         requestData={selectedRequest}
       />
 
