@@ -1,0 +1,618 @@
+/* Medication Management Page */
+.medication-page {
+    padding: 24px;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+/* Loading & Error States */
+.medication-page .loading-container,
+.medication-page .error-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px;
+    color: #9ca3af;
+}
+
+.medication-page .loading-container svg,
+.medication-page .error-container svg {
+    font-size: 64px;
+    margin-bottom: 16px;
+}
+
+.medication-page .spinner {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.medication-page .btn-retry {
+    margin-top: 16px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background: #3b82f6;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.medication-page .btn-retry:hover {
+    background: #2563eb;
+}
+
+/* Header */
+.medication-page .medication-header {
+    background: white;
+    padding: 24px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.medication-page .header-content h1 {
+    margin: 0 0 4px 0;
+    font-size: 24px;
+    color: #1a1a1a;
+}
+
+.medication-page .header-content p {
+    margin: 0;
+    color: #6b7280;
+    font-size: 14px;
+}
+
+.medication-page .btn-refresh {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background: #3b82f6;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.medication-page .btn-refresh:hover {
+    background: #2563eb;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+/* Filters */
+.medication-page .medication-filters {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 24px;
+    display: flex;
+    gap: 16px;
+    align-items: center;
+}
+
+.medication-page .search-box {
+    flex: 1;
+}
+
+.medication-page .search-box input {
+    width: 100%;
+    padding: 10px 16px;
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    font-size: 14px;
+    transition: all 0.3s ease;
+}
+
+.medication-page .search-box input:focus {
+    outline: none;
+    border-color: #3b82f6;
+}
+
+.medication-page .filter-options {
+    display: flex;
+    gap: 16px;
+}
+
+.medication-page .checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    color: #374151;
+}
+
+.medication-page .checkbox-label input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+}
+
+/* Stats */
+.medication-page .medication-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.medication-page .stat-card {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.medication-page .stat-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    color: white;
+}
+
+.medication-page .stat-icon.total {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+}
+
+.medication-page .stat-icon.overdue {
+    background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+}
+
+.medication-page .stat-info h3 {
+    margin: 0 0 4px 0;
+    font-size: 28px;
+    color: #1a1a1a;
+}
+
+.medication-page .stat-info p {
+    margin: 0;
+    font-size: 14px;
+    color: #6b7280;
+}
+
+/* Empty State */
+.medication-page .empty-state {
+    background: white;
+    padding: 60px 20px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    color: #9ca3af;
+}
+
+.medication-page .empty-state svg {
+    font-size: 64px;
+    margin-bottom: 16px;
+}
+
+/* Medication List */
+.medication-page .medication-list {
+    display: grid;
+    gap: 16px;
+}
+
+.medication-page .medication-card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.medication-page .medication-card:hover {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+.medication-page .medication-card.overdue {
+    border: 2px solid #f97316;
+}
+
+.medication-page .overdue-banner {
+    background: #f97316;
+    color: white;
+    padding: 8px 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.medication-page .card-header {
+    padding: 20px;
+    border-bottom: 2px solid #f3f4f6;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.medication-page .patient-info h3 {
+    margin: 0 0 4px 0;
+    font-size: 18px;
+    color: #1a1a1a;
+}
+
+.medication-page .patient-code {
+    font-size: 13px;
+    color: #6b7280;
+    font-weight: 500;
+}
+
+.medication-page .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.medication-page .badge.status-pending {
+    background: #fef3c7;
+    color: #d97706;
+}
+
+.medication-page .card-body {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.medication-page .medication-info h4 {
+    margin: 0 0 12px 0;
+    font-size: 16px;
+    color: #3b82f6;
+    font-weight: 600;
+}
+
+.medication-page .med-details {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.medication-page .detail-item {
+    font-size: 14px;
+    color: #374151;
+}
+
+.medication-page .detail-item strong {
+    color: #1a1a1a;
+}
+
+.medication-page .schedule-info {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.medication-page .info-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    color: #374151;
+}
+
+.medication-page .info-row svg {
+    color: #6b7280;
+}
+
+.medication-page .card-actions {
+    padding: 16px 20px;
+    background: #f9fafb;
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+}
+
+.medication-page .btn-action {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.medication-page .btn-administer {
+    background: #16a34a;
+    color: white;
+}
+
+.medication-page .btn-administer:hover {
+    background: #15803d;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(22, 163, 74, 0.3);
+}
+
+.medication-page .btn-refuse {
+    background: #ef4444;
+    color: white;
+}
+
+.medication-page .btn-refuse:hover {
+    background: #dc2626;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+.medication-page .btn-miss {
+    background: #f97316;
+    color: white;
+}
+
+.medication-page .btn-miss:hover {
+    background: #ea580c;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(249, 115, 22, 0.3);
+}
+
+/* Modal */
+.medication-page .modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 24px;
+}
+
+.medication-page .modal-content {
+    background: white;
+    border-radius: 12px;
+    max-width: 600px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.medication-page .administer-dialog {
+    max-width: 700px;
+}
+
+.medication-page .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 24px;
+    border-bottom: 2px solid #e5e7eb;
+}
+
+.medication-page .modal-header h2 {
+    margin: 0;
+    font-size: 20px;
+    color: #1a1a1a;
+}
+
+.medication-page .btn-close {
+    background: none;
+    border: none;
+    font-size: 28px;
+    color: #6b7280;
+    cursor: pointer;
+    padding: 0;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.medication-page .btn-close:hover {
+    color: #1a1a1a;
+}
+
+.medication-page .modal-body {
+    padding: 24px;
+}
+
+.medication-page .patient-summary {
+    background: #f3f4f6;
+    padding: 16px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+.medication-page .patient-summary p {
+    margin: 0 0 8px 0;
+    font-size: 14px;
+    color: #374151;
+}
+
+.medication-page .patient-summary p:last-child {
+    margin-bottom: 0;
+}
+
+.medication-page .form-group {
+    margin-bottom: 20px;
+}
+
+.medication-page .form-group label {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 8px;
+}
+
+.medication-page .form-group label .required {
+    color: #ef4444;
+}
+
+.medication-page .form-group input[type="text"],
+.medication-page .form-group input[type="datetime-local"],
+.medication-page .form-group textarea {
+    width: 100%;
+    padding: 10px 12px;
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: inherit;
+    transition: all 0.3s ease;
+}
+
+.medication-page .form-group textarea {
+    resize: vertical;
+}
+
+.medication-page .form-group input:focus,
+.medication-page .form-group textarea:focus {
+    outline: none;
+    border-color: #3b82f6;
+}
+
+.medication-page .form-group textarea.error {
+    border-color: #ef4444;
+}
+
+.medication-page .error-message {
+    display: block;
+    margin-top: 4px;
+    font-size: 12px;
+    color: #ef4444;
+    font-weight: 500;
+}
+
+.medication-page .dialog-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+    margin-top: 24px;
+}
+
+.medication-page .btn-cancel {
+    padding: 10px 20px;
+    background: #f3f4f6;
+    color: #374151;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.medication-page .btn-cancel:hover:not(:disabled) {
+    background: #e5e7eb;
+}
+
+.medication-page .btn-cancel:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.medication-page .btn-confirm {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background: #16a34a;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.medication-page .btn-confirm:hover:not(:disabled) {
+    background: #15803d;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(22, 163, 74, 0.3);
+}
+
+.medication-page .btn-confirm:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.medication-page .btn-refuse-confirm {
+    background: #ef4444;
+}
+
+.medication-page .btn-refuse-confirm:hover:not(:disabled) {
+    background: #dc2626;
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+.medication-page .btn-miss-confirm {
+    background: #f97316;
+}
+
+.medication-page .btn-miss-confirm:hover:not(:disabled) {
+    background: #ea580c;
+    box-shadow: 0 4px 12px rgba(249, 115, 22, 0.3);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .medication-page .medication-filters {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .medication-page .medication-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+    }
+
+    .medication-page .btn-refresh {
+        align-self: flex-start;
+    }
+
+    .medication-page .card-actions {
+        flex-direction: column;
+    }
+
+    .medication-page .btn-action {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .medication-page .med-details {
+        flex-direction: column;
+        gap: 8px;
+    }
+}
+

@@ -1,0 +1,358 @@
+/* Inpatient Stay Detail Page */
+.inpatient-stay-detail-page {
+    padding: 24px;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+/* Loading & Error States */
+.detail-loading,
+.detail-error {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 400px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    margin: 24px;
+}
+
+.detail-loading svg,
+.detail-error svg {
+    font-size: 48px;
+    color: #9ca3af;
+    margin-bottom: 16px;
+}
+
+.detail-loading .spinner {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.detail-error svg {
+    color: #ef4444;
+}
+
+.btn-back-error {
+    margin-top: 16px;
+    padding: 10px 24px;
+    background: #3b82f6;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-back-error:hover {
+    background: #2563eb;
+}
+
+/* Header */
+.inpatient-stay-detail-page .detail-header {
+    background: white;
+    padding: 24px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 24px;
+}
+
+.inpatient-stay-detail-page .btn-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background: #f3f4f6;
+    border: none;
+    border-radius: 8px;
+    color: #374151;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-bottom: 16px;
+}
+
+.inpatient-stay-detail-page .btn-back:hover {
+    background: #e5e7eb;
+}
+
+.inpatient-stay-detail-page .header-content h1 {
+    margin: 0 0 4px 0;
+    font-size: 24px;
+    color: #1a1a1a;
+}
+
+.inpatient-stay-detail-page .header-content p {
+    margin: 0;
+    color: #6b7280;
+    font-size: 14px;
+}
+
+/* Status Section */
+.inpatient-stay-detail-page .status-section {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    background: white;
+    padding: 24px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 24px;
+}
+
+.inpatient-stay-detail-page .info-item-lg {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.inpatient-stay-detail-page .info-item-lg label {
+    font-size: 12px;
+    color: #6b7280;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.inpatient-stay-detail-page .info-item-lg span {
+    font-size: 18px;
+    color: #1a1a1a;
+    font-weight: 600;
+}
+
+.inpatient-stay-detail-page .patient-name {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #3b82f6;
+}
+
+.inpatient-stay-detail-page .patient-name svg {
+    font-size: 20px;
+}
+
+.inpatient-stay-detail-page .highlight-text {
+    color: #3b82f6;
+}
+
+.inpatient-stay-detail-page .badge {
+    display: inline-block;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.inpatient-stay-detail-page .badge.status-active {
+    background: #dcfce7;
+    color: #16a34a;
+}
+
+.inpatient-stay-detail-page .badge.status-discharged {
+    background: #e5e7eb;
+    color: #6b7280;
+}
+
+.inpatient-stay-detail-page .badge.status-transferred {
+    background: #fef3c7;
+    color: #d97706;
+}
+
+/* Action Buttons */
+.inpatient-stay-detail-page .action-buttons {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.inpatient-stay-detail-page .btn-action {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 16px 24px;
+    border: none;
+    border-radius: 12px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.inpatient-stay-detail-page .btn-action svg {
+    font-size: 18px;
+}
+
+.inpatient-stay-detail-page .btn-workflow {
+    background: #eff6ff;
+    color: #3b82f6;
+}
+
+.inpatient-stay-detail-page .btn-workflow:hover {
+    background: #dbeafe;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.inpatient-stay-detail-page .btn-nursing-notes {
+    background: #f0fdf4;
+    color: #16a34a;
+}
+
+.inpatient-stay-detail-page .btn-nursing-notes:hover {
+    background: #dcfce7;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(22, 163, 74, 0.3);
+}
+
+.inpatient-stay-detail-page .btn-medication {
+    background: #fef3c7;
+    color: #d97706;
+}
+
+.inpatient-stay-detail-page .btn-medication:hover {
+    background: #fde68a;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(217, 119, 6, 0.3);
+}
+
+.inpatient-stay-detail-page .btn-safety-assessment {
+    background: #c7fef9;
+    color: #1a394e;
+}
+
+.inpatient-stay-detail-page .btn-safety-assessment:hover {
+    background: #61bfb5;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(9, 216, 183, 0.3);
+}
+.inpatient-stay-detail-page .btn-discharge {
+    background: #d7c7fe;
+    color: #2b174a;
+}
+
+.inpatient-stay-detail-page .btn-discharge:hover {
+    background: #8761bf;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(65, 21, 179, 0.3);
+}
+
+/* Detail Columns */
+.inpatient-stay-detail-page .detail-columns {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+}
+
+.inpatient-stay-detail-page .detail-column {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+/* Detail Section */
+.inpatient-stay-detail-page .detail-section {
+    background: white;
+    padding: 24px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.inpatient-stay-detail-page .detail-section h3 {
+    margin: 0 0 16px 0;
+    font-size: 16px;
+    color: #1a1a1a;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid #e5e7eb;
+}
+
+.inpatient-stay-detail-page .detail-section h3 svg {
+    color: #3b82f6;
+    font-size: 18px;
+}
+
+/* Info Grid */
+.inpatient-stay-detail-page .info-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+}
+
+.inpatient-stay-detail-page .info-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.inpatient-stay-detail-page .info-item label {
+    font-size: 12px;
+    color: #6b7280;
+    font-weight: 500;
+}
+
+.inpatient-stay-detail-page .info-item span {
+    font-size: 14px;
+    color: #1a1a1a;
+    font-weight: 500;
+}
+
+.inpatient-stay-detail-page .info-item span.highlight {
+    color: #3b82f6;
+    font-weight: 600;
+}
+
+.inpatient-stay-detail-page .info-item-full {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid #e5e7eb;
+}
+
+.inpatient-stay-detail-page .info-item-full label {
+    font-size: 12px;
+    color: #6b7280;
+    font-weight: 500;
+    display: block;
+    margin-bottom: 8px;
+}
+
+.inpatient-stay-detail-page .info-item-full p {
+    margin: 0;
+    font-size: 14px;
+    color: #1a1a1a;
+    line-height: 1.6;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+    .inpatient-stay-detail-page .detail-columns {
+        grid-template-columns: 1fr;
+    }
+    
+    .inpatient-stay-detail-page .status-section {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .inpatient-stay-detail-page .action-buttons {
+        flex-direction: column;
+    }
+    
+    .inpatient-stay-detail-page .info-grid {
+        grid-template-columns: 1fr;
+    }
+}
+

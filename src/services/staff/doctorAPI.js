@@ -703,6 +703,16 @@ export const admissionRequestAPI = {
       },
     });
   },
+  
+  // HÀM MỚI ĐỂ GỌI ENCOUNTER
+  getFinishedOutpatientEncounters: async () => {
+    return apiCall('api/v1/encounters/finished-outpatient', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
 };
 
 export default {

@@ -1,0 +1,183 @@
+/* -- Trang chung -- */
+.safety-assessment-page {
+    padding: 24px;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+/* Header */
+.sa-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding-bottom: 24px;
+    margin-bottom: 24px;
+    border-bottom: 2px solid #e5e7eb;
+}
+.sa-header .btn-back {
+    display: flex; align-items: center; gap: 8px; padding: 10px 16px;
+    background: #f3f4f6; border: none; border-radius: 8px;
+    color: #374151; font-size: 14px; font-weight: 500; cursor: pointer;
+}
+.sa-header .btn-back:hover { background: #e5e7eb; }
+.sa-header .header-content { flex: 1; }
+.sa-header .header-content h1 { margin: 0; font-size: 24px; }
+.sa-header .header-content p { margin: 4px 0 0 0; color: #666; }
+.sa-header .btn-create {
+    display: flex; align-items: center; gap: 8px; padding: 10px 20px;
+    background: #10b981; color: white; border: none; border-radius: 8px;
+    font-size: 14px; font-weight: 600; cursor: pointer;
+}
+.sa-header .btn-create:hover { background: #059669; }
+
+/* -- Loading, Error, No-data -- */
+.sa-loading, .sa-error, .sa-no-data {
+    text-align: center; padding: 60px; font-size: 16px; color: #666;
+    background: #fff; border-radius: 12px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
+}
+.sa-error { color: #ef4444; }
+.sa-no-data svg { font-size: 48px; color: #d1d5db; margin-bottom: 16px; }
+
+/* -- Danh sách thẻ -- */
+.sa-list-container {
+    background: #f9fafb;
+    padding: 24px;
+    border-radius: 12px;
+}
+.sa-list-grid {
+    display: grid;
+    grid-template-columns: 1fr; /* Một cột */
+    gap: 20px;
+}
+
+/* -- Thẻ Đánh giá -- */
+.sa-card {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    border: 1px solid #e5e7eb;
+}
+
+.sa-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 20px;
+    border-bottom: 1px solid #f3f4f6;
+}
+.sa-card-header h3 { margin: 0; font-size: 18px; color: #10b981; }
+.sa-risk-badge {
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    /* Dùng biến CSS --risk-color được set từ inline style */
+    background-color: var(--risk-color);
+    color: white;
+}
+
+.sa-card-body {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+.sa-info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 12px;
+}
+.sa-info-item { display: flex; flex-direction: column; gap: 4px; }
+.sa-info-item label { font-size: 12px; color: #6b7280; font-weight: 500; }
+.sa-info-item span { font-size: 14px; color: #111827; font-weight: 500; }
+
+.sa-tags-section { display: flex; flex-direction: column; gap: 8px; }
+.sa-tags-section label { font-size: 12px; color: #6b7280; font-weight: 500; }
+.sa-tags-list { display: flex; flex-wrap: wrap; gap: 6px; }
+.sa-tag {
+    background: #e0f2fe; /* Màu xanh nhạt */
+    color: #0369a1; /* Xanh đậm */
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 500;
+}
+.sa-info-full { background: #f9fafb; padding: 12px; border-radius: 8px; }
+.sa-info-full label { font-size: 12px; color: #6b7280; font-weight: 500; }
+.sa-info-full p { margin: 4px 0 0 0; font-size: 14px; }
+
+.sa-card-footer {
+    display: flex;
+    justify-content: space-between;
+    padding: 12px 20px;
+    background-color: #f9fafb;
+    border-top: 1px solid #f3f4f6;
+    border-bottom-left-radius: 12px;
+    border-bottom-right-radius: 12px;
+}
+.sa-footer-item {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 13px; color: #4b5563;
+}
+
+/* -- Modal (Sao chép từ các file trước) -- */
+.modal-overlay {
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 1000; padding: 20px;
+}
+.modal-content {
+    background: white; border-radius: 12px;
+    max-width: 600px; width: 100%;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    max-height: 90vh; overflow-y: auto;
+}
+.modal-content.modal-lg { max-width: 800px; }
+.modal-header {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 20px 24px; border-bottom: 2px solid #e5e7eb;
+}
+.modal-header h3 { margin: 0; font-size: 20px; }
+.btn-close {
+    background: none; border: none; font-size: 28px;
+    color: #9ca3af; cursor: pointer;
+}
+.modal-body { padding: 24px; }
+.modal-footer {
+    display: flex; justify-content: flex-end; gap: 12px;
+    padding: 20px 24px; border-top: 2px solid #e5e7eb;
+}
+.btn-cancel, .btn-submit {
+    padding: 10px 24px; border: none; border-radius: 8px;
+    font-size: 14px; font-weight: 600; cursor: pointer;
+}
+.btn-cancel { background: #f3f4f6; color: #6b7280; }
+.btn-submit { background: #10b981; color: white; }
+.btn-submit:disabled { background: #d1d5db; }
+.error-state.modal-error {
+    margin-top: 16px; padding: 12px; font-size: 14px;
+}
+
+/* Grid form trong modal */
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+.form-group { display: flex; flex-direction: column; gap: 6px; }
+.form-group.full-width { grid-column: 1 / -1; }
+.form-group label {
+    font-size: 13px; font-weight: 600; color: #374151;
+}
+.form-group input,
+.form-group select,
+.form-group textarea {
+    width: 100%; padding: 10px 12px;
+    border: 2px solid #e5e7eb; border-radius: 8px;
+    font-size: 14px; font-family: inherit;
+}
+.form-group textarea { resize: vertical; min-height: 80px; }
+.form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+    outline: none; border-color: #10b981;
+}
