@@ -467,6 +467,29 @@ export const doctorEncounterAPI = {
     });
   },
 
+  // Thay thế đơn thuốc (Replace Prescription)
+  // Per Vietnamese legal requirements - SIGNED prescriptions cannot be cancelled, only replaced
+  replacePrescription: async (prescriptionId, replacementReason, prescriptionData) => {
+    return apiCall(`api/v1/prescriptions/${prescriptionId}/replace?replacementReason=${encodeURIComponent(replacementReason)}`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(prescriptionData),
+    });
+  },
+
+  // Lấy lịch sử thay thế đơn thuốc (Get Replacement Chain)
+  getReplacementChain: async (prescriptionId) => {
+    return apiCall(`api/v1/prescriptions/${prescriptionId}/replacement-chain`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
   // Lấy danh sách prescriptions của encounter
   // getPrescriptions: async (encounterId) => {
   //   return apiCall(`api/v1/encounters/${encounterId}/prescriptions`, {

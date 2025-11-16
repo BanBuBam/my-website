@@ -4,25 +4,24 @@ const BASE_URL = process.env.REACT_APP_BASE_URL || 'http://100.99.181.59:8081/';
 // Hàm helper để gọi API
 const apiCall = async (endpoint, options = {}) => {
   const url = `${BASE_URL}${endpoint}`;
-  
-  const defaultOptions = {
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  };
+
+  // Chỉ thêm Content-Type nếu có body
+  const defaultHeaders = {};
+  if (options.body) {
+    defaultHeaders['Content-Type'] = 'application/json';
+  }
 
   const config = {
-    ...defaultOptions,
     ...options,
     headers: {
-      ...defaultOptions.headers,
+      ...defaultHeaders,
       ...options.headers,
     },
   };
 
   try {
     const response = await fetch(url, config);
-    
+
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
       throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
@@ -493,3 +492,296 @@ export default {
   adminAdmissionRequestAPI,
 };
 
+// ==================== API Quản lý Nhà cung cấp (Supplier Management) ====================
+
+export const adminSupplierAPI = {
+  // 1. Tạo nhà cung cấp mới (Create Supplier)
+  // POST /api/v1/suppliers
+  createSupplier: async (supplierData) => {
+    return apiCall('api/v1/suppliers', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(supplierData),
+    });
+  },
+
+  // 2. Cập nhật nhà cung cấp (Update Supplier)
+  // PUT /api/v1/suppliers/{supplierId}
+  updateSupplier: async (supplierId, supplierData) => {
+    return apiCall(`api/v1/suppliers/${supplierId}`, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(supplierData),
+    });
+  },
+
+  // 3. Lấy thông tin chi tiết nhà cung cấp (Get Supplier by ID)
+  // GET /api/v1/suppliers/{supplierId}
+  getSupplierById: async (supplierId) => {
+    return apiCall(`api/v1/suppliers/${supplierId}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // 4. Lấy danh sách tất cả nhà cung cấp (Get All Suppliers - Paginated)
+  // GET /api/v1/suppliers?page={page}&size={size}
+  getAllSuppliers: async (page = 0, size = 20) => {
+    return apiCall(`api/v1/suppliers?page=${page}&size=${size}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // 5. Tìm kiếm nhà cung cấp (Search Suppliers)
+  // GET /api/v1/suppliers/search?searchTerm={searchTerm}
+  searchSuppliers: async (searchTerm) => {
+    return apiCall(`api/v1/suppliers/search?searchTerm=${encodeURIComponent(searchTerm)}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // 6. Xóa nhà cung cấp (Soft Delete Supplier)
+  // DELETE /api/v1/suppliers/{supplierId}
+  deleteSupplier: async (supplierId) => {
+    return apiCall(`api/v1/suppliers/${supplierId}`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // 7. Khôi phục nhà cung cấp đã xóa (Restore Supplier)
+  // PUT /api/v1/suppliers/{supplierId}/restore
+  restoreSupplier: async (supplierId) => {
+    return apiCall(`api/v1/suppliers/${supplierId}/restore`, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // 8. Lấy danh sách nhà cung cấp đã xóa (Get Deleted Suppliers)
+  // GET /api/v1/suppliers/deleted?page={page}&size={size}
+  getDeletedSuppliers: async (page = 0, size = 10) => {
+    return apiCall(`api/v1/suppliers/deleted?page=${page}&size=${size}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // 9. Lấy danh sách nhà cung cấp đang hoạt động (Get Active Suppliers)
+  // GET /api/v1/suppliers/active?page={page}&size={size}
+  getActiveSuppliers: async (page = 0, size = 10) => {
+    return apiCall(`api/v1/suppliers/active?page=${page}&size=${size}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // 10. Lấy thống kê nhà cung cấp (Get Supplier Statistics)
+  // GET /api/v1/suppliers/stats/soft-delete
+  getSupplierStats: async () => {
+    return apiCall('api/v1/suppliers/stats/soft-delete', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+};
+
+// ==================== Cabinet Management API ====================
+export const adminCabinetAPI = {
+  // Tạo tủ mới (Create Cabinet)
+  // API: POST /api/v1/cabinet-management
+  createCabinet: async (cabinetData) => {
+    return apiCall('api/v1/cabinet-management', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(cabinetData),
+    });
+  },
+
+  // Cập nhật tủ (Update Cabinet)
+  // API: PUT /api/v1/cabinet-management/{cabinetId}
+  updateCabinet: async (cabinetId, cabinetData) => {
+    return apiCall(`api/v1/cabinet-management/${cabinetId}`, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(cabinetData),
+    });
+  },
+
+  // Lấy thông tin tủ theo ID (Get Cabinet by ID)
+  // API: GET /api/v1/cabinet-management/{cabinetId}
+  getCabinetById: async (cabinetId) => {
+    return apiCall(`api/v1/cabinet-management/${cabinetId}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Lấy tất cả tủ với phân trang (Get All Cabinets)
+  // API: GET /api/v1/cabinet-management?page={page}&size={size}
+  getAllCabinets: async (page = 0, size = 20) => {
+    return apiCall(`api/v1/cabinet-management?page=${page}&size=${size}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Lấy tủ theo khoa phòng (Get Cabinets by Department)
+  // API: GET /api/v1/cabinet-management/department/{departmentId}
+  getCabinetsByDepartment: async (departmentId) => {
+    return apiCall(`api/v1/cabinet-management/department/${departmentId}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Gán người chịu trách nhiệm (Assign Responsible Employee)
+  // API: POST /api/v1/cabinet-management/{cabinetId}/assign?employeeId={employeeId}
+  assignResponsibleEmployee: async (cabinetId, employeeId) => {
+    return apiCall(`api/v1/cabinet-management/${cabinetId}/assign?employeeId=${employeeId}`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Khóa/Mở khóa tủ (Lock/Unlock Cabinet)
+  // API: POST /api/v1/cabinet-management/{cabinetId}/lock?locked={locked}
+  lockUnlockCabinet: async (cabinetId, locked) => {
+    return apiCall(`api/v1/cabinet-management/${cabinetId}/lock?locked=${locked}`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Thiết lập mức đặt hàng lại (Set Reorder Levels)
+  // API: POST /api/v1/cabinet-management/{cabinetId}/reorder-levels
+  setReorderLevels: async (cabinetId, reorderData) => {
+    return apiCall(`api/v1/cabinet-management/${cabinetId}/reorder-levels`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(reorderData),
+    });
+  },
+
+  // Ngừng hoạt động tủ (Deactivate Cabinet)
+  // API: POST /api/v1/cabinet-management/{cabinetId}/deactivate?reason={reason}
+  deactivateCabinet: async (cabinetId, reason) => {
+    return apiCall(`api/v1/cabinet-management/${cabinetId}/deactivate?reason=${encodeURIComponent(reason)}`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Lấy lịch sử truy cập tủ (Get Cabinet Access Log)
+  // API: GET /api/v1/cabinet-management/{cabinetId}/access-log?startDate={startDate}&endDate={endDate}
+  getCabinetAccessLog: async (cabinetId, startDate = null, endDate = null) => {
+    let url = `api/v1/cabinet-management/${cabinetId}/access-log`;
+    const params = [];
+    if (startDate) params.push(`startDate=${startDate}`);
+    if (endDate) params.push(`endDate=${endDate}`);
+    if (params.length > 0) url += `?${params.join('&')}`;
+
+    return apiCall(url, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Lấy cảnh báo của tủ (Get Cabinet Alerts)
+  // API: GET /api/v1/cabinet-management/{cabinetId}/alerts
+  getCabinetAlerts: async (cabinetId) => {
+    return apiCall(`api/v1/cabinet-management/${cabinetId}/alerts`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Tạo báo cáo tủ (Generate Cabinet Report)
+  // API: GET /api/v1/cabinet-management/{cabinetId}/report?reportType={reportType}&startDate={startDate}&endDate={endDate}
+  generateCabinetReport: async (cabinetId, reportType, startDate = null, endDate = null) => {
+    let url = `api/v1/cabinet-management/${cabinetId}/report?reportType=${reportType}`;
+    if (startDate) url += `&startDate=${startDate}`;
+    if (endDate) url += `&endDate=${endDate}`;
+
+    return apiCall(url, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Lấy lịch trình bảo trì (Get Cabinet Maintenance)
+  // API: GET /api/v1/cabinet-management/{cabinetId}/maintenance
+  getCabinetMaintenance: async (cabinetId) => {
+    return apiCall(`api/v1/cabinet-management/${cabinetId}/maintenance`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Lên lịch bảo trì (Schedule Cabinet Maintenance)
+  // API: POST /api/v1/cabinet-management/{cabinetId}/schedule-maintenance?maintenanceType={maintenanceType}&scheduledDate={scheduledDate}&notes={notes}
+  scheduleCabinetMaintenance: async (cabinetId, maintenanceType, scheduledDate, notes = '') => {
+    let url = `api/v1/cabinet-management/${cabinetId}/schedule-maintenance?maintenanceType=${maintenanceType}&scheduledDate=${scheduledDate}`;
+    if (notes) url += `&notes=${encodeURIComponent(notes)}`;
+
+    return apiCall(url, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+};

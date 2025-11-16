@@ -205,6 +205,36 @@ export const pharmacistPrescriptionAPI = {
     });
   },
 
+  // Lấy danh sách đơn thuốc đã ký (SIGNED)
+  getSignedPrescriptions: async (page = 0, size = 20) => {
+    return apiCall(`api/v1/prescriptions/status/SIGNED?page=${page}&size=${size}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Lấy danh sách đơn thuốc đã cấp phát (DISPENSED)
+  getDispensedPrescriptions: async (page = 0, size = 20) => {
+    return apiCall(`api/v1/prescriptions/status/DISPENSED?page=${page}&size=${size}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Lấy danh sách đơn thuốc đã cấp phát (DISPENSED)
+  getDispensedPrescriptions: async (page = 0, size = 20) => {
+    return apiCall(`api/v1/prescriptions/status/DISPENSED?page=${page}&size=${size}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
   // Lấy chi tiết đơn thuốc
   getPrescriptionDetail: async (prescriptionId) => {
     return apiCall(`api/v1/pharmacist/prescriptions/${prescriptionId}`, {
@@ -215,14 +245,96 @@ export const pharmacistPrescriptionAPI = {
     });
   },
 
-  // Xác nhận cấp phát đơn thuốc
-  dispensePrescription: async (prescriptionId, dispenseData) => {
+  // Xác nhận cấp phát đơn thuốc (với data)
+  dispensePrescriptionWithData: async (prescriptionId, dispenseData) => {
     return apiCall(`api/v1/pharmacist/prescriptions/${prescriptionId}/dispense`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${getAccessToken()}`,
       },
       body: JSON.stringify(dispenseData),
+    });
+  },
+
+  // Cấp phát đơn thuốc (chuyển trạng thái SIGNED → DISPENSED)
+  dispensePrescription: async (prescriptionId) => {
+    return apiCall(`api/v1/prescriptions/${prescriptionId}/dispense`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Trả thuốc (Return Medication)
+  // Process medication return with proper audit trail
+  // API: POST /api/v1/prescriptions/{prescriptionId}/items/{itemId}/return
+  returnMedicationItem: async (prescriptionId, itemId, quantity, reason) => {
+    const url = `${BASE_URL}api/v1/prescriptions/${prescriptionId}/items/${itemId}/return?quantity=${quantity}&reason=${encodeURIComponent(reason)}`;
+
+    console.log('Return medication API call:', {
+      url,
+      prescriptionId,
+      itemId,
+      quantity,
+      reason
+    });
+
+    try {
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${getAccessToken()}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      console.log('Return medication response status:', response.status);
+      console.log('Return medication response ok:', response.ok);
+
+      // Try to parse JSON response
+      const contentType = response.headers.get('content-type');
+      let data = null;
+
+      if (contentType && contentType.includes('application/json')) {
+        data = await response.json();
+        console.log('Return medication response data:', data);
+      } else {
+        const text = await response.text();
+        console.log('Return medication response text:', text);
+        data = { message: text };
+      }
+
+      // Check if response is successful
+      if (!response.ok) {
+        throw new Error(data?.message || `HTTP error! status: ${response.status}`);
+      }
+
+      return data;
+    } catch (error) {
+      console.error('Return medication API error:', error);
+      throw error;
+    }
+  },
+
+  // Lấy lịch sử trả thuốc của đơn thuốc (Get Return History)
+  // API: GET /api/v1/prescriptions/{prescriptionId}/return-history
+  getReturnHistory: async (prescriptionId) => {
+    return apiCall(`api/v1/prescriptions/${prescriptionId}/return-history`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Lấy lịch sử thay thế đơn thuốc (Get Replacement Chain)
+  getReplacementChain: async (prescriptionId) => {
+    return apiCall(`api/v1/prescriptions/${prescriptionId}/replacement-chain`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
     });
   },
 };
