@@ -1,0 +1,620 @@
+/* Discharge Planning Page */
+.discharge-planning-page {
+    padding: 24px;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+/* Loading & Error States */
+.discharge-planning-page .loading-container,
+.discharge-planning-page .error-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px;
+    color: #9ca3af;
+}
+
+.discharge-planning-page .loading-container svg,
+.discharge-planning-page .error-container svg {
+    font-size: 64px;
+    margin-bottom: 16px;
+}
+
+.discharge-planning-page .spinner {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.discharge-planning-page .btn-retry {
+    margin-top: 16px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background: #3b82f6;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.discharge-planning-page .btn-retry:hover {
+    background: #2563eb;
+}
+
+/* Header */
+.discharge-planning-page .discharge-header {
+    background: white;
+    padding: 24px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+}
+
+.discharge-planning-page .header-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex: 1;
+}
+
+.discharge-planning-page .btn-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    background: #f3f4f6;
+    color: #374151;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.discharge-planning-page .btn-back:hover {
+    background: #e5e7eb;
+}
+
+.discharge-planning-page .header-title h1 {
+    margin: 0 0 4px 0;
+    font-size: 24px;
+    color: #1a1a1a;
+}
+
+.discharge-planning-page .patient-info {
+    margin: 0;
+    font-size: 14px;
+    color: #6b7280;
+}
+
+.discharge-planning-page .header-actions {
+    display: flex;
+    gap: 12px;
+}
+
+.discharge-planning-page .btn-create,
+.discharge-planning-page .btn-edit,
+.discharge-planning-page .btn-approve,
+.discharge-planning-page .btn-execute {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.discharge-planning-page .btn-create {
+    background: #3b82f6;
+    color: white;
+}
+
+.discharge-planning-page .btn-create:hover {
+    background: #2563eb;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.discharge-planning-page .btn-edit {
+    background: #f97316;
+    color: white;
+}
+
+.discharge-planning-page .btn-edit:hover {
+    background: #ea580c;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(249, 115, 22, 0.3);
+}
+
+.discharge-planning-page .btn-approve {
+    background: #16a34a;
+    color: white;
+}
+
+.discharge-planning-page .btn-approve:hover:not(:disabled) {
+    background: #15803d;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(22, 163, 74, 0.3);
+}
+
+.discharge-planning-page .btn-approve:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.discharge-planning-page .btn-execute {
+    background: #16a34a;
+    color: white;
+}
+
+.discharge-planning-page .btn-execute:hover:not(:disabled) {
+    background: #15803d;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(22, 163, 74, 0.3);
+}
+
+.discharge-planning-page .btn-execute:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Empty State */
+.discharge-planning-page .empty-state {
+    background: white;
+    padding: 60px 20px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    color: #9ca3af;
+}
+
+.discharge-planning-page .empty-state svg {
+    font-size: 64px;
+    margin-bottom: 16px;
+}
+
+.discharge-planning-page .empty-state h3 {
+    margin: 0 0 8px 0;
+    font-size: 20px;
+    color: #374151;
+}
+
+.discharge-planning-page .empty-state p {
+    margin: 0 0 24px 0;
+    font-size: 14px;
+}
+
+.discharge-planning-page .btn-create-empty {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    background: #3b82f6;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.discharge-planning-page .btn-create-empty:hover {
+    background: #2563eb;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+/* Discharge Plan Content */
+.discharge-planning-page .discharge-plan-content {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* Status Section */
+.discharge-planning-page .plan-status-section {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.discharge-planning-page .status-badges {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.discharge-planning-page .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.discharge-planning-page .badge.status-pending {
+    background: #fef3c7;
+    color: #d97706;
+}
+
+.discharge-planning-page .badge.status-draft {
+    background: #e0e7ff;
+    color: #4f46e5;
+}
+
+.discharge-planning-page .badge.status-completed {
+    background: #d1fae5;
+    color: #059669;
+}
+
+.discharge-planning-page .badge.approved {
+    background: #d1fae5;
+    color: #059669;
+}
+
+.discharge-planning-page .badge.pending-approval {
+    background: #fef3c7;
+    color: #d97706;
+}
+
+.discharge-planning-page .badge.transfer-yes {
+    background: #dbeafe;
+    color: #1d4ed8;
+}
+
+.discharge-planning-page .badge.transfer-no {
+    background: #f3f4f6;
+    color: #6b7280;
+}
+
+/* Plan Section */
+.discharge-planning-page .plan-section {
+    background: white;
+    padding: 24px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.discharge-planning-page .plan-section h2 {
+    margin: 0 0 20px 0;
+    font-size: 18px;
+    color: #1a1a1a;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid #e5e7eb;
+}
+
+.discharge-planning-page .plan-section h2 svg {
+    color: #3b82f6;
+}
+
+.discharge-planning-page .info-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+}
+
+.discharge-planning-page .info-item {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.discharge-planning-page .info-item.full-width {
+    grid-column: 1 / -1;
+}
+
+.discharge-planning-page .info-item label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #6b7280;
+}
+
+.discharge-planning-page .info-item span {
+    font-size: 14px;
+    color: #1a1a1a;
+}
+
+.discharge-planning-page .info-detail {
+    margin-bottom: 16px;
+}
+
+.discharge-planning-page .info-detail:last-child {
+    margin-bottom: 0;
+}
+
+.discharge-planning-page .info-detail label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: #6b7280;
+    margin-bottom: 8px;
+}
+
+.discharge-planning-page .info-detail p {
+    margin: 0;
+    font-size: 14px;
+    color: #374151;
+    line-height: 1.6;
+    white-space: pre-wrap;
+}
+
+.discharge-planning-page .metadata-section {
+    background: #f9fafb;
+}
+
+/* Modal */
+.discharge-planning-page .modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 24px;
+}
+
+.discharge-planning-page .modal-content {
+    background: white;
+    border-radius: 12px;
+    max-width: 900px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.discharge-planning-page .modal-content.modal-lg {
+    max-width: 1000px;
+}
+
+.discharge-planning-page .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 24px;
+    border-bottom: 2px solid #e5e7eb;
+    position: sticky;
+    top: 0;
+    background: white;
+    z-index: 10;
+}
+
+.discharge-planning-page .modal-header h2,
+.discharge-planning-page .modal-header h3 {
+    margin: 0;
+    font-size: 20px;
+    color: #1a1a1a;
+}
+
+.discharge-planning-page .btn-close {
+    background: none;
+    border: none;
+    font-size: 28px;
+    color: #6b7280;
+    cursor: pointer;
+    padding: 0;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.discharge-planning-page .btn-close:hover {
+    color: #1a1a1a;
+}
+
+.discharge-planning-page .modal-body {
+    padding: 24px;
+}
+
+.discharge-planning-page .form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+}
+
+.discharge-planning-page .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.discharge-planning-page .form-group.full-width {
+    grid-column: 1 / -1;
+}
+
+.discharge-planning-page .form-group label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #374151;
+}
+
+.discharge-planning-page .form-group label .required {
+    color: #ef4444;
+}
+
+.discharge-planning-page .form-group input[type="text"],
+.discharge-planning-page .form-group input[type="date"],
+.discharge-planning-page .form-group input[type="datetime-local"],
+.discharge-planning-page .form-group select,
+.discharge-planning-page .form-group textarea {
+    width: 100%;
+    padding: 10px 12px;
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: inherit;
+    transition: all 0.3s ease;
+}
+
+.discharge-planning-page .form-group textarea {
+    resize: vertical;
+}
+
+.discharge-planning-page .form-group input:focus,
+.discharge-planning-page .form-group select:focus,
+.discharge-planning-page .form-group textarea:focus {
+    outline: none;
+    border-color: #3b82f6;
+}
+
+.discharge-planning-page .checkbox-group {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.discharge-planning-page .checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    color: #374151;
+    font-weight: 600;
+}
+
+.discharge-planning-page .checkbox-label input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+}
+
+.discharge-planning-page .dialog-actions,
+.discharge-planning-page .modal-footer {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+    margin-top: 24px;
+    padding-top: 24px;
+    border-top: 2px solid #e5e7eb;
+}
+
+.discharge-planning-page .modal-footer {
+    padding: 20px 24px;
+    margin-top: 0;
+    position: sticky;
+    bottom: 0;
+    background: white;
+    z-index: 10;
+}
+
+.discharge-planning-page .btn-cancel {
+    padding: 10px 20px;
+    background: #f3f4f6;
+    color: #374151;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.discharge-planning-page .btn-cancel:hover:not(:disabled) {
+    background: #e5e7eb;
+}
+
+.discharge-planning-page .btn-cancel:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.discharge-planning-page .btn-confirm {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background: #3b82f6;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.discharge-planning-page .btn-confirm:hover:not(:disabled) {
+    background: #2563eb;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.discharge-planning-page .btn-confirm:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .discharge-planning-page .discharge-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .discharge-planning-page .header-left {
+        flex-direction: column;
+        align-items: flex-start;
+        width: 100%;
+    }
+
+    .discharge-planning-page .header-actions {
+        width: 100%;
+        flex-direction: column;
+    }
+
+    .discharge-planning-page .header-actions button {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .discharge-planning-page .info-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .discharge-planning-page .form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .discharge-planning-page .status-badges {
+        flex-direction: column;
+    }
+
+    .discharge-planning-page .badge {
+        justify-content: center;
+    }
+}
+

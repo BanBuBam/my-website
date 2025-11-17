@@ -13,6 +13,7 @@ import InpatientTreatmentPage from './pages/inpatient-treatment/InpatientTreatme
 import InpatientStayDetailPage from './pages/inpatient-treatment/InpatientStayDetailPage';
 import WorkflowPage from './pages/inpatient-treatment/WorkflowPage';
 import NursingNotesPage from './pages/inpatient-treatment/NursingNotesPage';
+import DischargePlanningPage from './pages/inpatient-treatment/DischargePlanningPage';
 import MedicationManagementPage from './pages/medication/MedicationManagementPage';
 import MedicationInpatientPage from "./pages/medication/MedicationInpatientPage";
 import SafetyAssessmentInpatientPage from "./pages/safety-assessment/SafetyAssessmentInpatientPage";
@@ -32,7 +33,7 @@ const NurseRoutes = () => {
                 <Route path="dieu-tri-noi-tru/:stayId/nursing-notes" element={<NursingNotesPage />} />
                 <Route path="dieu-tri-noi-tru/:stayId/medications" element={<MedicationInpatientPage />} />
                 <Route path="dieu-tri-noi-tru/:stayId/safety-assessments" element={<SafetyAssessmentInpatientPage />} />
-                <Route path="dieu-tri-noi-tru/:stayId/discharge" element={<SafetyAssessmentInpatientPage />} />
+                <Route path="dieu-tri-noi-tru/:stayId/discharge-planning" element={<DischargePlanningPage />} />
                 <Route path="quan-ly-medication" element={<MedicationManagementPage />} />
                 <Route path="nhap-xuat-vien" element={<AdmissionPage />} />
                 <Route path="cham-soc" element={<PatientCarePage />} />

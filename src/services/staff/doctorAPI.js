@@ -648,6 +648,76 @@ export const medicineAPI = {
   },
 };
 
+// API Departments
+export const departmentAPI = {
+  // Lấy danh sách departments
+  getDepartments: async () => {
+    return apiCall('api/v1/departments', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+};
+
+// API Inpatient Treatment (Điều trị nội trú)
+export const doctorInpatientTreatmentAPI = {
+  // Lấy danh sách điều trị nội trú đang hoạt động
+  getActiveInpatientStays: async () => {
+    return apiCall('api/v1/inpatient/stays/active', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Lấy chi tiết điều trị nội trú
+  getInpatientStayDetail: async (inpatientStayId) => {
+    return apiCall(`api/v1/inpatient/stays/${inpatientStayId}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Lấy danh sách đơn thuốc theo encounter
+  getPrescriptionsByEncounter: async (encounterId) => {
+    return apiCall(`api/v1/encounters/${encounterId}/prescriptions`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Tạo lượt thuốc điều trị nội trú
+  createInpatientMedication: async (medicationData) => {
+    return apiCall('api/v1/inpatient/medications', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(medicationData),
+    });
+  },
+
+  // Tạo kế hoạch xuất viện
+  createDischargePlanning: async (inpatientStayId, dischargePlanData) => {
+    return apiCall(`api/v1/inpatient/stays/${inpatientStayId}/discharge-planning`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(dischargePlanData),
+    });
+  },
+};
+
 // API Admission Requests (Yêu cầu nhập viện)
 export const admissionRequestAPI = {
   // Tạo yêu cầu nhập viện
@@ -751,6 +821,8 @@ export default {
   icdDiseaseAPI,
   serviceAPI,
   medicineAPI,
+  departmentAPI,
+  doctorInpatientTreatmentAPI,
   admissionRequestAPI,
 };
 

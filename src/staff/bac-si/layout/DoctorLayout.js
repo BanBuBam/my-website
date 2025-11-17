@@ -143,6 +143,12 @@ const DoctorLayout = () => {
                                 </NavLink>
                             </li>
                             <li>
+                                <NavLink to="/staff/bac-si/dieu-tri-noi-tru">
+                                    <FiActivity />
+                                    <span>Quản lý điều trị nội trú</span>
+                                </NavLink>
+                            </li>
+                            <li>
                                 <NavLink to="/staff/bac-si/benh-an-dien-tu">
                                     <FiFolder />
                                     <span>Bệnh án điện tử</span>

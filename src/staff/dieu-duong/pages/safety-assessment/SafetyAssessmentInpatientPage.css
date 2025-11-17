@@ -65,7 +65,16 @@
     padding: 16px 20px;
     border-bottom: 1px solid #f3f4f6;
 }
+
+.sa-card-header-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: 1;
+}
+
 .sa-card-header h3 { margin: 0; font-size: 18px; color: #10b981; }
+
 .sa-risk-badge {
     padding: 6px 12px;
     border-radius: 6px;
@@ -74,6 +83,61 @@
     /* Dùng biến CSS --risk-color được set từ inline style */
     background-color: var(--risk-color);
     color: white;
+}
+
+/* Action buttons trong card header */
+.sa-card-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.sa-card-actions .btn-action {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 16px;
+}
+
+.sa-card-actions .btn-edit {
+    background: #fef3c7;
+    color: #f97316;
+}
+
+.sa-card-actions .btn-edit:hover {
+    background: #fde68a;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(249, 115, 22, 0.2);
+}
+
+.sa-card-actions .btn-delete {
+    background: #fee2e2;
+    color: #ef4444;
+}
+
+.sa-card-actions .btn-delete:hover:not(:disabled) {
+    background: #fecaca;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(239, 68, 68, 0.2);
+}
+
+.sa-card-actions .btn-delete:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.sa-card-actions .spinner {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
 }
 
 .sa-card-body {
@@ -170,6 +234,12 @@
 .form-group label {
     font-size: 13px; font-weight: 600; color: #374151;
 }
+
+.form-group label .required {
+    color: #ef4444;
+    margin-left: 2px;
+}
+
 .form-group input,
 .form-group select,
 .form-group textarea {
@@ -180,4 +250,26 @@
 .form-group textarea { resize: vertical; min-height: 80px; }
 .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
     outline: none; border-color: #10b981;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .sa-card-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+    .sa-card-header-left {
+        width: 100%;
+    }
+
+    .sa-card-actions {
+        width: 100%;
+        justify-content: flex-end;
+    }
 }
