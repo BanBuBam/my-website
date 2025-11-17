@@ -9,6 +9,8 @@ import DoctorScheduleListPage from './pages/doctor-schedules/DoctorScheduleListP
 import CreateDoctorSchedulePage from './pages/doctor-schedules/CreateDoctorSchedulePage';
 import RoleListPage from './pages/roles/RoleListPage';
 import AdmissionRequestPage from './pages/inpatient/AdmissionRequestPage';
+import SupplierManagementPage from './pages/nha-cung-cap/SupplierManagementPage';
+import CabinetManagementPage from './pages/tu-thuoc/CabinetManagementPage';
 
 const AdminRoutes = () => {
     return (
@@ -60,6 +62,12 @@ const AdminRoutes = () => {
                 <Route path="roles/create" element={<div>Trang Tạo Role mới</div>} />
                 <Route path="permissions/grant" element={<div>Trang Cấp quyền cho NV</div>} />
                 <Route path="permissions/revoke" element={<div>Trang Loại bỏ quyền NV</div>} />
+
+                {/* Supplier Management */}
+                <Route path="nha-cung-cap" element={<SupplierManagementPage />} />
+
+                {/* Cabinet Management */}
+                <Route path="tu-thuoc" element={<CabinetManagementPage />} />
 
                 {/* Legacy routes */}
                 <Route path="users" element={<UserListPage />} />
