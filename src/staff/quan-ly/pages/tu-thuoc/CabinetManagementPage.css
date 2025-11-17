@@ -414,6 +414,31 @@ button:disabled {
     color: #856404;
 }
 
+.badge-scheduled {
+    background: #cfe2ff;
+    color: #084298;
+}
+
+.badge-planned {
+    background: #e7f1ff;
+    color: #0a58ca;
+}
+
+.badge-in-progress {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.badge-cancelled {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.badge-default {
+    background: #e9ecef;
+    color: #495057;
+}
+
 .lock-icon {
     font-size: 0.95rem;
 }

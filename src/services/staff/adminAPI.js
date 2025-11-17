@@ -114,6 +114,23 @@ export const adminEmployeeAPI = {
     });
   },
 
+  // Lấy danh sách nhân viên theo khoa phòng (Get Employees by Department)
+  // API: GET /api/v1/employees/department/{departmentId}
+  getEmployeesByDepartment: async (departmentId) => {
+    // Validate departmentId is a valid number
+    const deptId = parseInt(departmentId, 10);
+    if (isNaN(deptId)) {
+      throw new Error(`Invalid departmentId: ${departmentId}`);
+    }
+
+    return apiCall(`api/v1/employees/department/${deptId}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
   // Legacy API - Lấy danh sách nhân viên (admin endpoint)
   getStaffList: async (params) => {
     const queryString = new URLSearchParams(params).toString();
@@ -683,9 +700,10 @@ export const adminCabinetAPI = {
   },
 
   // Khóa/Mở khóa tủ (Lock/Unlock Cabinet)
-  // API: POST /api/v1/cabinet-management/{cabinetId}/lock?locked={locked}
+  // API: POST /api/v1/cabinet-management/{cabinetId}/lock?lock={lock}
+  // Note: Backend expects parameter name "lock" (not "locked")
   lockUnlockCabinet: async (cabinetId, locked) => {
-    return apiCall(`api/v1/cabinet-management/${cabinetId}/lock?locked=${locked}`, {
+    return apiCall(`api/v1/cabinet-management/${cabinetId}/lock?lock=${locked}`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${getAccessToken()}`,

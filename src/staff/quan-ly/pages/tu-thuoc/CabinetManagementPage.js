@@ -17,8 +17,6 @@ const CabinetManagementPage = () => {
     });
 
     // State cho modals
-    const [showModal, setShowModal] = useState(false);
-    const [modalMode, setModalMode] = useState('create'); // 'create' hoặc 'edit'
     const [selectedCabinet, setSelectedCabinet] = useState(null);
     const [showDetailModal, setShowDetailModal] = useState(false);
     const [showAlertsModal, setShowAlertsModal] = useState(false);
@@ -26,9 +24,22 @@ const CabinetManagementPage = () => {
     const [showMaintenanceModal, setShowMaintenanceModal] = useState(false);
     const [showScheduleMaintenanceModal, setShowScheduleMaintenanceModal] = useState(false);
     const [showAssignEmployeeModal, setShowAssignEmployeeModal] = useState(false);
+    const [showCreateModal, setShowCreateModal] = useState(false);
 
-    // State cho form data
-    const [formData, setFormData] = useState({
+    // State cho tìm kiếm và lọc
+    const [searchTerm, setSearchTerm] = useState('');
+    const [viewMode, setViewMode] = useState('active'); // 'active', 'inactive', 'all'
+    const [stats, setStats] = useState({ active: 0, inactive: 0, total: 0, locked: 0 });
+    const [submitting, setSubmitting] = useState(false);
+
+    // State cho departments và employees
+    const [departments, setDepartments] = useState([]);
+    const [employees, setEmployees] = useState([]);
+    const [filteredEmployees, setFilteredEmployees] = useState([]);
+    const [loadingEmployees, setLoadingEmployees] = useState(false);
+
+    // State cho form data tạo mới tủ
+    const [createFormData, setCreateFormData] = useState({
         cabinetLocation: '',
         cabinetType: 'MEDICATION',
         departmentId: '',
@@ -41,18 +52,6 @@ const CabinetManagementPage = () => {
         securityCode: '',
         notes: ''
     });
-
-    // State cho tìm kiếm và lọc
-    const [searchTerm, setSearchTerm] = useState('');
-    const [viewMode, setViewMode] = useState('active'); // 'active', 'inactive', 'all'
-    const [stats, setStats] = useState({ active: 0, inactive: 0, total: 0, locked: 0 });
-    const [submitting, setSubmitting] = useState(false);
-
-    // State cho departments và employees
-    const [departments, setDepartments] = useState([]);
-    const [employees, setEmployees] = useState([]);
-    const [filteredEmployees, setFilteredEmployees] = useState([]); // Nhân viên theo khoa phòng
-    const [loadingEmployees, setLoadingEmployees] = useState(false);
 
     // State cho alerts, access log, maintenance
     const [alerts, setAlerts] = useState([]);
@@ -73,7 +72,6 @@ const CabinetManagementPage = () => {
     useEffect(() => {
         loadCabinets(0);
         loadDepartments();
-        loadEmployees();
     }, []);
 
     // Apply filters khi viewMode thay đổi
@@ -180,28 +178,25 @@ const CabinetManagementPage = () => {
         try {
             const response = await adminDepartmentAPI.getDepartments();
             if (response && (response.status === 'success' || response.code === 200 || response.OK)) {
-                setDepartments(Array.isArray(response.data) ? response.data : []);
+                const deptData = Array.isArray(response.data) ? response.data : [];
+                setDepartments(deptData);
             }
         } catch (err) {
             console.error('Error loading departments:', err);
         }
     };
 
-    // Load danh sách nhân viên
-    const loadEmployees = async () => {
-        try {
-            const response = await adminEmployeeAPI.getEmployees({ size: 1000 });
-            if (response && (response.status === 'success' || response.code === 200 || response.OK)) {
-                const data = response.data;
-                if (data.content) {
-                    setEmployees(data.content);
-                } else if (Array.isArray(data)) {
-                    setEmployees(data);
-                }
-            }
-        } catch (err) {
-            console.error('Error loading employees:', err);
-        }
+
+
+    // Xử lý tìm kiếm (client-side)
+    const handleSearch = () => {
+        applyFilters(allCabinets);
+    };
+
+    // Xử lý làm mới
+    const handleRefresh = () => {
+        setSearchTerm('');
+        loadCabinets(0);
     };
 
     // Load danh sách nhân viên theo khoa phòng
@@ -211,16 +206,21 @@ const CabinetManagementPage = () => {
             return;
         }
 
+        // Convert to integer and validate
+        const deptId = parseInt(departmentId, 10);
+        if (isNaN(deptId)) {
+            console.error('Invalid departmentId:', departmentId);
+            setFilteredEmployees([]);
+            return;
+        }
+
         try {
             setLoadingEmployees(true);
-            const response = await adminEmployeeAPI.getEmployees({
-                departmentId: departmentId,
-                size: 1000
-            });
+            const response = await adminEmployeeAPI.getEmployeesByDepartment(deptId);
 
-            if (response && (response.status === 'success' || response.code === 200 || response.OK)) {
+            if (response && (response.status === 'success' || response.status === 'OK' || response.code === 200)) {
                 const data = response.data;
-                if (data.content) {
+                if (data && data.content && Array.isArray(data.content)) {
                     setFilteredEmployees(data.content);
                 } else if (Array.isArray(data)) {
                     setFilteredEmployees(data);
@@ -238,21 +238,9 @@ const CabinetManagementPage = () => {
         }
     };
 
-    // Xử lý tìm kiếm (client-side)
-    const handleSearch = () => {
-        applyFilters(allCabinets);
-    };
-
-    // Xử lý làm mới
-    const handleRefresh = () => {
-        setSearchTerm('');
-        loadCabinets(0);
-    };
-
     // Mở modal thêm mới
     const handleOpenCreateModal = () => {
-        setModalMode('create');
-        setFormData({
+        setCreateFormData({
             cabinetLocation: '',
             cabinetType: 'MEDICATION',
             departmentId: '',
@@ -265,125 +253,120 @@ const CabinetManagementPage = () => {
             securityCode: '',
             notes: ''
         });
-        setFilteredEmployees([]); // Reset danh sách nhân viên
-        setShowModal(true);
+        setFilteredEmployees([]);
+        setShowCreateModal(true);
     };
 
-    // Mở modal sửa
-    const handleOpenEditModal = (cabinet) => {
-        setModalMode('edit');
-        setSelectedCabinet(cabinet);
-        setFormData({
-            cabinetLocation: cabinet.cabinetLocation || '',
-            cabinetType: cabinet.cabinetType || 'MEDICATION',
-            departmentId: cabinet.departmentId || '',
-            responsibleEmployeeId: cabinet.responsibleEmployeeId || '',
-            description: cabinet.description || '',
-            isActive: cabinet.isActive !== undefined ? cabinet.isActive : true,
-            isLocked: cabinet.isLocked !== undefined ? cabinet.isLocked : false,
-            accessLevel: cabinet.accessLevel || 'PUBLIC',
-            maxCapacity: cabinet.maxCapacity || '',
-            securityCode: cabinet.securityCode || '',
-            notes: cabinet.notes || ''
-        });
-
-        // Load nhân viên của khoa phòng này
-        if (cabinet.departmentId) {
-            loadEmployeesByDepartment(cabinet.departmentId);
-        }
-
-        setShowModal(true);
+    // Đóng modal tạo mới
+    const handleCloseCreateModal = () => {
+        setShowCreateModal(false);
+        setFilteredEmployees([]);
     };
 
-    // Đóng modal
-    const handleCloseModal = () => {
-        setShowModal(false);
-        setSelectedCabinet(null);
-        setFilteredEmployees([]); // Reset danh sách nhân viên
-    };
-
-    // Xử lý thay đổi input
-    const handleInputChange = (e) => {
+    // Xử lý thay đổi input trong form tạo mới
+    const handleCreateInputChange = (e) => {
         const { name, value, type, checked } = e.target;
 
-        // Nếu thay đổi khoa phòng, load nhân viên của khoa đó và reset nhân viên đã chọn
+        // Nếu thay đổi khoa phòng, load nhân viên của khoa đó
         if (name === 'departmentId') {
-            setFormData(prev => ({
+            setCreateFormData(prev => ({
                 ...prev,
                 departmentId: value,
                 responsibleEmployeeId: '' // Reset nhân viên khi đổi khoa
             }));
-            loadEmployeesByDepartment(value);
+
+            // Only load if value is not empty and is a valid number
+            if (value && value.trim() !== '') {
+                loadEmployeesByDepartment(value);
+            } else {
+                setFilteredEmployees([]);
+            }
         } else {
-            setFormData(prev => ({
+            setCreateFormData(prev => ({
                 ...prev,
                 [name]: type === 'checkbox' ? checked : value
             }));
         }
     };
 
-    // Validate form
-    const validateForm = () => {
-        if (!formData.cabinetLocation.trim()) {
+    // Validate form tạo mới
+    const validateCreateForm = () => {
+        if (!createFormData.cabinetLocation.trim()) {
             alert('❌ Vui lòng nhập vị trí tủ');
             return false;
         }
-        if (!formData.departmentId) {
+        if (!createFormData.departmentId) {
             alert('❌ Vui lòng chọn khoa phòng');
             return false;
         }
-        if (!formData.responsibleEmployeeId) {
+        if (!createFormData.responsibleEmployeeId) {
             alert('❌ Vui lòng chọn người chịu trách nhiệm');
             return false;
         }
-        if (!formData.maxCapacity || formData.maxCapacity <= 0) {
+        if (!createFormData.maxCapacity || createFormData.maxCapacity <= 0) {
             alert('❌ Sức chứa tối đa phải lớn hơn 0');
             return false;
         }
-        if (formData.securityCode && (formData.securityCode.length < 4 || formData.securityCode.length > 8)) {
+        if (createFormData.securityCode && (createFormData.securityCode.length < 4 || createFormData.securityCode.length > 8)) {
             alert('❌ Mã bảo mật phải từ 4-8 ký tự');
             return false;
         }
         return true;
     };
 
-    // Xử lý submit form
-    const handleSubmit = async (e) => {
+    // Xử lý submit form tạo mới
+    const handleCreateSubmit = async (e) => {
         e.preventDefault();
 
-        if (!validateForm()) {
+        if (!validateCreateForm()) {
             return;
         }
 
         try {
             setSubmitting(true);
 
+            // Chuẩn bị data theo đúng format API
             const submitData = {
-                ...formData,
-                maxCapacity: parseInt(formData.maxCapacity)
+                cabinetLocation: createFormData.cabinetLocation,
+                cabinetType: createFormData.cabinetType,
+                departmentId: parseInt(createFormData.departmentId),
+                responsibleEmployeeId: parseInt(createFormData.responsibleEmployeeId),
+                description: createFormData.description || null,
+                isActive: createFormData.isActive,
+                isLocked: createFormData.isLocked,
+                accessLevel: createFormData.accessLevel,
+                maxCapacity: parseInt(createFormData.maxCapacity),
+                securityCode: createFormData.securityCode || null,
+                notes: createFormData.notes || null
             };
 
-            let response;
-            if (modalMode === 'create') {
-                response = await adminCabinetAPI.createCabinet(submitData);
-            } else {
-                response = await adminCabinetAPI.updateCabinet(selectedCabinet.cabinetId, submitData);
-            }
+            console.log('Creating cabinet with data:', submitData);
 
-            if (response && (response.status === 'success' || response.code === 200 || response.OK)) {
-                alert(modalMode === 'create' ? '✅ Đã tạo tủ thành công!' : '✅ Đã cập nhật tủ thành công!');
-                handleCloseModal();
-                loadCabinets(pagination.currentPage);
+            const response = await adminCabinetAPI.createCabinet(submitData);
+            console.log('Create cabinet response:', response);
+
+            // Check response status: CREATED, status: "CREATED", code: 201
+            if (response && (response.status === 'CREATED' || response.code === 201 || response.status === 'success' || response.code === 200)) {
+                alert('✅ Đã tạo tủ thành công!');
+                handleCloseCreateModal();
+                loadCabinets(0); // Reload danh sách từ trang đầu
             } else {
-                throw new Error(response.message || 'Có lỗi xảy ra');
+                throw new Error(response.message || 'Có lỗi xảy ra khi tạo tủ');
             }
         } catch (err) {
-            console.error('Error submitting cabinet:', err);
-            alert('❌ ' + getErrorMessage(err));
+            console.error('Error creating cabinet:', err);
+            alert('❌ Lỗi khi tạo tủ: ' + getErrorMessage(err));
         } finally {
             setSubmitting(false);
         }
     };
+
+    // Mở modal sửa (chưa implement)
+    const handleOpenEditModal = (cabinet) => {
+        alert('⚠️ Chức năng sửa thông tin tủ đang được phát triển');
+    };
+
+
 
     // Xử lý khóa/mở khóa tủ
     const handleLockUnlock = async (cabinet) => {
@@ -443,8 +426,25 @@ const CabinetManagementPage = () => {
         try {
             setSelectedCabinet(cabinet);
             const response = await adminCabinetAPI.getCabinetAlerts(cabinet.cabinetId);
-            if (response && (response.status === 'success' || response.code === 200 || response.OK)) {
-                setAlerts(Array.isArray(response.data) ? response.data : []);
+            console.log('Alerts response:', response);
+
+            if (response && (response.status === 'success' || response.status === 'OK' || response.code === 200 || response.OK)) {
+                // Transform snake_case to camelCase
+                const transformedData = Array.isArray(response.data)
+                    ? response.data.map(item => ({
+                        alertId: item.alert_id || item.alertId,
+                        alertType: item.alert_type || item.alertType,
+                        severity: item.severity,
+                        message: item.message,
+                        createdAt: item.created_at || item.createdAt,
+                        // Parse message to extract details if needed
+                        itemName: item.item_name || item.itemName || 'N/A',
+                        currentQuantity: item.current_quantity || item.currentQuantity || 'N/A',
+                        reorderLevel: item.reorder_level || item.reorderLevel || 'N/A'
+                    }))
+                    : [];
+
+                setAlerts(transformedData);
                 setShowAlertsModal(true);
             } else {
                 throw new Error(response.message || 'Không thể tải cảnh báo');
@@ -464,8 +464,25 @@ const CabinetManagementPage = () => {
                 accessLogDateRange.startDate || null,
                 accessLogDateRange.endDate || null
             );
-            if (response && (response.status === 'success' || response.code === 200 || response.OK)) {
-                setAccessLog(Array.isArray(response.data) ? response.data : []);
+            console.log('Access log response:', response);
+
+            if (response && (response.status === 'success' || response.status === 'OK' || response.code === 200 || response.OK)) {
+                // Transform snake_case to camelCase
+                const transformedData = Array.isArray(response.data)
+                    ? response.data.map(item => ({
+                        accessId: item.access_id || item.accessId,
+                        accessType: item.access_type || item.accessType,
+                        employeeId: item.employee_id || item.employeeId,
+                        employeeName: item.employee_name || item.employeeName,
+                        accessTime: item.access_time || item.accessTime,
+                        durationMinutes: item.duration_minutes || item.durationMinutes,
+                        // Map accessType to action for display
+                        action: getAccessTypeLabel(item.access_type || item.accessType),
+                        timestamp: item.access_time || item.accessTime
+                    }))
+                    : [];
+
+                setAccessLog(transformedData);
                 setShowAccessLogModal(true);
             } else {
                 throw new Error(response.message || 'Không thể tải lịch sử truy cập');
@@ -481,8 +498,23 @@ const CabinetManagementPage = () => {
         try {
             setSelectedCabinet(cabinet);
             const response = await adminCabinetAPI.getCabinetMaintenance(cabinet.cabinetId);
-            if (response && (response.status === 'success' || response.code === 200 || response.OK)) {
-                setMaintenanceSchedule(Array.isArray(response.data) ? response.data : []);
+            console.log('Maintenance schedule response:', response);
+
+            if (response && (response.status === 'success' || response.status === 'OK' || response.code === 200 || response.OK)) {
+                // Transform snake_case to camelCase
+                const transformedData = Array.isArray(response.data)
+                    ? response.data.map(item => ({
+                        maintenanceId: item.maintenance_id || item.maintenanceId,
+                        maintenanceType: item.maintenance_type || item.maintenanceType,
+                        scheduledDate: item.scheduled_date || item.scheduledDate,
+                        estimatedDuration: item.estimated_duration || item.estimatedDuration,
+                        status: item.status,
+                        notes: item.notes || item.estimated_duration || '', // Use estimated_duration as notes if notes not available
+                        completed: item.status === 'COMPLETED' || item.completed
+                    }))
+                    : [];
+
+                setMaintenanceSchedule(transformedData);
                 setShowMaintenanceModal(true);
             } else {
                 throw new Error(response.message || 'Không thể tải lịch trình bảo trì');
@@ -531,15 +563,32 @@ const CabinetManagementPage = () => {
                 maintenanceFormData.notes
             );
 
-            if (response && (response.status === 'success' || response.code === 200 || response.OK)) {
+            console.log('Schedule maintenance response:', response);
+
+            // Check if response indicates success
+            const isSuccess = response && (
+                response.status === 'success' ||
+                response.status === 'OK' ||
+                response.code === 200 ||
+                response.OK ||
+                (response.message && response.message.toLowerCase().includes('success'))
+            );
+
+            if (isSuccess) {
                 alert('✅ Đã lên lịch bảo trì thành công!');
                 setShowScheduleMaintenanceModal(false);
+                // Reset form
+                setMaintenanceFormData({
+                    maintenanceType: 'CLEANING',
+                    scheduledDate: '',
+                    notes: ''
+                });
             } else {
                 throw new Error(response.message || 'Có lỗi xảy ra');
             }
         } catch (err) {
             console.error('Error scheduling maintenance:', err);
-            alert('❌ ' + getErrorMessage(err));
+            alert('❌ Lỗi khi lên lịch bảo trì: ' + getErrorMessage(err));
         } finally {
             setSubmitting(false);
         }
@@ -630,7 +679,48 @@ const CabinetManagementPage = () => {
             'CLEANING': 'Vệ sinh',
             'REPAIR': 'Sửa chữa',
             'INSPECTION': 'Kiểm tra',
-            'CALIBRATION': 'Hiệu chuẩn'
+            'CALIBRATION': 'Hiệu chuẩn',
+            'ROUTINE_CHECK': 'Kiểm tra định kỳ',
+            'DEEP_CLEANING': 'Vệ sinh sâu'
+        };
+        return labels[type] || type;
+    };
+
+    // Get maintenance status label and class
+    const getMaintenanceStatusInfo = (status) => {
+        const statusMap = {
+            'SCHEDULED': { label: '📅 Đã lên lịch', class: 'badge-scheduled' },
+            'PLANNED': { label: '📋 Đang lên kế hoạch', class: 'badge-planned' },
+            'IN_PROGRESS': { label: '🔧 Đang thực hiện', class: 'badge-in-progress' },
+            'COMPLETED': { label: '✅ Hoàn thành', class: 'badge-completed' },
+            'CANCELLED': { label: '❌ Đã hủy', class: 'badge-cancelled' },
+            'PENDING': { label: '⏳ Chờ thực hiện', class: 'badge-pending' }
+        };
+        return statusMap[status] || { label: status, class: 'badge-default' };
+    };
+
+    // Get access type label
+    const getAccessTypeLabel = (type) => {
+        const labels = {
+            'RESTOCK': '📦 Nhập hàng',
+            'DISPENSE': '💊 Xuất thuốc',
+            'INSPECTION': '🔍 Kiểm tra',
+            'MAINTENANCE': '🔧 Bảo trì',
+            'AUDIT': '📋 Kiểm toán',
+            'EMERGENCY': '🚨 Khẩn cấp'
+        };
+        return labels[type] || type;
+    };
+
+    // Get alert type label
+    const getAlertTypeLabel = (type) => {
+        const labels = {
+            'LOW_STOCK': '📉 Tồn kho thấp',
+            'EXPIRED_ITEMS': '⏰ Hết hạn',
+            'MAINTENANCE_DUE': '🔧 Đến hạn bảo trì',
+            'UNAUTHORIZED_ACCESS': '🚫 Truy cập trái phép',
+            'TEMPERATURE_ALERT': '🌡️ Cảnh báo nhiệt độ',
+            'HUMIDITY_ALERT': '💧 Cảnh báo độ ẩm'
         };
         return labels[type] || type;
     };
@@ -916,15 +1006,15 @@ const CabinetManagementPage = () => {
                 </div>
             )}
 
-            {/* Create/Edit Modal */}
-            {showModal && (
-                <div className="modal-overlay" onClick={handleCloseModal}>
+            {/* Create Cabinet Modal */}
+            {showCreateModal && (
+                <div className="modal-overlay" onClick={handleCloseCreateModal}>
                     <div className="modal-content modal-large" onClick={(e) => e.stopPropagation()}>
                         <div className="modal-header">
-                            <h3>{modalMode === 'create' ? '➕ Thêm tủ mới' : '✏️ Sửa thông tin tủ'}</h3>
-                            <button className="btn-close" onClick={handleCloseModal}>✕</button>
+                            <h3>➕ Thêm tủ mới</h3>
+                            <button className="btn-close" onClick={handleCloseCreateModal}>✕</button>
                         </div>
-                        <form onSubmit={handleSubmit}>
+                        <form onSubmit={handleCreateSubmit}>
                             <div className="modal-body">
                                 <div className="form-row">
                                     <div className="form-group">
@@ -933,9 +1023,9 @@ const CabinetManagementPage = () => {
                                             type="text"
                                             id="cabinetLocation"
                                             name="cabinetLocation"
-                                            value={formData.cabinetLocation}
-                                            onChange={handleInputChange}
-                                            placeholder="VD: Tầng 2 - Phòng 201"
+                                            value={createFormData.cabinetLocation}
+                                            onChange={handleCreateInputChange}
+                                            placeholder="VD: Khoa Nội - Tầng 3 - Phòng 301"
                                             required
                                         />
                                     </div>
@@ -944,8 +1034,8 @@ const CabinetManagementPage = () => {
                                         <select
                                             id="cabinetType"
                                             name="cabinetType"
-                                            value={formData.cabinetType}
-                                            onChange={handleInputChange}
+                                            value={createFormData.cabinetType}
+                                            onChange={handleCreateInputChange}
                                             required
                                         >
                                             <option value="MEDICATION">Tủ thuốc</option>
@@ -961,16 +1051,26 @@ const CabinetManagementPage = () => {
                                         <select
                                             id="departmentId"
                                             name="departmentId"
-                                            value={formData.departmentId}
-                                            onChange={handleInputChange}
+                                            value={createFormData.departmentId}
+                                            onChange={handleCreateInputChange}
+                                            autoComplete="off"
                                             required
                                         >
                                             <option value="">-- Chọn khoa phòng --</option>
-                                            {Array.isArray(departments) && departments.map(dept => (
-                                                <option key={dept.departmentId} value={dept.departmentId}>
-                                                    {dept.departmentName}
-                                                </option>
-                                            ))}
+                                            {Array.isArray(departments) && departments.map(dept => {
+                                                // Ensure we use the correct ID field
+                                                const deptId = dept.departmentId || dept.id;
+
+                                                if (!deptId) {
+                                                    return null;
+                                                }
+
+                                                return (
+                                                    <option key={deptId} value={deptId}>
+                                                        {dept.departmentName || dept.name}
+                                                    </option>
+                                                );
+                                            })}
                                         </select>
                                     </div>
                                     <div className="form-group">
@@ -978,25 +1078,26 @@ const CabinetManagementPage = () => {
                                         <select
                                             id="responsibleEmployeeId"
                                             name="responsibleEmployeeId"
-                                            value={formData.responsibleEmployeeId}
-                                            onChange={handleInputChange}
+                                            value={createFormData.responsibleEmployeeId}
+                                            onChange={handleCreateInputChange}
                                             required
-                                            disabled={!formData.departmentId || loadingEmployees}
+                                            disabled={!createFormData.departmentId || loadingEmployees}
                                         >
                                             <option value="">
-                                                {!formData.departmentId
+                                                {!createFormData.departmentId
                                                     ? '-- Chọn khoa phòng trước --'
                                                     : loadingEmployees
                                                     ? '-- Đang tải nhân viên... --'
                                                     : '-- Chọn nhân viên --'}
                                             </option>
                                             {Array.isArray(filteredEmployees) && filteredEmployees.map(emp => (
-                                                <option key={emp.employeeId} value={emp.employeeId}>
-                                                    {emp.fullName || emp.name || emp.employeeName}
+                                                <option key={emp.id || emp.employeeId} value={emp.id || emp.employeeId}>
+                                                    {emp.fullName} - {emp.jobTitle}
+                                                    {emp.specialization ? ` (${emp.specialization})` : ''}
                                                 </option>
                                             ))}
                                         </select>
-                                        {formData.departmentId && filteredEmployees.length === 0 && !loadingEmployees && (
+                                        {createFormData.departmentId && filteredEmployees.length === 0 && !loadingEmployees && (
                                             <small style={{ color: '#dc3545', marginTop: '0.25rem', display: 'block' }}>
                                                 ⚠️ Không có nhân viên nào trong khoa phòng này
                                             </small>
@@ -1010,8 +1111,8 @@ const CabinetManagementPage = () => {
                                         <select
                                             id="accessLevel"
                                             name="accessLevel"
-                                            value={formData.accessLevel}
-                                            onChange={handleInputChange}
+                                            value={createFormData.accessLevel}
+                                            onChange={handleCreateInputChange}
                                             required
                                         >
                                             <option value="PUBLIC">Công khai</option>
@@ -1025,9 +1126,9 @@ const CabinetManagementPage = () => {
                                             type="number"
                                             id="maxCapacity"
                                             name="maxCapacity"
-                                            value={formData.maxCapacity}
-                                            onChange={handleInputChange}
-                                            placeholder="VD: 100"
+                                            value={createFormData.maxCapacity}
+                                            onChange={handleCreateInputChange}
+                                            placeholder="VD: 500"
                                             min="1"
                                             required
                                         />
@@ -1041,8 +1142,8 @@ const CabinetManagementPage = () => {
                                             type="text"
                                             id="securityCode"
                                             name="securityCode"
-                                            value={formData.securityCode}
-                                            onChange={handleInputChange}
+                                            value={createFormData.securityCode}
+                                            onChange={handleCreateInputChange}
                                             placeholder="VD: 1234"
                                             minLength="4"
                                             maxLength="8"
@@ -1053,8 +1154,8 @@ const CabinetManagementPage = () => {
                                             <input
                                                 type="checkbox"
                                                 name="isActive"
-                                                checked={formData.isActive}
-                                                onChange={handleInputChange}
+                                                checked={createFormData.isActive}
+                                                onChange={handleCreateInputChange}
                                             />
                                             <span>Đang hoạt động</span>
                                         </label>
@@ -1062,8 +1163,8 @@ const CabinetManagementPage = () => {
                                             <input
                                                 type="checkbox"
                                                 name="isLocked"
-                                                checked={formData.isLocked}
-                                                onChange={handleInputChange}
+                                                checked={createFormData.isLocked}
+                                                onChange={handleCreateInputChange}
                                             />
                                             <span>Khóa tủ</span>
                                         </label>
@@ -1075,9 +1176,9 @@ const CabinetManagementPage = () => {
                                     <textarea
                                         id="description"
                                         name="description"
-                                        value={formData.description}
-                                        onChange={handleInputChange}
-                                        placeholder="Nhập mô tả về tủ"
+                                        value={createFormData.description}
+                                        onChange={handleCreateInputChange}
+                                        placeholder="VD: Tủ trực thuốc khoa Nội"
                                         rows="2"
                                     />
                                 </div>
@@ -1087,9 +1188,9 @@ const CabinetManagementPage = () => {
                                     <textarea
                                         id="notes"
                                         name="notes"
-                                        value={formData.notes}
-                                        onChange={handleInputChange}
-                                        placeholder="Nhập ghi chú"
+                                        value={createFormData.notes}
+                                        onChange={handleCreateInputChange}
+                                        placeholder="VD: Tủ mới lắp đặt tháng 11/2025"
                                         rows="2"
                                     />
                                 </div>
@@ -1098,7 +1199,7 @@ const CabinetManagementPage = () => {
                                 <button
                                     type="button"
                                     className="btn-secondary"
-                                    onClick={handleCloseModal}
+                                    onClick={handleCloseCreateModal}
                                     disabled={submitting}
                                 >
                                     Hủy
@@ -1108,7 +1209,7 @@ const CabinetManagementPage = () => {
                                     className="btn-primary"
                                     disabled={submitting}
                                 >
-                                    {submitting ? 'Đang lưu...' : (modalMode === 'create' ? 'Tạo mới' : 'Cập nhật')}
+                                    {submitting ? 'Đang tạo...' : 'Tạo mới'}
                                 </button>
                             </div>
                         </form>
@@ -1228,17 +1329,23 @@ const CabinetManagementPage = () => {
                             {alerts.length > 0 ? (
                                 <div className="alerts-list">
                                     {Array.isArray(alerts) && alerts.map((alert, index) => (
-                                        <div key={index} className={`alert-item ${getSeverityClass(alert.severity)}`}>
+                                        <div key={alert.alertId || index} className={`alert-item ${getSeverityClass(alert.severity)}`}>
                                             <div className="alert-header">
-                                                <span className="alert-type">{alert.alertType}</span>
+                                                <span className="alert-type">{getAlertTypeLabel(alert.alertType)}</span>
                                                 <span className={`severity-badge ${getSeverityClass(alert.severity)}`}>
                                                     {alert.severity}
                                                 </span>
                                             </div>
                                             <div className="alert-body">
-                                                <p><strong>Vật phẩm:</strong> {alert.itemName}</p>
-                                                <p><strong>Số lượng hiện tại:</strong> {alert.currentQuantity}</p>
-                                                <p><strong>Mức đặt lại:</strong> {alert.reorderLevel}</p>
+                                                <p><strong>Thông báo:</strong> {alert.message}</p>
+                                                <p><strong>Thời gian:</strong> {formatDateTime(alert.createdAt)}</p>
+                                                {alert.itemName !== 'N/A' && (
+                                                    <>
+                                                        <p><strong>Vật phẩm:</strong> {alert.itemName}</p>
+                                                        <p><strong>Số lượng hiện tại:</strong> {alert.currentQuantity}</p>
+                                                        <p><strong>Mức đặt lại:</strong> {alert.reorderLevel}</p>
+                                                    </>
+                                                )}
                                             </div>
                                         </div>
                                     ))}
@@ -1304,15 +1411,17 @@ const CabinetManagementPage = () => {
                                                 <th>Nhân viên</th>
                                                 <th>Hành động</th>
                                                 <th>Thời gian</th>
+                                                <th>Thời lượng</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             {Array.isArray(accessLog) && accessLog.map((log, index) => (
-                                                <tr key={index}>
+                                                <tr key={log.accessId || index}>
                                                     <td>{index + 1}</td>
                                                     <td>{log.employeeName || 'N/A'}</td>
                                                     <td>{log.action || 'N/A'}</td>
                                                     <td>{formatDateTime(log.timestamp)}</td>
+                                                    <td>{log.durationMinutes ? `${log.durationMinutes} phút` : 'N/A'}</td>
                                                 </tr>
                                             ))}
                                         </tbody>
@@ -1365,24 +1474,27 @@ const CabinetManagementPage = () => {
                                                 <th>STT</th>
                                                 <th>Loại bảo trì</th>
                                                 <th>Ngày dự kiến</th>
-                                                <th>Ghi chú</th>
+                                                <th>Thời gian dự kiến</th>
                                                 <th>Trạng thái</th>
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            {Array.isArray(maintenanceSchedule) && maintenanceSchedule.map((maintenance, index) => (
-                                                <tr key={index}>
-                                                    <td>{index + 1}</td>
-                                                    <td>{getMaintenanceTypeLabel(maintenance.maintenanceType)}</td>
-                                                    <td>{formatDate(maintenance.scheduledDate)}</td>
-                                                    <td>{maintenance.notes || 'N/A'}</td>
-                                                    <td>
-                                                        <span className={`badge ${maintenance.completed ? 'badge-completed' : 'badge-pending'}`}>
-                                                            {maintenance.completed ? '✅ Hoàn thành' : '⏳ Chờ thực hiện'}
-                                                        </span>
-                                                    </td>
-                                                </tr>
-                                            ))}
+                                            {Array.isArray(maintenanceSchedule) && maintenanceSchedule.map((maintenance, index) => {
+                                                const statusInfo = getMaintenanceStatusInfo(maintenance.status);
+                                                return (
+                                                    <tr key={maintenance.maintenanceId || index}>
+                                                        <td>{index + 1}</td>
+                                                        <td>{getMaintenanceTypeLabel(maintenance.maintenanceType)}</td>
+                                                        <td>{formatDate(maintenance.scheduledDate)}</td>
+                                                        <td>{maintenance.estimatedDuration || maintenance.notes || 'N/A'}</td>
+                                                        <td>
+                                                            <span className={`badge ${statusInfo.class}`}>
+                                                                {statusInfo.label}
+                                                            </span>
+                                                        </td>
+                                                    </tr>
+                                                );
+                                            })}
                                         </tbody>
                                     </table>
                                 </div>
