@@ -4,7 +4,7 @@ import './AdminLayout.css';
 import {
     FiUsers, FiShield, FiGrid, FiHome, FiUserCheck, FiCalendar,
     FiClock, FiCheckSquare, FiUmbrella, FiChevronDown, FiChevronRight,
-    FiClipboard
+    FiClipboard, FiPackage, FiArchive
 } from 'react-icons/fi';
 import StaffAvatarDropdown from '../../components/StaffAvatarDropdown';
 
@@ -175,6 +175,22 @@ const AdminLayout = () => {
                                     <li><NavLink to="/staff/admin/permissions/revoke">Loại bỏ quyền NV</NavLink></li>
                                 </ul>
                             )}
+                        </li>
+
+                        {/* Quản lý Nhà cung cấp */}
+                        <li>
+                            <NavLink to="/staff/admin/nha-cung-cap">
+                                <FiPackage />
+                                <span>Quản lý Nhà cung cấp</span>
+                            </NavLink>
+                        </li>
+
+                        {/* Quản lý Tủ thuốc/Vật tư */}
+                        <li>
+                            <NavLink to="/staff/admin/tu-thuoc">
+                                <FiArchive />
+                                <span>Quản lý Tủ thuốc/Vật tư</span>
+                            </NavLink>
                         </li>
                     </ul>
                 </nav>

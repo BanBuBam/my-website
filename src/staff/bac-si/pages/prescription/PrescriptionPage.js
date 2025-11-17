@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './PrescriptionPage.css';
 import {
     FiSearch, FiUser, FiClock, FiList, FiX,
-    FiCheckCircle, FiFileText, FiPackage, FiPlus, FiShoppingCart, FiTrash2
+    FiCheckCircle, FiFileText, FiPackage, FiPlus, FiShoppingCart, FiTrash2, FiRefreshCw
 } from 'react-icons/fi';
 import { doctorEncounterAPI, medicineAPI } from '../../../../services/staff/doctorAPI';
 
@@ -17,7 +17,11 @@ const PrescriptionPage = () => {
     const [showPrescriptionListModal, setShowPrescriptionListModal] = useState(false);
     const [showCreatePrescriptionModal, setShowCreatePrescriptionModal] = useState(false);
     const [showPrescriptionDetailModal, setShowPrescriptionDetailModal] = useState(false);
+    const [showReplacePrescriptionModal, setShowReplacePrescriptionModal] = useState(false);
     const [selectedPrescription, setSelectedPrescription] = useState(null);
+    const [prescriptionToReplace, setPrescriptionToReplace] = useState(null);
+    const [replacementChain, setReplacementChain] = useState([]);
+    const [loadingReplacementChain, setLoadingReplacementChain] = useState(false);
     const [loadingDetail, setLoadingDetail] = useState(false);
     const [submitting, setSubmitting] = useState(false);
 
@@ -25,6 +29,17 @@ const PrescriptionPage = () => {
     const [prescriptionFormData, setPrescriptionFormData] = useState({
         prescriptionDate: new Date().toISOString().split('T')[0],
         items: []
+    });
+
+    // Replace prescription form data
+    const [replacePrescriptionFormData, setReplacePrescriptionFormData] = useState({
+        prescriptionDate: new Date().toISOString().split('T')[0],
+        prescriptionType: 'BHYT',
+        diagnosisCode: '',
+        insuranceCoveragePercent: 80,
+        digitalSignature: '',
+        items: [],
+        replacementReason: ''
     });
 
     // Current prescription item being added
@@ -185,11 +200,14 @@ const PrescriptionPage = () => {
             setLoadingDetail(true);
             setShowPrescriptionDetailModal(true);
             setSelectedPrescription(null);
+            setReplacementChain([]);
 
             const response = await doctorEncounterAPI.getPrescriptionDetail(prescriptionId);
 
             if (response && response.data) {
                 setSelectedPrescription(response.data);
+                // Load replacement chain
+                loadReplacementChain(prescriptionId);
             }
         } catch (err) {
             console.error('Error loading prescription detail:', err);
@@ -197,6 +215,23 @@ const PrescriptionPage = () => {
             setShowPrescriptionDetailModal(false);
         } finally {
             setLoadingDetail(false);
+        }
+    };
+
+    const loadReplacementChain = async (prescriptionId) => {
+        try {
+            setLoadingReplacementChain(true);
+            const response = await doctorEncounterAPI.getReplacementChain(prescriptionId);
+
+            if (response && response.data) {
+                setReplacementChain(response.data);
+            }
+        } catch (err) {
+            console.error('Error loading replacement chain:', err);
+            // Don't show alert for this error, just log it
+            setReplacementChain([]);
+        } finally {
+            setLoadingReplacementChain(false);
         }
     };
 
@@ -223,6 +258,135 @@ const PrescriptionPage = () => {
         } catch (err) {
             console.error('Error signing prescription:', err);
             alert(err.message || 'Không thể ký đơn thuốc');
+        }
+    };
+
+    const handleOpenReplacePrescription = (prescription) => {
+        setPrescriptionToReplace(prescription);
+        setReplacePrescriptionFormData({
+            prescriptionDate: new Date().toISOString().split('T')[0],
+            prescriptionType: prescription.prescriptionType || 'BHYT',
+            diagnosisCode: prescription.diagnosisCode || '',
+            insuranceCoveragePercent: prescription.insuranceCoveragePercent || 80,
+            digitalSignature: '',
+            items: prescription.items ? prescription.items.map(item => ({
+                medicineId: parseInt(item.medicineId),
+                dosage: item.dosage || '',
+                quantity: parseInt(item.quantity) || 0,
+                notes: item.notes || ''
+            })) : [],
+            replacementReason: ''
+        });
+        setShowReplacePrescriptionModal(true);
+        setShowPrescriptionDetailModal(false);
+    };
+
+    const handleReplacePrescriptionItemChange = (index, field, value) => {
+        setReplacePrescriptionFormData(prev => ({
+            ...prev,
+            items: prev.items.map((item, i) => {
+                if (i === index) {
+                    // Ensure quantity is a number
+                    if (field === 'quantity') {
+                        return { ...item, [field]: parseInt(value) || 0 };
+                    }
+                    return { ...item, [field]: value };
+                }
+                return item;
+            })
+        }));
+    };
+
+    const handleAddReplacePrescriptionItem = () => {
+        if (!currentPrescriptionItem.medicineId || !currentPrescriptionItem.dosage || !currentPrescriptionItem.quantity) {
+            alert('Vui lòng điền đầy đủ thông tin thuốc');
+            return;
+        }
+
+        setReplacePrescriptionFormData(prev => ({
+            ...prev,
+            items: [...prev.items, { ...currentPrescriptionItem, quantity: parseInt(currentPrescriptionItem.quantity) }]
+        }));
+
+        setCurrentPrescriptionItem({
+            medicineId: '',
+            dosage: '',
+            quantity: '',
+            notes: ''
+        });
+    };
+
+    const handleRemoveReplacePrescriptionItem = (index) => {
+        setReplacePrescriptionFormData(prev => ({
+            ...prev,
+            items: prev.items.filter((_, i) => i !== index)
+        }));
+    };
+
+    const handleSubmitReplacePrescription = async (e) => {
+        e.preventDefault();
+
+        if (!replacePrescriptionFormData.replacementReason.trim()) {
+            alert('Vui lòng nhập lý do thay thế đơn thuốc');
+            return;
+        }
+
+        if (replacePrescriptionFormData.items.length === 0) {
+            alert('Vui lòng thêm ít nhất một loại thuốc');
+            return;
+        }
+
+        try {
+            setSubmitting(true);
+
+            const { replacementReason, digitalSignature, ...rest } = replacePrescriptionFormData;
+
+            // Build prescription data, only include non-empty fields
+            const prescriptionData = {
+                prescriptionDate: rest.prescriptionDate,
+                prescriptionType: rest.prescriptionType,
+                items: rest.items
+            };
+
+            // Only add optional fields if they have values
+            if (rest.diagnosisCode && rest.diagnosisCode.trim()) {
+                prescriptionData.diagnosisCode = rest.diagnosisCode;
+            }
+            if (rest.insuranceCoveragePercent !== undefined && rest.insuranceCoveragePercent !== null) {
+                prescriptionData.insuranceCoveragePercent = rest.insuranceCoveragePercent;
+            }
+
+            const response = await doctorEncounterAPI.replacePrescription(
+                prescriptionToReplace.prescriptionId,
+                replacementReason,
+                prescriptionData
+            );
+
+            if (response && response.data) {
+                alert('Thay thế đơn thuốc thành công!');
+                setShowReplacePrescriptionModal(false);
+                setReplacePrescriptionFormData({
+                    prescriptionDate: new Date().toISOString().split('T')[0],
+                    prescriptionType: 'BHYT',
+                    diagnosisCode: '',
+                    insuranceCoveragePercent: 80,
+                    digitalSignature: '',
+                    items: [],
+                    replacementReason: ''
+                });
+                // Refresh prescriptions list if modal is open
+                if (showPrescriptionListModal && encounter) {
+                    const refreshResponse = await doctorEncounterAPI.getPrescriptions(encounter.encounterId);
+                    if (refreshResponse && refreshResponse.data) {
+                        setPrescriptions(refreshResponse.data);
+                    }
+                }
+            }
+        } catch (err) {
+            console.error('Error replacing prescription:', err);
+            alert(err.message || 'Không thể thay thế đơn thuốc');
+        } finally {
+            setSubmitting(false);
         }
     };
 
@@ -589,6 +753,63 @@ const PrescriptionPage = () => {
                                         </div>
                                     )}
 
+                                    {/* Replacement Chain History */}
+                                    {replacementChain.length > 0 && (
+                                        <div className="replacement-chain-section">
+                                            <h4>
+                                                <FiRefreshCw /> Lịch sử thay thế đơn thuốc
+                                            </h4>
+                                            {loadingReplacementChain ? (
+                                                <div className="loading-chain">
+                                                    <p>Đang tải lịch sử...</p>
+                                                </div>
+                                            ) : (
+                                                <div className="replacement-chain-timeline">
+                                                    {replacementChain.map((item, index) => (
+                                                        <div
+                                                            key={item.prescriptionId}
+                                                            className={`chain-item ${item.prescriptionId === selectedPrescription.prescriptionId ? 'current' : ''}`}
+                                                        >
+                                                            <div className="chain-marker">
+                                                                <div className="chain-dot"></div>
+                                                                {index < replacementChain.length - 1 && (
+                                                                    <div className="chain-line"></div>
+                                                                )}
+                                                            </div>
+                                                            <div className="chain-content">
+                                                                <div className="chain-header">
+                                                                    <span className="chain-id">
+                                                                        Đơn thuốc #{item.prescriptionId}
+                                                                        {item.prescriptionId === selectedPrescription.prescriptionId && (
+                                                                            <span className="current-badge">Hiện tại</span>
+                                                                        )}
+                                                                    </span>
+                                                                    <span className={`chain-status status-${item.status.toLowerCase()}`}>
+                                                                        {item.status === 'SUPERSEDED' ? 'Đã thay thế' :
+                                                                         item.status === 'SIGNED' ? 'Đã ký' :
+                                                                         item.status === 'DRAFT' ? 'Nháp' :
+                                                                         item.status === 'DISPENSED' ? 'Đã cấp phát' :
+                                                                         item.status}
+                                                                    </span>
+                                                                </div>
+                                                                <div className="chain-info">
+                                                                    <span className="chain-date">
+                                                                        <FiClock /> {formatDateTime(item.createdAt)}
+                                                                    </span>
+                                                                    {item.replacedBy && (
+                                                                        <span className="chain-replaced">
+                                                                            → Được thay thế bởi đơn #{item.replacedBy}
+                                                                        </span>
+                                                                    )}
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            )}
+                                        </div>
+                                    )}
+
                                     {/*{selectedPrescription.status === 'PENDING' && (*/}
                                         <div className="detail-actions">
                                             <button
@@ -597,6 +818,14 @@ const PrescriptionPage = () => {
                                             >
                                                 <FiCheckCircle /> Ký đơn thuốc
                                             </button>
+                                            {selectedPrescription.status === 'SIGNED' && (
+                                                <button
+                                                    className="btn-replace-prescription"
+                                                    onClick={() => handleOpenReplacePrescription(selectedPrescription)}
+                                                >
+                                                    <FiRefreshCw /> Thay thế đơn thuốc
+                                                </button>
+                                            )}
                                         </div>
                                     {/*)}*/}
                                 </div>
@@ -753,6 +982,240 @@ const PrescriptionPage = () => {
                                         disabled={submitting || prescriptionFormData.items.length === 0}
                                     >
                                         {submitting ? 'Đang tạo...' : 'Tạo đơn thuốc'}
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Replace Prescription Modal */}
+            {showReplacePrescriptionModal && prescriptionToReplace && (
+                <div className="modal-overlay" onClick={() => setShowReplacePrescriptionModal(false)}>
+                    <div className="modal-content replace-prescription-modal" onClick={(e) => e.stopPropagation()}>
+                        <div className="modal-header">
+                            <h3>Thay thế đơn thuốc #{prescriptionToReplace.prescriptionId}</h3>
+                            <button className="modal-close" onClick={() => setShowReplacePrescriptionModal(false)}>
+                                <FiX />
+                            </button>
+                        </div>
+                        <div className="modal-body">
+                            <div className="alert-info">
+                                <strong>Lưu ý:</strong> Theo quy định pháp luật Việt Nam, đơn thuốc đã ký không thể hủy, chỉ có thể thay thế.
+                                Đơn thuốc cũ sẽ được đánh dấu là SUPERSEDED (Đã thay thế).
+                            </div>
+                            <form onSubmit={handleSubmitReplacePrescription}>
+                                <div className="form-group">
+                                    <label>Lý do thay thế <span className="required">*</span></label>
+                                    <textarea
+                                        value={replacePrescriptionFormData.replacementReason}
+                                        onChange={(e) => setReplacePrescriptionFormData(prev => ({
+                                            ...prev,
+                                            replacementReason: e.target.value
+                                        }))}
+                                        placeholder="VD: Thay đổi liều lượng, thay đổi thuốc..."
+                                        rows="3"
+                                        required
+                                    />
+                                </div>
+
+                                <div className="form-grid">
+                                    <div className="form-group">
+                                        <label>Ngày kê đơn <span className="required">*</span></label>
+                                        <input
+                                            type="date"
+                                            value={replacePrescriptionFormData.prescriptionDate}
+                                            onChange={(e) => setReplacePrescriptionFormData(prev => ({
+                                                ...prev,
+                                                prescriptionDate: e.target.value
+                                            }))}
+                                            required
+                                        />
+                                    </div>
+                                    <div className="form-group">
+                                        <label>Loại đơn thuốc</label>
+                                        <select
+                                            value={replacePrescriptionFormData.prescriptionType}
+                                            onChange={(e) => setReplacePrescriptionFormData(prev => ({
+                                                ...prev,
+                                                prescriptionType: e.target.value
+                                            }))}
+                                        >
+                                            <option value="BHYT">BHYT</option>
+                                            <option value="DICH_VU">Dịch vụ</option>
+                                        </select>
+                                    </div>
+                                    <div className="form-group">
+                                        <label>Mã chẩn đoán (ICD-10)</label>
+                                        <input
+                                            type="text"
+                                            value={replacePrescriptionFormData.diagnosisCode}
+                                            onChange={(e) => setReplacePrescriptionFormData(prev => ({
+                                                ...prev,
+                                                diagnosisCode: e.target.value
+                                            }))}
+                                            placeholder="VD: J06.9"
+                                        />
+                                    </div>
+                                    <div className="form-group">
+                                        <label>% BHYT chi trả</label>
+                                        <input
+                                            type="number"
+                                            value={replacePrescriptionFormData.insuranceCoveragePercent}
+                                            onChange={(e) => setReplacePrescriptionFormData(prev => ({
+                                                ...prev,
+                                                insuranceCoveragePercent: parseInt(e.target.value)
+                                            }))}
+                                            min="0"
+                                            max="100"
+                                        />
+                                    </div>
+                                </div>
+
+                                {/* Add Medicine Item Section */}
+                                <div className="add-medicine-section">
+                                    <h4>Thêm thuốc vào đơn</h4>
+                                    <div className="form-grid">
+                                        <div className="form-group">
+                                            <label>Thuốc <span className="required">*</span></label>
+                                            <select
+                                                name="medicineId"
+                                                value={currentPrescriptionItem.medicineId}
+                                                onChange={handlePrescriptionItemChange}
+                                            >
+                                                <option value="">-- Chọn thuốc --</option>
+                                                {medicines.map((medicine) => (
+                                                    <option key={medicine.medicineId} value={medicine.medicineId}>
+                                                        {medicine.medicineName} {medicine.sku ? `(${medicine.sku})` : ''}
+                                                    </option>
+                                                ))}
+                                            </select>
+                                        </div>
+                                        <div className="form-group">
+                                            <label>Liều lượng <span className="required">*</span></label>
+                                            <input
+                                                type="text"
+                                                name="dosage"
+                                                value={currentPrescriptionItem.dosage}
+                                                onChange={handlePrescriptionItemChange}
+                                                placeholder="VD: 1 viên x 2 lần/ngày"
+                                            />
+                                        </div>
+                                        <div className="form-group">
+                                            <label>Số lượng <span className="required">*</span></label>
+                                            <input
+                                                type="number"
+                                                name="quantity"
+                                                value={currentPrescriptionItem.quantity}
+                                                onChange={handlePrescriptionItemChange}
+                                                placeholder="20"
+                                                min="1"
+                                            />
+                                        </div>
+                                        <div className="form-group full-width">
+                                            <label>Ghi chú</label>
+                                            <input
+                                                type="text"
+                                                name="notes"
+                                                value={currentPrescriptionItem.notes}
+                                                onChange={handlePrescriptionItemChange}
+                                                placeholder="VD: Thay đổi liều lượng"
+                                            />
+                                        </div>
+                                    </div>
+                                    <button
+                                        type="button"
+                                        className="btn-add-item"
+                                        onClick={handleAddReplacePrescriptionItem}
+                                    >
+                                        <FiPlus /> Thêm vào đơn
+                                    </button>
+                                </div>
+
+                                {/* Prescription Items List */}
+                                {replacePrescriptionFormData.items.length > 0 && (
+                                    <div className="prescription-items-list">
+                                        <h4>Danh sách thuốc trong đơn ({replacePrescriptionFormData.items.length})</h4>
+                                        <div className="items-table">
+                                            <table>
+                                                <thead>
+                                                    <tr>
+                                                        <th>Thuốc</th>
+                                                        <th>Liều lượng</th>
+                                                        <th>Số lượng</th>
+                                                        <th>Ghi chú</th>
+                                                        <th>Xóa</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {replacePrescriptionFormData.items.map((item, index) => {
+                                                        const medicine = medicines.find(m => m.medicineId === parseInt(item.medicineId));
+                                                        return (
+                                                            <tr key={index}>
+                                                                <td>
+                                                                    <input
+                                                                        type="text"
+                                                                        value={medicine?.medicineName || 'N/A'}
+                                                                        disabled
+                                                                        className="readonly-input"
+                                                                    />
+                                                                </td>
+                                                                <td>
+                                                                    <input
+                                                                        type="text"
+                                                                        value={item.dosage}
+                                                                        onChange={(e) => handleReplacePrescriptionItemChange(index, 'dosage', e.target.value)}
+                                                                    />
+                                                                </td>
+                                                                <td>
+                                                                    <input
+                                                                        type="number"
+                                                                        value={item.quantity}
+                                                                        onChange={(e) => handleReplacePrescriptionItemChange(index, 'quantity', parseInt(e.target.value))}
+                                                                        min="1"
+                                                                    />
+                                                                </td>
+                                                                <td>
+                                                                    <input
+                                                                        type="text"
+                                                                        value={item.notes || ''}
+                                                                        onChange={(e) => handleReplacePrescriptionItemChange(index, 'notes', e.target.value)}
+                                                                    />
+                                                                </td>
+                                                                <td>
+                                                                    <button
+                                                                        type="button"
+                                                                        className="btn-remove-item"
+                                                                        onClick={() => handleRemoveReplacePrescriptionItem(index)}
+                                                                    >
+                                                                        <FiTrash2 />
+                                                                    </button>
+                                                                </td>
+                                                            </tr>
+                                                        );
+                                                    })}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                )}
+
+                                <div className="modal-footer">
+                                    <button
+                                        type="button"
+                                        className="btn-secondary"
+                                        onClick={() => setShowReplacePrescriptionModal(false)}
+                                        disabled={submitting}
+                                    >
+                                        Hủy
+                                    </button>
+                                    <button
+                                        type="submit"
+                                        className="btn-primary"
+                                        disabled={submitting || replacePrescriptionFormData.items.length === 0 || !replacePrescriptionFormData.replacementReason.trim()}
+                                    >
+                                        {submitting ? 'Đang thay thế...' : 'Thay thế đơn thuốc'}
                                     </button>
                                 </div>
                             </form>
