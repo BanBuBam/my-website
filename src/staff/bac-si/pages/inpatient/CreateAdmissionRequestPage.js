@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { admissionRequestAPI, doctorEncounterAPI } from '../../../../services/staff/doctorAPI';
+import { admissionRequestAPI, doctorEncounterAPI, departmentAPI } from '../../../../services/staff/doctorAPI';
 import { FiArrowLeft, FiSave, FiAlertCircle, FiClipboard } from 'react-icons/fi';
 import './CreateAdmissionRequestPage.css';
 
@@ -8,7 +8,9 @@ const CreateAdmissionRequestPage = () => {
     const { encounterId } = useParams();
     const navigate = useNavigate();
     const [encounter, setEncounter] = useState(null);
+    const [departments, setDepartments] = useState([]);
     const [loading, setLoading] = useState(false);
+    const [loadingDepartments, setLoadingDepartments] = useState(false);
     const [submitting, setSubmitting] = useState(false);
     const [error, setError] = useState(null);
 
@@ -29,6 +31,7 @@ const CreateAdmissionRequestPage = () => {
 
     useEffect(() => {
         fetchEncounter();
+        fetchDepartments();
     }, [encounterId]);
 
     const fetchEncounter = async () => {
@@ -46,6 +49,21 @@ const CreateAdmissionRequestPage = () => {
         }
     };
 
+    const fetchDepartments = async () => {
+        try {
+            setLoadingDepartments(true);
+            const response = await departmentAPI.getDepartments();
+            if (response && response.data) {
+                setDepartments(response.data);
+            }
+        } catch (err) {
+            console.error('Error loading departments:', err);
+            // Don't set error state, just log it - form can still work with manual ID entry
+        } finally {
+            setLoadingDepartments(false);
+        }
+    };
+
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
         setFormData(prev => ({
@@ -58,7 +76,7 @@ const CreateAdmissionRequestPage = () => {
         e.preventDefault();
 
         if (!formData.requestedDepartmentId) {
-            alert('Vui lòng nhập ID khoa yêu cầu');
+            alert('Vui lòng chọn khoa yêu cầu');
             return;
         }
 
@@ -209,15 +227,23 @@ const CreateAdmissionRequestPage = () => {
                         </div>
 
                         <div className="form-group">
-                            <label>ID Khoa yêu cầu <span className="required">*</span></label>
-                            <input
-                                type="number"
+                            <label>Khoa yêu cầu <span className="required">*</span></label>
+                            <select
                                 name="requestedDepartmentId"
                                 value={formData.requestedDepartmentId}
                                 onChange={handleChange}
-                                placeholder="Nhập ID khoa..."
                                 required
-                            />
+                                disabled={loadingDepartments}
+                            >
+                                <option value="">
+                                    {loadingDepartments ? 'Đang tải...' : 'Chọn khoa...'}
+                                </option>
+                                {departments.map(dept => (
+                                    <option key={dept.id} value={dept.id}>
+                                        {dept.departmentName}
+                                    </option>
+                                ))}
+                            </select>
                         </div>
 
                         <div className="form-group">

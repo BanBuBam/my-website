@@ -299,11 +299,34 @@ export const nurseAdmissionRequestAPI = {
   },
 };
 
+// API Departments
+export const nurseDepartmentAPI = {
+  // Lấy danh sách departments
+  getDepartments: async () => {
+    return apiCall('api/v1/departments', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+};
+
 // API quản lý điều trị nội trú
 export const nurseInpatientStayAPI = {
   // Lấy danh sách điều trị nội trú đang hoạt động
   getActiveStays: async () => {
     return apiCall('api/v1/inpatient/stays/active', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Lấy danh sách điều trị nội trú theo khoa
+  getStaysByDepartment: async (departmentId) => {
+    return apiCall(`api/v1/inpatient/departments/${departmentId}/stays`, {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${getAccessToken()}`,
@@ -450,7 +473,33 @@ export const nurseSafetyAssessmentAPI = {
       body: JSON.stringify(assessmentData),
     });
   },
-  
+
+  /**
+   * Cập nhật đánh giá an toàn
+   */
+  updateSafetyAssessment: async (assessmentId, assessmentData) => {
+    return apiCall(`api/v1/patient-safety-assessments/${assessmentId}`, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(assessmentData),
+    });
+  },
+
+  /**
+   * Xóa đánh giá an toàn
+   */
+  deleteSafetyAssessment: async (assessmentId) => {
+    return apiCall(`api/v1/patient-safety-assessments/${assessmentId}`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
 };
 
 export const nurseBedAPI = {
@@ -514,6 +563,75 @@ export const nurseBedAPI = {
   }
 };
 
+// ==================== DISCHARGE PLANNING API ====================
+export const nurseDischargePlanningAPI = {
+  // Lấy thông tin discharge planning theo inpatient stay ID
+  getDischargePlanningByStay: async (inpatientStayId) => {
+    return apiCall(`api/v1/inpatient/stays/${inpatientStayId}/discharge-planning`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Lấy chi tiết discharge planning theo discharge plan ID
+  getDischargePlanningDetail: async (dischargePlanId) => {
+    return apiCall(`api/v1/inpatient/discharge-planning/${dischargePlanId}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Tạo mới discharge planning cho inpatient stay
+  createDischargePlanning: async (inpatientStayId, planData) => {
+    return apiCall(`api/v1/inpatient/stays/${inpatientStayId}/discharge-planning`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(planData),
+    });
+  },
+
+  // Cập nhật discharge planning
+  updateDischargePlanning: async (dischargePlanId, planData) => {
+    return apiCall(`api/v1/inpatient/discharge-planning/${dischargePlanId}`, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(planData),
+    });
+  },
+
+  // Phê duyệt discharge planning
+  approveDischargePlanning: async (dischargePlanId) => {
+    return apiCall(`api/v1/inpatient/discharge-planning/${dischargePlanId}/approve`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Thực hiện xuất viện
+  executeDischarge: async (stayId, dischargeData) => {
+    return apiCall(`api/v1/inpatient/stays/${stayId}/discharge`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(dischargeData),
+    });
+  },
+};
+
 export default {
   nurseAuthAPI,
   nurseDashboardAPI,
@@ -522,7 +640,9 @@ export default {
   nurseMedicationAPI,
   nurseAdmissionRequestAPI,
   nurseBedAPI,
+  nurseDepartmentAPI,
   nurseInpatientStayAPI,
-  nurseSafetyAssessmentAPI
+  nurseSafetyAssessmentAPI,
+  nurseDischargePlanningAPI
 };
 

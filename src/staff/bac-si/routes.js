@@ -7,6 +7,8 @@ import LabResultsPage from './pages/labresult/LabResultsPage';
 import InpatientPage from './pages/inpatient/InpatientPage';
 import AdmissionRequestPage from './pages/inpatient/AdmissionRequestPage';
 import CreateAdmissionRequestPage from './pages/inpatient/CreateAdmissionRequestPage';
+import InpatientTreatmentListPage from './pages/inpatient-treatment/InpatientTreatmentListPage';
+import InpatientTreatmentDetailPage from './pages/inpatient-treatment/InpatientTreatmentDetailPage';
 import BookingListPage from './pages/booking/BookingListPage';
 import EmergencyEncounterPage from './pages/emergency/EmergencyEncounterPage';
 import EncounterVitalPage from './pages/examination/EncounterVitalPage';
@@ -36,6 +38,8 @@ const DoctorRoutes = () => {
                 <Route path="yeu-cau-nhap-vien" element={<AdmissionRequestPage />} />
                 <Route path="tao-yeu-cau-nhap-vien/:encounterId" element={<CreateAdmissionRequestPage />} />
                 <Route path="benh-nhan-noi-tru" element={<InpatientPage />} />
+                <Route path="dieu-tri-noi-tru" element={<InpatientTreatmentListPage />} />
+                <Route path="dieu-tri-noi-tru/:inpatientStayId" element={<InpatientTreatmentDetailPage />} />
                 <Route path="cap-cuu" element={<EmergencyEncounterPage />} />
             </Route>
         </Routes>

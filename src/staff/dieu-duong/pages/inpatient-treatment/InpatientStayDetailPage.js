@@ -157,7 +157,7 @@ const InpatientStayDetailPage = () => {
                     <FiActivity /> Xem Safety Assessment
                 </button>
                 <button className="btn-action btn-discharge"
-                        onClick={() => navigate(`/staff/dieu-duong/dieu-tri-noi-tru/${stayId}/discharge`)}
+                        onClick={() => navigate(`/staff/dieu-duong/dieu-tri-noi-tru/${stayId}/discharge-planning`)}
                 >
                     {/*<FiPackage /> Xem Medication*/}
                     <FiActivity /> Xuất viện

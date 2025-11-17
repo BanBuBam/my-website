@@ -1,0 +1,210 @@
+/* Discharge Plan Modal - Extends base modal styles */
+.discharge-modal {
+    max-width: 900px;
+}
+
+.discharge-modal .modal-body {
+    max-height: 70vh;
+}
+
+/* Form Sections */
+.discharge-modal .form-section {
+    margin-bottom: 28px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.discharge-modal .form-section:last-of-type {
+    border-bottom: none;
+}
+
+.discharge-modal .form-section h3 {
+    margin: 0 0 16px 0;
+    font-size: 16px;
+    color: #1a1a1a;
+    font-weight: 600;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #10b981;
+    display: inline-block;
+}
+
+/* Form Rows - Two columns layout */
+.discharge-modal .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+}
+
+.discharge-modal .form-row:has(textarea) {
+    grid-template-columns: 1fr;
+}
+
+/* Form Groups */
+.discharge-modal .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.discharge-modal .form-group label {
+    font-size: 14px;
+    color: #374151;
+    font-weight: 600;
+}
+
+.discharge-modal .form-group label .required {
+    color: #ef4444;
+    margin-left: 2px;
+}
+
+.discharge-modal .form-group input,
+.discharge-modal .form-group select,
+.discharge-modal .form-group textarea {
+    padding: 10px 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 14px;
+    color: #1a1a1a;
+    transition: all 0.3s ease;
+    font-family: inherit;
+}
+
+.discharge-modal .form-group input:focus,
+.discharge-modal .form-group select:focus,
+.discharge-modal .form-group textarea:focus {
+    outline: none;
+    border-color: #10b981;
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+}
+
+.discharge-modal .form-group textarea {
+    resize: vertical;
+    min-height: 80px;
+}
+
+.discharge-modal .form-group input[type="date"] {
+    cursor: pointer;
+}
+
+/* Alert Styles */
+.discharge-modal .alert {
+    padding: 12px 16px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+}
+
+.discharge-modal .alert svg {
+    font-size: 20px;
+    flex-shrink: 0;
+}
+
+.discharge-modal .alert-error {
+    background: #fee2e2;
+    color: #dc2626;
+    border: 1px solid #fca5a5;
+}
+
+/* Modal Footer */
+.discharge-modal .modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    padding-top: 20px;
+    border-top: 2px solid #f3f4f6;
+    margin-top: 20px;
+}
+
+.discharge-modal .btn {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.discharge-modal .btn-secondary {
+    background: #f3f4f6;
+    color: #374151;
+}
+
+.discharge-modal .btn-secondary:hover {
+    background: #e5e7eb;
+}
+
+.discharge-modal .btn-primary {
+    background: #10b981;
+    color: white;
+}
+
+.discharge-modal .btn-primary:hover {
+    background: #059669;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.discharge-modal .btn-primary:disabled {
+    background: #d1d5db;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .discharge-modal {
+        max-width: 100%;
+        margin: 10px;
+    }
+    
+    .discharge-modal .modal-body {
+        max-height: 75vh;
+        padding: 16px;
+    }
+    
+    .discharge-modal .form-row {
+        grid-template-columns: 1fr;
+    }
+    
+    .discharge-modal .form-section h3 {
+        font-size: 15px;
+    }
+    
+    .discharge-modal .modal-footer {
+        flex-direction: column;
+    }
+    
+    .discharge-modal .btn {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+/* Scrollbar Styling */
+.discharge-modal .modal-body::-webkit-scrollbar {
+    width: 8px;
+}
+
+.discharge-modal .modal-body::-webkit-scrollbar-track {
+    background: #f3f4f6;
+    border-radius: 4px;
+}
+
+.discharge-modal .modal-body::-webkit-scrollbar-thumb {
+    background: #d1d5db;
+    border-radius: 4px;
+}
+
+.discharge-modal .modal-body::-webkit-scrollbar-thumb:hover {
+    background: #9ca3af;
+}
+
