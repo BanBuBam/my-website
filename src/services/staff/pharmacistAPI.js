@@ -411,6 +411,196 @@ export const medicineAPI = {
   },
 };
 
+// ==================== Cabinet Management API ====================
+export const pharmacistCabinetAPI = {
+  // Tạo tủ mới (Create Cabinet)
+  createCabinet: async (cabinetData) => {
+    return apiCall('api/v1/cabinet-management', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(cabinetData),
+    });
+  },
+
+  // Cập nhật tủ (Update Cabinet)
+  updateCabinet: async (cabinetId, cabinetData) => {
+    return apiCall(`api/v1/cabinet-management/${cabinetId}`, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(cabinetData),
+    });
+  },
+
+  // Lấy thông tin tủ theo ID (Get Cabinet by ID)
+  getCabinetById: async (cabinetId) => {
+    return apiCall(`api/v1/cabinet-management/${cabinetId}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Lấy tất cả tủ với phân trang (Get All Cabinets)
+  getAllCabinets: async (page = 0, size = 20) => {
+    return apiCall(`api/v1/cabinet-management?page=${page}&size=${size}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Lấy tủ theo khoa phòng (Get Cabinets by Department)
+  getCabinetsByDepartment: async (departmentId) => {
+    return apiCall(`api/v1/cabinet-management/department/${departmentId}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Gán người chịu trách nhiệm (Assign Responsible Employee)
+  assignResponsibleEmployee: async (cabinetId, employeeId) => {
+    return apiCall(`api/v1/cabinet-management/${cabinetId}/assign?employeeId=${employeeId}`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Khóa/Mở khóa tủ (Lock/Unlock Cabinet)
+  lockUnlockCabinet: async (cabinetId, locked) => {
+    return apiCall(`api/v1/cabinet-management/${cabinetId}/lock?lock=${locked}`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Thiết lập mức đặt hàng lại (Set Reorder Levels)
+  setReorderLevels: async (cabinetId, reorderData) => {
+    return apiCall(`api/v1/cabinet-management/${cabinetId}/reorder-levels`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(reorderData),
+    });
+  },
+
+  // Ngừng hoạt động tủ (Deactivate Cabinet)
+  deactivateCabinet: async (cabinetId, reason) => {
+    return apiCall(`api/v1/cabinet-management/${cabinetId}/deactivate?reason=${encodeURIComponent(reason)}`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Lấy lịch sử truy cập tủ (Get Cabinet Access Log)
+  getCabinetAccessLog: async (cabinetId, startDate = null, endDate = null) => {
+    let url = `api/v1/cabinet-management/${cabinetId}/access-log`;
+    const params = [];
+    if (startDate) params.push(`startDate=${startDate}`);
+    if (endDate) params.push(`endDate=${endDate}`);
+    if (params.length > 0) url += `?${params.join('&')}`;
+
+    return apiCall(url, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Lấy cảnh báo của tủ (Get Cabinet Alerts)
+  getCabinetAlerts: async (cabinetId) => {
+    return apiCall(`api/v1/cabinet-management/${cabinetId}/alerts`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Tạo báo cáo tủ (Generate Cabinet Report)
+  generateCabinetReport: async (cabinetId, reportType, startDate = null, endDate = null) => {
+    let url = `api/v1/cabinet-management/${cabinetId}/report?reportType=${reportType}`;
+    if (startDate) url += `&startDate=${startDate}`;
+    if (endDate) url += `&endDate=${endDate}`;
+
+    return apiCall(url, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Lấy lịch trình bảo trì (Get Cabinet Maintenance)
+  getCabinetMaintenance: async (cabinetId) => {
+    return apiCall(`api/v1/cabinet-management/${cabinetId}/maintenance`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Lên lịch bảo trì (Schedule Cabinet Maintenance)
+  scheduleCabinetMaintenance: async (cabinetId, maintenanceType, scheduledDate, notes = '') => {
+    let url = `api/v1/cabinet-management/${cabinetId}/schedule-maintenance?maintenanceType=${maintenanceType}&scheduledDate=${scheduledDate}`;
+    if (notes) url += `&notes=${encodeURIComponent(notes)}`;
+
+    return apiCall(url, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+};
+
+// ==================== Department API ====================
+export const pharmacistDepartmentAPI = {
+  // Lấy danh sách khoa phòng
+  getDepartments: async () => {
+    return apiCall('api/v1/departments', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+};
+
+// ==================== Employee API ====================
+export const pharmacistEmployeeAPI = {
+  // Lấy danh sách nhân viên theo khoa phòng
+  getEmployeesByDepartment: async (departmentId) => {
+    return apiCall(`api/v1/employees/department/${departmentId}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+};
+
+
+
 export default {
   pharmacistAuthAPI,
   pharmacistDashboardAPI,
@@ -421,5 +611,8 @@ export default {
   pharmacistSupplierAPI,
   pharmacistExpiryAPI,
   medicineAPI,
+  pharmacistCabinetAPI,
+  pharmacistDepartmentAPI,
+  pharmacistEmployeeAPI,
 };
 

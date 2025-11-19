@@ -88,6 +88,18 @@ const PharmacistLayout = () => {
                                 </NavLink>
                             </li>
                             <li>
+                                <NavLink to="/staff/duoc-si/tu-thuoc">
+                                    <FiArchive />
+                                    <span>Quản lý Tủ thuốc</span>
+                                </NavLink>
+                            </li>
+                            <li>
+                                <NavLink to="/staff/duoc-si/ton-kho-tu-thuoc">
+                                    <FiPackage />
+                                    <span>Tồn kho Tủ thuốc</span>
+                                </NavLink>
+                            </li>
+                            <li>
                                 <NavLink to="/staff/duoc-si/han-su-dung">
                                     <FiAlertCircle />
                                     <span>Hạn sử dụng</span>
