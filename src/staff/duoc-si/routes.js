@@ -34,8 +34,6 @@ const PharmacistRoutes = () => {
                 <Route path="han-su-dung" element={<ExpiryManagementPage />} />
                 <Route path="thuoc" element={<MedicineManagementPage />} />
                 <Route path="tu-thuoc" element={<CabinetManagementPage />} />
-                <Route path="ton-kho-tu-thuoc" element={<CabinetInventoryPage />} />
-                <Route path="test-api" element={<TestAPIConnection />} />
                 <Route path="inventory" element={<div>Trang Quản lý Kho thuốc</div>} />
                 <Route path="prescriptions" element={<div>Trang Quản lý Đơn thuốc</div>} />
                 <Route path="reports" element={<div>Trang Báo cáo</div>} />
