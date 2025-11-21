@@ -14,6 +14,7 @@ import ExportStockPage from "./pages/xuat-kho/ExportStockPage";
 import ExpiryManagementPage from "./pages/han-su-dung/ExpiryManagementPage";
 import MedicineManagementPage from "./pages/thuoc/MedicineManagementPage";
 import CabinetManagementPage from "./pages/tu-thuoc/CabinetManagementPage";
+import CabinetInventoryPage from "./pages/tu-thuoc/CabinetInventoryPage";
 
 const PharmacistRoutes = () => {
     return (
@@ -34,6 +35,7 @@ const PharmacistRoutes = () => {
                 <Route path="han-su-dung" element={<ExpiryManagementPage />} />
                 <Route path="thuoc" element={<MedicineManagementPage />} />
                 <Route path="tu-thuoc" element={<CabinetManagementPage />} />
+                <Route path="ton-kho-tu-thuoc" element={<CabinetInventoryPage />} />
                 <Route path="inventory" element={<div>Trang Quản lý Kho thuốc</div>} />
                 <Route path="prescriptions" element={<div>Trang Quản lý Đơn thuốc</div>} />
                 <Route path="reports" element={<div>Trang Báo cáo</div>} />

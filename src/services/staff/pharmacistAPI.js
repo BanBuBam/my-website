@@ -571,6 +571,44 @@ export const pharmacistCabinetAPI = {
       },
     });
   },
+
+  // Lấy tồn kho của tủ (Get Cabinet Inventory)
+  // API: GET /api/v1/cabinet-inventory/{cabinetId}
+  getCabinetInventory: async (cabinetId) => {
+    return apiCall(`api/v1/cabinet-inventory/cabinet/${cabinetId}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Cấp phát từ tủ thuốc (Dispense from Cabinet)
+  // API: POST /api/v1/cabinet-inventory/dispense
+  dispenseFromCabinet: async (dispenseData) => {
+    return apiCall('api/v1/cabinet-inventory/dispense', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(dispenseData),
+    });
+  },
+
+  // Bổ sung tồn kho tủ (Restock Cabinet)
+  // API: POST /api/v1/cabinet-inventory/cabinet/{cabinetId}/restock
+  // Required Permission: cabinet.restock
+  restockCabinet: async (cabinetId, restockData) => {
+    return apiCall(`api/v1/cabinet-inventory/cabinet/${cabinetId}/restock`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(restockData),
+    });
+  },
 };
 
 // ==================== Department API ====================
@@ -599,6 +637,29 @@ export const pharmacistEmployeeAPI = {
   },
 };
 
+// ==================== Patient API ====================
+export const pharmacistPatientAPI = {
+  // Tìm kiếm bệnh nhân
+  searchPatient: async (searchTerm) => {
+    return apiCall(`api/v1/patients/search?q=${encodeURIComponent(searchTerm)}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Lấy thông tin bệnh nhân
+  getPatientById: async (patientId) => {
+    return apiCall(`api/v1/patients/${patientId}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+};
+
 
 
 export default {
@@ -614,5 +675,6 @@ export default {
   pharmacistCabinetAPI,
   pharmacistDepartmentAPI,
   pharmacistEmployeeAPI,
+  pharmacistPatientAPI,
 };
 

@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import './CabinetManagementPage.css';
-import { FiRefreshCw, FiPlus, FiEdit2, FiTrash2, FiEye, FiSearch, FiLock, FiUnlock, FiAlertTriangle, FiClock, FiTool } from 'react-icons/fi';
+import { FiRefreshCw, FiPlus, FiEdit2, FiTrash2, FiEye, FiSearch, FiLock, FiUnlock, FiAlertTriangle, FiClock, FiTool, FiPackage } from 'react-icons/fi';
 import { adminCabinetAPI, adminDepartmentAPI, adminEmployeeAPI } from '../../../../services/staff/adminAPI';
+import { useNavigate } from 'react-router-dom';
 
 const CabinetManagementPage = () => {
+    const navigate = useNavigate();
     // State quản lý danh sách và UI
     const [cabinets, setCabinets] = useState([]);
     const [allCabinets, setAllCabinets] = useState([]); // Lưu toàn bộ danh sách để tìm kiếm
@@ -25,12 +27,17 @@ const CabinetManagementPage = () => {
     const [showScheduleMaintenanceModal, setShowScheduleMaintenanceModal] = useState(false);
     const [showAssignEmployeeModal, setShowAssignEmployeeModal] = useState(false);
     const [showCreateModal, setShowCreateModal] = useState(false);
+    const [showInventoryModal, setShowInventoryModal] = useState(false);
 
     // State cho tìm kiếm và lọc
     const [searchTerm, setSearchTerm] = useState('');
     const [viewMode, setViewMode] = useState('active'); // 'active', 'inactive', 'all'
     const [stats, setStats] = useState({ active: 0, inactive: 0, total: 0, locked: 0 });
     const [submitting, setSubmitting] = useState(false);
+
+    // State cho lock status checking
+    const [lockStatusCache, setLockStatusCache] = useState({}); // Cache lock status by cabinetId
+    const [checkingLockStatus, setCheckingLockStatus] = useState(false);
 
     // State cho departments và employees
     const [departments, setDepartments] = useState([]);
@@ -67,6 +74,10 @@ const CabinetManagementPage = () => {
         startDate: '',
         endDate: ''
     });
+
+    // State cho inventory
+    const [inventoryData, setInventoryData] = useState(null);
+    const [loadingInventory, setLoadingInventory] = useState(false);
 
     // Load danh sách tủ khi component mount
     useEffect(() => {
@@ -368,10 +379,60 @@ const CabinetManagementPage = () => {
 
 
 
+    // Kiểm tra trạng thái khóa của tủ (Check individual cabinet lock status)
+    const checkCabinetLockStatus = async (cabinetId) => {
+        try {
+            const response = await adminCabinetAPI.getCabinetLockStatus(cabinetId);
+
+            if (response && (response.status === 'success' || response.code === 200 || response.OK)) {
+                const lockStatus = response.data?.isLocked;
+
+                // Update cache
+                setLockStatusCache(prev => ({
+                    ...prev,
+                    [cabinetId]: lockStatus
+                }));
+
+                // Update the cabinet in the list
+                setCabinets(prevCabinets =>
+                    prevCabinets.map(cab =>
+                        cab.cabinetId === cabinetId
+                            ? { ...cab, isLocked: lockStatus }
+                            : cab
+                    )
+                );
+
+                setAllCabinets(prevCabinets =>
+                    prevCabinets.map(cab =>
+                        cab.cabinetId === cabinetId
+                            ? { ...cab, isLocked: lockStatus }
+                            : cab
+                    )
+                );
+
+                return lockStatus;
+            }
+        } catch (err) {
+            console.error('Error checking lock status:', err);
+        }
+        return null;
+    };
+
+    // Lấy trạng thái khóa hiện tại của tủ (Get current lock status with cache)
+    const getCurrentLockStatus = (cabinet) => {
+        // Check cache first
+        if (lockStatusCache.hasOwnProperty(cabinet.cabinetId)) {
+            return lockStatusCache[cabinet.cabinetId];
+        }
+        // Fall back to cabinet's isLocked property
+        return cabinet.isLocked;
+    };
+
     // Xử lý khóa/mở khóa tủ
     const handleLockUnlock = async (cabinet) => {
-        const action = cabinet.isLocked ? 'mở khóa' : 'khóa';
-        const newLockedState = !cabinet.isLocked;
+        const currentLockStatus = getCurrentLockStatus(cabinet);
+        const action = currentLockStatus ? 'mở khóa' : 'khóa';
+        const newLockedState = !currentLockStatus;
 
         if (!window.confirm(`Bạn có chắc chắn muốn ${action} tủ "${cabinet.cabinetLocation}"?`)) {
             return;
@@ -384,6 +445,31 @@ const CabinetManagementPage = () => {
 
             if (response && (response.status === 'success' || response.status === 'OK' || response.code === 200 || response.OK)) {
                 alert(`✅ Đã ${action} tủ thành công!`);
+
+                // Immediately update the lock status in cache and UI
+                setLockStatusCache(prev => ({
+                    ...prev,
+                    [cabinet.cabinetId]: newLockedState
+                }));
+
+                // Update the cabinet in the list immediately
+                setCabinets(prevCabinets =>
+                    prevCabinets.map(cab =>
+                        cab.cabinetId === cabinet.cabinetId
+                            ? { ...cab, isLocked: newLockedState }
+                            : cab
+                    )
+                );
+
+                setAllCabinets(prevCabinets =>
+                    prevCabinets.map(cab =>
+                        cab.cabinetId === cabinet.cabinetId
+                            ? { ...cab, isLocked: newLockedState }
+                            : cab
+                    )
+                );
+
+                // Reload to ensure consistency
                 loadCabinets(pagination.currentPage);
             } else {
                 throw new Error(response.message || 'Có lỗi xảy ra');
@@ -522,6 +608,52 @@ const CabinetManagementPage = () => {
         } catch (err) {
             console.error('Error loading maintenance:', err);
             alert('❌ ' + getErrorMessage(err));
+        }
+    };
+
+    // Xem tồn kho tủ
+    const handleViewInventory = async (cabinet) => {
+        try {
+            setSelectedCabinet(cabinet);
+            setLoadingInventory(true);
+            setInventoryData(null);
+            setShowInventoryModal(true);
+
+            const response = await adminCabinetAPI.getCabinetInventory(cabinet.cabinetId);
+            console.log('Cabinet inventory response:', response);
+
+            if (response && (response.status === 'success' || response.code === 200 || response.OK)) {
+                setInventoryData(response.data);
+            } else {
+                throw new Error('Không thể tải tồn kho tủ');
+            }
+        } catch (err) {
+            console.error('Error loading cabinet inventory:', err);
+            alert('❌ ' + getErrorMessage(err));
+            setShowInventoryModal(false);
+        } finally {
+            setLoadingInventory(false);
+        }
+    };
+
+    // Refresh inventory
+    const handleRefreshInventory = async () => {
+        if (!selectedCabinet) return;
+
+        try {
+            setLoadingInventory(true);
+            const response = await adminCabinetAPI.getCabinetInventory(selectedCabinet.cabinetId);
+
+            if (response && (response.status === 'success' || response.code === 200 || response.OK)) {
+                setInventoryData(response.data);
+            } else {
+                throw new Error('Không thể tải tồn kho tủ');
+            }
+        } catch (err) {
+            console.error('Error refreshing inventory:', err);
+            alert('❌ ' + getErrorMessage(err));
+        } finally {
+            setLoadingInventory(false);
         }
     };
 
@@ -761,6 +893,60 @@ const CabinetManagementPage = () => {
         return err.message || 'Không thể tải danh sách tủ. Vui lòng thử lại.';
     };
 
+    // Check if date is expired
+    const isExpiredDate = (dateString) => {
+        if (!dateString) return false;
+        try {
+            const expiryDate = new Date(dateString);
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            return expiryDate < today;
+        } catch {
+            return false;
+        }
+    };
+
+    // Check if date is expiring within 30 days
+    const isExpiringWithin30Days = (dateString) => {
+        if (!dateString) return false;
+        try {
+            const expiryDate = new Date(dateString);
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const thirtyDaysFromNow = new Date(today);
+            thirtyDaysFromNow.setDate(today.getDate() + 30);
+            return expiryDate >= today && expiryDate <= thirtyDaysFromNow;
+        } catch {
+            return false;
+        }
+    };
+
+    // Get inventory status label
+    const getInventoryStatusLabel = (status) => {
+        const labels = {
+            'AVAILABLE': 'Có sẵn',
+            'LOW_STOCK': 'Sắp hết',
+            'OUT_OF_STOCK': 'Hết hàng',
+            'EXPIRED': 'Hết hạn',
+            'RESERVED': 'Đã đặt trước',
+            'DAMAGED': 'Hư hỏng'
+        };
+        return labels[status] || status || 'N/A';
+    };
+
+    // Get inventory status badge class
+    const getInventoryStatusBadgeClass = (status) => {
+        const classes = {
+            'AVAILABLE': 'badge-active',
+            'LOW_STOCK': 'badge-warning',
+            'OUT_OF_STOCK': 'badge-inactive',
+            'EXPIRED': 'badge-inactive',
+            'RESERVED': 'badge-info',
+            'DAMAGED': 'badge-inactive'
+        };
+        return classes[status] || 'badge-secondary';
+    };
+
     return (
         <div className="cabinet-management-page">
             {/* Page Header */}
@@ -770,6 +956,14 @@ const CabinetManagementPage = () => {
                     <p>Quản lý tủ thuốc, vật tư y tế và thiết bị</p>
                 </div>
                 <div className="header-right">
+                    <button
+                        className="btn-secondary"
+                        onClick={() => navigate('/staff/admin/tu-thuoc/locked')}
+                        style={{ marginRight: '0.5rem' }}
+                    >
+                        <FiLock />
+                        Tủ đang khóa ({stats.locked})
+                    </button>
                     <button className="btn-refresh" onClick={handleRefresh} disabled={loading}>
                         <FiRefreshCw className={loading ? 'spinning' : ''} />
                         Làm mới
@@ -804,7 +998,12 @@ const CabinetManagementPage = () => {
                         <div className="stat-value">{stats.total}</div>
                     </div>
                 </div>
-                <div className="stat-card locked">
+                <div
+                    className="stat-card locked"
+                    onClick={() => navigate('/staff/admin/tu-thuoc/locked')}
+                    style={{ cursor: 'pointer' }}
+                    title="Nhấn để xem danh sách tủ đang khóa"
+                >
                     <div className="stat-icon">🔒</div>
                     <div className="stat-info">
                         <div className="stat-label">Đang khóa</div>
@@ -910,9 +1109,33 @@ const CabinetManagementPage = () => {
                                         </span>
                                     </td>
                                     <td>
-                                        <span className="lock-icon">
-                                            {cabinet.isLocked ? '🔒 Khóa' : '🔓 Mở'}
-                                        </span>
+                                        {(() => {
+                                            const isLocked = getCurrentLockStatus(cabinet);
+                                            return (
+                                                <span
+                                                    className="lock-icon"
+                                                    style={{
+                                                        color: isLocked ? '#dc3545' : '#28a745',
+                                                        fontWeight: 'bold',
+                                                        display: 'inline-flex',
+                                                        alignItems: 'center',
+                                                        gap: '0.3rem'
+                                                    }}
+                                                >
+                                                    {isLocked ? (
+                                                        <>
+                                                            <FiLock style={{ fontSize: '1rem' }} />
+                                                            Khóa
+                                                        </>
+                                                    ) : (
+                                                        <>
+                                                            <FiUnlock style={{ fontSize: '1rem' }} />
+                                                            Mở
+                                                        </>
+                                                    )}
+                                                </span>
+                                            );
+                                        })()}
                                     </td>
                                     <td>
                                         <div className="action-buttons">
@@ -935,9 +1158,12 @@ const CabinetManagementPage = () => {
                                                     <button
                                                         className="btn-icon btn-lock"
                                                         onClick={() => handleLockUnlock(cabinet)}
-                                                        title={cabinet.isLocked ? 'Mở khóa' : 'Khóa'}
+                                                        title={getCurrentLockStatus(cabinet) ? 'Mở khóa' : 'Khóa'}
+                                                        style={{
+                                                            background: getCurrentLockStatus(cabinet) ? '#28a745' : '#ffc107'
+                                                        }}
                                                     >
-                                                        {cabinet.isLocked ? <FiUnlock /> : <FiLock />}
+                                                        {getCurrentLockStatus(cabinet) ? <FiUnlock /> : <FiLock />}
                                                     </button>
                                                     <button
                                                         className="btn-icon btn-alert"
@@ -959,6 +1185,14 @@ const CabinetManagementPage = () => {
                                                         title="Bảo trì"
                                                     >
                                                         <FiTool />
+                                                    </button>
+                                                    <button
+                                                        className="btn-icon btn-inventory"
+                                                        onClick={() => handleViewInventory(cabinet)}
+                                                        title="Xem tồn kho"
+                                                        style={{ background: '#17a2b8' }}
+                                                    >
+                                                        <FiPackage />
                                                     </button>
                                                     <button
                                                         className="btn-icon btn-deactivate"
@@ -1629,6 +1863,181 @@ const CabinetManagementPage = () => {
                                 </button>
                             </div>
                         </form>
+                    </div>
+                </div>
+            )}
+
+            {/* Inventory Modal */}
+            {showInventoryModal && selectedCabinet && (
+                <div className="modal-overlay" onClick={() => setShowInventoryModal(false)}>
+                    <div className="modal-content modal-large" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '1200px' }}>
+                        <div className="modal-header">
+                            <h3>📦 Tồn kho - {selectedCabinet.cabinetLocation}</h3>
+                            <button className="btn-close" onClick={() => setShowInventoryModal(false)}>✕</button>
+                        </div>
+                        <div className="modal-body">
+                            {loadingInventory ? (
+                                <div className="loading-state" style={{ textAlign: 'center', padding: '3rem' }}>
+                                    <p>⏳ Đang tải tồn kho...</p>
+                                </div>
+                            ) : inventoryData ? (
+                                <>
+                                    {/* Cabinet Summary */}
+                                    <div style={{
+                                        display: 'grid',
+                                        gridTemplateColumns: 'repeat(3, 1fr)',
+                                        gap: '1rem',
+                                        marginBottom: '1.5rem',
+                                        padding: '1rem',
+                                        background: '#f8f9fa',
+                                        borderRadius: '8px'
+                                    }}>
+                                        <div>
+                                            <div style={{ fontSize: '0.85rem', color: '#6c757d', marginBottom: '0.25rem' }}>
+                                                Vị trí tủ
+                                            </div>
+                                            <div style={{ fontWeight: '600', fontSize: '1rem' }}>
+                                                {inventoryData.cabinetLocation || selectedCabinet.cabinetLocation}
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <div style={{ fontSize: '0.85rem', color: '#6c757d', marginBottom: '0.25rem' }}>
+                                                Tổng số items
+                                            </div>
+                                            <div style={{ fontWeight: '600', fontSize: '1rem', color: '#007bff' }}>
+                                                {inventoryData.totalItems || 0}
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <div style={{ fontSize: '0.85rem', color: '#6c757d', marginBottom: '0.25rem' }}>
+                                                Tỷ lệ sử dụng
+                                            </div>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                                <div style={{
+                                                    flex: 1,
+                                                    height: '8px',
+                                                    background: '#e9ecef',
+                                                    borderRadius: '4px',
+                                                    overflow: 'hidden'
+                                                }}>
+                                                    <div style={{
+                                                        width: `${inventoryData.utilizationPercent || 0}%`,
+                                                        height: '100%',
+                                                        background: getUtilizationColor(inventoryData.utilizationPercent || 0),
+                                                        transition: 'width 0.3s ease'
+                                                    }}></div>
+                                                </div>
+                                                <span style={{ fontWeight: '600', fontSize: '0.9rem' }}>
+                                                    {inventoryData.utilizationPercent || 0}%
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Refresh Button */}
+                                    <div style={{ marginBottom: '1rem', display: 'flex', justifyContent: 'flex-end' }}>
+                                        <button
+                                            className="btn-refresh"
+                                            onClick={handleRefreshInventory}
+                                            disabled={loadingInventory}
+                                            style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+                                        >
+                                            <FiRefreshCw className={loadingInventory ? 'spinning' : ''} />
+                                            Làm mới
+                                        </button>
+                                    </div>
+
+                                    {/* Inventory Items Table */}
+                                    {inventoryData.items && inventoryData.items.length > 0 ? (
+                                        <div className="cabinet-table-container">
+                                            <table className="cabinet-table">
+                                                <thead>
+                                                    <tr>
+                                                        <th>STT</th>
+                                                        <th>Stock ID</th>
+                                                        <th>Tên thuốc/Vật tư</th>
+                                                        <th>Loại</th>
+                                                        <th>Số lượng</th>
+                                                        <th>Mức đặt lại</th>
+                                                        <th>Mức tối đa</th>
+                                                        <th>Số lô</th>
+                                                        <th>Hạn sử dụng</th>
+                                                        <th>Trạng thái</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {inventoryData.items.map((item, index) => {
+                                                        const isLowStock = item.quantityOnHand <= item.reorderLevel;
+                                                        const isExpiringSoon = isExpiringWithin30Days(item.expiryDate);
+                                                        const isExpired = isExpiredDate(item.expiryDate);
+
+                                                        return (
+                                                            <tr key={item.stockId || index} style={{
+                                                                background: isExpired ? '#fff5f5' : isExpiringSoon ? '#fffbf0' : 'transparent'
+                                                            }}>
+                                                                <td>{index + 1}</td>
+                                                                <td>{item.stockId}</td>
+                                                                <td><strong>{item.itemName}</strong></td>
+                                                                <td>
+                                                                    <span className={`badge badge-type-${(item.itemType || 'MEDICINE').toLowerCase()}`}>
+                                                                        {item.itemType || 'MEDICINE'}
+                                                                    </span>
+                                                                </td>
+                                                                <td>
+                                                                    <span style={{
+                                                                        color: isLowStock ? '#dc3545' : '#28a745',
+                                                                        fontWeight: 'bold'
+                                                                    }}>
+                                                                        {item.quantityOnHand}
+                                                                        {isLowStock && ' ⚠️'}
+                                                                    </span>
+                                                                </td>
+                                                                <td>{item.reorderLevel}</td>
+                                                                <td>{item.maxStockLevel}</td>
+                                                                <td>{item.batchNumber || 'N/A'}</td>
+                                                                <td style={{
+                                                                    color: isExpired ? '#dc3545' : isExpiringSoon ? '#ffc107' : 'inherit',
+                                                                    fontWeight: (isExpired || isExpiringSoon) ? 'bold' : 'normal'
+                                                                }}>
+                                                                    {formatDate(item.expiryDate)}
+                                                                    {isExpired && ' ❌'}
+                                                                    {!isExpired && isExpiringSoon && ' ⚠️'}
+                                                                </td>
+                                                                <td>
+                                                                    <span className={`badge ${getInventoryStatusBadgeClass(item.status)}`}>
+                                                                        {getInventoryStatusLabel(item.status)}
+                                                                    </span>
+                                                                </td>
+                                                            </tr>
+                                                        );
+                                                    })}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    ) : (
+                                        <div className="empty-state" style={{ textAlign: 'center', padding: '3rem' }}>
+                                            <FiPackage size={48} color="#dee2e6" />
+                                            <p style={{ marginTop: '1rem', color: '#6c757d' }}>
+                                                Tủ này chưa có tồn kho
+                                            </p>
+                                        </div>
+                                    )}
+                                </>
+                            ) : (
+                                <div className="error-message" style={{ textAlign: 'center', padding: '3rem' }}>
+                                    <p>❌ Không thể tải dữ liệu tồn kho</p>
+                                </div>
+                            )}
+                        </div>
+                        <div className="modal-footer">
+                            <button
+                                type="button"
+                                className="btn-secondary"
+                                onClick={() => setShowInventoryModal(false)}
+                            >
+                                Đóng
+                            </button>
+                        </div>
                     </div>
                 </div>
             )}

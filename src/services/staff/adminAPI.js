@@ -802,4 +802,40 @@ export const adminCabinetAPI = {
       },
     });
   },
+
+  // Kiểm tra trạng thái khóa của tủ (Check Cabinet Lock Status)
+  // API: GET /api/v1/cabinet-management/{cabinetId}/lock-status
+  // Returns: { isLocked: boolean, lastModifiedDate: string, lastModifiedBy: string }
+  getCabinetLockStatus: async (cabinetId) => {
+    return apiCall(`api/v1/cabinet-management/${cabinetId}/lock-status`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Lấy danh sách tủ đang khóa (Get Locked Cabinets Only)
+  // API: GET /api/v1/cabinet-management/locked?page={page}&size={size}
+  getLockedCabinets: async (page = 0, size = 20) => {
+    return apiCall(`api/v1/cabinet-management/locked?page=${page}&size=${size}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Lấy tồn kho của tủ (Get Cabinet Inventory)
+  // API: GET /api/v1/cabinet-inventory/cabinet/{cabinetId}
+  // Required Permission: cabinet.view
+  // Returns: { cabinetId, cabinetLocation, items[], totalItems, utilizationPercent }
+  getCabinetInventory: async (cabinetId) => {
+    return apiCall(`api/v1/cabinet-inventory/cabinet/${cabinetId}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
 };
