@@ -9,6 +9,7 @@ import ImportStockPage from "./pages/nhap-kho/ImportStockPage";
 import StockReceiptPage from "./pages/nhap-kho/StockReceiptPage";
 import PaymentReceiptPage from "./pages/nhap-kho/PaymentReceiptPage";
 import SupplierPage from "./pages/nha-cung-cap/SupplierPage";
+import InventoryTransactionsPage from "./pages/bien-dong-kho/InventoryTransactionsPage";
 import CreateSupplierPage from "./pages/nha-cung-cap/CreateSupplierPage";
 import ExportStockPage from "./pages/xuat-kho/ExportStockPage";
 import ExpiryManagementPage from "./pages/han-su-dung/ExpiryManagementPage";
@@ -36,6 +37,7 @@ const PharmacistRoutes = () => {
                 <Route path="thuoc" element={<MedicineManagementPage />} />
                 <Route path="tu-thuoc" element={<CabinetManagementPage />} />
                 <Route path="ton-kho-tu-thuoc" element={<CabinetInventoryPage />} />
+                <Route path="bien-dong-kho" element={<InventoryTransactionsPage />} />
                 <Route path="inventory" element={<div>Trang Quản lý Kho thuốc</div>} />
                 <Route path="prescriptions" element={<div>Trang Quản lý Đơn thuốc</div>} />
                 <Route path="reports" element={<div>Trang Báo cáo</div>} />

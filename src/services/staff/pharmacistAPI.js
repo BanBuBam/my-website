@@ -660,6 +660,240 @@ export const pharmacistPatientAPI = {
   },
 };
 
+// ==================== Inventory Movement API ====================
+// Based on backend API specification: INVENTORY MOVEMENT APIs
+export const pharmacistInventoryMovementAPI = {
+  // Record Inventory Movement
+  // API: POST /inventory-movements
+  recordMovement: async (movementData) => {
+    return apiCall('api/v1/inventory-movements', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(movementData),
+    });
+  },
+
+  // Reverse Movement
+  // API: POST /inventory-movements/{movementId}/reverse
+  reverseMovement: async (movementId) => {
+    return apiCall(`api/v1/inventory-movements/${movementId}/reverse`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Get Movement by ID
+  // API: GET /inventory-movements/{movementId}
+  getMovementById: async (movementId) => {
+    return apiCall(`api/v1/inventory-movements/${movementId}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Get Movement History for Stock
+  // API: GET /inventory-movements/stock/{stockId}
+  getMovementHistoryForStock: async (stockId, page = 0, size = 20) => {
+    const queryParams = new URLSearchParams({
+      page: page.toString(),
+      size: size.toString(),
+    });
+
+    return apiCall(`api/v1/inventory-movements/stock/${stockId}?${queryParams.toString()}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Get Movements by Date Range
+  // API: GET /inventory-movements/date-range
+  getMovementsByDateRange: async (startDate, endDate, page = 0, size = 20) => {
+    const queryParams = new URLSearchParams({
+      startDate,
+      endDate,
+      page: page.toString(),
+      size: size.toString(),
+    });
+
+    return apiCall(`api/v1/inventory-movements/date-range?${queryParams.toString()}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Get Movements by Reference
+  // API: GET /inventory-movements/reference
+  getMovementsByReference: async (referenceType, referenceId, page = 0, size = 20) => {
+    const queryParams = new URLSearchParams({
+      referenceType,
+      referenceId: referenceId.toString(),
+      page: page.toString(),
+      size: size.toString(),
+    });
+
+    return apiCall(`api/v1/inventory-movements/reference?${queryParams.toString()}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Get Movements by Patient
+  // API: GET /inventory-movements/patient/{patientId}
+  getMovementsByPatient: async (patientId, page = 0, size = 20) => {
+    const queryParams = new URLSearchParams({
+      page: page.toString(),
+      size: size.toString(),
+    });
+
+    return apiCall(`api/v1/inventory-movements/patient/${patientId}?${queryParams.toString()}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Get Movements by Employee
+  // API: GET /inventory-movements/employee/{employeeId}
+  getMovementsByEmployee: async (employeeId, page = 0, size = 20) => {
+    const queryParams = new URLSearchParams({
+      page: page.toString(),
+      size: size.toString(),
+    });
+
+    return apiCall(`api/v1/inventory-movements/employee/${employeeId}?${queryParams.toString()}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Get Movements by Cabinet
+  // API: GET /inventory-movements/cabinet/{cabinetId}
+  getMovementsByCabinet: async (cabinetId, page = 0, size = 20) => {
+    const queryParams = new URLSearchParams({
+      page: page.toString(),
+      size: size.toString(),
+    });
+
+    return apiCall(`api/v1/inventory-movements/cabinet/${cabinetId}?${queryParams.toString()}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Get Recent Movements
+  // API: GET /inventory-movements/recent
+  // Query Parameters: days (int, default: 7) - Number of days to look back
+  getRecentMovements: async (days = 7) => {
+    const queryParams = new URLSearchParams({
+      days: days.toString(),
+    });
+
+    return apiCall(`api/v1/inventory-movements/recent?${queryParams.toString()}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Get Movements by Type
+  // API: GET /inventory-movements/type/{movementType}
+  getMovementsByType: async (movementType, page = 0, size = 20) => {
+    const queryParams = new URLSearchParams({
+      page: page.toString(),
+      size: size.toString(),
+    });
+
+    return apiCall(`api/v1/inventory-movements/type/${movementType}?${queryParams.toString()}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Get Reversible Movements
+  // API: GET /inventory-movements/reversible
+  getReversibleMovements: async (page = 0, size = 20) => {
+    const queryParams = new URLSearchParams({
+      page: page.toString(),
+      size: size.toString(),
+    });
+
+    return apiCall(`api/v1/inventory-movements/reversible?${queryParams.toString()}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Get High Value Movements
+  // API: GET /inventory-movements/high-value
+  getHighValueMovements: async (threshold, page = 0, size = 20) => {
+    const queryParams = new URLSearchParams({
+      threshold: threshold.toString(),
+      page: page.toString(),
+      size: size.toString(),
+    });
+
+    return apiCall(`api/v1/inventory-movements/high-value?${queryParams.toString()}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Get Movement Statistics
+  // API: GET /inventory-movements/statistics
+  getMovementStatistics: async (startDate, endDate) => {
+    const queryParams = new URLSearchParams();
+    if (startDate) queryParams.append('startDate', startDate);
+    if (endDate) queryParams.append('endDate', endDate);
+
+    return apiCall(`api/v1/inventory-movements/statistics?${queryParams.toString()}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Get Daily Movement Summary
+  // API: GET /inventory-movements/daily-summary
+  getDailyMovementSummary: async (startDate, endDate) => {
+    const queryParams = new URLSearchParams();
+    if (startDate) queryParams.append('startDate', startDate);
+    if (endDate) queryParams.append('endDate', endDate);
+
+    return apiCall(`api/v1/inventory-movements/daily-summary?${queryParams.toString()}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+};
+
 
 
 export default {
@@ -676,5 +910,6 @@ export default {
   pharmacistDepartmentAPI,
   pharmacistEmployeeAPI,
   pharmacistPatientAPI,
+  pharmacistInventoryMovementAPI,
 };
 

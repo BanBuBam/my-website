@@ -1099,3 +1099,120 @@ button:disabled {
     padding: 1rem;
 }
 
+/* ==================== Filter Section Animations ==================== */
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.7;
+    }
+}
+
+@keyframes shimmer {
+    0% {
+        background-position: -1000px 0;
+    }
+    100% {
+        background-position: 1000px 0;
+    }
+}
+
+/* Enhanced Input Focus States */
+.form-group input:focus,
+.form-group select:focus {
+    outline: none;
+    transform: translateY(-1px);
+}
+
+.form-group input:hover,
+.form-group select:hover {
+    border-color: #cbd5e1 !important;
+}
+
+/* Smooth Transitions for All Interactive Elements */
+.form-group input,
+.form-group select,
+button {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Loading State Animation */
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.loading-spinner {
+    animation: spin 1s linear infinite;
+}
+
+/* Hover Effects for Cards */
+.filter-section:hover {
+    box-shadow: 0 12px 40px rgba(102, 126, 234, 0.35) !important;
+}
+
+/* Responsive Design for Filter Section */
+@media (max-width: 1200px) {
+    .filter-section [style*="gridTemplateColumns"] {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+}
+
+@media (max-width: 768px) {
+    .filter-section [style*="gridTemplateColumns"] {
+        grid-template-columns: 1fr !important;
+    }
+
+    .filter-section {
+        padding: 1.5rem !important;
+    }
+}
+
+/* Badge Pulse Animation */
+@keyframes badgePulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+}
+
+/* Gradient Animation for Header */
+@keyframes gradientShift {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
