@@ -395,6 +395,23 @@ export const doctorEncounterAPI = {
     });
   },
 
+  // Export clinical note as PDF
+  exportClinicalNotePDF: async (clinicalNoteId) => {
+    const response = await fetch(`/api/v1/notes/${clinicalNoteId}/export-medical-record-pdf`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.message || 'Không thể xuất PDF');
+    }
+
+    return response.blob();
+  },
+
   // Tạo prescription cho encounter
   createPrescription: async (encounterId, prescriptionData) => {
     return apiCall(`api/v1/encounters/${encounterId}/prescriptions`, {
@@ -808,6 +825,119 @@ export const admissionRequestAPI = {
   },
 };
 
+// API Patient List
+export const patientListAPI = {
+  // Tìm kiếm bệnh nhân với phân trang
+  searchPatients: async (params = {}) => {
+    const queryParams = new URLSearchParams();
+
+    // Thêm các tham số query nếu có
+    if (params.name) queryParams.append('name', params.name);
+    if (params.page !== undefined) queryParams.append('page', params.page);
+    if (params.size !== undefined) queryParams.append('size', params.size);
+
+    const queryString = queryParams.toString();
+    const endpoint = queryString
+      ? `api/v1/patient/admin/search?${queryString}`
+      : 'api/v1/patient/admin/search';
+
+    return apiCall(endpoint, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+};
+
+// API Medication Orders
+export const medicationOrderAPI = {
+  // Tạo nhóm y lệnh (Medication Order Group)
+  createMedicationOrderGroup: async (orderGroupData) => {
+    return apiCall('api/v1/medication-order-groups', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+      body: JSON.stringify(orderGroupData),
+    });
+  },
+
+  // Tạo y lệnh lẻ (Single Medication Order)
+  createSingleMedicationOrder: async (orderData) => {
+    return apiCall('api/v1/medication-orders', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+      body: JSON.stringify(orderData),
+    });
+  },
+
+  // Xác nhận nhóm y lệnh (Confirm Medication Order Group)
+  confirmMedicationOrderGroup: async (groupId) => {
+    return apiCall(`api/v1/medication-order-groups/${groupId}/confirm`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Lấy danh sách nhóm y lệnh theo inpatient stay
+  getMedicationOrderGroupsByInpatientStay: async (inpatientStayId) => {
+    return apiCall(`api/v1/medication-order-groups/inpatient-stays/${inpatientStayId}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Lấy chi tiết y lệnh
+  getMedicationOrderDetail: async (orderId) => {
+    return apiCall(`api/v1/medication-orders/${orderId}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Tạm dừng y lệnh (Hold)
+  holdMedicationOrder: async (orderId, holdData) => {
+    return apiCall(`api/v1/medication-orders/${orderId}/hold?reason=${holdData.holdReason}`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+      body: JSON.stringify(holdData),
+    });
+  },
+
+  // Tiếp tục y lệnh (Resume)
+  resumeMedicationOrder: async (orderId, resumeData) => {
+    return apiCall(`api/v1/medication-orders/${orderId}/resume`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+      body: JSON.stringify(resumeData),
+    });
+  },
+
+  // Ngừng y lệnh (Discontinue)
+  discontinueMedicationOrder: async (orderId, discontinueData) => {
+    return apiCall(`api/v1/medication-orders/${orderId}/discontinue`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+      body: JSON.stringify(discontinueData),
+    });
+  },
+};
+
 export default {
   doctorAuthAPI,
   doctorDashboardAPI,
@@ -824,5 +954,7 @@ export default {
   departmentAPI,
   doctorInpatientTreatmentAPI,
   admissionRequestAPI,
+  patientListAPI,
+  medicationOrderAPI,
 };
 

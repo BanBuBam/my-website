@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { nurseInpatientStayAPI } from '../../../../services/staff/nurseAPI';
+import { nurseInpatientStayAPI, nurseMedicationAPI } from '../../../../services/staff/nurseAPI';
 import {
     FiArrowLeft, FiAlertCircle, FiClock, FiCheckCircle,
-    FiPackage, FiInfo, FiActivity, FiXCircle, FiUser
+    FiPackage, FiInfo, FiActivity, FiXCircle, FiUser, FiSlash
 } from 'react-icons/fi';
 import './MedicationInpatientPage.css';
 
@@ -11,9 +11,10 @@ const MedicationInpatientPage = () => {
     const [medications, setMedications] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [actionLoading, setActionLoading] = useState(null);
     const { stayId } = useParams();
     const navigate = useNavigate();
-    
+
     // Hàm tải dữ liệu
     const fetchMedications = async () => {
         if (!stayId) {
@@ -21,7 +22,7 @@ const MedicationInpatientPage = () => {
             setLoading(false);
             return;
         }
-        
+
         setLoading(true);
         setError(null);
         try {
@@ -37,18 +38,98 @@ const MedicationInpatientPage = () => {
             setLoading(false);
         }
     };
-    
+
     // Tải dữ liệu khi component mount
     useEffect(() => {
         fetchMedications();
     }, [stayId]);
-    
-    // TODO: Xử lý logic khi thực hiện y lệnh
-    const handleAdminister = (administrationId) => {
-        alert(`(Chưa thực hiện) Xử lý cho thuốc ID: ${administrationId}`);
-        // 1. Gọi API để xác nhận đã thực hiện
-        // 2. Mở modal để nhập ghi chú (nếu cần)
-        // 3. Gọi fetchMedications() để làm mới danh sách
+
+    // Xử lý thực hiện thuốc
+    const handleAdminister = async (medication) => {
+        if (!window.confirm(`Xác nhận đã thực hiện thuốc "${medication.medicationName}"?`)) {
+            return;
+        }
+
+        setActionLoading(medication.administrationId);
+        try {
+            const administrationData = {
+                administeredAt: new Date().toISOString(),
+                notes: 'Đã thực hiện'
+            };
+
+            const response = await nurseMedicationAPI.administerMedication(
+                medication.administrationId,
+                administrationData
+            );
+
+            if (response && (response.code === 200 || response.code === 201)) {
+                alert('Đã ghi nhận thực hiện thuốc thành công!');
+                await fetchMedications();
+            } else {
+                alert(response?.message || 'Không thể thực hiện thuốc');
+            }
+        } catch (err) {
+            console.error('Error administering medication:', err);
+            alert(err.message || 'Không thể thực hiện thuốc');
+        } finally {
+            setActionLoading(null);
+        }
+    };
+
+    // Xử lý bệnh nhân từ chối
+    const handleRefuse = async (medication) => {
+        const reason = prompt(`Lý do bệnh nhân từ chối thuốc "${medication.medicationName}":`);
+        if (!reason || reason.trim() === '') {
+            return;
+        }
+
+        setActionLoading(medication.administrationId);
+        try {
+            const response = await nurseMedicationAPI.refuseMedication(
+                medication.administrationId,
+                reason
+            );
+
+            if (response && (response.code === 200 || response.code === 201)) {
+                alert('Đã ghi nhận bệnh nhân từ chối thuốc!');
+                await fetchMedications();
+            } else {
+                alert(response?.message || 'Không thể ghi nhận từ chối thuốc');
+            }
+        } catch (err) {
+            console.error('Error refusing medication:', err);
+            alert(err.message || 'Không thể ghi nhận từ chối thuốc');
+        } finally {
+            setActionLoading(null);
+        }
+    };
+
+    // Xử lý bỏ lỡ thuốc
+    const handleMiss = async (medication) => {
+        const reason = prompt(`Lý do bỏ lỡ thuốc "${medication.medicationName}":`);
+        if (!reason || reason.trim() === '') {
+            return;
+        }
+
+        setActionLoading(medication.administrationId);
+        try {
+            const response = await nurseMedicationAPI.missMedication(
+                medication.administrationId,
+                reason
+            );
+
+            if (response && (response.code === 200 || response.code === 201)) {
+                alert('Đã ghi nhận bỏ lỡ thuốc!');
+                await fetchMedications();
+            } else {
+                alert(response?.message || 'Không thể ghi nhận bỏ lỡ thuốc');
+            }
+        } catch (err) {
+            console.error('Error missing medication:', err);
+            alert(err.message || 'Không thể ghi nhận bỏ lỡ thuốc');
+        } finally {
+            setActionLoading(null);
+        }
     };
     
     if (loading) {
@@ -99,6 +180,9 @@ const MedicationInpatientPage = () => {
                                 key={med.administrationId}
                                 medication={med}
                                 onAdminister={handleAdminister}
+                                onRefuse={handleRefuse}
+                                onMiss={handleMiss}
+                                actionLoading={actionLoading}
                             />
                         ))}
                     </div>
@@ -109,7 +193,7 @@ const MedicationInpatientPage = () => {
 };
 
 // Component thẻ thuốc
-const MedicationCard = ({ medication, onAdminister }) => {
+const MedicationCard = ({ medication, onAdminister, onRefuse, onMiss, actionLoading }) => {
     
     const formatTime = (dateString) => {
         if (!dateString) return '-';
@@ -196,16 +280,25 @@ const MedicationCard = ({ medication, onAdminister }) => {
             ) : (
                 <div className="med-card-footer actions">
                     <button
-                        className="btn-action btn-skip"
-                        onClick={() => alert('Chức năng Bỏ qua (chưa làm)')}
+                        className="btn-action btn-administer"
+                        onClick={() => onAdminister(medication)}
+                        disabled={actionLoading === medication.administrationId}
                     >
-                        <FiXCircle /> Bỏ qua
+                        <FiCheckCircle /> Đã thực hiện
                     </button>
                     <button
-                        className="btn-action btn-administer"
-                        onClick={() => onAdminister(medication.administrationId)}
+                        className="btn-action btn-refuse"
+                        onClick={() => onRefuse(medication)}
+                        disabled={actionLoading === medication.administrationId}
                     >
-                        <FiCheckCircle /> Thực hiện
+                        <FiXCircle /> Bệnh nhân từ chối
+                    </button>
+                    <button
+                        className="btn-action btn-miss"
+                        onClick={() => onMiss(medication)}
+                        disabled={actionLoading === medication.administrationId}
+                    >
+                        <FiSlash /> Bỏ lỡ
                     </button>
                 </div>
             )}

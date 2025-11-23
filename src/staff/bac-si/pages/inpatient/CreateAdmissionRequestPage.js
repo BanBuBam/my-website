@@ -33,6 +33,7 @@ const CreateAdmissionRequestPage = () => {
         fetchEncounter();
         fetchDepartments();
     }, [encounterId]);
+    
 
     const fetchEncounter = async () => {
         try {

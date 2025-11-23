@@ -204,13 +204,22 @@
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-.inpatient-treatment-detail-page .btn-medication {
+.inpatient-treatment-detail-page .btn-medication-group {
     color: #10b981;
     border-color: #10b981;
 }
 
-.inpatient-treatment-detail-page .btn-medication:hover {
+.inpatient-treatment-detail-page .btn-medication-group:hover {
     background: #d1fae5;
+}
+
+.inpatient-treatment-detail-page .btn-medication-single {
+    color: #3b82f6;
+    border-color: #3b82f6;
+}
+
+.inpatient-treatment-detail-page .btn-medication-single:hover {
+    background: #dbeafe;
 }
 
 .inpatient-treatment-detail-page .btn-transfer-hospital {
@@ -272,19 +281,388 @@
     color: #ef4444;
 }
 
+/* Medication Groups Section */
+.inpatient-treatment-detail-page .medication-groups-section {
+    background: white;
+    border-radius: 12px;
+    padding: 24px;
+    margin-top: 24px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.inpatient-treatment-detail-page .medication-groups-section .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.inpatient-treatment-detail-page .medication-groups-section h2 {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 0;
+    font-size: 20px;
+    color: #111827;
+}
+
+.inpatient-treatment-detail-page .medication-groups-section h2 svg {
+    color: #3b82f6;
+}
+
+/* Inline States */
+.inpatient-treatment-detail-page .loading-state-inline,
+.inpatient-treatment-detail-page .error-state-inline,
+.inpatient-treatment-detail-page .empty-state-inline {
+    padding: 40px;
+    text-align: center;
+    color: #6b7280;
+}
+
+.inpatient-treatment-detail-page .error-state-inline {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    color: #ef4444;
+}
+
+.inpatient-treatment-detail-page .empty-state-inline {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+}
+
+/* Medication Groups List */
+.inpatient-treatment-detail-page .medication-groups-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+/* Medication Group Card */
+.inpatient-treatment-detail-page .medication-group-card {
+    background: #f9fafb;
+    border: 2px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 20px;
+    transition: all 0.3s ease;
+}
+
+.inpatient-treatment-detail-page .medication-group-card:hover {
+    border-color: #3b82f6;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.1);
+}
+
+.inpatient-treatment-detail-page .group-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+}
+
+.inpatient-treatment-detail-page .group-info {
+    flex: 1;
+}
+
+.inpatient-treatment-detail-page .group-info h3 {
+    margin: 0 0 12px 0;
+    font-size: 18px;
+    color: #111827;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.inpatient-treatment-detail-page .group-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    font-size: 14px;
+    color: #6b7280;
+}
+
+.inpatient-treatment-detail-page .group-meta span {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.inpatient-treatment-detail-page .btn-expand {
+    background: #e5e7eb;
+    border: none;
+    border-radius: 6px;
+    padding: 8px 12px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.inpatient-treatment-detail-page .btn-expand:hover {
+    background: #d1d5db;
+}
+
+.inpatient-treatment-detail-page .group-notes {
+    margin-top: 12px;
+    padding: 12px;
+    background: white;
+    border-left: 4px solid #3b82f6;
+    border-radius: 6px;
+    font-size: 14px;
+    color: #374151;
+}
+
+/* Status and Priority Badges */
+.inpatient-treatment-detail-page .status-badge {
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.inpatient-treatment-detail-page .status-active {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.inpatient-treatment-detail-page .status-pending {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.inpatient-treatment-detail-page .status-completed {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+.inpatient-treatment-detail-page .status-held {
+    background: #fed7aa;
+    color: #9a3412;
+}
+
+.inpatient-treatment-detail-page .status-discontinued {
+    background: #fecaca;
+    color: #991b1b;
+}
+
+.inpatient-treatment-detail-page .priority-badge {
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.inpatient-treatment-detail-page .priority-routine {
+    background: #e0e7ff;
+    color: #3730a3;
+}
+
+.inpatient-treatment-detail-page .priority-urgent {
+    background: #fed7aa;
+    color: #9a3412;
+}
+
+.inpatient-treatment-detail-page .priority-stat {
+    background: #fecaca;
+    color: #991b1b;
+}
+
+.inpatient-treatment-detail-page .stat-badge {
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+    background: #fecaca;
+    color: #991b1b;
+}
+
+.inpatient-treatment-detail-page .badge-prn,
+.inpatient-treatment-detail-page .badge-stat {
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    background: #e0e7ff;
+    color: #3730a3;
+}
+
+/* Medications List */
+.inpatient-treatment-detail-page .medications-list {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 2px solid #e5e7eb;
+}
+
+.inpatient-treatment-detail-page .medications-list h4 {
+    margin: 0 0 12px 0;
+    font-size: 16px;
+    color: #374151;
+}
+
+/* Medication Item Card */
+.inpatient-treatment-detail-page .medication-item-card {
+    background: white;
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+    transition: all 0.3s ease;
+}
+
+.inpatient-treatment-detail-page .medication-item-card:hover {
+    border-color: #3b82f6;
+    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.1);
+}
+
+.inpatient-treatment-detail-page .medication-details {
+    flex: 1;
+}
+
+.inpatient-treatment-detail-page .medication-name {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+}
+
+.inpatient-treatment-detail-page .medication-name strong {
+    font-size: 16px;
+    color: #111827;
+}
+
+.inpatient-treatment-detail-page .medication-info-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+}
+
+.inpatient-treatment-detail-page .medication-info-grid .info-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.inpatient-treatment-detail-page .medication-info-grid .info-item label {
+    font-size: 12px;
+    color: #6b7280;
+    font-weight: 600;
+}
+
+.inpatient-treatment-detail-page .medication-info-grid .info-item span {
+    font-size: 14px;
+    color: #111827;
+}
+
+/* Medication Actions */
+.inpatient-treatment-detail-page .medication-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.inpatient-treatment-detail-page .btn-action-small {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    min-width: 36px;
+    min-height: 36px;
+}
+
+.inpatient-treatment-detail-page .btn-action-small:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.inpatient-treatment-detail-page .btn-view {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+.inpatient-treatment-detail-page .btn-view:hover {
+    background: #bfdbfe;
+}
+
+.inpatient-treatment-detail-page .btn-hold {
+    background: #fed7aa;
+    color: #9a3412;
+}
+
+.inpatient-treatment-detail-page .btn-hold:hover {
+    background: #fdba74;
+}
+
+.inpatient-treatment-detail-page .btn-resume {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.inpatient-treatment-detail-page .btn-resume:hover {
+    background: #a7f3d0;
+}
+
+.inpatient-treatment-detail-page .btn-discontinue {
+    background: #fecaca;
+    color: #991b1b;
+}
+
+.inpatient-treatment-detail-page .btn-discontinue:hover {
+    background: #fca5a5;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
     .inpatient-treatment-detail-page .info-grid {
         grid-template-columns: 1fr;
     }
-    
+
     .inpatient-treatment-detail-page .action-buttons {
         grid-template-columns: 1fr;
     }
-    
+
     .inpatient-treatment-detail-page .page-header {
         flex-direction: column;
         align-items: flex-start;
+    }
+
+    .inpatient-treatment-detail-page .group-header {
+        flex-direction: column;
+    }
+
+    .inpatient-treatment-detail-page .group-meta {
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .inpatient-treatment-detail-page .medication-info-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .inpatient-treatment-detail-page .medication-item-card {
+        flex-direction: column;
+    }
+
+    .inpatient-treatment-detail-page .medication-actions {
+        flex-direction: row;
+        width: 100%;
+    }
+
+    .inpatient-treatment-detail-page .btn-action-small {
+        flex: 1;
     }
 }
 

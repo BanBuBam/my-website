@@ -160,6 +160,40 @@ export const nurseVitalSignsAPI = {
   },
 };
 
+// API Encounter-based Vital Signs (for nurse module)
+export const nurseEncounterAPI = {
+  // Lấy thông tin encounter
+  getEncounterStatus: async (encounterId) => {
+    return apiCall(`api/v1/encounters/${encounterId}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Thêm vital signs cho encounter
+  addVitalSigns: async (encounterId, vitalSignsData) => {
+    return apiCall(`api/v1/encounters/${encounterId}/vitals`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+      body: JSON.stringify(vitalSignsData),
+    });
+  },
+
+  // Lấy danh sách vital signs của encounter
+  getVitalSigns: async (encounterId) => {
+    return apiCall(`api/v1/encounters/${encounterId}/vitals`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+};
+
 // API Quản lý thuốc và Medication Management
 export const nurseMedicationAPI = {
   // Lấy danh sách thuốc cần cấp phát
@@ -205,22 +239,26 @@ export const nurseMedicationAPI = {
   },
 
   // Từ chối medication (refuse)
-  refuseMedication: async (administrationId, reason) => {
-    return apiCall(`api/v1/inpatient/medications/${administrationId}/refuse?reason=${encodeURIComponent(reason)}`, {
+  refuseMedication: async (administrationId, refusalReason) => {
+    return apiCall(`api/v1/inpatient/medications/${administrationId}/refuse`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${getAccessToken()}`,
+        'Content-Type': 'application/json'
       },
+      body: JSON.stringify({refusalReason}),
     });
   },
 
   // Bỏ lỡ medication (miss)
   missMedication: async (administrationId, reason) => {
-    return apiCall(`api/v1/inpatient/medications/${administrationId}/miss?reason=${encodeURIComponent(reason)}`, {
+    return apiCall(`api/v1/inpatient/medications/${administrationId}/miss`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${getAccessToken()}`,
+        'Content-Type': 'application/json'
       },
+      body: JSON.stringify({ reason }),
     });
   },
 };
@@ -637,6 +675,7 @@ export default {
   nurseDashboardAPI,
   nursePatientCareAPI,
   nurseVitalSignsAPI,
+  nurseEncounterAPI,
   nurseMedicationAPI,
   nurseAdmissionRequestAPI,
   nurseBedAPI,

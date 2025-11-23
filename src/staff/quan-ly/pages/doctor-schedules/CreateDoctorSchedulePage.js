@@ -19,7 +19,7 @@ const CreateDoctorSchedulePage = () => {
         clinicId: '',
         scheduleDate: new Date().toISOString().split('T')[0],
         startTime: '08:00:00',
-        endTime: '17:00:00',
+        endTime: '22:00:00',
         breakStartTime: '',
         breakEndTime: '',
         bufferTimeMinutes: 5,
@@ -162,10 +162,11 @@ const CreateDoctorSchedulePage = () => {
 
             if (response && response.data) {
                 setSuccess('Tạo lịch làm việc bác sĩ thành công!');
+                alert('Tạo thành công lịch làm việc cho bác sĩ');
                 // Chờ 2 giây để hiển thị thông báo trước khi chuyển trang
                 setTimeout(() => {
                     navigate('/staff/admin/doctor-schedules');
-                }, 2000);
+                }, 100);
             }
         } catch (err) {
             console.error('Error creating doctor schedule:', err);

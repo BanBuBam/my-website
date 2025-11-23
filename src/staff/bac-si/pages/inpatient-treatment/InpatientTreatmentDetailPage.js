@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { doctorInpatientTreatmentAPI } from '../../../../services/staff/doctorAPI';
+import { doctorInpatientTreatmentAPI, medicationOrderAPI } from '../../../../services/staff/doctorAPI';
 import {
     FiArrowLeft,
     FiUser,
@@ -11,10 +11,19 @@ import {
     FiTruck,
     FiMove,
     FiLogOut,
-    FiPlusCircle
+    FiPlusCircle,
+    FiPackage,
+    FiEye,
+    FiPause,
+    FiPlay,
+    FiXCircle,
+    FiClock,
+    FiList
 } from 'react-icons/fi';
-import CreateMedicationModal from './CreateMedicationModal';
 import CreateDischargePlanModal from './CreateDischargePlanModal';
+import HoldMedicationModal from './HoldMedicationModal';
+import ResumeMedicationModal from './ResumeMedicationModal';
+import DiscontinueMedicationModal from './DiscontinueMedicationModal';
 import './InpatientTreatmentDetailPage.css';
 
 const InpatientTreatmentDetailPage = () => {
@@ -23,12 +32,24 @@ const InpatientTreatmentDetailPage = () => {
     const [stay, setStay] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [showMedicationModal, setShowMedicationModal] = useState(false);
     const [showDischargePlanModal, setShowDischargePlanModal] = useState(false);
     const [isDischarged, setIsDischarged] = useState(false);
 
+    // Medication Order Groups
+    const [medicationOrderGroups, setMedicationOrderGroups] = useState([]);
+    const [loadingGroups, setLoadingGroups] = useState(false);
+    const [groupsError, setGroupsError] = useState(null);
+    const [expandedGroups, setExpandedGroups] = useState({});
+
+    // Modals for medication actions
+    const [showHoldModal, setShowHoldModal] = useState(false);
+    const [showResumeModal, setShowResumeModal] = useState(false);
+    const [showDiscontinueModal, setShowDiscontinueModal] = useState(false);
+    const [selectedMedication, setSelectedMedication] = useState(null);
+
     useEffect(() => {
         fetchStayDetail();
+        fetchMedicationOrderGroups();
     }, [inpatientStayId]);
 
     const fetchStayDetail = async () => {
@@ -47,29 +68,91 @@ const InpatientTreatmentDetailPage = () => {
         }
     };
 
+    const fetchMedicationOrderGroups = async () => {
+        try {
+            setLoadingGroups(true);
+            setGroupsError(null);
+            const response = await medicationOrderAPI.getMedicationOrderGroupsByInpatientStay(inpatientStayId);
+            if (response && response.data) {
+                setMedicationOrderGroups(response.data);
+            }
+        } catch (err) {
+            console.error('Error loading medication order groups:', err);
+            setGroupsError(err.message || 'Không thể tải danh sách nhóm y lệnh');
+        } finally {
+            setLoadingGroups(false);
+        }
+    };
+
     const formatDate = (dateString) => {
         if (!dateString) return '-';
         const date = new Date(dateString);
         return date.toLocaleDateString('vi-VN');
     };
 
+    const formatDateTime = (dateString) => {
+        if (!dateString) return '-';
+        const date = new Date(dateString);
+        return date.toLocaleString('vi-VN', {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+    };
+
+    const handleDischargePlanSuccess = () => {
+        // Optionally refresh the stay data or show success message
+        alert('Tạo kế hoạch xuất viện thành công!');
+    };
+
+    const toggleGroupExpansion = (groupId) => {
+        setExpandedGroups(prev => ({
+            ...prev,
+            [groupId]: !prev[groupId]
+        }));
+    };
+
+    const handleHoldMedication = (medication) => {
+        setSelectedMedication(medication);
+        setShowHoldModal(true);
+    };
+
+    const handleResumeMedication = (medication) => {
+        setSelectedMedication(medication);
+        setShowResumeModal(true);
+    };
+
+    const handleDiscontinueMedication = (medication) => {
+        setSelectedMedication(medication);
+        setShowDiscontinueModal(true);
+    };
+
+    const handleMedicationActionSuccess = () => {
+        fetchMedicationOrderGroups();
+    };
+
     const getStatusBadgeClass = (status) => {
         const statusMap = {
             'ACTIVE': 'status-active',
+            'PENDING': 'status-pending',
+            'COMPLETED': 'status-completed',
+            'HELD': 'status-held',
+            'DISCONTINUED': 'status-discontinued',
             'DISCHARGED': 'status-discharged',
             'TRANSFERRED': 'status-transferred',
         };
         return statusMap[status] || 'status-default';
     };
 
-    const handleMedicationSuccess = () => {
-        // Optionally refresh the stay data or show success message
-        alert('Tạo lượt thuốc điều trị thành công!');
-    };
-
-    const handleDischargePlanSuccess = () => {
-        // Optionally refresh the stay data or show success message
-        alert('Tạo kế hoạch xuất viện thành công!');
+    const getPriorityBadgeClass = (priority) => {
+        const priorityMap = {
+            'ROUTINE': 'priority-routine',
+            'URGENT': 'priority-urgent',
+            'STAT': 'priority-stat',
+        };
+        return priorityMap[priority] || 'priority-default';
     };
 
     if (loading) {
@@ -226,11 +309,18 @@ const InpatientTreatmentDetailPage = () => {
                 <h2>Thao tác</h2>
                 <div className="action-buttons">
                     <button
-                        className="btn-action btn-medication"
-                        onClick={() => setShowMedicationModal(true)}
+                        className="btn-action btn-medication-group"
+                        onClick={() => navigate(`/staff/bac-si/dieu-tri-noi-tru/${inpatientStayId}/tao-nhom-y-lenh`)}
                     >
                         <FiPlusCircle />
-                        <span>Tạo lượt thuốc điều trị</span>
+                        <span>Tạo nhóm y lệnh</span>
+                    </button>
+                    <button
+                        className="btn-action btn-medication-single"
+                        onClick={() => navigate(`/staff/bac-si/dieu-tri-noi-tru/${inpatientStayId}/tao-y-lenh-le`)}
+                    >
+                        <FiPackage />
+                        <span>Thêm y lệnh lẻ</span>
                     </button>
                     <button className="btn-action btn-transfer-hospital">
                         <FiTruck />
@@ -253,21 +343,178 @@ const InpatientTreatmentDetailPage = () => {
                 </div>
             </div>
 
-            {/* Medication Modal */}
-            <CreateMedicationModal
-                isOpen={showMedicationModal}
-                onClose={() => setShowMedicationModal(false)}
-                inpatientStayId={stay.inpatientStayId}
-                encounterId={stay.encounterId}
-                onSuccess={handleMedicationSuccess}
-            />
+            {/* Medication Order Groups Section */}
+            <div className="medication-groups-section">
+                <div className="section-header">
+                    <h2><FiList /> Danh sách nhóm y lệnh</h2>
+                </div>
 
-            {/* Discharge Plan Modal */}
+                {loadingGroups ? (
+                    <div className="loading-state-inline">
+                        <p>Đang tải danh sách nhóm y lệnh...</p>
+                    </div>
+                ) : groupsError ? (
+                    <div className="error-state-inline">
+                        <FiAlertCircle />
+                        <p>{groupsError}</p>
+                    </div>
+                ) : medicationOrderGroups.length === 0 ? (
+                    <div className="empty-state-inline">
+                        <FiAlertCircle />
+                        <p>Chưa có nhóm y lệnh nào</p>
+                    </div>
+                ) : (
+                    <div className="medication-groups-list">
+                        {medicationOrderGroups.map((group) => (
+                            <div key={group.medicationOrderGroupId} className="medication-group-card">
+                                <div className="group-header">
+                                    <div className="group-info">
+                                        <h3>
+                                            Nhóm y lệnh #{group.medicationOrderGroupId}
+                                            <span className={`status-badge ${getStatusBadgeClass(group.status)}`}>
+                                                {group.status}
+                                            </span>
+                                            <span className={`priority-badge ${getPriorityBadgeClass(group.priority)}`}>
+                                                {group.priority}
+                                            </span>
+                                            {group.isStat && (
+                                                <span className="stat-badge">STAT</span>
+                                            )}
+                                        </h3>
+                                        <div className="group-meta">
+                                            <span><FiClock /> {formatDateTime(group.orderDate)}</span>
+                                            <span><FiUser /> {group.orderedByDoctorName}</span>
+                                            <span><FiPackage /> {group.medicationCount} thuốc</span>
+                                        </div>
+                                    </div>
+                                    <button
+                                        className="btn-expand"
+                                        onClick={() => toggleGroupExpansion(group.medicationOrderGroupId)}
+                                    >
+                                        {expandedGroups[group.medicationOrderGroupId] ? '▼' : '▶'}
+                                    </button>
+                                </div>
+
+                                {group.orderNotes && (
+                                    <div className="group-notes">
+                                        <strong>Ghi chú:</strong> {group.orderNotes}
+                                    </div>
+                                )}
+
+                                {expandedGroups[group.medicationOrderGroupId] && (
+                                    <div className="medications-list">
+                                        <h4>Danh sách thuốc:</h4>
+                                        {group.medications && group.medications.map((medication) => (
+                                            <div key={medication.medicationOrderId} className="medication-item-card">
+                                                <div className="medication-details">
+                                                    <div className="medication-name">
+                                                        <strong>{medication.medicineName}</strong>
+                                                        <span className={`status-badge ${getStatusBadgeClass(medication.status)}`}>
+                                                            {medication.statusDisplay || medication.status}
+                                                        </span>
+                                                    </div>
+                                                    <div className="medication-info-grid">
+                                                        <div className="info-item">
+                                                            <label>Liều lượng:</label>
+                                                            <span>{medication.dosage}</span>
+                                                        </div>
+                                                        <div className="info-item">
+                                                            <label>Đường dùng:</label>
+                                                            <span>{medication.routeDisplay || medication.route}</span>
+                                                        </div>
+                                                        <div className="info-item">
+                                                            <label>Tần suất:</label>
+                                                            <span>{medication.frequency}</span>
+                                                        </div>
+                                                        <div className="info-item">
+                                                            <label>Số lượng:</label>
+                                                            <span>{medication.quantityOrdered}</span>
+                                                        </div>
+                                                        {medication.isPrn && (
+                                                            <div className="info-item">
+                                                                <span className="badge-prn">PRN</span>
+                                                            </div>
+                                                        )}
+                                                        {medication.isStat && (
+                                                            <div className="info-item">
+                                                                <span className="badge-stat">STAT</span>
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                                <div className="medication-actions">
+                                                    <button
+                                                        className="btn-action-small btn-view"
+                                                        onClick={() => alert(`View details for medication ${medication.medicationOrderId}`)}
+                                                        title="Xem chi tiết"
+                                                    >
+                                                        <FiEye />
+                                                    </button>
+                                                    {medication.status !== 'HELD' && medication.status !== 'DISCONTINUED' && (
+                                                        <button
+                                                            className="btn-action-small btn-hold"
+                                                            onClick={() => handleHoldMedication(medication)}
+                                                            title="Tạm dừng"
+                                                        >
+                                                            <FiPause />
+                                                        </button>
+                                                    )}
+                                                    {medication.status === 'HELD' && (
+                                                        <button
+                                                            className="btn-action-small btn-resume"
+                                                            onClick={() => handleResumeMedication(medication)}
+                                                            title="Tiếp tục"
+                                                        >
+                                                            <FiPlay />
+                                                        </button>
+                                                    )}
+                                                    {medication.status !== 'DISCONTINUED' && (
+                                                        <button
+                                                            className="btn-action-small btn-discontinue"
+                                                            onClick={() => handleDiscontinueMedication(medication)}
+                                                            title="Ngừng y lệnh"
+                                                        >
+                                                            <FiXCircle />
+                                                        </button>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                        ))}
+                    </div>
+                )}
+            </div>
+
+            {/* Modals */}
             <CreateDischargePlanModal
                 isOpen={showDischargePlanModal}
                 onClose={() => setShowDischargePlanModal(false)}
                 inpatientStayId={stay.inpatientStayId}
                 onSuccess={handleDischargePlanSuccess}
+            />
+
+            <HoldMedicationModal
+                isOpen={showHoldModal}
+                onClose={() => setShowHoldModal(false)}
+                medicationOrder={selectedMedication}
+                onSuccess={handleMedicationActionSuccess}
+            />
+
+            <ResumeMedicationModal
+                isOpen={showResumeModal}
+                onClose={() => setShowResumeModal(false)}
+                medicationOrder={selectedMedication}
+                onSuccess={handleMedicationActionSuccess}
+            />
+
+            <DiscontinueMedicationModal
+                isOpen={showDiscontinueModal}
+                onClose={() => setShowDiscontinueModal(false)}
+                medicationOrder={selectedMedication}
+                onSuccess={handleMedicationActionSuccess}
             />
         </div>
     );

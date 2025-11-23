@@ -1,0 +1,405 @@
+/* Departments Page */
+.departments-page {
+  background-color: #f0f4f8;
+  min-height: 80vh;
+  padding: 20px;
+}
+
+/* Page Header */
+.departments-page .page-header {
+  background-color: #ffffff;
+  padding: 40px 30px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  margin-bottom: 30px;
+  text-align: center;
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.departments-page .page-header h1 {
+  font-size: 36px;
+  font-weight: 700;
+  color: #2c5282;
+  margin-bottom: 12px;
+}
+
+.departments-page .page-header p {
+  font-size: 18px;
+  color: #666;
+  margin: 0;
+}
+
+/* Stats Section */
+.dept-stats-section {
+  max-width: 1200px;
+  margin: 0 auto 30px;
+  background-color: white;
+  padding: 40px 30px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.dept-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 24px;
+}
+
+.dept-stat-card {
+  text-align: center;
+  padding: 20px;
+  background-color: #f8fafc;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+}
+
+.dept-stat-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+.dept-stat-icon {
+  font-size: 48px;
+  color: #0058a0;
+  margin-bottom: 16px;
+}
+
+.dept-stat-number {
+  font-size: 36px;
+  font-weight: 700;
+  color: #0058a0;
+  margin-bottom: 8px;
+}
+
+.dept-stat-label {
+  font-size: 15px;
+  color: #666;
+  font-weight: 500;
+}
+
+/* Filter Section */
+.filter-section {
+  max-width: 1200px;
+  margin: 0 auto 30px;
+  background-color: white;
+  padding: 24px 30px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.filter-tabs {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.filter-tab {
+  padding: 10px 20px;
+  border: 2px solid #e2e8f0;
+  background-color: white;
+  color: #4a5568;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.filter-tab:hover {
+  border-color: #0058a0;
+  color: #0058a0;
+}
+
+.filter-tab.active {
+  background-color: #0058a0;
+  color: white;
+  border-color: #0058a0;
+}
+
+/* Departments Grid */
+.departments-grid-section {
+  max-width: 1200px;
+  margin: 0 auto 40px;
+}
+
+.departments-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 24px;
+}
+
+.department-card {
+  background-color: white;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.department-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+}
+
+.department-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.department-icon-wrapper {
+  width: 60px;
+  height: 60px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  flex-shrink: 0;
+}
+
+.department-card h3 {
+  font-size: 22px;
+  font-weight: 600;
+  color: #2c5282;
+  margin: 0;
+}
+
+.department-description {
+  font-size: 15px;
+  color: #666;
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+
+.department-services {
+  margin-bottom: 20px;
+  flex: 1;
+}
+
+.department-services h4 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #4a5568;
+  margin-bottom: 12px;
+}
+
+.department-services ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.department-services li {
+  padding: 8px 0 8px 24px;
+  position: relative;
+  font-size: 14px;
+  color: #4a5568;
+  line-height: 1.5;
+}
+
+.department-services li::before {
+  content: '•';
+  position: absolute;
+  left: 8px;
+  color: #0058a0;
+  font-weight: 700;
+  font-size: 18px;
+}
+
+.department-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 20px;
+  border-top: 1px solid #e2e8f0;
+}
+
+.department-doctors {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #666;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.department-doctors svg {
+  font-size: 18px;
+  color: #0058a0;
+}
+
+.btn-book {
+  padding: 10px 20px;
+  background-color: #8dc63f;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-book:hover {
+  background-color: #7ab52f;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(141, 198, 63, 0.3);
+}
+
+/* CTA Section */
+.dept-cta-section {
+  max-width: 1200px;
+  margin: 0 auto;
+  background: linear-gradient(135deg, #0058a0 0%, #003d70 100%);
+  color: white;
+  padding: 60px 30px;
+  border-radius: 12px;
+  text-align: center;
+}
+
+.dept-cta-content h2 {
+  font-size: 32px;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+.dept-cta-content p {
+  font-size: 18px;
+  margin-bottom: 30px;
+  opacity: 0.9;
+}
+
+.dept-cta-actions {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.dept-cta-actions .btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 32px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 16px;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+}
+
+.dept-cta-actions .btn-primary {
+  background-color: #8dc63f;
+  color: white;
+}
+
+.dept-cta-actions .btn-primary:hover {
+  background-color: #7ab52f;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(141, 198, 63, 0.3);
+}
+
+.dept-cta-actions .btn-secondary {
+  background-color: white;
+  color: #0058a0;
+}
+
+.dept-cta-actions .btn-secondary:hover {
+  background-color: #f0f4f8;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .departments-page .page-header {
+    padding: 30px 20px;
+  }
+
+  .departments-page .page-header h1 {
+    font-size: 28px;
+  }
+
+  .dept-stats-section,
+  .filter-section,
+  .dept-cta-section {
+    padding: 30px 20px;
+  }
+
+  .dept-stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .filter-tabs {
+    justify-content: flex-start;
+  }
+
+  .departments-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .dept-cta-content h2 {
+    font-size: 26px;
+  }
+
+  .dept-cta-actions {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .dept-cta-actions .btn {
+    width: 100%;
+    max-width: 300px;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .departments-page {
+    padding: 10px;
+  }
+
+  .departments-page .page-header h1 {
+    font-size: 24px;
+  }
+
+  .dept-stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .dept-stat-icon {
+    font-size: 36px;
+  }
+
+  .dept-stat-number {
+    font-size: 28px;
+  }
+
+  .filter-tab {
+    font-size: 13px;
+    padding: 8px 16px;
+  }
+
+  .department-card {
+    padding: 24px 20px;
+  }
+
+  .department-footer {
+    flex-direction: column;
+    gap: 12px;
+    align-items: stretch;
+  }
+
+  .btn-book {
+    width: 100%;
+  }
+}
+

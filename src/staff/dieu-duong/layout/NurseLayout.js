@@ -15,7 +15,8 @@ import {
     FiTrendingUp,
     FiEdit3,
     FiPackage,
-    FiBarChart2
+    FiBarChart2,
+    FiThermometer
 } from 'react-icons/fi';
 import StaffAvatarDropdown from '../../components/StaffAvatarDropdown';
 
@@ -113,9 +114,9 @@ const NurseLayout = () => {
                                 </NavLink>
                             </li>
                             <li>
-                                <NavLink to="/staff/dieu-duong/theo-doi-sinh-hieu">
-                                    <FiActivity />
-                                    <span>///Theo dõi sinh hiệu</span>
+                                <NavLink to="/staff/dieu-duong/vital-signs">
+                                    <FiThermometer />
+                                    <span>Quản lý dấu hiệu sinh tồn</span>
                                 </NavLink>
                             </li>
                             <li>
