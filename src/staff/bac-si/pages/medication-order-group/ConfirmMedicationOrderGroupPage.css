@@ -1,0 +1,438 @@
+/* Confirm Medication Order Group Page */
+.confirm-medication-order-group-page {
+    padding: 24px;
+    background: #f9fafb;
+    min-height: 100vh;
+}
+
+/* Page Header */
+.confirm-medication-order-group-page .page-header {
+    background: white;
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 24px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.confirm-medication-order-group-page .btn-back-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background: #f3f4f6;
+    border: none;
+    border-radius: 8px;
+    color: #374151;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-bottom: 16px;
+}
+
+.confirm-medication-order-group-page .btn-back-header:hover {
+    background: #e5e7eb;
+    color: #111827;
+}
+
+.confirm-medication-order-group-page .header-title {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.confirm-medication-order-group-page .page-icon {
+    font-size: 40px;
+    color: #10b981;
+}
+
+.confirm-medication-order-group-page .header-title h1 {
+    margin: 0 0 8px 0;
+    font-size: 28px;
+    color: #111827;
+}
+
+.confirm-medication-order-group-page .header-title p {
+    margin: 0;
+    font-size: 14px;
+    color: #6b7280;
+}
+
+/* Input Section */
+.confirm-medication-order-group-page .input-section {
+    background: white;
+    border-radius: 12px;
+    padding: 32px;
+    margin-bottom: 24px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.confirm-medication-order-group-page .form-group {
+    margin-bottom: 0;
+}
+
+.confirm-medication-order-group-page .form-group label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 12px;
+}
+
+.confirm-medication-order-group-page .form-group label svg {
+    color: #10b981;
+    font-size: 20px;
+}
+
+.confirm-medication-order-group-page .input-wrapper {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+.confirm-medication-order-group-page .input-wrapper input {
+    flex: 1;
+    padding: 14px 16px;
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    font-size: 16px;
+    transition: all 0.3s ease;
+}
+
+.confirm-medication-order-group-page .input-wrapper input:focus {
+    outline: none;
+    border-color: #10b981;
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+}
+
+.confirm-medication-order-group-page .input-wrapper input:disabled {
+    background: #f3f4f6;
+    cursor: not-allowed;
+}
+
+.confirm-medication-order-group-page .btn-confirm,
+.confirm-medication-order-group-page .btn-reset {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 24px;
+    border: none;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+}
+
+.confirm-medication-order-group-page .btn-confirm {
+    background: #10b981;
+    color: white;
+}
+
+.confirm-medication-order-group-page .btn-confirm:hover:not(:disabled) {
+    background: #059669;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.confirm-medication-order-group-page .btn-confirm:disabled {
+    background: #d1d5db;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.confirm-medication-order-group-page .btn-reset {
+    background: #6b7280;
+    color: white;
+}
+
+.confirm-medication-order-group-page .btn-reset:hover {
+    background: #4b5563;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(107, 114, 128, 0.3);
+}
+
+.confirm-medication-order-group-page .spinning {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Messages */
+.confirm-medication-order-group-page .error-message,
+.confirm-medication-order-group-page .success-message {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px;
+    border-radius: 8px;
+    margin-top: 16px;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.confirm-medication-order-group-page .error-message {
+    background: #fef2f2;
+    color: #991b1b;
+    border: 2px solid #fecaca;
+}
+
+.confirm-medication-order-group-page .error-message svg {
+    font-size: 20px;
+    flex-shrink: 0;
+}
+
+.confirm-medication-order-group-page .success-message {
+    background: #f0fdf4;
+    color: #065f46;
+    border: 2px solid #bbf7d0;
+}
+
+.confirm-medication-order-group-page .success-message svg {
+    font-size: 20px;
+    flex-shrink: 0;
+}
+
+/* Confirmed Group Details */
+.confirm-medication-order-group-page .confirmed-group-details {
+    background: white;
+    border-radius: 12px;
+    padding: 32px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.confirm-medication-order-group-page .confirmed-group-details > h2 {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 0 0 24px 0;
+    font-size: 22px;
+    color: #111827;
+    padding-bottom: 16px;
+    border-bottom: 2px solid #e5e7eb;
+}
+
+.confirm-medication-order-group-page .confirmed-group-details > h2 svg {
+    color: #10b981;
+    font-size: 28px;
+}
+
+/* Info Section */
+.confirm-medication-order-group-page .info-section {
+    margin-bottom: 24px;
+    padding: 20px;
+    background: #f9fafb;
+    border-radius: 8px;
+}
+
+.confirm-medication-order-group-page .info-section:last-child {
+    margin-bottom: 0;
+}
+
+.confirm-medication-order-group-page .info-section h3 {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0 0 16px 0;
+    font-size: 18px;
+    color: #374151;
+}
+
+.confirm-medication-order-group-page .info-section h3 svg {
+    color: #10b981;
+}
+
+.confirm-medication-order-group-page .info-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+}
+
+.confirm-medication-order-group-page .info-item {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.confirm-medication-order-group-page .info-item label {
+    font-size: 13px;
+    color: #6b7280;
+    font-weight: 600;
+}
+
+.confirm-medication-order-group-page .info-item span {
+    font-size: 15px;
+    color: #111827;
+}
+
+.confirm-medication-order-group-page .info-item .highlight {
+    color: #10b981;
+    font-weight: 700;
+    font-size: 18px;
+}
+
+/* Notes Box */
+.confirm-medication-order-group-page .notes-box {
+    margin-top: 16px;
+    padding: 16px;
+    background: white;
+    border-left: 4px solid #10b981;
+    border-radius: 6px;
+}
+
+.confirm-medication-order-group-page .notes-box label {
+    display: block;
+    font-size: 13px;
+    color: #6b7280;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.confirm-medication-order-group-page .notes-box p {
+    margin: 0;
+    font-size: 14px;
+    color: #374151;
+    font-style: italic;
+}
+
+/* Status and Priority Badges */
+.confirm-medication-order-group-page .status-badge,
+.confirm-medication-order-group-page .priority-badge {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.confirm-medication-order-group-page .status-pending {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.confirm-medication-order-group-page .status-verified {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.confirm-medication-order-group-page .status-prepared {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+.confirm-medication-order-group-page .status-dispensed {
+    background: #e0e7ff;
+    color: #3730a3;
+}
+
+.confirm-medication-order-group-page .status-active {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.confirm-medication-order-group-page .status-completed {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+.confirm-medication-order-group-page .priority-routine {
+    background: #e0e7ff;
+    color: #3730a3;
+}
+
+.confirm-medication-order-group-page .priority-urgent {
+    background: #fed7aa;
+    color: #9a3412;
+}
+
+.confirm-medication-order-group-page .priority-stat {
+    background: #fecaca;
+    color: #991b1b;
+}
+
+/* Medications Table */
+.confirm-medication-order-group-page .medications-table-container {
+    overflow-x: auto;
+    margin-top: 16px;
+    background: white;
+    border-radius: 8px;
+}
+
+.confirm-medication-order-group-page .medications-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+}
+
+.confirm-medication-order-group-page .medications-table thead {
+    background: #f9fafb;
+}
+
+.confirm-medication-order-group-page .medications-table th {
+    padding: 12px;
+    text-align: left;
+    font-weight: 600;
+    color: #374151;
+    border-bottom: 2px solid #e5e7eb;
+    white-space: nowrap;
+}
+
+.confirm-medication-order-group-page .medications-table td {
+    padding: 12px;
+    border-bottom: 1px solid #e5e7eb;
+    color: #111827;
+}
+
+.confirm-medication-order-group-page .medications-table tbody tr:hover {
+    background: #f9fafb;
+}
+
+.confirm-medication-order-group-page .special-instructions {
+    font-size: 12px;
+    color: #6b7280;
+    font-style: italic;
+    margin-top: 4px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .confirm-medication-order-group-page {
+        padding: 16px;
+    }
+
+    .confirm-medication-order-group-page .input-wrapper {
+        flex-direction: column;
+    }
+
+    .confirm-medication-order-group-page .btn-confirm,
+    .confirm-medication-order-group-page .btn-reset {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .confirm-medication-order-group-page .info-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .confirm-medication-order-group-page .medications-table {
+        font-size: 12px;
+    }
+
+    .confirm-medication-order-group-page .medications-table th,
+    .confirm-medication-order-group-page .medications-table td {
+        padding: 8px;
+    }
+}
+
+

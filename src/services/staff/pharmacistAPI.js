@@ -226,14 +226,14 @@ export const pharmacistPrescriptionAPI = {
   },
 
   // Lấy danh sách đơn thuốc đã cấp phát (DISPENSED)
-  getDispensedPrescriptions: async (page = 0, size = 20) => {
-    return apiCall(`api/v1/prescriptions/status/DISPENSED?page=${page}&size=${size}`, {
-      method: 'GET',
-      headers: {
-        'Authorization': `Bearer ${getAccessToken()}`,
-      },
-    });
-  },
+  // getDispensedPrescriptions: async (page = 0, size = 20) => {
+  //   return apiCall(`api/v1/prescriptions/status/DISPENSED?page=${page}&size=${size}`, {
+  //     method: 'GET',
+  //     headers: {
+  //       'Authorization': `Bearer ${getAccessToken()}`,
+  //     },
+  //   });
+  // },
 
   // Lấy chi tiết đơn thuốc
   getPrescriptionDetail: async (prescriptionId) => {
@@ -440,6 +440,11 @@ export const pharmacistCabinetAPI = {
   // Lấy thông tin tủ theo ID (Get Cabinet by ID)
   getCabinetById: async (cabinetId) => {
     return apiCall(`api/v1/cabinet-management/${cabinetId}`, {
+// API Medication Order Groups
+export const medicationOrderGroupAPI = {
+  // Lấy danh sách nhóm y lệnh chờ xác minh
+  getPendingVerificationGroups: async () => {
+    return apiCall('api/v1/medication-order-groups/pending-verification', {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${getAccessToken()}`,
@@ -450,6 +455,9 @@ export const pharmacistCabinetAPI = {
   // Lấy tất cả tủ với phân trang (Get All Cabinets)
   getAllCabinets: async (page = 0, size = 20) => {
     return apiCall(`api/v1/cabinet-management?page=${page}&size=${size}`, {
+  // Lấy chi tiết nhóm y lệnh
+  getGroupDetail: async (groupId) => {
+    return apiCall(`api/v1/medication-order-groups/${groupId}`, {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${getAccessToken()}`,
@@ -565,6 +573,20 @@ export const pharmacistCabinetAPI = {
     if (notes) url += `&notes=${encodeURIComponent(notes)}`;
 
     return apiCall(url, {
+  // Phê duyệt nhóm y lệnh
+  verifyMedicationOrderGroup: async (groupId, notes) => {
+    return apiCall(`api/v1/medication-order-groups/${groupId}/verify`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+      body: JSON.stringify({ notes }),
+    });
+  },
+
+  // Từ chối/Hủy nhóm y lệnh
+  cancelMedicationOrderGroup: async (groupId, reason) => {
+    return apiCall(`api/v1/medication-order-groups/${groupId}/cancel`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${getAccessToken()}`,
@@ -680,6 +702,41 @@ export const pharmacistInventoryMovementAPI = {
   // API: POST /inventory-movements/{movementId}/reverse
   reverseMovement: async (movementId) => {
     return apiCall(`api/v1/inventory-movements/${movementId}/reverse`, {
+      body: JSON.stringify({ reason }),
+    });
+  },
+
+  // Chuẩn bị nhóm y lệnh
+  prepareMedicationOrderGroup: async (groupId, notes) => {
+    return apiCall(`api/v1/medication-order-groups/${groupId}/prepare`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+      body: JSON.stringify({ notes }),
+    });
+  },
+
+  // Tạm dừng nhóm y lệnh
+  discontinueMedicationOrderGroup: async (groupId, reason) => {
+    return apiCall(`api/v1/medication-order-groups/${groupId}/discontinue`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+      body: JSON.stringify({ reason }),
+    });
+  },
+
+  // Xuất kho nhóm y lệnh
+  dispenseMedicationOrderGroup: async (groupId, nurseId, notes) => {
+    const params = new URLSearchParams();
+    params.append('nurseId', nurseId);
+    if (notes) {
+      params.append('notes', notes);
+    }
+
+    return apiCall(`api/v1/medication-order-groups/${groupId}/dispense?${params.toString()}`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${getAccessToken()}`,
@@ -896,6 +953,8 @@ export const pharmacistInventoryMovementAPI = {
 
 
 
+};
+
 export default {
   pharmacistAuthAPI,
   pharmacistDashboardAPI,
@@ -911,5 +970,6 @@ export default {
   pharmacistEmployeeAPI,
   pharmacistPatientAPI,
   pharmacistInventoryMovementAPI,
+  medicationOrderGroupAPI,
 };
 

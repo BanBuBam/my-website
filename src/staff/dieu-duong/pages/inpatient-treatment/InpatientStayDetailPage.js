@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { nurseInpatientStayAPI } from '../../../../services/staff/nurseAPI';
-import { 
+import {
     FiArrowLeft, FiAlertCircle, FiUser, FiCalendar,
-    FiActivity, FiFileText, FiClipboard, FiPackage 
+    FiActivity, FiFileText, FiClipboard, FiPackage
 } from 'react-icons/fi';
 import './InpatientStayDetailPage.css';
 
@@ -11,7 +11,7 @@ const InpatientStayDetailPage = () => {
     const [stay, setStay] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    
+
     const { stayId } = useParams();
     const navigate = useNavigate();
     
@@ -147,8 +147,7 @@ const InpatientStayDetailPage = () => {
                 <button className="btn-action btn-medication"
                         onClick={() => navigate(`/staff/dieu-duong/dieu-tri-noi-tru/${stayId}/medications`)}
                 >
-                    {/*<FiPackage /> Xem Medication*/}
-                    <FiActivity /> Xem Medication
+                    <FiPackage /> Xem Medication
                 </button>
                 <button className="btn-action btn-safety-assessment"
                         onClick={() => navigate(`/staff/dieu-duong/dieu-tri-noi-tru/${stayId}/safety-assessments`)}

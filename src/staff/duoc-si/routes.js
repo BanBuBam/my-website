@@ -16,6 +16,8 @@ import ExpiryManagementPage from "./pages/han-su-dung/ExpiryManagementPage";
 import MedicineManagementPage from "./pages/thuoc/MedicineManagementPage";
 import CabinetManagementPage from "./pages/tu-thuoc/CabinetManagementPage";
 import CabinetInventoryPage from "./pages/tu-thuoc/CabinetInventoryPage";
+import MedicationOrderGroupsListPage from "./pages/medication-order-groups/MedicationOrderGroupsListPage";
+import MedicationOrderGroupDetailPage from "./pages/medication-order-groups/MedicationOrderGroupDetailPage";
 
 const PharmacistRoutes = () => {
     return (
@@ -38,6 +40,8 @@ const PharmacistRoutes = () => {
                 <Route path="tu-thuoc" element={<CabinetManagementPage />} />
                 <Route path="ton-kho-tu-thuoc" element={<CabinetInventoryPage />} />
                 <Route path="bien-dong-kho" element={<InventoryTransactionsPage />} />
+                <Route path="danh-sach-y-lenh-theo-nhom" element={<MedicationOrderGroupsListPage />} />
+                <Route path="danh-sach-y-lenh-theo-nhom/:groupId" element={<MedicationOrderGroupDetailPage />} />
                 <Route path="inventory" element={<div>Trang Quản lý Kho thuốc</div>} />
                 <Route path="prescriptions" element={<div>Trang Quản lý Đơn thuốc</div>} />
                 <Route path="reports" element={<div>Trang Báo cáo</div>} />

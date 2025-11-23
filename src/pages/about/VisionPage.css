@@ -1,0 +1,395 @@
+/* Vision Page */
+.vision-page {
+  background-color: #f0f4f8;
+  min-height: 80vh;
+  padding: 20px;
+}
+
+/* Page Header */
+.vision-page .page-header {
+  background-color: #ffffff;
+  padding: 40px 30px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  margin-bottom: 30px;
+  text-align: center;
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.vision-page .page-header h1 {
+  font-size: 36px;
+  font-weight: 700;
+  color: #2c5282;
+  margin-bottom: 12px;
+}
+
+.vision-page .page-header p {
+  font-size: 18px;
+  color: #666;
+  margin: 0;
+}
+
+/* Sections */
+.vision-page section {
+  max-width: 1200px;
+  margin: 0 auto 40px;
+  background-color: white;
+  padding: 40px 30px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.vision-page section h2 {
+  font-size: 28px;
+  font-weight: 700;
+  color: #2c5282;
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+/* Vision Statement */
+.vision-statement {
+  background: linear-gradient(135deg, #0058a0 0%, #003d70 100%);
+  color: white;
+}
+
+.vision-hero {
+  text-align: center;
+  padding: 20px;
+}
+
+.vision-hero-icon {
+  font-size: 80px;
+  color: #8dc63f;
+  margin-bottom: 24px;
+}
+
+.vision-hero h2 {
+  color: white;
+  font-size: 32px;
+  margin-bottom: 24px;
+}
+
+.vision-text {
+  font-size: 20px;
+  line-height: 1.8;
+  max-width: 800px;
+  margin: 0 auto;
+  font-style: italic;
+  opacity: 0.95;
+}
+
+/* Vision Points */
+.vision-points-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 24px;
+}
+
+.vision-point-card {
+  background-color: #f8fafc;
+  padding: 30px 24px;
+  border-radius: 12px;
+  text-align: center;
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+}
+
+.vision-point-card:hover {
+  border-color: #0058a0;
+  background-color: white;
+  box-shadow: 0 8px 20px rgba(0, 88, 160, 0.1);
+  transform: translateY(-5px);
+}
+
+.vision-point-icon {
+  font-size: 48px;
+  color: #0058a0;
+  margin-bottom: 16px;
+}
+
+.vision-point-card h3 {
+  font-size: 20px;
+  font-weight: 600;
+  color: #2c5282;
+  margin-bottom: 12px;
+}
+
+.vision-point-card p {
+  font-size: 15px;
+  color: #666;
+  line-height: 1.6;
+}
+
+/* Strategic Goals */
+.goals-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 30px;
+}
+
+.goal-card {
+  background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
+  padding: 30px;
+  border-radius: 12px;
+  border-left: 5px solid #0058a0;
+  transition: all 0.3s ease;
+}
+
+.goal-card:hover {
+  box-shadow: 0 8px 20px rgba(0, 88, 160, 0.15);
+  transform: translateX(5px);
+}
+
+.goal-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.goal-icon {
+  font-size: 40px;
+  color: #0058a0;
+}
+
+.goal-card h3 {
+  font-size: 22px;
+  font-weight: 600;
+  color: #2c5282;
+  margin: 0;
+}
+
+.goal-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.goal-list li {
+  padding: 12px 0 12px 32px;
+  position: relative;
+  font-size: 16px;
+  color: #4a5568;
+  line-height: 1.6;
+}
+
+.goal-list li::before {
+  content: '✓';
+  position: absolute;
+  left: 0;
+  color: #8dc63f;
+  font-weight: 700;
+  font-size: 18px;
+}
+
+/* Core Values */
+.core-values-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 24px;
+}
+
+.core-value-card {
+  background-color: #f8fafc;
+  padding: 30px 24px;
+  border-radius: 12px;
+  text-align: center;
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+}
+
+.core-value-card:hover {
+  border-color: #8dc63f;
+  background-color: white;
+  box-shadow: 0 8px 20px rgba(141, 198, 63, 0.15);
+  transform: translateY(-5px);
+}
+
+.core-value-icon {
+  font-size: 48px;
+  color: #8dc63f;
+  margin-bottom: 16px;
+}
+
+.core-value-card h3 {
+  font-size: 20px;
+  font-weight: 600;
+  color: #2c5282;
+  margin-bottom: 12px;
+}
+
+.core-value-card p {
+  font-size: 15px;
+  color: #666;
+  line-height: 1.6;
+}
+
+/* Mission Statement */
+.mission-statement {
+  background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
+}
+
+.mission-content {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.mission-text p {
+  font-size: 16px;
+  line-height: 1.8;
+  color: #4a5568;
+  margin-bottom: 24px;
+}
+
+.mission-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.mission-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 16px 20px;
+  margin-bottom: 12px;
+  background-color: white;
+  border-radius: 8px;
+  border-left: 4px solid #0058a0;
+  transition: all 0.3s ease;
+}
+
+.mission-list li:hover {
+  transform: translateX(8px);
+  box-shadow: 0 4px 12px rgba(0, 88, 160, 0.1);
+}
+
+.mission-list li svg {
+  font-size: 24px;
+  color: #0058a0;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.mission-list li span {
+  font-size: 16px;
+  color: #4a5568;
+  line-height: 1.6;
+}
+
+/* Commitment Section */
+.commitment-content p {
+  font-size: 16px;
+  line-height: 1.8;
+  color: #4a5568;
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+.commitment-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 24px;
+  margin-top: 30px;
+}
+
+.commitment-item {
+  background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
+  padding: 30px 24px;
+  border-radius: 12px;
+  text-align: center;
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+}
+
+.commitment-item:hover {
+  border-color: #0058a0;
+  box-shadow: 0 8px 20px rgba(0, 88, 160, 0.1);
+  transform: translateY(-5px);
+}
+
+.commitment-number {
+  font-size: 48px;
+  font-weight: 700;
+  color: #0058a0;
+  opacity: 0.2;
+  margin-bottom: 16px;
+}
+
+.commitment-item h4 {
+  font-size: 20px;
+  font-weight: 600;
+  color: #2c5282;
+  margin-bottom: 12px;
+}
+
+.commitment-item p {
+  font-size: 15px;
+  color: #666;
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .vision-page .page-header {
+    padding: 30px 20px;
+  }
+
+  .vision-page .page-header h1 {
+    font-size: 28px;
+  }
+
+  .vision-page section {
+    padding: 30px 20px;
+  }
+
+  .vision-page section h2 {
+    font-size: 24px;
+  }
+
+  .vision-hero-icon {
+    font-size: 60px;
+  }
+
+  .vision-hero h2 {
+    font-size: 26px;
+  }
+
+  .vision-text {
+    font-size: 18px;
+  }
+
+  .vision-points-grid,
+  .goals-grid,
+  .core-values-grid,
+  .commitment-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .vision-page {
+    padding: 10px;
+  }
+
+  .vision-page .page-header h1 {
+    font-size: 24px;
+  }
+
+  .vision-page section h2 {
+    font-size: 20px;
+  }
+
+  .vision-hero-icon {
+    font-size: 50px;
+  }
+
+  .vision-text {
+    font-size: 16px;
+  }
+}
+

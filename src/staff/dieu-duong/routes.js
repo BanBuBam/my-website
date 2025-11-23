@@ -17,6 +17,7 @@ import DischargePlanningPage from './pages/inpatient-treatment/DischargePlanning
 import MedicationManagementPage from './pages/medication/MedicationManagementPage';
 import MedicationInpatientPage from "./pages/medication/MedicationInpatientPage";
 import SafetyAssessmentInpatientPage from "./pages/safety-assessment/SafetyAssessmentInpatientPage";
+import VitalSignsPage from './pages/vitalsigns/VitalSignsPage';
 
 const NurseRoutes = () => {
     return (
@@ -39,6 +40,7 @@ const NurseRoutes = () => {
                 <Route path="cham-soc" element={<PatientCarePage />} />
                 <Route path="chuyen-giuong" element={<BedTransferPage />} />
                 <Route path="y-lenh" element={<OrdersPage />} />
+                <Route path="vital-signs" element={<VitalSignsPage />} />
             </Route>
         </Routes>
     );

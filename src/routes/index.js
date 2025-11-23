@@ -21,6 +21,19 @@ import TrangThaiDatLich from '../pages/dat-lich-kham/trang-thai/TrangThaiDatLich
 import DatLichKhamPage from '../pages/dat-lich-kham/dat-lich/DatLichKhamPage';
 import BookAppointment from '../pages/BookAppointment/BookAppointment';
 
+// About pages
+import AboutUsPage from '../pages/about/AboutUsPage';
+import VisionPage from '../pages/about/VisionPage';
+
+// Departments page
+import DepartmentsPage from '../pages/departments/DepartmentsPage';
+
+// Support page
+import CustomerSupportPage from '../pages/support/CustomerSupportPage';
+
+// News page
+import NewsEventsPage from '../pages/news/NewsEventsPage';
+
 // Bộ định tuyến của nhân viên
 import StaffRoutes from '../staff/routes';
 
@@ -45,6 +58,19 @@ const AppRoutes = () => {
         <Route path="/trang-thai-dat-lich" element={<TrangThaiDatLich />} />
         <Route path="/dat-lich-kham-page" element={<DatLichKhamPage />} />
         <Route path="/dat-lich-kham" element={<BookAppointment />} />
+
+        {/* About pages */}
+        <Route path="/gioi-thieu/ve-chung-toi" element={<AboutUsPage />} />
+        <Route path="/gioi-thieu/tam-nhin" element={<VisionPage />} />
+
+        {/* Departments page */}
+        <Route path="/chuyen-khoa" element={<DepartmentsPage />} />
+
+        {/* Support page */}
+        <Route path="/ho-tro" element={<CustomerSupportPage />} />
+
+        {/* News page */}
+        <Route path="/tin-tuc" element={<NewsEventsPage />} />
       </Route>
 
       {/* --- CÁC ROUTE TÁCH BIỆT (KHÔNG CÓ HEADER/FOOTER) --- */}

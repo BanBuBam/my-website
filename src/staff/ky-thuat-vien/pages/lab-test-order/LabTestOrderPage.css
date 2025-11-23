@@ -32,6 +32,48 @@
     font-size: 14px;
 }
 
+/* Tabs Section */
+.lab-test-order-page .tabs-section {
+    background: white;
+    padding: 20px 24px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 24px;
+}
+
+.lab-test-order-page .tabs {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.lab-test-order-page .tab {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background: transparent;
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    color: #6b7280;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.lab-test-order-page .tab:hover {
+    background: #f3f4f6;
+    color: #3b82f6;
+    border-color: #3b82f6;
+}
+
+.lab-test-order-page .tab.active {
+    background: #3b82f6;
+    color: white;
+    border-color: #3b82f6;
+}
+
 /* Search Section */
 .lab-test-order-page .search-section {
     background: white;
@@ -451,8 +493,231 @@
     font-size: 18px;
 }
 
+/* Pending Tests Grid (Tab 1) */
+.lab-test-order-page .pending-tests-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+    gap: 20px;
+}
+
+.lab-test-order-page .test-card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.lab-test-order-page .test-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+.lab-test-order-page .test-header {
+    padding: 16px 20px;
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    border-bottom: 1px solid #e5e7eb;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.lab-test-order-page .test-name {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 16px;
+    font-weight: 600;
+    color: #1a1a1a;
+}
+
+.lab-test-order-page .test-name svg {
+    color: #3b82f6;
+    font-size: 20px;
+}
+
+.lab-test-order-page .test-id {
+    font-size: 12px;
+    color: #6b7280;
+    background: #f3f4f6;
+    padding: 4px 12px;
+    border-radius: 12px;
+}
+
+.lab-test-order-page .test-body {
+    padding: 20px;
+}
+
+.lab-test-order-page .test-info {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+}
+
+.lab-test-order-page .test-info .info-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.lab-test-order-page .test-info .label {
+    font-size: 12px;
+    color: #6b7280;
+    font-weight: 500;
+}
+
+.lab-test-order-page .test-info .value {
+    font-size: 14px;
+    color: #1a1a1a;
+    font-weight: 500;
+}
+
+.lab-test-order-page .test-footer {
+    padding: 16px 20px;
+    background: #f9fafb;
+    border-top: 1px solid #e5e7eb;
+    display: flex;
+    gap: 12px;
+}
+
+.lab-test-order-page .btn-enter-result {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    color: white;
+}
+
+.lab-test-order-page .btn-enter-result:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+/* Verification Tests Grid (Tab 3) */
+.lab-test-order-page .verification-tests-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(450px, 1fr));
+    gap: 20px;
+}
+
+.lab-test-order-page .verification-card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.lab-test-order-page .verification-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+.lab-test-order-page .verification-header {
+    padding: 16px 20px;
+    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+    border-bottom: 1px solid #fbbf24;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.lab-test-order-page .verification-body {
+    padding: 20px;
+}
+
+.lab-test-order-page .result-display {
+    background: #f0f9ff;
+    border: 2px solid #3b82f6;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 16px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+}
+
+.lab-test-order-page .result-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.lab-test-order-page .result-item.highlight {
+    grid-column: 1 / -1;
+}
+
+.lab-test-order-page .result-value {
+    font-size: 18px;
+    font-weight: 700;
+    color: #3b82f6;
+}
+
+.lab-test-order-page .test-notes {
+    margin-top: 12px;
+    padding: 12px;
+    background: #fef3c7;
+    border-left: 4px solid #f59e0b;
+    border-radius: 4px;
+    font-size: 14px;
+    color: #92400e;
+}
+
+.lab-test-order-page .verification-footer {
+    padding: 16px 20px;
+    background: #f9fafb;
+    border-top: 1px solid #e5e7eb;
+    display: flex;
+    gap: 12px;
+}
+
+.lab-test-order-page .btn-verify {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: white;
+}
+
+.lab-test-order-page .btn-verify:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+/* Results Section */
+.lab-test-order-page .results-section {
+    background: white;
+    padding: 24px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.lab-test-order-page .no-data {
+    text-align: center;
+    padding: 60px 20px;
+    color: #9ca3af;
+}
+
+.lab-test-order-page .no-data svg {
+    font-size: 64px;
+    margin-bottom: 16px;
+    opacity: 0.5;
+}
+
+.lab-test-order-page .no-data p {
+    font-size: 16px;
+    margin: 0;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
+    .lab-test-order-page {
+        padding: 16px;
+    }
+
+    .lab-test-order-page .tabs {
+        flex-direction: column;
+    }
+
+    .lab-test-order-page .tab {
+        width: 100%;
+        justify-content: center;
+    }
+
     .lab-test-order-page .search-form {
         flex-direction: column;
     }
@@ -483,6 +748,19 @@
 
     .lab-test-order-page .btn-action {
         width: 100%;
+    }
+
+    .lab-test-order-page .pending-tests-grid,
+    .lab-test-order-page .verification-tests-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .lab-test-order-page .test-info {
+        grid-template-columns: 1fr;
+    }
+
+    .lab-test-order-page .result-display {
+        grid-template-columns: 1fr;
     }
 }
 

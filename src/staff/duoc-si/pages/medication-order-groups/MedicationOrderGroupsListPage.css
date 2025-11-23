@@ -1,0 +1,344 @@
+/* Medication Order Groups List Page */
+.medication-order-groups-list-page {
+    padding: 24px;
+    background: #f9fafb;
+    min-height: 100vh;
+}
+
+/* Page Header */
+.medication-order-groups-list-page .page-header {
+    background: white;
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 24px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.medication-order-groups-list-page .header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.medication-order-groups-list-page .title-section {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.medication-order-groups-list-page .page-icon {
+    font-size: 40px;
+    color: #3b82f6;
+}
+
+.medication-order-groups-list-page .title-section h1 {
+    margin: 0 0 8px 0;
+    font-size: 28px;
+    color: #111827;
+}
+
+.medication-order-groups-list-page .title-section p {
+    margin: 0;
+    font-size: 14px;
+    color: #6b7280;
+}
+
+/* Loading State */
+.medication-order-groups-list-page .loading-state {
+    background: white;
+    border-radius: 12px;
+    padding: 60px;
+    text-align: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.medication-order-groups-list-page .loading-state p {
+    color: #6b7280;
+    font-size: 16px;
+}
+
+/* Error State */
+.medication-order-groups-list-page .error-state {
+    background: white;
+    border-radius: 12px;
+    padding: 60px;
+    text-align: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+}
+
+.medication-order-groups-list-page .error-state svg {
+    font-size: 48px;
+    color: #ef4444;
+}
+
+.medication-order-groups-list-page .error-state p {
+    color: #ef4444;
+    font-size: 16px;
+    margin: 0;
+}
+
+.medication-order-groups-list-page .btn-retry {
+    padding: 10px 24px;
+    background: #3b82f6;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.medication-order-groups-list-page .btn-retry:hover {
+    background: #2563eb;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+/* Empty State */
+.medication-order-groups-list-page .empty-state {
+    background: white;
+    border-radius: 12px;
+    padding: 60px;
+    text-align: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+}
+
+.medication-order-groups-list-page .empty-state svg {
+    font-size: 48px;
+    color: #6b7280;
+}
+
+.medication-order-groups-list-page .empty-state p {
+    color: #6b7280;
+    font-size: 16px;
+    margin: 0;
+}
+
+/* Groups Grid */
+.medication-order-groups-list-page .groups-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+    gap: 20px;
+}
+
+/* Group Card */
+.medication-order-groups-list-page .group-card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    overflow: hidden;
+}
+
+.medication-order-groups-list-page .group-card:hover {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+    transform: translateY(-4px);
+}
+
+/* Card Header */
+.medication-order-groups-list-page .card-header {
+    background: #f9fafb;
+    padding: 16px 20px;
+    border-bottom: 2px solid #e5e7eb;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.medication-order-groups-list-page .group-id {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    color: #111827;
+}
+
+.medication-order-groups-list-page .group-id svg {
+    color: #3b82f6;
+    font-size: 20px;
+}
+
+.medication-order-groups-list-page .badges {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+/* Status and Priority Badges */
+.medication-order-groups-list-page .status-badge,
+.medication-order-groups-list-page .priority-badge,
+.medication-order-groups-list-page .stat-badge {
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.medication-order-groups-list-page .status-pending {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.medication-order-groups-list-page .status-verified {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.medication-order-groups-list-page .status-prepared {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+.medication-order-groups-list-page .status-dispensed {
+    background: #e0e7ff;
+    color: #3730a3;
+}
+
+.medication-order-groups-list-page .status-rejected {
+    background: #fecaca;
+    color: #991b1b;
+}
+
+.medication-order-groups-list-page .status-held {
+    background: #fed7aa;
+    color: #9a3412;
+}
+
+.medication-order-groups-list-page .status-discontinued {
+    background: #fecaca;
+    color: #991b1b;
+}
+
+.medication-order-groups-list-page .priority-routine {
+    background: #e0e7ff;
+    color: #3730a3;
+}
+
+.medication-order-groups-list-page .priority-urgent {
+    background: #fed7aa;
+    color: #9a3412;
+}
+
+.medication-order-groups-list-page .priority-stat {
+    background: #fecaca;
+    color: #991b1b;
+}
+
+.medication-order-groups-list-page .stat-badge {
+    background: #fecaca;
+    color: #991b1b;
+}
+
+/* Card Body */
+.medication-order-groups-list-page .card-body {
+    padding: 20px;
+}
+
+.medication-order-groups-list-page .info-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.medication-order-groups-list-page .info-row:last-child {
+    margin-bottom: 0;
+}
+
+.medication-order-groups-list-page .info-icon {
+    color: #6b7280;
+    font-size: 18px;
+    margin-top: 2px;
+    flex-shrink: 0;
+}
+
+.medication-order-groups-list-page .info-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.medication-order-groups-list-page .info-content label {
+    font-size: 12px;
+    color: #6b7280;
+    font-weight: 600;
+}
+
+.medication-order-groups-list-page .info-content span {
+    font-size: 14px;
+    color: #111827;
+}
+
+.medication-order-groups-list-page .info-row.notes .info-content span {
+    font-style: italic;
+    color: #374151;
+}
+
+/* Card Footer */
+.medication-order-groups-list-page .card-footer {
+    padding: 16px 20px;
+    border-top: 2px solid #e5e7eb;
+    background: #f9fafb;
+}
+
+.medication-order-groups-list-page .btn-view-detail {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background: #3b82f6;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.medication-order-groups-list-page .btn-view-detail:hover {
+    background: #2563eb;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .medication-order-groups-list-page {
+        padding: 16px;
+    }
+
+    .medication-order-groups-list-page .groups-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .medication-order-groups-list-page .page-header {
+        padding: 16px;
+    }
+
+    .medication-order-groups-list-page .title-section {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .medication-order-groups-list-page .card-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+}
+

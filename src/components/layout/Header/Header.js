@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import {Link, useNavigate} from 'react-router-dom';
 import UserInfo from '../../UserInfo/UserInfo';
+import StaffLoginModal from '../../StaffLoginModal/StaffLoginModal';
 import './Header.css';
 import logo from '../../../assets/images/logo.png';
 import phoneIcon from '../../../assets/icons/phone-icon.png';
@@ -14,7 +15,9 @@ import arrowDown2 from '../../../assets/icons/arrow-down-2.png';
 
 const Header = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [showStaffLoginModal, setShowStaffLoginModal] = useState(false);
 
+  const navigate = useNavigate();
   useEffect(() => {
     // Kiểm tra trạng thái đăng nhập
     const checkLoginStatus = () => {
@@ -97,6 +100,13 @@ const Header = () => {
           <Link to="/tra-cuu-ket-qua">Tra cứu kết quả</Link>
           <Link to="/hoi-dap">Hỏi đáp</Link>
           <Link to="/tai-ung-dung">Tải ứng dụng</Link>
+          <button
+            className="staff-login-link"
+            // onClick={() => setShowStaffLoginModal(true)}
+            onClick={() => navigate('staff/login')}
+          >
+            Nhân viên
+          </button>
           {!isLoggedIn && (
             <>
               <Link to="/login">Đăng nhập</Link>
@@ -144,6 +154,12 @@ const Header = () => {
           </ul>
         </div>
       </nav>
+
+      {/* Staff Login Modal */}
+      <StaffLoginModal
+        isOpen={showStaffLoginModal}
+        onClose={() => setShowStaffLoginModal(false)}
+      />
     </header>
   );
 };

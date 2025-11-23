@@ -160,12 +160,46 @@
     font-size: 14px;
     font-weight: 600;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all 0.3s ease;
 }
-.btn-action.btn-skip { background-color: #f3f4f6; color: #6b7280; }
-.btn-action.btn-skip:hover { background-color: #e5e7eb; }
-.btn-action.btn-administer { background-color: #10b981; color: white; }
-.btn-action.btn-administer:hover { background-color: #059669; }
+
+.btn-action:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.btn-action.btn-administer {
+    background-color: #10b981;
+    color: white;
+}
+
+.btn-action.btn-administer:hover:not(:disabled) {
+    background-color: #059669;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.btn-action.btn-refuse {
+    background-color: #f59e0b;
+    color: white;
+}
+
+.btn-action.btn-refuse:hover:not(:disabled) {
+    background-color: #d97706;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+}
+
+.btn-action.btn-miss {
+    background-color: #ef4444;
+    color: white;
+}
+
+.btn-action.btn-miss:hover:not(:disabled) {
+    background-color: #dc2626;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
 
 .med-card-footer.completed-info {
     display: flex;
