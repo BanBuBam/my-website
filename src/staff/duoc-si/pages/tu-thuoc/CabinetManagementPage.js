@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import './CabinetManagementPage.css';
-import { FiRefreshCw, FiPlus, FiEdit2, FiTrash2, FiEye, FiSearch, FiLock, FiUnlock, FiAlertTriangle, FiClock, FiTool, FiPackage } from 'react-icons/fi';
-import { adminCabinetAPI, adminDepartmentAPI, adminEmployeeAPI } from '../../../../services/staff/adminAPI';
-import { useNavigate } from 'react-router-dom';
+import { FiRefreshCw, FiPlus, FiEdit2, FiTrash2, FiEye, FiSearch, FiLock, FiUnlock, FiAlertTriangle, FiClock, FiTool } from 'react-icons/fi';
+import { pharmacistCabinetAPI, pharmacistDepartmentAPI, pharmacistEmployeeAPI } from '../../../../services/staff/pharmacistAPI';
 
 const CabinetManagementPage = () => {
-    const navigate = useNavigate();
     // State quản lý danh sách và UI
     const [cabinets, setCabinets] = useState([]);
     const [allCabinets, setAllCabinets] = useState([]); // Lưu toàn bộ danh sách để tìm kiếm
@@ -27,17 +25,12 @@ const CabinetManagementPage = () => {
     const [showScheduleMaintenanceModal, setShowScheduleMaintenanceModal] = useState(false);
     const [showAssignEmployeeModal, setShowAssignEmployeeModal] = useState(false);
     const [showCreateModal, setShowCreateModal] = useState(false);
-    const [showInventoryModal, setShowInventoryModal] = useState(false);
 
     // State cho tìm kiếm và lọc
     const [searchTerm, setSearchTerm] = useState('');
     const [viewMode, setViewMode] = useState('active'); // 'active', 'inactive', 'all'
     const [stats, setStats] = useState({ active: 0, inactive: 0, total: 0, locked: 0 });
     const [submitting, setSubmitting] = useState(false);
-
-    // State cho lock status checking
-    const [lockStatusCache, setLockStatusCache] = useState({}); // Cache lock status by cabinetId
-    const [checkingLockStatus, setCheckingLockStatus] = useState(false);
 
     // State cho departments và employees
     const [departments, setDepartments] = useState([]);
@@ -75,10 +68,6 @@ const CabinetManagementPage = () => {
         endDate: ''
     });
 
-    // State cho inventory
-    const [inventoryData, setInventoryData] = useState(null);
-    const [loadingInventory, setLoadingInventory] = useState(false);
-
     // Load danh sách tủ khi component mount
     useEffect(() => {
         loadCabinets(0);
@@ -99,7 +88,7 @@ const CabinetManagementPage = () => {
             setError(null);
 
             // Luôn gọi API getAllCabinets (không có search endpoint)
-            const response = await adminCabinetAPI.getAllCabinets(page, pagination.pageSize);
+            const response = await pharmacistCabinetAPI.getAllCabinets(page, pagination.pageSize);
 
             if (response && (response.status === 'success' || response.code === 200 || response.OK)) {
                 const data = response.data;
@@ -187,7 +176,7 @@ const CabinetManagementPage = () => {
     // Load danh sách khoa phòng
     const loadDepartments = async () => {
         try {
-            const response = await adminDepartmentAPI.getDepartments();
+            const response = await pharmacistDepartmentAPI.getDepartments();
             if (response && (response.status === 'success' || response.code === 200 || response.OK)) {
                 const deptData = Array.isArray(response.data) ? response.data : [];
                 setDepartments(deptData);
@@ -196,8 +185,6 @@ const CabinetManagementPage = () => {
             console.error('Error loading departments:', err);
         }
     };
-
-
 
     // Xử lý tìm kiếm (client-side)
     const handleSearch = () => {
@@ -227,7 +214,7 @@ const CabinetManagementPage = () => {
 
         try {
             setLoadingEmployees(true);
-            const response = await adminEmployeeAPI.getEmployeesByDepartment(deptId);
+            const response = await pharmacistEmployeeAPI.getEmployeesByDepartment(deptId);
 
             if (response && (response.status === 'success' || response.status === 'OK' || response.code === 200)) {
                 const data = response.data;
@@ -353,7 +340,7 @@ const CabinetManagementPage = () => {
 
             console.log('Creating cabinet with data:', submitData);
 
-            const response = await adminCabinetAPI.createCabinet(submitData);
+            const response = await pharmacistCabinetAPI.createCabinet(submitData);
             console.log('Create cabinet response:', response);
 
             // Check response status: CREATED, status: "CREATED", code: 201
@@ -377,62 +364,10 @@ const CabinetManagementPage = () => {
         alert('⚠️ Chức năng sửa thông tin tủ đang được phát triển');
     };
 
-
-
-    // Kiểm tra trạng thái khóa của tủ (Check individual cabinet lock status)
-    const checkCabinetLockStatus = async (cabinetId) => {
-        try {
-            const response = await adminCabinetAPI.getCabinetLockStatus(cabinetId);
-
-            if (response && (response.status === 'success' || response.code === 200 || response.OK)) {
-                const lockStatus = response.data?.isLocked;
-
-                // Update cache
-                setLockStatusCache(prev => ({
-                    ...prev,
-                    [cabinetId]: lockStatus
-                }));
-
-                // Update the cabinet in the list
-                setCabinets(prevCabinets =>
-                    prevCabinets.map(cab =>
-                        cab.cabinetId === cabinetId
-                            ? { ...cab, isLocked: lockStatus }
-                            : cab
-                    )
-                );
-
-                setAllCabinets(prevCabinets =>
-                    prevCabinets.map(cab =>
-                        cab.cabinetId === cabinetId
-                            ? { ...cab, isLocked: lockStatus }
-                            : cab
-                    )
-                );
-
-                return lockStatus;
-            }
-        } catch (err) {
-            console.error('Error checking lock status:', err);
-        }
-        return null;
-    };
-
-    // Lấy trạng thái khóa hiện tại của tủ (Get current lock status with cache)
-    const getCurrentLockStatus = (cabinet) => {
-        // Check cache first
-        if (lockStatusCache.hasOwnProperty(cabinet.cabinetId)) {
-            return lockStatusCache[cabinet.cabinetId];
-        }
-        // Fall back to cabinet's isLocked property
-        return cabinet.isLocked;
-    };
-
     // Xử lý khóa/mở khóa tủ
     const handleLockUnlock = async (cabinet) => {
-        const currentLockStatus = getCurrentLockStatus(cabinet);
-        const action = currentLockStatus ? 'mở khóa' : 'khóa';
-        const newLockedState = !currentLockStatus;
+        const action = cabinet.isLocked ? 'mở khóa' : 'khóa';
+        const newLockedState = !cabinet.isLocked;
 
         if (!window.confirm(`Bạn có chắc chắn muốn ${action} tủ "${cabinet.cabinetLocation}"?`)) {
             return;
@@ -440,36 +375,11 @@ const CabinetManagementPage = () => {
 
         try {
             console.log(`Calling lockUnlockCabinet API: cabinetId=${cabinet.cabinetId}, locked=${newLockedState}`);
-            const response = await adminCabinetAPI.lockUnlockCabinet(cabinet.cabinetId, newLockedState);
+            const response = await pharmacistCabinetAPI.lockUnlockCabinet(cabinet.cabinetId, newLockedState);
             console.log('Lock/Unlock response:', response);
 
             if (response && (response.status === 'success' || response.status === 'OK' || response.code === 200 || response.OK)) {
                 alert(`✅ Đã ${action} tủ thành công!`);
-
-                // Immediately update the lock status in cache and UI
-                setLockStatusCache(prev => ({
-                    ...prev,
-                    [cabinet.cabinetId]: newLockedState
-                }));
-
-                // Update the cabinet in the list immediately
-                setCabinets(prevCabinets =>
-                    prevCabinets.map(cab =>
-                        cab.cabinetId === cabinet.cabinetId
-                            ? { ...cab, isLocked: newLockedState }
-                            : cab
-                    )
-                );
-
-                setAllCabinets(prevCabinets =>
-                    prevCabinets.map(cab =>
-                        cab.cabinetId === cabinet.cabinetId
-                            ? { ...cab, isLocked: newLockedState }
-                            : cab
-                    )
-                );
-
-                // Reload to ensure consistency
                 loadCabinets(pagination.currentPage);
             } else {
                 throw new Error(response.message || 'Có lỗi xảy ra');
@@ -488,7 +398,7 @@ const CabinetManagementPage = () => {
         }
 
         try {
-            const response = await adminCabinetAPI.deactivateCabinet(cabinet.cabinetId, reason);
+            const response = await pharmacistCabinetAPI.deactivateCabinet(cabinet.cabinetId, reason);
             if (response && (response.status === 'success' || response.code === 200 || response.OK)) {
                 alert('✅ Đã ngừng hoạt động tủ thành công!');
                 loadCabinets(pagination.currentPage);
@@ -511,7 +421,7 @@ const CabinetManagementPage = () => {
     const handleViewAlerts = async (cabinet) => {
         try {
             setSelectedCabinet(cabinet);
-            const response = await adminCabinetAPI.getCabinetAlerts(cabinet.cabinetId);
+            const response = await pharmacistCabinetAPI.getCabinetAlerts(cabinet.cabinetId);
             console.log('Alerts response:', response);
 
             if (response && (response.status === 'success' || response.status === 'OK' || response.code === 200 || response.OK)) {
@@ -545,7 +455,7 @@ const CabinetManagementPage = () => {
     const handleViewAccessLog = async (cabinet) => {
         try {
             setSelectedCabinet(cabinet);
-            const response = await adminCabinetAPI.getCabinetAccessLog(
+            const response = await pharmacistCabinetAPI.getCabinetAccessLog(
                 cabinet.cabinetId,
                 accessLogDateRange.startDate || null,
                 accessLogDateRange.endDate || null
@@ -583,7 +493,7 @@ const CabinetManagementPage = () => {
     const handleViewMaintenance = async (cabinet) => {
         try {
             setSelectedCabinet(cabinet);
-            const response = await adminCabinetAPI.getCabinetMaintenance(cabinet.cabinetId);
+            const response = await pharmacistCabinetAPI.getCabinetMaintenance(cabinet.cabinetId);
             console.log('Maintenance schedule response:', response);
 
             if (response && (response.status === 'success' || response.status === 'OK' || response.code === 200 || response.OK)) {
@@ -608,52 +518,6 @@ const CabinetManagementPage = () => {
         } catch (err) {
             console.error('Error loading maintenance:', err);
             alert('❌ ' + getErrorMessage(err));
-        }
-    };
-
-    // Xem tồn kho tủ
-    const handleViewInventory = async (cabinet) => {
-        try {
-            setSelectedCabinet(cabinet);
-            setLoadingInventory(true);
-            setInventoryData(null);
-            setShowInventoryModal(true);
-
-            const response = await adminCabinetAPI.getCabinetInventory(cabinet.cabinetId);
-            console.log('Cabinet inventory response:', response);
-
-            if (response && (response.status === 'success' || response.code === 200 || response.OK)) {
-                setInventoryData(response.data);
-            } else {
-                throw new Error('Không thể tải tồn kho tủ');
-            }
-        } catch (err) {
-            console.error('Error loading cabinet inventory:', err);
-            alert('❌ ' + getErrorMessage(err));
-            setShowInventoryModal(false);
-        } finally {
-            setLoadingInventory(false);
-        }
-    };
-
-    // Refresh inventory
-    const handleRefreshInventory = async () => {
-        if (!selectedCabinet) return;
-
-        try {
-            setLoadingInventory(true);
-            const response = await adminCabinetAPI.getCabinetInventory(selectedCabinet.cabinetId);
-
-            if (response && (response.status === 'success' || response.code === 200 || response.OK)) {
-                setInventoryData(response.data);
-            } else {
-                throw new Error('Không thể tải tồn kho tủ');
-            }
-        } catch (err) {
-            console.error('Error refreshing inventory:', err);
-            alert('❌ ' + getErrorMessage(err));
-        } finally {
-            setLoadingInventory(false);
         }
     };
 
@@ -688,7 +552,7 @@ const CabinetManagementPage = () => {
 
         try {
             setSubmitting(true);
-            const response = await adminCabinetAPI.scheduleCabinetMaintenance(
+            const response = await pharmacistCabinetAPI.scheduleCabinetMaintenance(
                 selectedCabinet.cabinetId,
                 maintenanceFormData.maintenanceType,
                 maintenanceFormData.scheduledDate,
@@ -744,7 +608,7 @@ const CabinetManagementPage = () => {
 
         try {
             setSubmitting(true);
-            const response = await adminCabinetAPI.assignResponsibleEmployee(
+            const response = await pharmacistCabinetAPI.assignResponsibleEmployee(
                 selectedCabinet.cabinetId,
                 assignEmployeeId
             );
@@ -893,77 +757,15 @@ const CabinetManagementPage = () => {
         return err.message || 'Không thể tải danh sách tủ. Vui lòng thử lại.';
     };
 
-    // Check if date is expired
-    const isExpiredDate = (dateString) => {
-        if (!dateString) return false;
-        try {
-            const expiryDate = new Date(dateString);
-            const today = new Date();
-            today.setHours(0, 0, 0, 0);
-            return expiryDate < today;
-        } catch {
-            return false;
-        }
-    };
-
-    // Check if date is expiring within 30 days
-    const isExpiringWithin30Days = (dateString) => {
-        if (!dateString) return false;
-        try {
-            const expiryDate = new Date(dateString);
-            const today = new Date();
-            today.setHours(0, 0, 0, 0);
-            const thirtyDaysFromNow = new Date(today);
-            thirtyDaysFromNow.setDate(today.getDate() + 30);
-            return expiryDate >= today && expiryDate <= thirtyDaysFromNow;
-        } catch {
-            return false;
-        }
-    };
-
-    // Get inventory status label
-    const getInventoryStatusLabel = (status) => {
-        const labels = {
-            'AVAILABLE': 'Có sẵn',
-            'LOW_STOCK': 'Sắp hết',
-            'OUT_OF_STOCK': 'Hết hàng',
-            'EXPIRED': 'Hết hạn',
-            'RESERVED': 'Đã đặt trước',
-            'DAMAGED': 'Hư hỏng'
-        };
-        return labels[status] || status || 'N/A';
-    };
-
-    // Get inventory status badge class
-    const getInventoryStatusBadgeClass = (status) => {
-        const classes = {
-            'AVAILABLE': 'badge-active',
-            'LOW_STOCK': 'badge-warning',
-            'OUT_OF_STOCK': 'badge-inactive',
-            'EXPIRED': 'badge-inactive',
-            'RESERVED': 'badge-info',
-            'DAMAGED': 'badge-inactive'
-        };
-        return classes[status] || 'badge-secondary';
-    };
-
     return (
         <div className="cabinet-management-page">
             {/* Page Header */}
             <div className="page-header">
                 <div className="header-left">
-                    <h2>🏥 Quản lý Tủ thuốc/Vật tư</h2>
-                    <p>Quản lý tủ thuốc, vật tư y tế và thiết bị</p>
+                    <h2>💊 Quản lý Tủ thuốc/Vật tư</h2>
+                    <p>Quản lý tủ thuốc, vật tư y tế và thiết bị trong nhà thuốc</p>
                 </div>
                 <div className="header-right">
-                    <button
-                        className="btn-secondary"
-                        onClick={() => navigate('/staff/admin/tu-thuoc/locked')}
-                        style={{ marginRight: '0.5rem' }}
-                    >
-                        <FiLock />
-                        Tủ đang khóa ({stats.locked})
-                    </button>
                     <button className="btn-refresh" onClick={handleRefresh} disabled={loading}>
                         <FiRefreshCw className={loading ? 'spinning' : ''} />
                         Làm mới
@@ -998,12 +800,7 @@ const CabinetManagementPage = () => {
                         <div className="stat-value">{stats.total}</div>
                     </div>
                 </div>
-                <div
-                    className="stat-card locked"
-                    onClick={() => navigate('/staff/admin/tu-thuoc/locked')}
-                    style={{ cursor: 'pointer' }}
-                    title="Nhấn để xem danh sách tủ đang khóa"
-                >
+                <div className="stat-card locked">
                     <div className="stat-icon">🔒</div>
                     <div className="stat-info">
                         <div className="stat-label">Đang khóa</div>
@@ -1109,33 +906,9 @@ const CabinetManagementPage = () => {
                                         </span>
                                     </td>
                                     <td>
-                                        {(() => {
-                                            const isLocked = getCurrentLockStatus(cabinet);
-                                            return (
-                                                <span
-                                                    className="lock-icon"
-                                                    style={{
-                                                        color: isLocked ? '#dc3545' : '#28a745',
-                                                        fontWeight: 'bold',
-                                                        display: 'inline-flex',
-                                                        alignItems: 'center',
-                                                        gap: '0.3rem'
-                                                    }}
-                                                >
-                                                    {isLocked ? (
-                                                        <>
-                                                            <FiLock style={{ fontSize: '1rem' }} />
-                                                            Khóa
-                                                        </>
-                                                    ) : (
-                                                        <>
-                                                            <FiUnlock style={{ fontSize: '1rem' }} />
-                                                            Mở
-                                                        </>
-                                                    )}
-                                                </span>
-                                            );
-                                        })()}
+                                        <span className="lock-icon">
+                                            {cabinet.isLocked ? '🔒 Khóa' : '🔓 Mở'}
+                                        </span>
                                     </td>
                                     <td>
                                         <div className="action-buttons">
@@ -1158,12 +931,9 @@ const CabinetManagementPage = () => {
                                                     <button
                                                         className="btn-icon btn-lock"
                                                         onClick={() => handleLockUnlock(cabinet)}
-                                                        title={getCurrentLockStatus(cabinet) ? 'Mở khóa' : 'Khóa'}
-                                                        style={{
-                                                            background: getCurrentLockStatus(cabinet) ? '#28a745' : '#ffc107'
-                                                        }}
+                                                        title={cabinet.isLocked ? 'Mở khóa' : 'Khóa'}
                                                     >
-                                                        {getCurrentLockStatus(cabinet) ? <FiUnlock /> : <FiLock />}
+                                                        {cabinet.isLocked ? <FiUnlock /> : <FiLock />}
                                                     </button>
                                                     <button
                                                         className="btn-icon btn-alert"
@@ -1185,14 +955,6 @@ const CabinetManagementPage = () => {
                                                         title="Bảo trì"
                                                     >
                                                         <FiTool />
-                                                    </button>
-                                                    <button
-                                                        className="btn-icon btn-inventory"
-                                                        onClick={() => handleViewInventory(cabinet)}
-                                                        title="Xem tồn kho"
-                                                        style={{ background: '#17a2b8' }}
-                                                    >
-                                                        <FiPackage />
                                                     </button>
                                                     <button
                                                         className="btn-icon btn-deactivate"
@@ -1292,13 +1054,8 @@ const CabinetManagementPage = () => {
                                         >
                                             <option value="">-- Chọn khoa phòng --</option>
                                             {Array.isArray(departments) && departments.map(dept => {
-                                                // Ensure we use the correct ID field
                                                 const deptId = dept.departmentId || dept.id;
-
-                                                if (!deptId) {
-                                                    return null;
-                                                }
-
+                                                if (!deptId) return null;
                                                 return (
                                                     <option key={deptId} value={deptId}>
                                                         {dept.departmentName || dept.name}
@@ -1534,507 +1291,12 @@ const CabinetManagementPage = () => {
                             <div className="detail-row">
                                 <span className="detail-label">Khóa:</span>
                                 <span className="detail-value">
-                                    {selectedCabinet.isLocked ? '🔒 Đã khóa' : '🔓 Mở'}
+                                    {selectedCabinet.isLocked ? '🔒 Đang khóa' : '🔓 Đang mở'}
                                 </span>
                             </div>
                         </div>
                         <div className="modal-footer">
-                            <button
-                                type="button"
-                                className="btn-secondary"
-                                onClick={() => setShowDetailModal(false)}
-                            >
-                                Đóng
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
-
-            {/* Alerts Modal */}
-            {showAlertsModal && selectedCabinet && (
-                <div className="modal-overlay" onClick={() => setShowAlertsModal(false)}>
-                    <div className="modal-content modal-large" onClick={(e) => e.stopPropagation()}>
-                        <div className="modal-header">
-                            <h3>⚠️ Cảnh báo - {selectedCabinet.cabinetLocation}</h3>
-                            <button className="btn-close" onClick={() => setShowAlertsModal(false)}>✕</button>
-                        </div>
-                        <div className="modal-body">
-                            {alerts.length > 0 ? (
-                                <div className="alerts-list">
-                                    {Array.isArray(alerts) && alerts.map((alert, index) => (
-                                        <div key={alert.alertId || index} className={`alert-item ${getSeverityClass(alert.severity)}`}>
-                                            <div className="alert-header">
-                                                <span className="alert-type">{getAlertTypeLabel(alert.alertType)}</span>
-                                                <span className={`severity-badge ${getSeverityClass(alert.severity)}`}>
-                                                    {alert.severity}
-                                                </span>
-                                            </div>
-                                            <div className="alert-body">
-                                                <p><strong>Thông báo:</strong> {alert.message}</p>
-                                                <p><strong>Thời gian:</strong> {formatDateTime(alert.createdAt)}</p>
-                                                {alert.itemName !== 'N/A' && (
-                                                    <>
-                                                        <p><strong>Vật phẩm:</strong> {alert.itemName}</p>
-                                                        <p><strong>Số lượng hiện tại:</strong> {alert.currentQuantity}</p>
-                                                        <p><strong>Mức đặt lại:</strong> {alert.reorderLevel}</p>
-                                                    </>
-                                                )}
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            ) : (
-                                <div className="empty-state">
-                                    <p>✅ Không có cảnh báo nào</p>
-                                </div>
-                            )}
-                        </div>
-                        <div className="modal-footer">
-                            <button
-                                type="button"
-                                className="btn-secondary"
-                                onClick={() => setShowAlertsModal(false)}
-                            >
-                                Đóng
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
-
-            {/* Access Log Modal */}
-            {showAccessLogModal && selectedCabinet && (
-                <div className="modal-overlay" onClick={() => setShowAccessLogModal(false)}>
-                    <div className="modal-content modal-large" onClick={(e) => e.stopPropagation()}>
-                        <div className="modal-header">
-                            <h3>🕐 Lịch sử truy cập - {selectedCabinet.cabinetLocation}</h3>
-                            <button className="btn-close" onClick={() => setShowAccessLogModal(false)}>✕</button>
-                        </div>
-                        <div className="modal-body">
-                            <div className="date-filter">
-                                <div className="form-group">
-                                    <label>Từ ngày:</label>
-                                    <input
-                                        type="date"
-                                        value={accessLogDateRange.startDate}
-                                        onChange={(e) => setAccessLogDateRange(prev => ({ ...prev, startDate: e.target.value }))}
-                                    />
-                                </div>
-                                <div className="form-group">
-                                    <label>Đến ngày:</label>
-                                    <input
-                                        type="date"
-                                        value={accessLogDateRange.endDate}
-                                        onChange={(e) => setAccessLogDateRange(prev => ({ ...prev, endDate: e.target.value }))}
-                                    />
-                                </div>
-                                <button
-                                    className="btn-primary"
-                                    onClick={() => handleViewAccessLog(selectedCabinet)}
-                                >
-                                    Lọc
-                                </button>
-                            </div>
-                            {accessLog.length > 0 ? (
-                                <div className="access-log-table-container">
-                                    <table className="access-log-table">
-                                        <thead>
-                                            <tr>
-                                                <th>STT</th>
-                                                <th>Nhân viên</th>
-                                                <th>Hành động</th>
-                                                <th>Thời gian</th>
-                                                <th>Thời lượng</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {Array.isArray(accessLog) && accessLog.map((log, index) => (
-                                                <tr key={log.accessId || index}>
-                                                    <td>{index + 1}</td>
-                                                    <td>{log.employeeName || 'N/A'}</td>
-                                                    <td>{log.action || 'N/A'}</td>
-                                                    <td>{formatDateTime(log.timestamp)}</td>
-                                                    <td>{log.durationMinutes ? `${log.durationMinutes} phút` : 'N/A'}</td>
-                                                </tr>
-                                            ))}
-                                        </tbody>
-                                    </table>
-                                </div>
-                            ) : (
-                                <div className="empty-state">
-                                    <p>📋 Không có lịch sử truy cập</p>
-                                </div>
-                            )}
-                        </div>
-                        <div className="modal-footer">
-                            <button
-                                type="button"
-                                className="btn-secondary"
-                                onClick={() => setShowAccessLogModal(false)}
-                            >
-                                Đóng
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
-
-            {/* Maintenance Modal */}
-            {showMaintenanceModal && selectedCabinet && (
-                <div className="modal-overlay" onClick={() => setShowMaintenanceModal(false)}>
-                    <div className="modal-content modal-large" onClick={(e) => e.stopPropagation()}>
-                        <div className="modal-header">
-                            <h3>🔧 Lịch trình bảo trì - {selectedCabinet.cabinetLocation}</h3>
-                            <button className="btn-close" onClick={() => setShowMaintenanceModal(false)}>✕</button>
-                        </div>
-                        <div className="modal-body">
-                            <div className="maintenance-actions">
-                                <button
-                                    className="btn-primary"
-                                    onClick={() => {
-                                        setShowMaintenanceModal(false);
-                                        handleOpenScheduleMaintenance(selectedCabinet);
-                                    }}
-                                >
-                                    <FiPlus /> Lên lịch bảo trì mới
-                                </button>
-                            </div>
-                            {maintenanceSchedule.length > 0 ? (
-                                <div className="maintenance-table-container">
-                                    <table className="maintenance-table">
-                                        <thead>
-                                            <tr>
-                                                <th>STT</th>
-                                                <th>Loại bảo trì</th>
-                                                <th>Ngày dự kiến</th>
-                                                <th>Thời gian dự kiến</th>
-                                                <th>Trạng thái</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {Array.isArray(maintenanceSchedule) && maintenanceSchedule.map((maintenance, index) => {
-                                                const statusInfo = getMaintenanceStatusInfo(maintenance.status);
-                                                return (
-                                                    <tr key={maintenance.maintenanceId || index}>
-                                                        <td>{index + 1}</td>
-                                                        <td>{getMaintenanceTypeLabel(maintenance.maintenanceType)}</td>
-                                                        <td>{formatDate(maintenance.scheduledDate)}</td>
-                                                        <td>{maintenance.estimatedDuration || maintenance.notes || 'N/A'}</td>
-                                                        <td>
-                                                            <span className={`badge ${statusInfo.class}`}>
-                                                                {statusInfo.label}
-                                                            </span>
-                                                        </td>
-                                                    </tr>
-                                                );
-                                            })}
-                                        </tbody>
-                                    </table>
-                                </div>
-                            ) : (
-                                <div className="empty-state">
-                                    <p>📅 Chưa có lịch trình bảo trì</p>
-                                </div>
-                            )}
-                        </div>
-                        <div className="modal-footer">
-                            <button
-                                type="button"
-                                className="btn-secondary"
-                                onClick={() => setShowMaintenanceModal(false)}
-                            >
-                                Đóng
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
-
-            {/* Schedule Maintenance Modal */}
-            {showScheduleMaintenanceModal && selectedCabinet && (
-                <div className="modal-overlay" onClick={() => setShowScheduleMaintenanceModal(false)}>
-                    <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-                        <div className="modal-header">
-                            <h3>📅 Lên lịch bảo trì - {selectedCabinet.cabinetLocation}</h3>
-                            <button className="btn-close" onClick={() => setShowScheduleMaintenanceModal(false)}>✕</button>
-                        </div>
-                        <form onSubmit={handleScheduleMaintenance}>
-                            <div className="modal-body">
-                                <div className="form-group">
-                                    <label htmlFor="maintenanceType">Loại bảo trì <span className="required">*</span></label>
-                                    <select
-                                        id="maintenanceType"
-                                        value={maintenanceFormData.maintenanceType}
-                                        onChange={(e) => setMaintenanceFormData(prev => ({ ...prev, maintenanceType: e.target.value }))}
-                                        required
-                                    >
-                                        <option value="CLEANING">Vệ sinh</option>
-                                        <option value="REPAIR">Sửa chữa</option>
-                                        <option value="INSPECTION">Kiểm tra</option>
-                                        <option value="CALIBRATION">Hiệu chuẩn</option>
-                                    </select>
-                                </div>
-                                <div className="form-group">
-                                    <label htmlFor="scheduledDate">Ngày dự kiến <span className="required">*</span></label>
-                                    <input
-                                        type="date"
-                                        id="scheduledDate"
-                                        value={maintenanceFormData.scheduledDate}
-                                        onChange={(e) => setMaintenanceFormData(prev => ({ ...prev, scheduledDate: e.target.value }))}
-                                        required
-                                    />
-                                </div>
-                                <div className="form-group">
-                                    <label htmlFor="maintenanceNotes">Ghi chú</label>
-                                    <textarea
-                                        id="maintenanceNotes"
-                                        value={maintenanceFormData.notes}
-                                        onChange={(e) => setMaintenanceFormData(prev => ({ ...prev, notes: e.target.value }))}
-                                        placeholder="Nhập ghi chú về bảo trì"
-                                        rows="3"
-                                    />
-                                </div>
-                            </div>
-                            <div className="modal-footer">
-                                <button
-                                    type="button"
-                                    className="btn-secondary"
-                                    onClick={() => setShowScheduleMaintenanceModal(false)}
-                                    disabled={submitting}
-                                >
-                                    Hủy
-                                </button>
-                                <button
-                                    type="submit"
-                                    className="btn-primary"
-                                    disabled={submitting}
-                                >
-                                    {submitting ? 'Đang lưu...' : 'Lên lịch'}
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            )}
-
-            {/* Assign Employee Modal */}
-            {showAssignEmployeeModal && selectedCabinet && (
-                <div className="modal-overlay" onClick={() => setShowAssignEmployeeModal(false)}>
-                    <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-                        <div className="modal-header">
-                            <h3>👤 Gán người chịu trách nhiệm - {selectedCabinet.cabinetLocation}</h3>
-                            <button className="btn-close" onClick={() => setShowAssignEmployeeModal(false)}>✕</button>
-                        </div>
-                        <form onSubmit={handleAssignEmployee}>
-                            <div className="modal-body">
-                                <div className="form-group">
-                                    <label htmlFor="assignEmployeeId">Chọn nhân viên <span className="required">*</span></label>
-                                    <select
-                                        id="assignEmployeeId"
-                                        value={assignEmployeeId}
-                                        onChange={(e) => setAssignEmployeeId(e.target.value)}
-                                        required
-                                    >
-                                        <option value="">-- Chọn nhân viên --</option>
-                                        {Array.isArray(employees) && employees.map(emp => (
-                                            <option key={emp.employeeId} value={emp.employeeId}>
-                                                {emp.fullName || emp.name}
-                                            </option>
-                                        ))}
-                                    </select>
-                                </div>
-                            </div>
-                            <div className="modal-footer">
-                                <button
-                                    type="button"
-                                    className="btn-secondary"
-                                    onClick={() => setShowAssignEmployeeModal(false)}
-                                    disabled={submitting}
-                                >
-                                    Hủy
-                                </button>
-                                <button
-                                    type="submit"
-                                    className="btn-primary"
-                                    disabled={submitting}
-                                >
-                                    {submitting ? 'Đang gán...' : 'Gán'}
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            )}
-
-            {/* Inventory Modal */}
-            {showInventoryModal && selectedCabinet && (
-                <div className="modal-overlay" onClick={() => setShowInventoryModal(false)}>
-                    <div className="modal-content modal-large" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '1200px' }}>
-                        <div className="modal-header">
-                            <h3>📦 Tồn kho - {selectedCabinet.cabinetLocation}</h3>
-                            <button className="btn-close" onClick={() => setShowInventoryModal(false)}>✕</button>
-                        </div>
-                        <div className="modal-body">
-                            {loadingInventory ? (
-                                <div className="loading-state" style={{ textAlign: 'center', padding: '3rem' }}>
-                                    <p>⏳ Đang tải tồn kho...</p>
-                                </div>
-                            ) : inventoryData ? (
-                                <>
-                                    {/* Cabinet Summary */}
-                                    <div style={{
-                                        display: 'grid',
-                                        gridTemplateColumns: 'repeat(3, 1fr)',
-                                        gap: '1rem',
-                                        marginBottom: '1.5rem',
-                                        padding: '1rem',
-                                        background: '#f8f9fa',
-                                        borderRadius: '8px'
-                                    }}>
-                                        <div>
-                                            <div style={{ fontSize: '0.85rem', color: '#6c757d', marginBottom: '0.25rem' }}>
-                                                Vị trí tủ
-                                            </div>
-                                            <div style={{ fontWeight: '600', fontSize: '1rem' }}>
-                                                {inventoryData.cabinetLocation || selectedCabinet.cabinetLocation}
-                                            </div>
-                                        </div>
-                                        <div>
-                                            <div style={{ fontSize: '0.85rem', color: '#6c757d', marginBottom: '0.25rem' }}>
-                                                Tổng số items
-                                            </div>
-                                            <div style={{ fontWeight: '600', fontSize: '1rem', color: '#007bff' }}>
-                                                {inventoryData.totalItems || 0}
-                                            </div>
-                                        </div>
-                                        <div>
-                                            <div style={{ fontSize: '0.85rem', color: '#6c757d', marginBottom: '0.25rem' }}>
-                                                Tỷ lệ sử dụng
-                                            </div>
-                                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                                                <div style={{
-                                                    flex: 1,
-                                                    height: '8px',
-                                                    background: '#e9ecef',
-                                                    borderRadius: '4px',
-                                                    overflow: 'hidden'
-                                                }}>
-                                                    <div style={{
-                                                        width: `${inventoryData.utilizationPercent || 0}%`,
-                                                        height: '100%',
-                                                        background: getUtilizationColor(inventoryData.utilizationPercent || 0),
-                                                        transition: 'width 0.3s ease'
-                                                    }}></div>
-                                                </div>
-                                                <span style={{ fontWeight: '600', fontSize: '0.9rem' }}>
-                                                    {inventoryData.utilizationPercent || 0}%
-                                                </span>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    {/* Refresh Button */}
-                                    <div style={{ marginBottom: '1rem', display: 'flex', justifyContent: 'flex-end' }}>
-                                        <button
-                                            className="btn-refresh"
-                                            onClick={handleRefreshInventory}
-                                            disabled={loadingInventory}
-                                            style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
-                                        >
-                                            <FiRefreshCw className={loadingInventory ? 'spinning' : ''} />
-                                            Làm mới
-                                        </button>
-                                    </div>
-
-                                    {/* Inventory Items Table */}
-                                    {inventoryData.items && inventoryData.items.length > 0 ? (
-                                        <div className="cabinet-table-container">
-                                            <table className="cabinet-table">
-                                                <thead>
-                                                    <tr>
-                                                        <th>STT</th>
-                                                        <th>Stock ID</th>
-                                                        <th>Tên thuốc/Vật tư</th>
-                                                        <th>Loại</th>
-                                                        <th>Số lượng</th>
-                                                        <th>Mức đặt lại</th>
-                                                        <th>Mức tối đa</th>
-                                                        <th>Số lô</th>
-                                                        <th>Hạn sử dụng</th>
-                                                        <th>Trạng thái</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    {inventoryData.items.map((item, index) => {
-                                                        const isLowStock = item.quantityOnHand <= item.reorderLevel;
-                                                        const isExpiringSoon = isExpiringWithin30Days(item.expiryDate);
-                                                        const isExpired = isExpiredDate(item.expiryDate);
-
-                                                        return (
-                                                            <tr key={item.stockId || index} style={{
-                                                                background: isExpired ? '#fff5f5' : isExpiringSoon ? '#fffbf0' : 'transparent'
-                                                            }}>
-                                                                <td>{index + 1}</td>
-                                                                <td>{item.stockId}</td>
-                                                                <td><strong>{item.itemName}</strong></td>
-                                                                <td>
-                                                                    <span className={`badge badge-type-${(item.itemType || 'MEDICINE').toLowerCase()}`}>
-                                                                        {item.itemType || 'MEDICINE'}
-                                                                    </span>
-                                                                </td>
-                                                                <td>
-                                                                    <span style={{
-                                                                        color: isLowStock ? '#dc3545' : '#28a745',
-                                                                        fontWeight: 'bold'
-                                                                    }}>
-                                                                        {item.quantityOnHand}
-                                                                        {isLowStock && ' ⚠️'}
-                                                                    </span>
-                                                                </td>
-                                                                <td>{item.reorderLevel}</td>
-                                                                <td>{item.maxStockLevel}</td>
-                                                                <td>{item.batchNumber || 'N/A'}</td>
-                                                                <td style={{
-                                                                    color: isExpired ? '#dc3545' : isExpiringSoon ? '#ffc107' : 'inherit',
-                                                                    fontWeight: (isExpired || isExpiringSoon) ? 'bold' : 'normal'
-                                                                }}>
-                                                                    {formatDate(item.expiryDate)}
-                                                                    {isExpired && ' ❌'}
-                                                                    {!isExpired && isExpiringSoon && ' ⚠️'}
-                                                                </td>
-                                                                <td>
-                                                                    <span className={`badge ${getInventoryStatusBadgeClass(item.status)}`}>
-                                                                        {getInventoryStatusLabel(item.status)}
-                                                                    </span>
-                                                                </td>
-                                                            </tr>
-                                                        );
-                                                    })}
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    ) : (
-                                        <div className="empty-state" style={{ textAlign: 'center', padding: '3rem' }}>
-                                            <FiPackage size={48} color="#dee2e6" />
-                                            <p style={{ marginTop: '1rem', color: '#6c757d' }}>
-                                                Tủ này chưa có tồn kho
-                                            </p>
-                                        </div>
-                                    )}
-                                </>
-                            ) : (
-                                <div className="error-message" style={{ textAlign: 'center', padding: '3rem' }}>
-                                    <p>❌ Không thể tải dữ liệu tồn kho</p>
-                                </div>
-                            )}
-                        </div>
-                        <div className="modal-footer">
-                            <button
-                                type="button"
-                                className="btn-secondary"
-                                onClick={() => setShowInventoryModal(false)}
-                            >
+                            <button className="btn-secondary" onClick={() => setShowDetailModal(false)}>
                                 Đóng
                             </button>
                         </div>
@@ -2046,7 +1308,3 @@ const CabinetManagementPage = () => {
 };
 
 export default CabinetManagementPage;
-
-
-
-

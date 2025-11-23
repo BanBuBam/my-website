@@ -411,6 +411,35 @@ export const medicineAPI = {
   },
 };
 
+// ==================== Cabinet Management API ====================
+export const pharmacistCabinetAPI = {
+  // Tạo tủ mới (Create Cabinet)
+  createCabinet: async (cabinetData) => {
+    return apiCall('api/v1/cabinet-management', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(cabinetData),
+    });
+  },
+
+  // Cập nhật tủ (Update Cabinet)
+  updateCabinet: async (cabinetId, cabinetData) => {
+    return apiCall(`api/v1/cabinet-management/${cabinetId}`, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(cabinetData),
+    });
+  },
+
+  // Lấy thông tin tủ theo ID (Get Cabinet by ID)
+  getCabinetById: async (cabinetId) => {
+    return apiCall(`api/v1/cabinet-management/${cabinetId}`, {
 // API Medication Order Groups
 export const medicationOrderGroupAPI = {
   // Lấy danh sách nhóm y lệnh chờ xác minh
@@ -423,6 +452,9 @@ export const medicationOrderGroupAPI = {
     });
   },
 
+  // Lấy tất cả tủ với phân trang (Get All Cabinets)
+  getAllCabinets: async (page = 0, size = 20) => {
+    return apiCall(`api/v1/cabinet-management?page=${page}&size=${size}`, {
   // Lấy chi tiết nhóm y lệnh
   getGroupDetail: async (groupId) => {
     return apiCall(`api/v1/medication-order-groups/${groupId}`, {
@@ -433,6 +465,114 @@ export const medicationOrderGroupAPI = {
     });
   },
 
+  // Lấy tủ theo khoa phòng (Get Cabinets by Department)
+  getCabinetsByDepartment: async (departmentId) => {
+    return apiCall(`api/v1/cabinet-management/department/${departmentId}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Gán người chịu trách nhiệm (Assign Responsible Employee)
+  assignResponsibleEmployee: async (cabinetId, employeeId) => {
+    return apiCall(`api/v1/cabinet-management/${cabinetId}/assign?employeeId=${employeeId}`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Khóa/Mở khóa tủ (Lock/Unlock Cabinet)
+  lockUnlockCabinet: async (cabinetId, locked) => {
+    return apiCall(`api/v1/cabinet-management/${cabinetId}/lock?lock=${locked}`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Thiết lập mức đặt hàng lại (Set Reorder Levels)
+  setReorderLevels: async (cabinetId, reorderData) => {
+    return apiCall(`api/v1/cabinet-management/${cabinetId}/reorder-levels`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(reorderData),
+    });
+  },
+
+  // Ngừng hoạt động tủ (Deactivate Cabinet)
+  deactivateCabinet: async (cabinetId, reason) => {
+    return apiCall(`api/v1/cabinet-management/${cabinetId}/deactivate?reason=${encodeURIComponent(reason)}`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Lấy lịch sử truy cập tủ (Get Cabinet Access Log)
+  getCabinetAccessLog: async (cabinetId, startDate = null, endDate = null) => {
+    let url = `api/v1/cabinet-management/${cabinetId}/access-log`;
+    const params = [];
+    if (startDate) params.push(`startDate=${startDate}`);
+    if (endDate) params.push(`endDate=${endDate}`);
+    if (params.length > 0) url += `?${params.join('&')}`;
+
+    return apiCall(url, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Lấy cảnh báo của tủ (Get Cabinet Alerts)
+  getCabinetAlerts: async (cabinetId) => {
+    return apiCall(`api/v1/cabinet-management/${cabinetId}/alerts`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Tạo báo cáo tủ (Generate Cabinet Report)
+  generateCabinetReport: async (cabinetId, reportType, startDate = null, endDate = null) => {
+    let url = `api/v1/cabinet-management/${cabinetId}/report?reportType=${reportType}`;
+    if (startDate) url += `&startDate=${startDate}`;
+    if (endDate) url += `&endDate=${endDate}`;
+
+    return apiCall(url, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Lấy lịch trình bảo trì (Get Cabinet Maintenance)
+  getCabinetMaintenance: async (cabinetId) => {
+    return apiCall(`api/v1/cabinet-management/${cabinetId}/maintenance`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Lên lịch bảo trì (Schedule Cabinet Maintenance)
+  scheduleCabinetMaintenance: async (cabinetId, maintenanceType, scheduledDate, notes = '') => {
+    let url = `api/v1/cabinet-management/${cabinetId}/schedule-maintenance?maintenanceType=${maintenanceType}&scheduledDate=${scheduledDate}`;
+    if (notes) url += `&notes=${encodeURIComponent(notes)}`;
+
+    return apiCall(url, {
   // Phê duyệt nhóm y lệnh
   verifyMedicationOrderGroup: async (groupId, notes) => {
     return apiCall(`api/v1/medication-order-groups/${groupId}/verify`, {
@@ -451,6 +591,117 @@ export const medicationOrderGroupAPI = {
       headers: {
         'Authorization': `Bearer ${getAccessToken()}`,
       },
+    });
+  },
+
+  // Lấy tồn kho của tủ (Get Cabinet Inventory)
+  // API: GET /api/v1/cabinet-inventory/{cabinetId}
+  getCabinetInventory: async (cabinetId) => {
+    return apiCall(`api/v1/cabinet-inventory/cabinet/${cabinetId}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Cấp phát từ tủ thuốc (Dispense from Cabinet)
+  // API: POST /api/v1/cabinet-inventory/dispense
+  dispenseFromCabinet: async (dispenseData) => {
+    return apiCall('api/v1/cabinet-inventory/dispense', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(dispenseData),
+    });
+  },
+
+  // Bổ sung tồn kho tủ (Restock Cabinet)
+  // API: POST /api/v1/cabinet-inventory/cabinet/{cabinetId}/restock
+  // Required Permission: cabinet.restock
+  restockCabinet: async (cabinetId, restockData) => {
+    return apiCall(`api/v1/cabinet-inventory/cabinet/${cabinetId}/restock`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(restockData),
+    });
+  },
+};
+
+// ==================== Department API ====================
+export const pharmacistDepartmentAPI = {
+  // Lấy danh sách khoa phòng
+  getDepartments: async () => {
+    return apiCall('api/v1/departments', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+};
+
+// ==================== Employee API ====================
+export const pharmacistEmployeeAPI = {
+  // Lấy danh sách nhân viên theo khoa phòng
+  getEmployeesByDepartment: async (departmentId) => {
+    return apiCall(`api/v1/employees/department/${departmentId}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+};
+
+// ==================== Patient API ====================
+export const pharmacistPatientAPI = {
+  // Tìm kiếm bệnh nhân
+  searchPatient: async (searchTerm) => {
+    return apiCall(`api/v1/patients/search?q=${encodeURIComponent(searchTerm)}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Lấy thông tin bệnh nhân
+  getPatientById: async (patientId) => {
+    return apiCall(`api/v1/patients/${patientId}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+};
+
+// ==================== Inventory Movement API ====================
+// Based on backend API specification: INVENTORY MOVEMENT APIs
+export const pharmacistInventoryMovementAPI = {
+  // Record Inventory Movement
+  // API: POST /inventory-movements
+  recordMovement: async (movementData) => {
+    return apiCall('api/v1/inventory-movements', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(movementData),
+    });
+  },
+
+  // Reverse Movement
+  // API: POST /inventory-movements/{movementId}/reverse
+  reverseMovement: async (movementId) => {
+    return apiCall(`api/v1/inventory-movements/${movementId}/reverse`, {
       body: JSON.stringify({ reason }),
     });
   },
@@ -492,6 +743,216 @@ export const medicationOrderGroupAPI = {
       },
     });
   },
+
+  // Get Movement by ID
+  // API: GET /inventory-movements/{movementId}
+  getMovementById: async (movementId) => {
+    return apiCall(`api/v1/inventory-movements/${movementId}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Get Movement History for Stock
+  // API: GET /inventory-movements/stock/{stockId}
+  getMovementHistoryForStock: async (stockId, page = 0, size = 20) => {
+    const queryParams = new URLSearchParams({
+      page: page.toString(),
+      size: size.toString(),
+    });
+
+    return apiCall(`api/v1/inventory-movements/stock/${stockId}?${queryParams.toString()}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Get Movements by Date Range
+  // API: GET /inventory-movements/date-range
+  getMovementsByDateRange: async (startDate, endDate, page = 0, size = 20) => {
+    const queryParams = new URLSearchParams({
+      startDate,
+      endDate,
+      page: page.toString(),
+      size: size.toString(),
+    });
+
+    return apiCall(`api/v1/inventory-movements/date-range?${queryParams.toString()}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Get Movements by Reference
+  // API: GET /inventory-movements/reference
+  getMovementsByReference: async (referenceType, referenceId, page = 0, size = 20) => {
+    const queryParams = new URLSearchParams({
+      referenceType,
+      referenceId: referenceId.toString(),
+      page: page.toString(),
+      size: size.toString(),
+    });
+
+    return apiCall(`api/v1/inventory-movements/reference?${queryParams.toString()}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Get Movements by Patient
+  // API: GET /inventory-movements/patient/{patientId}
+  getMovementsByPatient: async (patientId, page = 0, size = 20) => {
+    const queryParams = new URLSearchParams({
+      page: page.toString(),
+      size: size.toString(),
+    });
+
+    return apiCall(`api/v1/inventory-movements/patient/${patientId}?${queryParams.toString()}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Get Movements by Employee
+  // API: GET /inventory-movements/employee/{employeeId}
+  getMovementsByEmployee: async (employeeId, page = 0, size = 20) => {
+    const queryParams = new URLSearchParams({
+      page: page.toString(),
+      size: size.toString(),
+    });
+
+    return apiCall(`api/v1/inventory-movements/employee/${employeeId}?${queryParams.toString()}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Get Movements by Cabinet
+  // API: GET /inventory-movements/cabinet/{cabinetId}
+  getMovementsByCabinet: async (cabinetId, page = 0, size = 20) => {
+    const queryParams = new URLSearchParams({
+      page: page.toString(),
+      size: size.toString(),
+    });
+
+    return apiCall(`api/v1/inventory-movements/cabinet/${cabinetId}?${queryParams.toString()}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Get Recent Movements
+  // API: GET /inventory-movements/recent
+  // Query Parameters: days (int, default: 7) - Number of days to look back
+  getRecentMovements: async (days = 7) => {
+    const queryParams = new URLSearchParams({
+      days: days.toString(),
+    });
+
+    return apiCall(`api/v1/inventory-movements/recent?${queryParams.toString()}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Get Movements by Type
+  // API: GET /inventory-movements/type/{movementType}
+  getMovementsByType: async (movementType, page = 0, size = 20) => {
+    const queryParams = new URLSearchParams({
+      page: page.toString(),
+      size: size.toString(),
+    });
+
+    return apiCall(`api/v1/inventory-movements/type/${movementType}?${queryParams.toString()}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Get Reversible Movements
+  // API: GET /inventory-movements/reversible
+  getReversibleMovements: async (page = 0, size = 20) => {
+    const queryParams = new URLSearchParams({
+      page: page.toString(),
+      size: size.toString(),
+    });
+
+    return apiCall(`api/v1/inventory-movements/reversible?${queryParams.toString()}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Get High Value Movements
+  // API: GET /inventory-movements/high-value
+  getHighValueMovements: async (threshold, page = 0, size = 20) => {
+    const queryParams = new URLSearchParams({
+      threshold: threshold.toString(),
+      page: page.toString(),
+      size: size.toString(),
+    });
+
+    return apiCall(`api/v1/inventory-movements/high-value?${queryParams.toString()}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Get Movement Statistics
+  // API: GET /inventory-movements/statistics
+  getMovementStatistics: async (startDate, endDate) => {
+    const queryParams = new URLSearchParams();
+    if (startDate) queryParams.append('startDate', startDate);
+    if (endDate) queryParams.append('endDate', endDate);
+
+    return apiCall(`api/v1/inventory-movements/statistics?${queryParams.toString()}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Get Daily Movement Summary
+  // API: GET /inventory-movements/daily-summary
+  getDailyMovementSummary: async (startDate, endDate) => {
+    const queryParams = new URLSearchParams();
+    if (startDate) queryParams.append('startDate', startDate);
+    if (endDate) queryParams.append('endDate', endDate);
+
+    return apiCall(`api/v1/inventory-movements/daily-summary?${queryParams.toString()}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+};
+
+
+
 };
 
 export default {
@@ -504,6 +965,11 @@ export default {
   pharmacistSupplierAPI,
   pharmacistExpiryAPI,
   medicineAPI,
+  pharmacistCabinetAPI,
+  pharmacistDepartmentAPI,
+  pharmacistEmployeeAPI,
+  pharmacistPatientAPI,
+  pharmacistInventoryMovementAPI,
   medicationOrderGroupAPI,
 };
 
