@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import './ClinicalNotesPage.css';
 import {
     FiSearch, FiUser, FiClock, FiList, FiX,
-    FiCheckCircle, FiFileText, FiPlus, FiEdit, FiEdit2
+    FiCheckCircle, FiFileText, FiPlus, FiEdit, FiEdit2, FiPrinter
 } from 'react-icons/fi';
 import { doctorEncounterAPI, icdDiseaseAPI } from '../../../../services/staff/doctorAPI';
 
 const ClinicalNotesPage = () => {
+    const location = useLocation();
     const [encounterId, setEncounterId] = useState('');
     const [encounter, setEncounter] = useState(null);
     const [clinicalNotes, setClinicalNotes] = useState([]);
@@ -19,6 +21,7 @@ const ClinicalNotesPage = () => {
     const [showEditNoteModal, setShowEditNoteModal] = useState(false);
     const [submitting, setSubmitting] = useState(false);
     const [editingNote, setEditingNote] = useState(null);
+    const [exportingNoteId, setExportingNoteId] = useState(null);
 
     // Clinical note form data
     const [noteFormData, setNoteFormData] = useState({
@@ -27,6 +30,29 @@ const ClinicalNotesPage = () => {
         noteType: 'GENERAL',
         notes: ''
     });
+
+    const loadEncounterById = async (id) => {
+        if (!id || !id.trim()) return;
+
+        try {
+            setLoading(true);
+            setError(null);
+            setEncounter(null);
+
+            const response = await doctorEncounterAPI.getEncounterStatus(id.trim());
+
+            if (response && response.data) {
+                setEncounter(response.data);
+            } else {
+                setError('Không tìm thấy encounter');
+            }
+        } catch (err) {
+            console.error('Error fetching encounter:', err);
+            setError(err.message || 'Không thể tải thông tin encounter');
+        } finally {
+            setLoading(false);
+        }
+    };
 
     // Load ICD diseases on component mount
     useEffect(() => {
@@ -43,6 +69,17 @@ const ClinicalNotesPage = () => {
         fetchIcdDiseases();
     }, []);
 
+    // Auto-load encounter if encounterId is passed via navigation state
+    useEffect(() => {
+        if (location.state?.encounterId) {
+            const encounterIdFromState = location.state.encounterId.toString();
+            setEncounterId(encounterIdFromState);
+            // Auto-trigger search
+            loadEncounterById(encounterIdFromState);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [location.state]);
+
     const handleSearchEncounter = async (e) => {
         e.preventDefault();
 
@@ -51,24 +88,7 @@ const ClinicalNotesPage = () => {
             return;
         }
 
-        try {
-            setLoading(true);
-            setError(null);
-            setEncounter(null);
-
-            const response = await doctorEncounterAPI.getEncounterStatus(encounterId.trim());
-
-            if (response && response.data) {
-                setEncounter(response.data);
-            } else {
-                setError('Không tìm thấy encounter');
-            }
-        } catch (err) {
-            console.error('Error fetching encounter:', err);
-            setError(err.message || 'Không thể tải thông tin encounter');
-        } finally {
-            setLoading(false);
-        }
+        loadEncounterById(encounterId);
     };
 
     const handleViewClinicalNotes = async () => {
@@ -226,6 +246,28 @@ const ClinicalNotesPage = () => {
         } catch (err) {
             console.error('Error signing clinical note:', err);
             alert(err.message || 'Không thể ký clinical note');
+        }
+    };
+
+    const handlePrintNote = async (clinicalNoteId) => {
+        try {
+            setExportingNoteId(clinicalNoteId);
+            const blob = await doctorEncounterAPI.exportClinicalNotePDF(clinicalNoteId);
+
+            // Create download link
+            const url = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `clinical-note-${clinicalNoteId}.pdf`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            window.URL.revokeObjectURL(url);
+        } catch (err) {
+            console.error('Error exporting PDF:', err);
+            alert(err.message || 'Không thể xuất PDF');
+        } finally {
+            setExportingNoteId(null);
         }
     };
 
@@ -450,9 +492,19 @@ const ClinicalNotesPage = () => {
                                                         </>
                                                     )}
                                                     {note.status === 'SIGNED' && (
-                                                        <span className="note-signed-info">
-                                                            <FiCheckCircle /> Đã ký
-                                                        </span>
+                                                        <>
+                                                            <span className="note-signed-info">
+                                                                <FiCheckCircle /> Đã ký
+                                                            </span>
+                                                            <button
+                                                                className="btn-print-note"
+                                                                onClick={() => handlePrintNote(note.clinicalNoteId)}
+                                                                disabled={exportingNoteId === note.clinicalNoteId}
+                                                            >
+                                                                <FiPrinter />
+                                                                {exportingNoteId === note.clinicalNoteId ? 'Đang xuất...' : 'In Clinical Note'}
+                                                            </button>
+                                                        </>
                                                     )}
                                                 </div>
                                             </div>

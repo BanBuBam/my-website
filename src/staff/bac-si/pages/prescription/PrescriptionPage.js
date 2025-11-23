@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import './PrescriptionPage.css';
 import {
     FiSearch, FiUser, FiClock, FiList, FiX,
@@ -7,6 +8,7 @@ import {
 import { doctorEncounterAPI, medicineAPI } from '../../../../services/staff/doctorAPI';
 
 const PrescriptionPage = () => {
+    const location = useLocation();
     const [encounterId, setEncounterId] = useState('');
     const [encounter, setEncounter] = useState(null);
     const [prescriptions, setPrescriptions] = useState([]);
@@ -50,6 +52,9 @@ const PrescriptionPage = () => {
         notes: ''
     });
 
+    // Medicine search filter
+    const [medicineSearchTerm, setMedicineSearchTerm] = useState('');
+
     // Load medicines on component mount
     useEffect(() => {
         const fetchMedicines = async () => {
@@ -65,20 +70,26 @@ const PrescriptionPage = () => {
         fetchMedicines();
     }, []);
 
-    const handleSearchEncounter = async (e) => {
-        e.preventDefault();
-
-        if (!encounterId.trim()) {
-            alert('Vui lòng nhập Encounter ID');
-            return;
+    // Auto-load encounter if encounterId is passed via navigation state
+    useEffect(() => {
+        if (location.state?.encounterId) {
+            const encounterIdFromState = location.state.encounterId.toString();
+            setEncounterId(encounterIdFromState);
+            // Auto-trigger search
+            loadEncounterById(encounterIdFromState);
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [location.state]);
+
+    const loadEncounterById = async (id) => {
+        if (!id || !id.trim()) return;
 
         try {
             setLoading(true);
             setError(null);
             setEncounter(null);
 
-            const response = await doctorEncounterAPI.getEncounterStatus(encounterId.trim());
+            const response = await doctorEncounterAPI.getEncounterStatus(id.trim());
 
             if (response && response.data) {
                 setEncounter(response.data);
@@ -91,6 +102,17 @@ const PrescriptionPage = () => {
         } finally {
             setLoading(false);
         }
+    };
+
+    const handleSearchEncounter = async (e) => {
+        e.preventDefault();
+
+        if (!encounterId.trim()) {
+            alert('Vui lòng nhập Encounter ID');
+            return;
+        }
+
+        loadEncounterById(encounterId);
     };
 
     const handleViewPrescriptions = async () => {
@@ -122,6 +144,7 @@ const PrescriptionPage = () => {
             quantity: '',
             notes: ''
         });
+        setMedicineSearchTerm('');
         setShowCreatePrescriptionModal(true);
     };
 
@@ -417,6 +440,16 @@ const PrescriptionPage = () => {
         };
         return statusColors[status] || '#6b7280';
     };
+
+    // Filter medicines based on search term
+    const filteredMedicines = medicines.filter(medicine => {
+        if (!medicineSearchTerm) return true;
+        const searchLower = medicineSearchTerm.toLowerCase();
+        return (
+            medicine.medicineName?.toLowerCase().includes(searchLower) ||
+            medicine.sku?.toLowerCase().includes(searchLower)
+        );
+    });
 
     return (
         <div className="prescription-page">
@@ -870,6 +903,19 @@ const PrescriptionPage = () => {
                                     <h4>Thêm thuốc vào đơn</h4>
                                     <div className="form-grid">
                                         <div className="form-group">
+                                            <label>Tìm kiếm thuốc</label>
+                                            <div className="medicine-search-wrapper">
+                                                <FiSearch className="search-icon-small" />
+                                                <input
+                                                    type="text"
+                                                    placeholder="Tìm theo tên thuốc hoặc mã SKU..."
+                                                    value={medicineSearchTerm}
+                                                    onChange={(e) => setMedicineSearchTerm(e.target.value)}
+                                                    className="medicine-search-input"
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="form-group">
                                             <label>Thuốc <span className="required">*</span></label>
                                             <select
                                                 name="medicineId"
@@ -877,12 +923,17 @@ const PrescriptionPage = () => {
                                                 onChange={handlePrescriptionItemChange}
                                             >
                                                 <option value="">-- Chọn thuốc --</option>
-                                                {medicines.map((medicine) => (
+                                                {filteredMedicines.map((medicine) => (
                                                     <option key={medicine.medicineId} value={medicine.medicineId}>
                                                         {medicine.medicineName} {medicine.sku ? `(${medicine.sku})` : ''}
                                                     </option>
                                                 ))}
                                             </select>
+                                            {medicineSearchTerm && (
+                                                <small className="medicine-count-info">
+                                                    Hiển thị {filteredMedicines.length} / {medicines.length} thuốc
+                                                </small>
+                                            )}
                                         </div>
                                         <div className="form-group">
                                             <label>Liều lượng <span className="required">*</span></label>

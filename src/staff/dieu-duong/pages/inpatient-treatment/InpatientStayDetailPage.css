@@ -216,14 +216,14 @@
 }
 
 .inpatient-stay-detail-page .btn-medication {
-    background: #fef3c7;
-    color: #d97706;
+    background: #d1fae5;
+    color: #065f46;
 }
 
 .inpatient-stay-detail-page .btn-medication:hover {
-    background: #fde68a;
+    background: #a7f3d0;
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(217, 119, 6, 0.3);
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
 }
 
 .inpatient-stay-detail-page .btn-safety-assessment {

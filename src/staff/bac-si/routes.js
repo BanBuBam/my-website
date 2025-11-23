@@ -9,6 +9,9 @@ import AdmissionRequestPage from './pages/inpatient/AdmissionRequestPage';
 import CreateAdmissionRequestPage from './pages/inpatient/CreateAdmissionRequestPage';
 import InpatientTreatmentListPage from './pages/inpatient-treatment/InpatientTreatmentListPage';
 import InpatientTreatmentDetailPage from './pages/inpatient-treatment/InpatientTreatmentDetailPage';
+import CreateMedicationOrderGroupPage from './pages/inpatient-treatment/CreateMedicationOrderGroupPage';
+import CreateSingleMedicationOrderPage from './pages/inpatient-treatment/CreateSingleMedicationOrderPage';
+import ConfirmMedicationOrderGroupPage from './pages/medication-order-group/ConfirmMedicationOrderGroupPage';
 import BookingListPage from './pages/booking/BookingListPage';
 import EmergencyEncounterPage from './pages/emergency/EmergencyEncounterPage';
 import EncounterVitalPage from './pages/examination/EncounterVitalPage';
@@ -18,6 +21,7 @@ import LabTestOrderPage from './pages/lab/LabTestOrderPage';
 import ImagingOrderPage from './pages/imaging/ImagingOrderPage';
 import PrescriptionPage from './pages/prescription/PrescriptionPage';
 import ClinicalNotesPage from './pages/clinicalnotes/ClinicalNotesPage';
+import PatientListPage from './pages/patient-list/PatientListPage';
 
 const DoctorRoutes = () => {
     return (
@@ -40,7 +44,11 @@ const DoctorRoutes = () => {
                 <Route path="benh-nhan-noi-tru" element={<InpatientPage />} />
                 <Route path="dieu-tri-noi-tru" element={<InpatientTreatmentListPage />} />
                 <Route path="dieu-tri-noi-tru/:inpatientStayId" element={<InpatientTreatmentDetailPage />} />
+                <Route path="dieu-tri-noi-tru/:inpatientStayId/tao-nhom-y-lenh" element={<CreateMedicationOrderGroupPage />} />
+                <Route path="dieu-tri-noi-tru/:inpatientStayId/tao-y-lenh-le" element={<CreateSingleMedicationOrderPage />} />
+                <Route path="xac-nhan-nhom-y-lenh" element={<ConfirmMedicationOrderGroupPage />} />
                 <Route path="cap-cuu" element={<EmergencyEncounterPage />} />
+                <Route path="danh-sach-benh-nhan" element={<PatientListPage />} />
             </Route>
         </Routes>
     );

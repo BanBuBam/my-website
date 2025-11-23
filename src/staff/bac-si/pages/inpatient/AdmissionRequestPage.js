@@ -580,7 +580,7 @@ const CreateAdmissionRequestModal = ({ onClose, onSuccess, encounter }) => {
         isolationRequired: false,
         requiresIcu: false,
         oxygenRequired: false,
-        monitoringLevel: 'STANDARD',
+        monitoringLevel: 'BASIC',
         preAdmissionChecklistCompleted: false,
         insuranceVerified: false,
         consentFormSigned: false,

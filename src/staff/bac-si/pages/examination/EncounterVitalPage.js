@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import './EncounterVitalPage.css';
 import {
     FiSearch, FiUser, FiClock, FiActivity, FiThermometer,
@@ -7,6 +8,7 @@ import {
 import { doctorEncounterAPI, icdDiseaseAPI, medicineAPI } from '../../../../services/staff/doctorAPI';
 
 const EncounterVitalPage = () => {
+    const location = useLocation();
     const [encounterId, setEncounterId] = useState('');
     const [encounter, setEncounter] = useState(null);
     const [vitalSigns, setVitalSigns] = useState([]);
@@ -60,6 +62,29 @@ const EncounterVitalPage = () => {
         notes: ''
     });
 
+    const loadEncounterById = async (id) => {
+        if (!id || !id.trim()) return;
+
+        try {
+            setLoading(true);
+            setError(null);
+            setEncounter(null);
+
+            const response = await doctorEncounterAPI.getEncounterStatus(id.trim());
+
+            if (response && response.data) {
+                setEncounter(response.data);
+            } else {
+                setError('Không tìm thấy encounter');
+            }
+        } catch (err) {
+            console.error('Error fetching encounter:', err);
+            setError(err.message || 'Không thể tải thông tin encounter');
+        } finally {
+            setLoading(false);
+        }
+    };
+
     // Load ICD diseases and medicines on component mount
     useEffect(() => {
         const fetchICDDiseases = async () => {
@@ -88,6 +113,17 @@ const EncounterVitalPage = () => {
         fetchMedicines();
     }, []);
 
+    // Auto-load encounter if encounterId is passed via navigation state
+    useEffect(() => {
+        if (location.state?.encounterId) {
+            const encounterIdFromState = location.state.encounterId.toString();
+            setEncounterId(encounterIdFromState);
+            // Auto-trigger search
+            loadEncounterById(encounterIdFromState);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [location.state]);
+
     const handleSearchEncounter = async (e) => {
         e.preventDefault();
 
@@ -96,24 +132,7 @@ const EncounterVitalPage = () => {
             return;
         }
 
-        try {
-            setLoading(true);
-            setError(null);
-            setEncounter(null);
-
-            const response = await doctorEncounterAPI.getEncounterStatus(encounterId.trim());
-
-            if (response && response.data) {
-                setEncounter(response.data);
-            } else {
-                setError('Không tìm thấy encounter');
-            }
-        } catch (err) {
-            console.error('Error fetching encounter:', err);
-            setError(err.message || 'Không thể tải thông tin encounter');
-        } finally {
-            setLoading(false);
-        }
+        loadEncounterById(encounterId);
     };
 
     const handleAddVitalSigns = () => {

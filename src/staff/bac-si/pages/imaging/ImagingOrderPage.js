@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import './ImagingOrderPage.css';
 import {
     FiSearch, FiUser, FiClock, FiActivity, FiPlus, FiList, FiX,
@@ -7,6 +8,7 @@ import {
 import { doctorEncounterAPI, serviceAPI } from '../../../../services/staff/doctorAPI';
 
 const ImagingOrderPage = () => {
+    const location = useLocation();
     const [encounterId, setEncounterId] = useState('');
     const [encounter, setEncounter] = useState(null);
     const [imagingOrders, setImagingOrders] = useState([]);
@@ -77,6 +79,17 @@ const ImagingOrderPage = () => {
         loadServices();
     }, []);
 
+    // Auto-load encounter if encounterId is passed via navigation state
+    useEffect(() => {
+        if (location.state?.encounterId) {
+            const encounterIdFromState = location.state.encounterId.toString();
+            setEncounterId(encounterIdFromState);
+            // Auto-trigger search
+            loadEncounterById(encounterIdFromState);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [location.state]);
+
     const loadServices = async () => {
         try {
             const response = await serviceAPI.getServices(0, 100);
@@ -97,19 +110,15 @@ const ImagingOrderPage = () => {
         }
     };
 
-    const handleSearchEncounter = async (e) => {
-        e.preventDefault();
-        if (!encounterId.trim()) {
-            setError('Vui lòng nhập Encounter ID');
-            return;
-        }
+    const loadEncounterById = async (id) => {
+        if (!id || !id.trim()) return;
 
         setLoading(true);
         setError('');
         setEncounter(null);
 
         try {
-            const response = await doctorEncounterAPI.getEncounterStatus(encounterId);
+            const response = await doctorEncounterAPI.getEncounterStatus(id);
             if (response.data) {
                 setEncounter(response.data);
             }
@@ -118,6 +127,16 @@ const ImagingOrderPage = () => {
         } finally {
             setLoading(false);
         }
+    };
+
+    const handleSearchEncounter = async (e) => {
+        e.preventDefault();
+        if (!encounterId.trim()) {
+            setError('Vui lòng nhập Encounter ID');
+            return;
+        }
+
+        loadEncounterById(encounterId);
     };
 
     const handleAddImagingOrder = () => {

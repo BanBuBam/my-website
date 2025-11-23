@@ -158,9 +158,14 @@ const InpatientPage = () => {
 
     return (
         <div className="inpatient-page">
-            <div className="page-header"><div><h2>Bệnh nhân nội trú</h2><p>Danh sách và quản lý các bệnh nhân đang điều trị nội trú</p></div></div>
+            <div className="page-header">
+                <div>
+                    <h2>Bệnh nhân nội trú, lấy phần danh sách bệnh nhân ở trên xuống đây</h2>
+                    <p>Danh sách và quản lý các bệnh nhân đang điều trị nội trú</p>
+                </div>
+            </div>
             <div className="card">
-                <h3>Danh sách bệnh nhân nội trú</h3>
+                <h3>Danh sách bệnh nhân nội trú, lấy phần danh sách bệnh nhân ở trên xuống đây</h3>
                 <div className="inpatient-list">
                     <div className="list-header"><span>Mã BN</span><span>Tên BN</span><span>Phòng</span><span>Ngày nhập viện</span><span>Hành động</span></div>
                     {inpatients.map(patient => (

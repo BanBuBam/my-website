@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import './LabTestOrderPage.css';
 import {
     FiSearch, FiUser, FiClock, FiActivity, FiPlus, FiList, FiX,
@@ -7,6 +8,7 @@ import {
 import { doctorEncounterAPI } from '../../../../services/staff/doctorAPI';
 
 const LabTestOrderPage = () => {
+    const location = useLocation();
     const [encounterId, setEncounterId] = useState('');
     const [encounter, setEncounter] = useState(null);
     const [labOrders, setLabOrders] = useState([]);
@@ -29,11 +31,6 @@ const LabTestOrderPage = () => {
         priorityNotes: ''
     });
 
-    // Load medical tests on component mount
-    useEffect(() => {
-        loadMedicalTests();
-    }, []);
-
     const loadMedicalTests = async () => {
         try {
             setLoadingTests(true);
@@ -50,20 +47,15 @@ const LabTestOrderPage = () => {
         }
     };
 
-    const handleSearchEncounter = async (e) => {
-        e.preventDefault();
-
-        if (!encounterId.trim()) {
-            alert('Vui lòng nhập Encounter ID');
-            return;
-        }
+    const loadEncounterById = async (id) => {
+        if (!id || !id.trim()) return;
 
         try {
             setLoading(true);
             setError(null);
             setEncounter(null);
 
-            const response = await doctorEncounterAPI.getEncounterStatus(encounterId.trim());
+            const response = await doctorEncounterAPI.getEncounterStatus(id.trim());
 
             if (response && response.data) {
                 setEncounter(response.data);
@@ -76,6 +68,33 @@ const LabTestOrderPage = () => {
         } finally {
             setLoading(false);
         }
+    };
+
+    // Load medical tests on component mount
+    useEffect(() => {
+        loadMedicalTests();
+    }, []);
+
+    // Auto-load encounter if encounterId is passed via navigation state
+    useEffect(() => {
+        if (location.state?.encounterId) {
+            const encounterIdFromState = location.state.encounterId.toString();
+            setEncounterId(encounterIdFromState);
+            // Auto-trigger search
+            loadEncounterById(encounterIdFromState);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [location.state]);
+
+    const handleSearchEncounter = async (e) => {
+        e.preventDefault();
+
+        if (!encounterId.trim()) {
+            alert('Vui lòng nhập Encounter ID');
+            return;
+        }
+
+        loadEncounterById(encounterId);
     };
 
     const handleAddLabOrder = () => {

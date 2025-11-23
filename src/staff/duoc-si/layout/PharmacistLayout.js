@@ -13,7 +13,8 @@ import {
     FiUsers,
     FiCheckCircle,
     FiList,
-    FiArchive
+    FiArchive,
+    FiClipboard
 } from 'react-icons/fi';
 import StaffAvatarDropdown from '../../components/StaffAvatarDropdown';
 
@@ -66,6 +67,12 @@ const PharmacistLayout = () => {
                                 <NavLink to="/staff/duoc-si/lich-su-cap-phat">
                                     <FiCheckCircle />
                                     <span>Lịch sử cấp phát</span>
+                                </NavLink>
+                            </li>
+                            <li>
+                                <NavLink to="/staff/duoc-si/danh-sach-y-lenh-theo-nhom">
+                                    <FiClipboard />
+                                    <span>Danh sách y lệnh theo nhóm</span>
                                 </NavLink>
                             </li>
                         </ul>

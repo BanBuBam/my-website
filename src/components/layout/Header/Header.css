@@ -95,6 +95,21 @@
     font-size: 14px;
     color: var(--text-dark);
   }
+  .staff-login-link {
+    background: none;
+    border: none;
+    font-family: 'Noto Sans', sans-serif;
+    font-size: 14px;
+    color: var(--primary-blue);
+    font-weight: 600;
+    cursor: pointer;
+    padding: 0;
+    transition: color 0.2s ease;
+  }
+  .staff-login-link:hover {
+    color: #003d70;
+    text-decoration: underline;
+  }
   .main-nav {
     background-color: var(--primary-blue);
     color: var(--bg-white);
