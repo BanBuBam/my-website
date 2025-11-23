@@ -165,11 +165,12 @@ const CabinetInventoryPage = () => {
         setShowDispenseModal(true);
     };
 
-    // Thêm item vào danh sách cấp phát
+    // --- ĐÃ CHỈNH SỬA: Xử lý mapping dữ liệu từ snake_case sang camelCase ---
     const handleAddItem = (inventoryItem) => {
+        // Kiểm tra item đã tồn tại trong danh sách chọn chưa (dùng key snake_case từ input)
         const existingItem = selectedItems.find(item =>
-            item.itemId === inventoryItem.itemId &&
-            item.batchNumber === inventoryItem.batchNumber
+            item.itemId === inventoryItem.item_id &&
+            item.batchNumber === inventoryItem.batch_number
         );
 
         if (existingItem) {
@@ -177,13 +178,14 @@ const CabinetInventoryPage = () => {
             return;
         }
 
+        // Tạo object mới mapping từ snake_case (API) sang camelCase (State form)
         const newItem = {
-            itemType: inventoryItem.itemType || 'MEDICINE',
-            itemId: inventoryItem.itemId || inventoryItem.medicineId,
-            itemName: inventoryItem.itemName || inventoryItem.medicineName,
+            itemType: inventoryItem.item_type || 'MEDICINE',
+            itemId: inventoryItem.item_id,
+            itemName: inventoryItem.item_name,
             quantity: 1,
-            availableQuantity: inventoryItem.quantity || inventoryItem.availableQuantity,
-            batchNumber: inventoryItem.batchNumber || '',
+            availableQuantity: inventoryItem.quantity,
+            batchNumber: inventoryItem.batch_number || '',
             notes: ''
         };
 
@@ -423,15 +425,15 @@ const CabinetInventoryPage = () => {
             quantity: parseInt(item.quantity),
             batchNumber: item.batchNumber,
             expiryDate: item.expiryDate,
-            unitPrice: parseFloat(item.unitPrice)
+            // unitPrice: parseFloat(item.unitPrice)
         }));
 
-        const restockData = {
+        const restockData = [{
             cabinetId: selectedCabinet.cabinetId,
-            operationType: 'RESTOCK',
+            // operationType: 'RESTOCK',
             items: items,
-            notes: restockNotes
-        };
+            // notes: restockNotes
+        }];
 
         console.log('=== RESTOCK DEBUG ===');
         console.log('Cabinet ID:', selectedCabinet.cabinetId);
@@ -485,7 +487,7 @@ const CabinetInventoryPage = () => {
     const formatDateTime = (dateString) => {
         if (!dateString) return 'N/A';
         try {
-            return new Date(dateString).toLocaleString('vi-VN');
+            return new Date(dateString).toLocaleDateString('vi-VN');
         } catch {
             return dateString;
         }
@@ -625,6 +627,7 @@ const CabinetInventoryPage = () => {
                                 </div>
                             ) : inventoryItems.length > 0 ? (
                                 <div className="cabinet-table-container">
+                                    {/* --- ĐÃ CHỈNH SỬA: Bảng hiển thị dùng key snake_case --- */}
                                     <table className="cabinet-table">
                                         <thead>
                                             <tr>
@@ -641,13 +644,13 @@ const CabinetInventoryPage = () => {
                                             {inventoryItems.map((item, index) => (
                                                 <tr key={index}>
                                                     <td>{index + 1}</td>
-                                                    <td><strong>{item.itemName || item.medicineName}</strong></td>
+                                                    <td><strong>{item.item_name}</strong></td>
                                                     <td>
-                                                        <span className={`badge badge-type-${(item.itemType || 'MEDICINE').toLowerCase()}`}>
-                                                            {item.itemType || 'MEDICINE'}
+                                                        <span className={`badge badge-type-${(item.item_type || 'MEDICINE').toLowerCase()}`}>
+                                                            {item.item_type || 'MEDICINE'}
                                                         </span>
                                                     </td>
-                                                    <td>{item.batchNumber || 'N/A'}</td>
+                                                    <td>{item.batch_number || 'N/A'}</td>
                                                     <td>
                                                         <span style={{
                                                             color: item.quantity < 10 ? '#dc3545' : '#28a745',
@@ -656,7 +659,7 @@ const CabinetInventoryPage = () => {
                                                             {item.quantity || 0}
                                                         </span>
                                                     </td>
-                                                    <td>{formatDateTime(item.expiryDate)}</td>
+                                                    <td>{formatDateTime(item.expiry_date)}</td>
                                                     <td>
                                                         <button
                                                             className="btn-icon btn-view"
@@ -1235,4 +1238,3 @@ const CabinetInventoryPage = () => {
 };
 
 export default CabinetInventoryPage;
-
