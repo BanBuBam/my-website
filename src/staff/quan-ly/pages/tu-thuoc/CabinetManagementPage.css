@@ -441,16 +441,6 @@ button:disabled {
 
 .lock-icon {
     font-size: 0.95rem;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.3rem;
-    padding: 0.25rem 0.5rem;
-    border-radius: 4px;
-    transition: all 0.2s ease;
-}
-
-.lock-icon svg {
-    font-size: 1rem;
 }
 
 /* ==================== Action Buttons ==================== */
