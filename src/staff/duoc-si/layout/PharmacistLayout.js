@@ -8,6 +8,7 @@ import {
     FiBarChart2,
     FiShoppingCart,
     FiTruck,
+    FiSearch,
     FiAlertCircle,
     FiDollarSign,
     FiUsers,
@@ -107,11 +108,18 @@ const PharmacistLayout = () => {
                                 </NavLink>
                             </li>
                             <li>
+                                <NavLink to="/staff/duoc-si/tra-cuu-ton-kho">
+                                    <FiSearch />
+                                    <span>Tra cứu hàng tồn kho</span>
+                                </NavLink>
+                            </li>
+                            <li>
                                 <NavLink to="/staff/duoc-si/bien-dong-kho">
                                     <FiBarChart2 />
                                     <span>Biến động kho</span>
                                 </NavLink>
                             </li>
+                            
                             <li>
                                 <NavLink to="/staff/duoc-si/han-su-dung">
                                     <FiAlertCircle />

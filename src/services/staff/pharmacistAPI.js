@@ -92,7 +92,7 @@ export const pharmacistDashboardAPI = {
   },
 };
 
-// API Quản lý tồn kho
+// API Quản lý tồn kho (Inventory Lookup)
 export const pharmacistInventoryAPI = {
   // Lấy danh sách thuốc tồn kho
   getInventory: async () => {
@@ -117,6 +117,96 @@ export const pharmacistInventoryAPI = {
   // Lấy chi tiết thuốc
   getMedicineDetail: async (medicineId) => {
     return apiCall(`api/v1/pharmacist/inventory/${medicineId}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Lấy danh sách hàng sắp hết (Low Stock)
+  getLowStockItems: async () => {
+    return apiCall('api/v1/inventory-lookup/low-stock', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Lấy danh sách hàng hết hạn/cận date (Expired)
+  getExpiredItems: async (daysAhead = 30) => {
+    return apiCall(`api/v1/inventory-lookup/expired?daysAhead=${daysAhead}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Tìm kiếm theo Barcode
+  searchByBarcode: async (barcode) => {
+    return apiCall(`api/v1/inventory-lookup/search/barcode?barcode=${barcode}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Tìm kiếm vật tư theo tên
+  searchMaterialsByName: async (name, limit = 20) => {
+    return apiCall(`api/v1/inventory-lookup/materials/search?name=${encodeURIComponent(name)}&limit=${limit}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Lấy chi tiết tồn kho vật tư
+  getMaterialStockDetails: async (materialId) => {
+    return apiCall(`api/v1/inventory-lookup/materials/${materialId}/stock`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Lấy tồn kho theo tủ (Cabinet)
+  getStockByCabinet: async (cabinetId) => {
+    return apiCall(`api/v1/inventory-lookup/cabinets/${cabinetId}/stock`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Lấy tồn kho theo Khoa phòng (Department)
+  getStockByDepartment: async (departmentId) => {
+    return apiCall(`api/v1/inventory-lookup/departments/${departmentId}/stock`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Lấy tổng quan tồn kho (Summary)
+  getStockSummary: async () => {
+    return apiCall('api/v1/inventory-lookup/summary', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // [THÊM MỚI] Lấy định giá tồn kho (Valuation)
+  getStockValuation: async () => {
+    return apiCall('api/v1/inventory-lookup/valuation', {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${getAccessToken()}`,
@@ -260,14 +350,6 @@ export const pharmacistPrescriptionAPI = {
   returnMedicationItem: async (prescriptionId, itemId, quantity, reason) => {
     const url = `${BASE_URL}api/v1/prescriptions/${prescriptionId}/items/${itemId}/return?quantity=${quantity}&reason=${encodeURIComponent(reason)}`;
 
-    console.log('Return medication API call:', {
-      url,
-      prescriptionId,
-      itemId,
-      quantity,
-      reason
-    });
-
     try {
       const response = await fetch(url, {
         method: 'POST',
@@ -277,23 +359,16 @@ export const pharmacistPrescriptionAPI = {
         },
       });
 
-      console.log('Return medication response status:', response.status);
-      console.log('Return medication response ok:', response.ok);
-
-      // Try to parse JSON response
       const contentType = response.headers.get('content-type');
       let data = null;
 
       if (contentType && contentType.includes('application/json')) {
         data = await response.json();
-        console.log('Return medication response data:', data);
       } else {
         const text = await response.text();
-        console.log('Return medication response text:', text);
         data = { message: text };
       }
 
-      // Check if response is successful
       if (!response.ok) {
         throw new Error(data?.message || `HTTP error! status: ${response.status}`);
       }
