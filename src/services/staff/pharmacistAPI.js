@@ -106,7 +106,7 @@ export const pharmacistInventoryAPI = {
 
   // Tìm kiếm thuốc
   searchMedicine: async (searchTerm) => {
-    return apiCall(`api/v1/pharmacist/inventory/search?q=${encodeURIComponent(searchTerm)}`, {
+    return apiCall(`/api/v1/inventory-lookup/medicines/search?name=${encodeURIComponent(searchTerm)}`, {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${getAccessToken()}`,
@@ -1183,70 +1183,200 @@ export const pharmacistStockAlertAPI = {
 
 // ==================== Drug Interaction API ====================
 export const pharmacistInteractionAPI = {
-    // 1. Quản lý (CRUD)
-    getAllInteractions: async (page = 0, size = 20) => {
-        return apiCall(`api/v1/drug-interactions?page=${page}&size=${size}`, { method: 'GET', headers: { 'Authorization': `Bearer ${getAccessToken()}` } });
-    },
-    
-    getInteractionById: async (id) => {
-        return apiCall(`api/v1/drug-interactions/${id}`, { method: 'GET', headers: { 'Authorization': `Bearer ${getAccessToken()}` } });
-    },
+  // 1. Lấy chi tiết tương tác theo ID
+  // GET /api/v1/drug-interactions/{interactionId}
+  getInteractionById: async (interactionId) => {
+    return apiCall(`api/v1/drug-interactions/${interactionId}`, {
+      method: 'GET',
+      headers: { 'Authorization': `Bearer ${getAccessToken()}` },
+    });
+  },
 
-    createInteraction: async (data) => {
-        return apiCall('api/v1/drug-interactions', { 
-            method: 'POST', 
-            headers: { 'Authorization': `Bearer ${getAccessToken()}`, 'Content-Type': 'application/json' },
-            body: JSON.stringify(data)
-        });
-    },
+  // 2. Lấy tất cả tương tác đang hoạt động
+  // GET /api/v1/drug-interactions/active
+  getAllActiveInteractions: async () => {
+    return apiCall('api/v1/drug-interactions/active', {
+      method: 'GET',
+      headers: { 'Authorization': `Bearer ${getAccessToken()}` },
+    });
+  },
 
-    updateInteraction: async (id, data) => {
-        return apiCall(`api/v1/drug-interactions/${id}`, { 
-            method: 'PUT', 
-            headers: { 'Authorization': `Bearer ${getAccessToken()}`, 'Content-Type': 'application/json' },
-            body: JSON.stringify(data)
-        });
-    },
+  // 3. Lấy tương tác theo mức độ nghiêm trọng
+  // GET /api/v1/drug-interactions/severity/{severityLevel}
+  getInteractionsBySeverity: async (severityLevel) => {
+    return apiCall(`api/v1/drug-interactions/severity/${severityLevel}`, {
+      method: 'GET',
+      headers: { 'Authorization': `Bearer ${getAccessToken()}` },
+    });
+  },
 
-    deleteInteraction: async (id) => {
-        return apiCall(`api/v1/drug-interactions/${id}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${getAccessToken()}` } });
-    },
+  // 4. Lấy tương tác liên quan đến một thuốc cụ thể
+  // GET /api/v1/drug-interactions/medicine/{medicineId}
+  getInteractionsByMedicine: async (medicineId) => {
+    return apiCall(`api/v1/drug-interactions/medicine/${medicineId}`, {
+      method: 'GET',
+      headers: { 'Authorization': `Bearer ${getAccessToken()}` },
+    });
+  },
 
-    // 2. Tìm kiếm & Lọc
-    searchInteractions: async (keyword) => {
-        return apiCall(`api/v1/drug-interactions/search?q=${encodeURIComponent(keyword)}`, { method: 'GET', headers: { 'Authorization': `Bearer ${getAccessToken()}` } });
-    },
+  // 5. Tìm kiếm tương tác
+  // GET /api/v1/drug-interactions/search?searchTerm=...
+  searchInteractions: async (searchTerm) => {
+    return apiCall(`api/v1/drug-interactions/search?searchTerm=${encodeURIComponent(searchTerm)}`, {
+      method: 'GET',
+      headers: { 'Authorization': `Bearer ${getAccessToken()}` },
+    });
+  },
 
-    getInteractionsBySeverity: async (severity) => {
-        return apiCall(`api/v1/drug-interactions/severity/${severity}`, { method: 'GET', headers: { 'Authorization': `Bearer ${getAccessToken()}` } });
-    },
+  // 6. Xóa tương tác
+  // DELETE /api/v1/drug-interactions/{interactionId}
+  deleteInteraction: async (interactionId) => {
+    return apiCall(`api/v1/drug-interactions/${interactionId}`, {
+      method: 'DELETE',
+      headers: { 'Authorization': `Bearer ${getAccessToken()}` },
+    });
+  },
+  // POST /api/v1/drug-interactions/check
+  checkInteractions: async (medicineIds, patientId = null) => {
+    const body = {
+      medicineIds: medicineIds,
+      patientId: patientId
+    };
+    return apiCall('api/v1/drug-interactions/check', {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${getAccessToken()}` },
+      body: JSON.stringify(body),
+    });
+  },
+  // 8. Tạo mới tương tác thuốc
+  // POST /api/v1/drug-interactions
+  createInteraction: async (data) => {
+    return apiCall('api/v1/drug-interactions', {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${getAccessToken()}` },
+      body: JSON.stringify(data),
+    });
+  },
 
-    // 3. Công cụ kiểm tra (Check Tools)
-    checkInteractions: async (medicineIds) => {
-        // medicineIds: array of ID [1, 2, 3]
-        return apiCall('api/v1/drug-interactions/check', { 
-            method: 'POST', 
-            headers: { 'Authorization': `Bearer ${getAccessToken()}`, 'Content-Type': 'application/json' },
-            body: JSON.stringify({ medicineIds })
-        });
-    },
+  // 9. Cập nhật tương tác thuốc
+  // PUT /api/v1/drug-interactions/{interactionId}
+  updateInteraction: async (interactionId, data) => {
+    return apiCall(`api/v1/drug-interactions/${interactionId}`, {
+      method: 'PUT',
+      headers: { 'Authorization': `Bearer ${getAccessToken()}` },
+      body: JSON.stringify(data),
+    });
+  },
+  // 10. Kiểm tra an toàn nhanh (Quick Safety Check)
+  // POST /api/v1/drug-interactions/safety-check
+  quickSafetyCheck: async (medicineIds) => {
+    return apiCall('api/v1/drug-interactions/safety-check', {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${getAccessToken()}` },
+      body: JSON.stringify(medicineIds),
+    });
+  },
 
-    checkPairInteraction: async (med1Id, med2Id) => {
-        return apiCall(`api/v1/drug-interactions/check-pair?med1=${med1Id}&med2=${med2Id}`, { method: 'GET', headers: { 'Authorization': `Bearer ${getAccessToken()}` } });
-    },
+  // 11. Kiểm tra tương tác giữa 2 thuốc cụ thể
+  // GET /api/v1/drug-interactions/check-between
+  checkInteractionBetween: async (id1, id2) => {
+    return apiCall(`api/v1/drug-interactions/check-between?medicine1Id=${id1}&medicine2Id=${id2}`, {
+      method: 'GET',
+      headers: { 'Authorization': `Bearer ${getAccessToken()}` },
+    });
+  },
 
-    // 4. Thống kê & Thùng rác
-    getStatistics: async () => {
-        return apiCall('api/v1/drug-interactions/statistics', { method: 'GET', headers: { 'Authorization': `Bearer ${getAccessToken()}` } });
-    },
+  // 12. Lấy các tương tác Chống chỉ định từ danh sách
+  // POST /api/v1/drug-interactions/contraindicated
+  getContraindicatedInteractions: async (medicineIds) => {
+    return apiCall('api/v1/drug-interactions/contraindicated', {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${getAccessToken()}` },
+      body: JSON.stringify(medicineIds),
+    });
+  },
 
-    getDeletedInteractions: async () => {
-        return apiCall('api/v1/drug-interactions/deleted', { method: 'GET', headers: { 'Authorization': `Bearer ${getAccessToken()}` } });
-    },
+  // 13. Lấy các tương tác Nghiêm trọng (Major) từ danh sách
+  // POST /api/v1/drug-interactions/major
+  getMajorInteractions: async (medicineIds) => {
+    return apiCall('api/v1/drug-interactions/major', {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${getAccessToken()}` },
+      body: JSON.stringify(medicineIds),
+    });
+  },
+  // 14. Lấy thống kê tổng quan
+  // GET /api/v1/drug-interactions/statistics
+  getInteractionStatistics: async () => {
+    return apiCall('api/v1/drug-interactions/statistics', {
+      method: 'GET',
+      headers: { 'Authorization': `Bearer ${getAccessToken()}` },
+    });
+  },
 
-    restoreInteraction: async (id) => {
-        return apiCall(`api/v1/drug-interactions/${id}/restore`, { method: 'POST', headers: { 'Authorization': `Bearer ${getAccessToken()}` } });
-    }
+  // 15. Lấy số lượng theo mức độ nghiêm trọng
+  // GET /api/v1/drug-interactions/count-by-severity
+  getInteractionCountBySeverity: async () => {
+    return apiCall('api/v1/drug-interactions/count-by-severity', {
+      method: 'GET',
+      headers: { 'Authorization': `Bearer ${getAccessToken()}` },
+    });
+  },
+
+  // 16. Lấy các tương tác gần đây
+  // GET /api/v1/drug-interactions/recent?limit=...
+  getRecentInteractions: async (limit = 10) => {
+    return apiCall(`api/v1/drug-interactions/recent?limit=${limit}`, {
+      method: 'GET',
+      headers: { 'Authorization': `Bearer ${getAccessToken()}` },
+    });
+  },
+
+  // 17. Import tương tác hàng loạt
+  // POST /api/v1/drug-interactions/bulk-import
+  bulkImportInteractions: async (data) => {
+    return apiCall('api/v1/drug-interactions/bulk-import', {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${getAccessToken()}` },
+      body: JSON.stringify(data),
+    });
+  },
+
+  // 18. Khôi phục tương tác đã xóa
+  // PUT /api/v1/drug-interactions/{interactionId}/restore
+  restoreInteraction: async (interactionId) => {
+    return apiCall(`api/v1/drug-interactions/${interactionId}/restore`, {
+      method: 'PUT',
+      headers: { 'Authorization': `Bearer ${getAccessToken()}` },
+    });
+  },
+
+  // 19. Lấy danh sách tương tác đã xóa
+  // GET /api/v1/drug-interactions/deleted?page=...&size=...
+  getDeletedInteractions: async (page = 0, size = 10) => {
+    return apiCall(`api/v1/drug-interactions/deleted?page=${page}&size=${size}`, {
+      method: 'GET',
+      headers: { 'Authorization': `Bearer ${getAccessToken()}` },
+    });
+  },
+
+  // 20. Lấy danh sách tương tác đang hoạt động (Phân trang)
+  // GET /api/v1/drug-interactions/active/paginated?page=...&size=...
+  getActiveInteractionsPaginated: async (page = 0, size = 10) => {
+    return apiCall(`api/v1/drug-interactions/active/paginated?page=${page}&size=${size}`, {
+      method: 'GET',
+      headers: { 'Authorization': `Bearer ${getAccessToken()}` },
+    });
+  },
+
+  // 21. Lấy thống kê Soft Delete
+  // GET /api/v1/drug-interactions/stats/soft-delete
+  getSoftDeleteStatistics: async () => {
+    return apiCall('api/v1/drug-interactions/stats/soft-delete', {
+      method: 'GET',
+      headers: { 'Authorization': `Bearer ${getAccessToken()}` },
+    });
+  },
 };
 
 // ==================== [NEW] Medical Supply API ====================
