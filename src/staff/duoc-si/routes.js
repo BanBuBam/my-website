@@ -18,7 +18,10 @@ import CabinetManagementPage from "./pages/tu-thuoc/CabinetManagementPage";
 import CabinetInventoryPage from "./pages/tu-thuoc/CabinetInventoryPage";
 import MedicationOrderGroupsListPage from "./pages/medication-order-groups/MedicationOrderGroupsListPage";
 import MedicationOrderGroupDetailPage from "./pages/medication-order-groups/MedicationOrderGroupDetailPage";
-
+import InventoryLookupPage from './pages/tra-cuu-ton-kho/InventoryLookupPage';
+import StockAlertPage from './pages/canh-bao/StockAlertPage';
+import MedicalSupplyPage from './pages/vat-tu-y-te/MedicalSupplyPage';
+import DrugInteractionPage from './pages/tuong-tac-thuoc/DrugInteractionPage';
 const PharmacistRoutes = () => {
     return (
         <Routes>
@@ -42,6 +45,10 @@ const PharmacistRoutes = () => {
                 <Route path="bien-dong-kho" element={<InventoryTransactionsPage />} />
                 <Route path="danh-sach-y-lenh-theo-nhom" element={<MedicationOrderGroupsListPage />} />
                 <Route path="danh-sach-y-lenh-theo-nhom/:groupId" element={<MedicationOrderGroupDetailPage />} />
+                <Route path="tra-cuu-ton-kho" element={<InventoryLookupPage />} />
+                <Route path="canh-bao-ton-kho" element={<StockAlertPage />} />
+                <Route path="vat-tu-y-te" element={<MedicalSupplyPage />} />
+                <Route path="tuong-tac-thuoc" element={<DrugInteractionPage/>} />
                 <Route path="inventory" element={<div>Trang Quản lý Kho thuốc</div>} />
                 <Route path="prescriptions" element={<div>Trang Quản lý Đơn thuốc</div>} />
                 <Route path="reports" element={<div>Trang Báo cáo</div>} />

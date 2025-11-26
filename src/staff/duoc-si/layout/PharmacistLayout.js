@@ -8,10 +8,12 @@ import {
     FiBarChart2,
     FiShoppingCart,
     FiTruck,
+    FiSearch,
     FiAlertCircle,
     FiDollarSign,
     FiUsers,
     FiCheckCircle,
+    FiBriefcase,
     FiList,
     FiArchive,
     FiClipboard
@@ -95,9 +97,21 @@ const PharmacistLayout = () => {
                                 </NavLink>
                             </li>
                             <li>
+                                <NavLink to="/staff/duoc-si/tuong-tac-thuoc">
+                                    <FiArchive />
+                                    <span>Tương tác thuốc</span>
+                                </NavLink>
+                            </li>
+                            <li>
                                 <NavLink to="/staff/duoc-si/tu-thuoc">
                                     <FiArchive />
                                     <span>Quản lý Tủ thuốc</span>
+                                </NavLink>
+                            </li>
+                            <li>
+                                <NavLink to="/staff/duoc-si/vat-tu-y-te">
+                                    <FiBriefcase />
+                                    <span>Quản lý Vật tư & Tiện ích</span>
                                 </NavLink>
                             </li>
                             <li>
@@ -107,11 +121,18 @@ const PharmacistLayout = () => {
                                 </NavLink>
                             </li>
                             <li>
+                                <NavLink to="/staff/duoc-si/tra-cuu-ton-kho">
+                                    <FiSearch />
+                                    <span>Tra cứu hàng tồn kho</span>
+                                </NavLink>
+                            </li>
+                            <li>
                                 <NavLink to="/staff/duoc-si/bien-dong-kho">
                                     <FiBarChart2 />
                                     <span>Biến động kho</span>
                                 </NavLink>
                             </li>
+                            
                             <li>
                                 <NavLink to="/staff/duoc-si/han-su-dung">
                                     <FiAlertCircle />
