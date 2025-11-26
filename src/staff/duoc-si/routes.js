@@ -4,7 +4,6 @@ import PharmacistLayout from './layout/PharmacistLayout';
 import PharmacistDashboardPage from './pages/dashboard/PharmacistDashboardPage';
 import PrescriptionListPage from "./pages/cap-phat/PrescriptionListPage";
 import DispenseHistoryPage from "./pages/lich-su/DispenseHistoryPage";
-import InventoryManagementPage from "./pages/ton-kho/InventoryManagementPage";
 import ImportStockPage from "./pages/nhap-kho/ImportStockPage";
 import StockReceiptPage from "./pages/nhap-kho/StockReceiptPage";
 import PaymentReceiptPage from "./pages/nhap-kho/PaymentReceiptPage";
@@ -31,7 +30,6 @@ const PharmacistRoutes = () => {
                 <Route path="dashboard" element={<PharmacistDashboardPage />} />
                 <Route path="cap-phat" element={<PrescriptionListPage />} />
                 <Route path="lich-su-cap-phat" element={<DispenseHistoryPage />} />
-                <Route path="ton-kho" element={<InventoryManagementPage />} />
                 <Route path="nhap-kho" element={<ImportStockPage />} />
                 <Route path="phieu-nhap-kho" element={<StockReceiptPage />} />
                 <Route path="phieu-thanh-toan" element={<PaymentReceiptPage />} />
