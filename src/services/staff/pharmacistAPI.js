@@ -204,7 +204,7 @@ export const pharmacistInventoryAPI = {
     });
   },
 
-  // [THÊM MỚI] Lấy định giá tồn kho (Valuation)
+  // Lấy định giá tồn kho (Valuation)
   getStockValuation: async () => {
     return apiCall('api/v1/inventory-lookup/valuation', {
       method: 'GET',
@@ -1018,6 +1018,403 @@ export const pharmacistInventoryMovementAPI = {
   },
 };
 
+// ==================== Stock Alert API ====================
+export const pharmacistStockAlertAPI = {
+  // 9.1. Get Alert by ID
+  getAlertById: async (alertId) => {
+    return apiCall(`api/v1/stock-alerts/${alertId}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // 9.2. Get Active Alerts
+  getActiveAlerts: async () => {
+    return apiCall('api/v1/stock-alerts/active', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // 9.3. Get Unacknowledged Alerts
+  getUnacknowledgedAlerts: async () => {
+    return apiCall('api/v1/stock-alerts/unacknowledged', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // 9.4. Get Critical Alerts
+  getCriticalAlerts: async () => {
+    return apiCall('api/v1/stock-alerts/critical', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // 9.5. Get Alerts Requiring Immediate Action
+  getImmediateActionAlerts: async () => {
+    return apiCall('api/v1/stock-alerts/immediate-action', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // 9.6. Get Quantity-Related Alerts
+  getQuantityRelatedAlerts: async () => {
+    return apiCall('api/v1/stock-alerts/quantity-related', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // 9.7. Get Expiry-Related Alerts
+  getExpiryRelatedAlerts: async () => {
+    return apiCall('api/v1/stock-alerts/expiry-related', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // 9.8. Get Overdue Alerts
+  getOverdueAlerts: async () => {
+    return apiCall('api/v1/stock-alerts/overdue', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // 9.9. Get Alerts by Type
+  getAlertsByType: async (alertType) => {
+    return apiCall(`api/v1/stock-alerts/type/${alertType}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // 9.10. Get Alerts by Severity
+  getAlertsBySeverity: async (severity) => {
+    return apiCall(`api/v1/stock-alerts/severity/${severity}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // 9.11. Get Alerts by Stock
+  getAlertsByStock: async (stockId) => {
+    return apiCall(`api/v1/stock-alerts/stock/${stockId}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // 9.12. Get Alerts by Cabinet
+  getAlertsByCabinet: async (cabinetId) => {
+    return apiCall(`api/v1/stock-alerts/cabinet/${cabinetId}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // 9.13. Get Recent Alerts
+  getRecentAlerts: async (hours = 24) => {
+    return apiCall(`api/v1/stock-alerts/recent?hours=${hours}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // 9.14. Search Alerts
+  searchAlerts: async (searchTerm) => {
+    return apiCall(`api/v1/stock-alerts/search?searchTerm=${encodeURIComponent(searchTerm)}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // 9.15. Get Alert Statistics
+  getAlertStatistics: async () => {
+    return apiCall('api/v1/stock-alerts/statistics', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // 9.16. Get Alert Dashboard
+  getAlertDashboard: async () => {
+    return apiCall('api/v1/stock-alerts/dashboard', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+};
+
+// ==================== Drug Interaction API ====================
+export const pharmacistInteractionAPI = {
+    // 1. Quản lý (CRUD)
+    getAllInteractions: async (page = 0, size = 20) => {
+        return apiCall(`api/v1/drug-interactions?page=${page}&size=${size}`, { method: 'GET', headers: { 'Authorization': `Bearer ${getAccessToken()}` } });
+    },
+    
+    getInteractionById: async (id) => {
+        return apiCall(`api/v1/drug-interactions/${id}`, { method: 'GET', headers: { 'Authorization': `Bearer ${getAccessToken()}` } });
+    },
+
+    createInteraction: async (data) => {
+        return apiCall('api/v1/drug-interactions', { 
+            method: 'POST', 
+            headers: { 'Authorization': `Bearer ${getAccessToken()}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        });
+    },
+
+    updateInteraction: async (id, data) => {
+        return apiCall(`api/v1/drug-interactions/${id}`, { 
+            method: 'PUT', 
+            headers: { 'Authorization': `Bearer ${getAccessToken()}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        });
+    },
+
+    deleteInteraction: async (id) => {
+        return apiCall(`api/v1/drug-interactions/${id}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${getAccessToken()}` } });
+    },
+
+    // 2. Tìm kiếm & Lọc
+    searchInteractions: async (keyword) => {
+        return apiCall(`api/v1/drug-interactions/search?q=${encodeURIComponent(keyword)}`, { method: 'GET', headers: { 'Authorization': `Bearer ${getAccessToken()}` } });
+    },
+
+    getInteractionsBySeverity: async (severity) => {
+        return apiCall(`api/v1/drug-interactions/severity/${severity}`, { method: 'GET', headers: { 'Authorization': `Bearer ${getAccessToken()}` } });
+    },
+
+    // 3. Công cụ kiểm tra (Check Tools)
+    checkInteractions: async (medicineIds) => {
+        // medicineIds: array of ID [1, 2, 3]
+        return apiCall('api/v1/drug-interactions/check', { 
+            method: 'POST', 
+            headers: { 'Authorization': `Bearer ${getAccessToken()}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ medicineIds })
+        });
+    },
+
+    checkPairInteraction: async (med1Id, med2Id) => {
+        return apiCall(`api/v1/drug-interactions/check-pair?med1=${med1Id}&med2=${med2Id}`, { method: 'GET', headers: { 'Authorization': `Bearer ${getAccessToken()}` } });
+    },
+
+    // 4. Thống kê & Thùng rác
+    getStatistics: async () => {
+        return apiCall('api/v1/drug-interactions/statistics', { method: 'GET', headers: { 'Authorization': `Bearer ${getAccessToken()}` } });
+    },
+
+    getDeletedInteractions: async () => {
+        return apiCall('api/v1/drug-interactions/deleted', { method: 'GET', headers: { 'Authorization': `Bearer ${getAccessToken()}` } });
+    },
+
+    restoreInteraction: async (id) => {
+        return apiCall(`api/v1/drug-interactions/${id}/restore`, { method: 'POST', headers: { 'Authorization': `Bearer ${getAccessToken()}` } });
+    }
+};
+
+// ==================== [NEW] Medical Supply API ====================
+export const pharmacistMedicalSupplyAPI = {
+    // --- 1. Prescription Management ---
+    // Create Medical Supply Prescription
+    createPrescription: async (data) => {
+        return apiCall('api/v1/medical-supplies', {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${getAccessToken()}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        });
+    },
+
+    // Update Medical Supply Prescription
+    updatePrescription: async (id, data) => {
+        return apiCall(`api/v1/medical-supplies/${id}`, {
+            method: 'PUT',
+            headers: { 'Authorization': `Bearer ${getAccessToken()}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        });
+    },
+
+    // Get Medical Supply Prescription by ID
+    getPrescriptionById: async (prescriptionId) => {
+        return apiCall(`api/v1/medical-supplies/${prescriptionId}`, {
+            method: 'GET',
+            headers: { 'Authorization': `Bearer ${getAccessToken()}` }
+        });
+    },
+
+    // Get Medical Supply Prescriptions by Patient
+    getPrescriptionsByPatient: async (patientId) => {
+        return apiCall(`api/v1/medical-supplies/patient/${patientId}`, {
+            method: 'GET',
+            headers: { 'Authorization': `Bearer ${getAccessToken()}` }
+        });
+    },
+
+    // Get Medical Supply Prescriptions by Encounter
+    getPrescriptionsByEncounter: async (encounterId) => {
+        return apiCall(`api/v1/medical-supplies/encounter/${encounterId}`, {
+            method: 'GET',
+            headers: { 'Authorization': `Bearer ${getAccessToken()}` }
+        });
+    },
+
+    // Get All Prescriptions (For Pharmacist List View)
+    getAllPrescriptions: async (status = '', page = 0, size = 20) => {
+        let url = `api/v1/medical-supplies?page=${page}&size=${size}`;
+        if (status) url += `&status=${status}`;
+        return apiCall(url, {
+            method: 'GET',
+            headers: { 'Authorization': `Bearer ${getAccessToken()}` }
+        });
+    },
+
+    // --- 2. Catalog & Search ---
+    // Search Medical Supplies
+    searchSupplies: async (query, limit = 20) => {
+        return apiCall(`api/v1/medical-supplies/search?query=${encodeURIComponent(query)}&limit=${limit}`, {
+            method: 'GET',
+            headers: { 'Authorization': `Bearer ${getAccessToken()}` }
+        });
+    },
+
+    // Get Medical Supply Categories
+    getCategories: async () => {
+        return apiCall(`api/v1/medical-supplies/categories`, {
+            method: 'GET',
+            headers: { 'Authorization': `Bearer ${getAccessToken()}` }
+        });
+    },
+
+    // Get Supplies by Category
+    getSuppliesByCategory: async (category) => {
+        return apiCall(`api/v1/medical-supplies/category/${encodeURIComponent(category)}`, {
+            method: 'GET',
+            headers: { 'Authorization': `Bearer ${getAccessToken()}` }
+        });
+    },
+
+    // Get Frequently Used Supplies
+    getFrequentlyUsedSupplies: async () => {
+        return apiCall('api/v1/medical-supplies/frequent', {
+            method: 'GET',
+            headers: { 'Authorization': `Bearer ${getAccessToken()}` }
+        });
+    },
+
+    // --- 3. Workflow Actions ---
+    // Approve Medical Supply Prescription
+    approvePrescription: async (id) => {
+        return apiCall(`api/v1/medical-supplies/${id}/approve`, {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${getAccessToken()}` }
+        });
+    },
+
+    // Reject Medical Supply Prescription
+    rejectPrescription: async (id, reason) => {
+        return apiCall(`api/v1/medical-supplies/${id}/reject`, {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${getAccessToken()}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ reason })
+        });
+    },
+
+    // Dispense Medical Supplies
+    dispenseSupplies: async (id) => {
+        return apiCall(`api/v1/medical-supplies/${id}/dispense`, {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${getAccessToken()}` }
+        });
+    },
+
+    // Cancel Medical Supply Prescription
+    cancelPrescription: async (id, reason) => {
+        return apiCall(`api/v1/medical-supplies/${id}/cancel`, {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${getAccessToken()}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ reason })
+        });
+    },
+
+    // --- 4. Statistics & History ---
+    // Get Prescription History
+    getPrescriptionHistory: async (id) => {
+        return apiCall(`api/v1/medical-supplies/${id}/history`, {
+            method: 'GET',
+            headers: { 'Authorization': `Bearer ${getAccessToken()}` }
+        });
+    },
+
+    // Get Supply Usage Statistics
+    getSupplyUsageStatistics: async (startDate, endDate) => {
+        return apiCall(`api/v1/medical-supplies/statistics?startDate=${startDate}&endDate=${endDate}`, {
+            method: 'GET',
+            headers: { 'Authorization': `Bearer ${getAccessToken()}` }
+        });
+    },
+
+    // --- 5. Soft Delete & Restore ---
+    // Get Deleted Materials
+    getDeletedMaterials: async () => {
+        return apiCall('api/v1/medical-supplies/deleted/materials', {
+            method: 'GET',
+            headers: { 'Authorization': `Bearer ${getAccessToken()}` }
+        });
+    },
+
+    // Restore Deleted Material
+    restoreMaterial: async (id) => {
+        return apiCall(`api/v1/medical-supplies/restore/material/${id}`, {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${getAccessToken()}` }
+        });
+    },
+
+    // Get Soft Delete Statistics
+    getSoftDeleteStatistics: async () => {
+        return apiCall('api/v1/medical-supplies/deleted/statistics', {
+            method: 'GET',
+            headers: { 'Authorization': `Bearer ${getAccessToken()}` }
+        });
+    }
+};
+
 export default {
   pharmacistAuthAPI,
   pharmacistDashboardAPI,
@@ -1034,4 +1431,7 @@ export default {
   pharmacistEmployeeAPI,
   pharmacistPatientAPI,
   pharmacistInventoryMovementAPI,
+  pharmacistStockAlertAPI,
+  pharmacistInteractionAPI,
+  pharmacistMedicalSupplyAPI,
 };

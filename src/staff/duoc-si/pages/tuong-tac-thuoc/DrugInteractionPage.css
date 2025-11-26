@@ -1,0 +1,173 @@
+.interaction-page {
+    padding: 1.5rem;
+    background-color: #f0f2f5;
+    min-height: 100vh;
+}
+
+/* Header */
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.header-left h2 { margin: 0; color: #2c3e50; font-size: 1.6rem; }
+.header-left p { margin: 5px 0 0; color: #666; }
+
+.tabs-control {
+    display: flex;
+    gap: 10px;
+    background: white;
+    padding: 5px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+.tab-btn {
+    border: none;
+    background: none;
+    padding: 0.6rem 1.2rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+    color: #666;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s;
+}
+
+.tab-btn:hover { background-color: #f8f9fa; }
+.tab-btn.active { background-color: #e3f2fd; color: #0d47a1; font-weight: 600; }
+
+/* Stats Cards */
+.stats-row {
+    display: flex;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.stat-card {
+    flex: 1;
+    background: white;
+    padding: 1.2rem;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    border-bottom: 4px solid transparent;
+}
+
+.stat-card h3 { margin: 0; font-size: 2rem; }
+.stat-card span { color: #666; font-size: 0.9rem; }
+
+.stat-card.critical { border-color: #d32f2f; color: #d32f2f; }
+.stat-card.major { border-color: #e65100; color: #e65100; }
+.stat-card.moderate { border-color: #fbc02d; color: #fbc02d; }
+
+/* Checker Tool Layout */
+.checker-container {
+    display: grid;
+    grid-template-columns: 1fr 2fr; /* Left 1 phần, Right 2 phần */
+    gap: 1.5rem;
+    height: calc(100vh - 200px);
+}
+
+.checker-input-panel, .checker-result-panel {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    display: flex;
+    flex-direction: column;
+}
+
+/* Medication Search Box */
+.med-search-box { position: relative; margin-bottom: 1rem; }
+.med-search-box input { width: 100%; padding: 0.8rem; border: 1px solid #ddd; border-radius: 6px; }
+
+.search-dropdown {
+    position: absolute;
+    top: 100%; left: 0; right: 0;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    z-index: 10;
+    list-style: none;
+    padding: 0; margin: 5px 0 0;
+    max-height: 200px; overflow-y: auto;
+}
+
+.search-dropdown li {
+    padding: 0.8rem;
+    cursor: pointer;
+    border-bottom: 1px solid #f0f0f0;
+}
+.search-dropdown li:hover { background-color: #f0f7ff; }
+
+/* Selected Meds Tags */
+.selected-meds-list {
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-content: flex-start;
+    padding: 10px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+}
+
+.med-tag {
+    background: #e3f2fd;
+    color: #0d47a1;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.remove-tag {
+    cursor: pointer;
+    font-weight: bold;
+    color: #ef5350;
+}
+
+/* Result Cards */
+.result-card {
+    border: 1px solid #eee;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border-left: 5px solid #ccc;
+}
+
+.result-card.contraindicated, .result-card.critical { border-left-color: #d32f2f; background: #ffebee; }
+.result-card.major { border-left-color: #e65100; background: #fff3e0; }
+.result-card.moderate { border-left-color: #fbc02d; background: #fffde7; }
+
+.result-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.severity-badge {
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    text-transform: uppercase;
+}
+
+.severity-badge.critical { background: #d32f2f; color: white; }
+.severity-badge.major { background: #e65100; color: white; }
+.severity-badge.moderate { background: #fbc02d; color: #333; }
