@@ -1251,168 +1251,243 @@ export const pharmacistInteractionAPI = {
 
 // ==================== [NEW] Medical Supply API ====================
 export const pharmacistMedicalSupplyAPI = {
-    // --- 1. Prescription Management ---
-    // Create Medical Supply Prescription
-    createPrescription: async (data) => {
-        return apiCall('api/v1/medical-supplies', {
-            method: 'POST',
-            headers: { 'Authorization': `Bearer ${getAccessToken()}`, 'Content-Type': 'application/json' },
-            body: JSON.stringify(data)
-        });
-    },
+  // 1. Lấy chi tiết đơn vật tư theo ID
+  // GET /api/v1/medical-supplies/{prescriptionId}
+  getPrescriptionById: async (prescriptionId) => {
+    return apiCall(`api/v1/medical-supplies/${prescriptionId}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
 
-    // Update Medical Supply Prescription
-    updatePrescription: async (id, data) => {
-        return apiCall(`api/v1/medical-supplies/${id}`, {
-            method: 'PUT',
-            headers: { 'Authorization': `Bearer ${getAccessToken()}`, 'Content-Type': 'application/json' },
-            body: JSON.stringify(data)
-        });
-    },
+  // 2. Lấy danh sách đơn vật tư theo Bệnh nhân
+  // GET /api/v1/medical-supplies/patient/{patientId}
+  getPrescriptionsByPatient: async (patientId) => {
+    return apiCall(`api/v1/medical-supplies/patient/${patientId}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
 
-    // Get Medical Supply Prescription by ID
-    getPrescriptionById: async (prescriptionId) => {
-        return apiCall(`api/v1/medical-supplies/${prescriptionId}`, {
-            method: 'GET',
-            headers: { 'Authorization': `Bearer ${getAccessToken()}` }
-        });
-    },
+  // 3. Lấy danh sách đơn vật tư theo Lượt khám (Encounter)
+  // GET /api/v1/medical-supplies/encounter/{encounterId}
+  getPrescriptionsByEncounter: async (encounterId) => {
+    return apiCall(`api/v1/medical-supplies/encounter/${encounterId}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
 
-    // Get Medical Supply Prescriptions by Patient
-    getPrescriptionsByPatient: async (patientId) => {
-        return apiCall(`api/v1/medical-supplies/patient/${patientId}`, {
-            method: 'GET',
-            headers: { 'Authorization': `Bearer ${getAccessToken()}` }
-        });
-    },
+  // 4. Tìm kiếm vật tư y tế
+  // GET /api/v1/medical-supplies/search?query=...&limit=...
+  searchSupplies: async (query, limit = 20) => {
+    const params = new URLSearchParams({
+      query: query,
+      limit: limit.toString()
+    });
+    
+    return apiCall(`api/v1/medical-supplies/search?${params.toString()}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
 
-    // Get Medical Supply Prescriptions by Encounter
-    getPrescriptionsByEncounter: async (encounterId) => {
-        return apiCall(`api/v1/medical-supplies/encounter/${encounterId}`, {
-            method: 'GET',
-            headers: { 'Authorization': `Bearer ${getAccessToken()}` }
-        });
-    },
+  // 5. Lấy danh sách danh mục vật tư
+  // GET /api/v1/medical-supplies/categories
+  getCategories: async () => {
+    return apiCall('api/v1/medical-supplies/categories', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
 
-    // Get All Prescriptions (For Pharmacist List View)
-    getAllPrescriptions: async (status = '', page = 0, size = 20) => {
-        let url = `api/v1/medical-supplies?page=${page}&size=${size}`;
-        if (status) url += `&status=${status}`;
-        return apiCall(url, {
-            method: 'GET',
-            headers: { 'Authorization': `Bearer ${getAccessToken()}` }
-        });
-    },
+  // 6. Lấy vật tư theo danh mục
+  // GET /api/v1/medical-supplies/category/{category}
+  getSuppliesByCategory: async (category) => {
+    return apiCall(`api/v1/medical-supplies/category/${encodeURIComponent(category)}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+  // 7. Duyệt đơn vật tư
+  // POST /api/v1/medical-supplies/{prescriptionId}/approve
+  approvePrescription: async (prescriptionId) => {
+    return apiCall(`api/v1/medical-supplies/${prescriptionId}/approve`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
 
-    // --- 2. Catalog & Search ---
-    // Search Medical Supplies
-    searchSupplies: async (query, limit = 20) => {
-        return apiCall(`api/v1/medical-supplies/search?query=${encodeURIComponent(query)}&limit=${limit}`, {
-            method: 'GET',
-            headers: { 'Authorization': `Bearer ${getAccessToken()}` }
-        });
-    },
+  // 8. Từ chối đơn vật tư
+  // POST /api/v1/medical-supplies/{prescriptionId}/reject?reason=...
+  rejectPrescription: async (prescriptionId, reason) => {
+    // Encode reason để đảm bảo URL hợp lệ (xử lý ký tự đặc biệt, khoảng trắng)
+    const params = new URLSearchParams({ reason });
+    return apiCall(`api/v1/medical-supplies/${prescriptionId}/reject?${params.toString()}`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+  // 9. Cấp phát vật tư (Dispense)
+  // POST /api/v1/medical-supplies/{prescriptionId}/dispense?notes=...
+  dispensePrescription: async (prescriptionId, notes = '') => {
+    const params = new URLSearchParams();
+    if (notes) params.append('notes', notes);
+    
+    return apiCall(`api/v1/medical-supplies/${prescriptionId}/dispense?${params.toString()}`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
 
-    // Get Medical Supply Categories
-    getCategories: async () => {
-        return apiCall(`api/v1/medical-supplies/categories`, {
-            method: 'GET',
-            headers: { 'Authorization': `Bearer ${getAccessToken()}` }
-        });
-    },
+  // 10. Hủy đơn vật tư (Cancel)
+  // POST /api/v1/medical-supplies/{prescriptionId}/cancel?reason=...
+  cancelPrescription: async (prescriptionId, reason) => {
+    const params = new URLSearchParams({ reason });
+    return apiCall(`api/v1/medical-supplies/${prescriptionId}/cancel?${params.toString()}`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+  // 11. Xem trạng thái tồn kho chi tiết của vật tư
+  // GET /api/v1/medical-supplies/{supplyId}/stock
+  getSupplyStockStatus: async (supplyId) => {
+    return apiCall(`api/v1/medical-supplies/${supplyId}/stock`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
 
-    // Get Supplies by Category
-    getSuppliesByCategory: async (category) => {
-        return apiCall(`api/v1/medical-supplies/category/${encodeURIComponent(category)}`, {
-            method: 'GET',
-            headers: { 'Authorization': `Bearer ${getAccessToken()}` }
-        });
-    },
+  // 12. Xem lịch sử đơn vật tư
+  // GET /api/v1/medical-supplies/history?patientId=...&startDate=...
+  getPrescriptionHistory: async (filters = {}) => {
+    const params = new URLSearchParams();
+    if (filters.patientId) params.append('patientId', filters.patientId);
+    if (filters.doctorId) params.append('doctorId', filters.doctorId);
+    if (filters.startDate) params.append('startDate', filters.startDate);
+    if (filters.endDate) params.append('endDate', filters.endDate);
 
-    // Get Frequently Used Supplies
-    getFrequentlyUsedSupplies: async () => {
-        return apiCall('api/v1/medical-supplies/frequent', {
-            method: 'GET',
-            headers: { 'Authorization': `Bearer ${getAccessToken()}` }
-        });
-    },
+    return apiCall(`api/v1/medical-supplies/history?${params.toString()}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
 
-    // --- 3. Workflow Actions ---
-    // Approve Medical Supply Prescription
-    approvePrescription: async (id) => {
-        return apiCall(`api/v1/medical-supplies/${id}/approve`, {
-            method: 'POST',
-            headers: { 'Authorization': `Bearer ${getAccessToken()}` }
-        });
-    },
+  // 13. Lấy danh sách vật tư thường dùng
+  // GET /api/v1/medical-supplies/frequent?limit=...
+  getFrequentlyUsedSupplies: async (limit = 10) => {
+    return apiCall(`api/v1/medical-supplies/frequent?limit=${limit}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
 
-    // Reject Medical Supply Prescription
-    rejectPrescription: async (id, reason) => {
-        return apiCall(`api/v1/medical-supplies/${id}/reject`, {
-            method: 'POST',
-            headers: { 'Authorization': `Bearer ${getAccessToken()}`, 'Content-Type': 'application/json' },
-            body: JSON.stringify({ reason })
-        });
-    },
+  // 14. Lấy thống kê sử dụng vật tư
+  // GET /api/v1/medical-supplies/statistics?startDate=...
+  getSupplyStatistics: async (filters = {}) => {
+    const params = new URLSearchParams();
+    if (filters.startDate) params.append('startDate', filters.startDate);
+    if (filters.endDate) params.append('endDate', filters.endDate);
+    if (filters.departmentId) params.append('departmentId', filters.departmentId);
 
-    // Dispense Medical Supplies
-    dispenseSupplies: async (id) => {
-        return apiCall(`api/v1/medical-supplies/${id}/dispense`, {
-            method: 'POST',
-            headers: { 'Authorization': `Bearer ${getAccessToken()}` }
-        });
-    },
+    return apiCall(`api/v1/medical-supplies/statistics?${params.toString()}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+  // 15. Lấy danh sách Vật tư đã xóa (Thùng rác)
+  // GET /api/v1/medical-supplies/materials/deleted
+  getDeletedMaterials: async (page = 0, size = 20, sort = "materialName,asc") => {
+    const params = new URLSearchParams({ page, size, sort });
+    return apiCall(`api/v1/medical-supplies/materials/deleted?${params.toString()}`, {
+      method: 'GET',
+      headers: { 'Authorization': `Bearer ${getAccessToken()}` },
+    });
+  },
 
-    // Cancel Medical Supply Prescription
-    cancelPrescription: async (id, reason) => {
-        return apiCall(`api/v1/medical-supplies/${id}/cancel`, {
-            method: 'POST',
-            headers: { 'Authorization': `Bearer ${getAccessToken()}`, 'Content-Type': 'application/json' },
-            body: JSON.stringify({ reason })
-        });
-    },
+  // 16. Lấy danh sách Vật tư đang hoạt động
+  // GET /api/v1/medical-supplies/materials/active
+  getActiveMaterials: async (page = 0, size = 20) => {
+    const params = new URLSearchParams({ page, size });
+    return apiCall(`api/v1/medical-supplies/materials/active?${params.toString()}`, {
+      method: 'GET',
+      headers: { 'Authorization': `Bearer ${getAccessToken()}` },
+    });
+  },
 
-    // --- 4. Statistics & History ---
-    // Get Prescription History
-    getPrescriptionHistory: async (id) => {
-        return apiCall(`api/v1/medical-supplies/${id}/history`, {
-            method: 'GET',
-            headers: { 'Authorization': `Bearer ${getAccessToken()}` }
-        });
-    },
+  // 17. Lấy danh sách Thuốc đã xóa (Thùng rác)
+  // GET /api/v1/medical-supplies/medicines/deleted
+  getDeletedMedicines: async (page = 0, size = 20) => {
+    const params = new URLSearchParams({ page, size });
+    return apiCall(`api/v1/medical-supplies/medicines/deleted?${params.toString()}`, {
+      method: 'GET',
+      headers: { 'Authorization': `Bearer ${getAccessToken()}` },
+    });
+  },
 
-    // Get Supply Usage Statistics
-    getSupplyUsageStatistics: async (startDate, endDate) => {
-        return apiCall(`api/v1/medical-supplies/statistics?startDate=${startDate}&endDate=${endDate}`, {
-            method: 'GET',
-            headers: { 'Authorization': `Bearer ${getAccessToken()}` }
-        });
-    },
+  // 18. Lấy danh sách Thuốc đang hoạt động
+  // GET /api/v1/medical-supplies/medicines/active
+  getActiveMedicines: async (page = 0, size = 20) => {
+    const params = new URLSearchParams({ page, size });
+    return apiCall(`api/v1/medical-supplies/medicines/active?${params.toString()}`, {
+      method: 'GET',
+      headers: { 'Authorization': `Bearer ${getAccessToken()}` },
+    });
+  },
 
-    // --- 5. Soft Delete & Restore ---
-    // Get Deleted Materials
-    getDeletedMaterials: async () => {
-        return apiCall('api/v1/medical-supplies/deleted/materials', {
-            method: 'GET',
-            headers: { 'Authorization': `Bearer ${getAccessToken()}` }
-        });
-    },
+  // 19. Lấy thống kê Soft Delete
+  // GET /api/v1/medical-supplies/stats/soft-delete
+  getSoftDeleteStatistics: async () => {
+    return apiCall('api/v1/medical-supplies/stats/soft-delete', {
+      method: 'GET',
+      headers: { 'Authorization': `Bearer ${getAccessToken()}` },
+    });
+  },
+  // 20. Khôi phục Vật tư đã xóa
+  // PUT /api/v1/medical-supplies/materials/{id}/restore
+  restoreMaterial: async (id) => {
+    return apiCall(`api/v1/medical-supplies/materials/${id}/restore`, {
+      method: 'PUT',
+      headers: { 'Authorization': `Bearer ${getAccessToken()}` },
+    });
+  },
 
-    // Restore Deleted Material
-    restoreMaterial: async (id) => {
-        return apiCall(`api/v1/medical-supplies/restore/material/${id}`, {
-            method: 'POST',
-            headers: { 'Authorization': `Bearer ${getAccessToken()}` }
-        });
-    },
-
-    // Get Soft Delete Statistics
-    getSoftDeleteStatistics: async () => {
-        return apiCall('api/v1/medical-supplies/deleted/statistics', {
-            method: 'GET',
-            headers: { 'Authorization': `Bearer ${getAccessToken()}` }
-        });
-    }
+  // 21. Khôi phục Thuốc đã xóa
+  // PUT /api/v1/medical-supplies/medicines/{id}/restore
+  restoreMedicine: async (id) => {
+    return apiCall(`api/v1/medical-supplies/medicines/${id}/restore`, {
+      method: 'PUT',
+      headers: { 'Authorization': `Bearer ${getAccessToken()}` },
+    });
+  },
 };
 
 export default {
