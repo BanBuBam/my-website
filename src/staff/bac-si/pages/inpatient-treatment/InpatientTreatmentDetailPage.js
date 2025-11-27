@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { doctorInpatientTreatmentAPI, medicationOrderAPI } from '../../../../services/staff/doctorAPI';
+import {
+    doctorDischargePlanningAPI,
+    doctorInpatientTreatmentAPI,
+    medicationOrderAPI
+} from '../../../../services/staff/doctorAPI';
 import {
     FiArrowLeft,
     FiUser,
@@ -34,24 +38,24 @@ const InpatientTreatmentDetailPage = () => {
     const [error, setError] = useState(null);
     const [showDischargePlanModal, setShowDischargePlanModal] = useState(false);
     const [isDischarged, setIsDischarged] = useState(false);
-
+    
     // Medication Order Groups
     const [medicationOrderGroups, setMedicationOrderGroups] = useState([]);
     const [loadingGroups, setLoadingGroups] = useState(false);
     const [groupsError, setGroupsError] = useState(null);
     const [expandedGroups, setExpandedGroups] = useState({});
-
+    
     // Modals for medication actions
     const [showHoldModal, setShowHoldModal] = useState(false);
     const [showResumeModal, setShowResumeModal] = useState(false);
     const [showDiscontinueModal, setShowDiscontinueModal] = useState(false);
     const [selectedMedication, setSelectedMedication] = useState(null);
-
+    
     useEffect(() => {
         fetchStayDetail();
         fetchMedicationOrderGroups();
     }, [inpatientStayId]);
-
+    
     const fetchStayDetail = async () => {
         try {
             setLoading(true);
@@ -67,7 +71,7 @@ const InpatientTreatmentDetailPage = () => {
             setLoading(false);
         }
     };
-
+    
     const fetchMedicationOrderGroups = async () => {
         try {
             setLoadingGroups(true);
@@ -83,13 +87,13 @@ const InpatientTreatmentDetailPage = () => {
             setLoadingGroups(false);
         }
     };
-
+    
     const formatDate = (dateString) => {
         if (!dateString) return '-';
         const date = new Date(dateString);
         return date.toLocaleDateString('vi-VN');
     };
-
+    
     const formatDateTime = (dateString) => {
         if (!dateString) return '-';
         const date = new Date(dateString);
@@ -101,38 +105,38 @@ const InpatientTreatmentDetailPage = () => {
             minute: '2-digit'
         });
     };
-
+    
     const handleDischargePlanSuccess = () => {
         // Optionally refresh the stay data or show success message
         alert('Tạo kế hoạch xuất viện thành công!');
     };
-
+    
     const toggleGroupExpansion = (groupId) => {
         setExpandedGroups(prev => ({
             ...prev,
             [groupId]: !prev[groupId]
         }));
     };
-
+    
     const handleHoldMedication = (medication) => {
         setSelectedMedication(medication);
         setShowHoldModal(true);
     };
-
+    
     const handleResumeMedication = (medication) => {
         setSelectedMedication(medication);
         setShowResumeModal(true);
     };
-
+    
     const handleDiscontinueMedication = (medication) => {
         setSelectedMedication(medication);
         setShowDiscontinueModal(true);
     };
-
+    
     const handleMedicationActionSuccess = () => {
         fetchMedicationOrderGroups();
     };
-
+    
     const getStatusBadgeClass = (status) => {
         const statusMap = {
             'ACTIVE': 'status-active',
@@ -145,7 +149,7 @@ const InpatientTreatmentDetailPage = () => {
         };
         return statusMap[status] || 'status-default';
     };
-
+    
     const getPriorityBadgeClass = (priority) => {
         const priorityMap = {
             'ROUTINE': 'priority-routine',
@@ -154,7 +158,7 @@ const InpatientTreatmentDetailPage = () => {
         };
         return priorityMap[priority] || 'priority-default';
     };
-
+    
     if (loading) {
         return (
             <div className="inpatient-treatment-detail-page">
@@ -165,7 +169,7 @@ const InpatientTreatmentDetailPage = () => {
             </div>
         );
     }
-
+    
     if (error) {
         return (
             <div className="inpatient-treatment-detail-page">
@@ -179,7 +183,7 @@ const InpatientTreatmentDetailPage = () => {
             </div>
         );
     }
-
+    
     if (!stay) {
         return (
             <div className="inpatient-treatment-detail-page">
@@ -193,7 +197,7 @@ const InpatientTreatmentDetailPage = () => {
             </div>
         );
     }
-
+    
     return (
         <div className="inpatient-treatment-detail-page">
             {/* Header */}
@@ -212,7 +216,7 @@ const InpatientTreatmentDetailPage = () => {
                     {stay.statusDisplay || stay.currentStatus}
                 </span>
             </div>
-
+            
             {/* Patient Information */}
             <div className="info-section">
                 <h2><FiUser /> Thông tin Bệnh nhân</h2>
@@ -243,7 +247,7 @@ const InpatientTreatmentDetailPage = () => {
                     </div>
                 </div>
             </div>
-
+            
             {/* Stay Information */}
             <div className="info-section">
                 <h2><FiCalendar /> Thông tin Lưu trú</h2>
@@ -284,7 +288,7 @@ const InpatientTreatmentDetailPage = () => {
                     </div>
                 </div>
             </div>
-
+            
             {/* Medical Information */}
             <div className="info-section">
                 <h2><FiFileText /> Thông tin Y tế</h2>
@@ -303,7 +307,7 @@ const InpatientTreatmentDetailPage = () => {
                     </div>
                 </div>
             </div>
-
+            
             {/* Action Buttons */}
             <div className="action-section">
                 <h2>Thao tác</h2>
@@ -322,33 +326,59 @@ const InpatientTreatmentDetailPage = () => {
                         <FiPackage />
                         <span>Thêm y lệnh lẻ</span>
                     </button>
+                    
+                    {/* --- CÁC NÚT MỚI ĐƯỢC THÊM TỪ TRANG NURSE --- */}
+                    <button
+                        className="btn-action btn-medication-view"
+                        onClick={() => navigate(`/staff/bac-si/dieu-tri-noi-tru/${inpatientStayId}/medication-groups`)}
+                    >
+                        <FiPackage />
+                        <span>Xem Medication</span>
+                    </button>
+                    
+                    <button
+                        className="btn-action btn-discharge-planning"
+                        onClick={() => navigate(`/staff/bac-si/dieu-tri-noi-tru/${inpatientStayId}/discharge-planning`)}
+                    >
+                        <FiLogOut />
+                        <span>Kế hoạch xuất viện</span>
+                    </button>
+                    {/* --------------------------------------------- */}
+                    
+                    {/* === CÁC NÚT === */}
+
                     <button className="btn-action btn-transfer-hospital">
                         <FiTruck />
                         <span>Tạo yêu cầu chuyển viện</span>
                     </button>
-                    <button className="btn-action btn-transfer-bed">
+                    <button
+                        className="btn-action btn-transfer-bed"
+                        onClick={() => navigate(`/staff/bac-si/dieu-tri-noi-tru/${inpatientStayId}/chuyen-giuong`)}
+                    >
                         <FiMove />
                         <span>Tạo yêu cầu chuyển giường</span>
                     </button>
+                    
+                    {/* Giữ lại nút logic cũ nếu bạn muốn giữ tính năng modal */}
                     { isDischarged && (
                         <button
-                            className="btn-action btn-discharge"
+                            className="btn-action btn-discharge-modal"
                             onClick={() => setShowDischargePlanModal(true)}
                         >
                             <FiLogOut/>
-                            <span>Tạo yêu cầu xuất viện</span>
+                            <span>Xử lý xuất viện (Modal)</span>
                         </button>
-                        )
+                    )
                     }
                 </div>
             </div>
-
+            
             {/* Medication Order Groups Section */}
             <div className="medication-groups-section">
                 <div className="section-header">
                     <h2><FiList /> Danh sách nhóm y lệnh</h2>
                 </div>
-
+                
                 {loadingGroups ? (
                     <div className="loading-state-inline">
                         <p>Đang tải danh sách nhóm y lệnh...</p>
@@ -394,13 +424,13 @@ const InpatientTreatmentDetailPage = () => {
                                         {expandedGroups[group.medicationOrderGroupId] ? '▼' : '▶'}
                                     </button>
                                 </div>
-
+                                
                                 {group.orderNotes && (
                                     <div className="group-notes">
                                         <strong>Ghi chú:</strong> {group.orderNotes}
                                     </div>
                                 )}
-
+                                
                                 {expandedGroups[group.medicationOrderGroupId] && (
                                     <div className="medications-list">
                                         <h4>Danh sách thuốc:</h4>
@@ -487,7 +517,7 @@ const InpatientTreatmentDetailPage = () => {
                     </div>
                 )}
             </div>
-
+            
             {/* Modals */}
             <CreateDischargePlanModal
                 isOpen={showDischargePlanModal}
@@ -495,21 +525,21 @@ const InpatientTreatmentDetailPage = () => {
                 inpatientStayId={stay.inpatientStayId}
                 onSuccess={handleDischargePlanSuccess}
             />
-
+            
             <HoldMedicationModal
                 isOpen={showHoldModal}
                 onClose={() => setShowHoldModal(false)}
                 medicationOrder={selectedMedication}
                 onSuccess={handleMedicationActionSuccess}
             />
-
+            
             <ResumeMedicationModal
                 isOpen={showResumeModal}
                 onClose={() => setShowResumeModal(false)}
                 medicationOrder={selectedMedication}
                 onSuccess={handleMedicationActionSuccess}
             />
-
+            
             <DiscontinueMedicationModal
                 isOpen={showDiscontinueModal}
                 onClose={() => setShowDiscontinueModal(false)}
@@ -521,4 +551,3 @@ const InpatientTreatmentDetailPage = () => {
 };
 
 export default InpatientTreatmentDetailPage;
-

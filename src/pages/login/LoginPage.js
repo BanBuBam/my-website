@@ -1,7 +1,7 @@
 // src/pages/login/LoginPage.js
 
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { patientAuthAPI } from '../../services/api';
 import './LoginPage.css'; // Import file CSS
 
@@ -51,13 +51,13 @@ const LoginPage = () => {
         localStorage.setItem('userInfo', JSON.stringify(response.data));
       }
 
-      // Trigger event để cập nhật Header
+      // Trigger event để cập nhật Header và Sidebar
       window.dispatchEvent(new Event('loginStatusChanged'));
 
       alert('Đăng nhập thành công!');
 
-      // Redirect về trang chủ sau khi đăng nhập thành công
-      navigate('/');
+      // Reload trang và redirect về trang chủ sau khi đăng nhập thành công
+      window.location.href = '/';
 
     } catch (error) {
       console.error('Lỗi đăng nhập:', error);
@@ -70,7 +70,7 @@ const LoginPage = () => {
   return (
     <div className="login-container">
       <div className="login-form">
-        <h2>Sign In</h2>
+        <h2>Đăng nhập</h2>
 
         {error && (
           <div className="error-message">
@@ -80,7 +80,7 @@ const LoginPage = () => {
 
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label htmlFor="email">Enter your Email</label>
+            <label htmlFor="email">Nhập địa chỉ Email</label>
             <input
               type="email"
               id="email"
@@ -93,12 +93,12 @@ const LoginPage = () => {
           </div>
 
           <div className="form-group">
-            <label htmlFor="password">Enter your Password</label>
+            <label htmlFor="password">Nhập mật khẩu</label>
             <input
               type="password"
               id="password"
               name="password"
-              placeholder="Password"
+              placeholder="Mật khẩu"
               value={formData.password}
               onChange={handleChange}
               disabled={loading}
@@ -110,11 +110,15 @@ const LoginPage = () => {
             className="submit-btn"
             disabled={loading}
           >
-            {loading ? 'Đang đăng nhập...' : 'Sign In'}
+            {loading ? 'Đang đăng nhập...' : 'Đăng nhập'}
           </button>
 
           <div className="form-footer">
             <a href="/forgot-password" className="forgot-link">Quên mật khẩu?</a>
+          </div>
+
+          <div className="register-link">
+            <p>Chưa có tài khoản? <Link to="/register">Đăng ký ngay</Link></p>
           </div>
         </form>
       </div>

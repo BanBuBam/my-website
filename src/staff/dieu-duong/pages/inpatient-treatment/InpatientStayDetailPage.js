@@ -155,12 +155,12 @@ const InpatientStayDetailPage = () => {
                     {/*<FiPackage /> Xem Medication*/}
                     <FiActivity /> Xem Safety Assessment
                 </button>
-                <button className="btn-action btn-discharge"
-                        onClick={() => navigate(`/staff/dieu-duong/dieu-tri-noi-tru/${stayId}/discharge-planning`)}
-                >
-                    {/*<FiPackage /> Xem Medication*/}
-                    <FiActivity /> Xuất viện
-                </button>
+                {/*<button className="btn-action btn-discharge"*/}
+                {/*        onClick={() => navigate(`/staff/dieu-duong/dieu-tri-noi-tru/${stayId}/discharge-planning`)}*/}
+                {/*>*/}
+                {/*    /!*<FiPackage /> Xem Medication*!/*/}
+                {/*    <FiActivity /> Xuất viện*/}
+                {/*</button>*/}
             </div>
             
             {/* Detail Columns */}

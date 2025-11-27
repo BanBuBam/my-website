@@ -2,39 +2,6 @@ import React, { useState, useEffect, useMemo } from 'react';
 import './BedMapPage.css';
 import {FiGrid, FiX, FiPlus, FiArrowLeft, FiLoader} from 'react-icons/fi';
 import { nurseBedAPI } from '../../../../services/staff/nurseAPI';
-// --- Mock Data ---
-const mockBeds = [
-    { 
-        id: 1, name: 'Giường 1', room: 'Phòng 301', status: 'Trống' 
-    },
-    { 
-        id: 2, name: 'Giường 2', room: 'Phòng 301', status: 'Có bệnh nhân', 
-        patient: { 
-            id: 'BN-123', name: 'Nguyễn Văn A', age: 56, gender: 'Nam', 
-            diagnosis: 'Viêm phổi', admissionDate: '12/06/2025',
-            orders: [
-                { id: 1, medicine: 'Paracetamol 500mg', dosage: '1 viên x 3 lần/ngày', doctor: 'BS. Nguyễn Văn A', timestamp: '10:30 15/06/2023' }
-            ]
-        } 
-    },
-    { 
-        id: 3, name: 'Giường 3', room: 'Phòng 301', status: 'Trống' 
-    },
-    { 
-        id: 4, name: 'Giường 4', room: 'Phòng 302', status: 'Đang dọn dẹp' 
-    },
-    { 
-        id: 5, name: 'Giường 5', room: 'Phòng 302', status: 'Có bệnh nhân', 
-        patient: {
-            id: 'BN-456', name: 'Trần Thị B', age: 62, gender: 'Nữ',
-            diagnosis: 'Suy tim', admissionDate: '11/06/2025',
-            orders: [
-                { id: 2, medicine: 'Furosemide 40mg', dosage: '1 viên x 2 lần/ngày', doctor: 'BS. Trần Minh Hoàng', timestamp: '09:00 15/06/2023' }
-            ]
-        }
-    },
-];
-
 // --- Sub-component for the Detail Modal ---
 const BedInfoModal = ({ isOpen, onClose, bedData, onUpdate }) => {
     const [modalView, setModalView] = useState('details'); // 'details' or 'add-order'
@@ -170,7 +137,7 @@ const BedMapPage = () => {
             try {
                 const response = await nurseBedAPI.getDepartments();
                 if (response && response.data) {
-                    setDepartments(response.data);
+                    setDepartments(response.data.content);
                     // Tự động chọn khoa đầu tiên
                     if (response.data.length > 0) {
                         setSelectedDepartment(response.data[0].id);
@@ -304,7 +271,7 @@ const BedMapPage = () => {
             
             <div className="card">
                 <div className="bed-map-header">
-                    <h3>Sơ đồ giường bệnh - {departments.find(d => d.id == selectedDepartment)?.departmentName}</h3>
+                    <h3>Sơ đồ giường bệnh - {departments.find(d => d.id === selectedDepartment)?.departmentName}</h3>
                     <div className="legend">
                         <div className="legend-item"><span className="dot empty"></span>Trống</div>
                         <div className="legend-item"><span className="dot occupied"></span>Có bệnh nhân</div>

@@ -266,6 +266,67 @@ export const doctorBookingAPI = {
   },
 };
 
+export const doctorBedAPI = {
+  
+  getAllAvailableBeds: async () => {
+    return apiCall('api/v1/bed-management/available', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+  /**
+   * Lấy danh sách tất cả các khoa
+   */
+  getDepartments: async () => {
+    return apiCall('api/v1/departments', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+  
+  /**
+   * LÀM VIỆC DỰA TRÊN GIẢ ĐỊNH:
+   * API này trả về TẤT CẢ giường trong một khoa, không chỉ giường "available".
+   */
+  getBedsByDepartment: async (departmentId) => {
+    // LƯU Ý: Tôi đang sử dụng API "available" mà bạn cung cấp,
+    // nhưng giả định nó trả về tất cả giường.
+    return apiCall(`api/v1/bed-management/available/department/${departmentId}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+  
+  /**
+   * API này bạn KHÔNG cung cấp, nhưng nó là cần thiết
+   * để lấy chi tiết bệnh nhân + y lệnh khi click vào giường.
+   * Đây là API ví dụ.
+   */
+  getBedDetails: async (bedId) => {
+    // API này không tồn tại trong danh sách của bạn,
+    // tôi thêm vào để logic modal hoạt động
+    console.warn("Đang gọi API giả: getBedDetails. Cần API thật.");
+    // return apiCall(`api/v1/bed-management/bed/${bedId}/details`, { ... });
+    return new Promise(resolve => setTimeout(() => resolve({
+      data: {
+        patient: {
+          id: 'BN-789', name: 'Bệnh nhân (API)', age: 45, gender: 'Nam',
+          diagnosis: 'Viêm ruột thừa', admissionDate: '14/06/2025',
+        },
+        orders: [
+          { id: 1, medicine: 'Kháng sinh X', dosage: '500mg x 2 lần/ngày', doctor: 'BS. Trần Văn C', timestamp: '11:00 15/06/2023' }
+        ]
+      }
+    }), 500));
+  }
+};
+
 // API Emergency Encounter
 export const doctorEmergencyAPI = {
   // Lấy danh sách emergency encounter theo doctor
@@ -611,7 +672,7 @@ export const doctorEncounterAPI = {
 export const icdDiseaseAPI = {
   // Lấy danh sách ICD diseases
   getICDDiseases: async () => {
-    return apiCall('api/icd-diseases', {
+    return apiCall('api/v1/icd-diseases', {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${getAccessToken()}`,
@@ -838,8 +899,8 @@ export const patientListAPI = {
 
     const queryString = queryParams.toString();
     const endpoint = queryString
-      ? `api/v1/patient/admin/search?${queryString}`
-      : 'api/v1/patient/admin/search';
+      ? `api/v1/patient/admin?${queryString}`
+      : 'api/v1/patient/admin';
 
     return apiCall(endpoint, {
       method: 'GET',
@@ -936,6 +997,108 @@ export const medicationOrderAPI = {
       body: JSON.stringify(discontinueData),
     });
   },
+  
+  //lấy danh sách nhóm y lệnh.
+  getMedicationOrderGroupsByStay: async (inpatientStayId) => {
+    return apiCall(`api/v1/medication-order-groups/inpatient-stays/${inpatientStayId}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+};
+
+export const doctorDischargePlanningAPI = {
+  // Lấy thông tin discharge planning theo inpatient stay ID
+  getDischargePlanningByStay: async (inpatientStayId) => {
+    return apiCall(`api/v1/inpatient/stays/${inpatientStayId}/discharge-planning`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+  
+  // Lấy chi tiết discharge planning theo discharge plan ID
+  getDischargePlanningDetail: async (dischargePlanId) => {
+    return apiCall(`api/v1/inpatient/discharge-planning/${dischargePlanId}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+  
+  // Tạo mới discharge planning cho inpatient stay
+  createDischargePlanning: async (inpatientStayId, planData) => {
+    return apiCall(`api/v1/inpatient/stays/${inpatientStayId}/discharge-planning`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(planData),
+    });
+  },
+  
+  // Cập nhật discharge planning
+  updateDischargePlanning: async (dischargePlanId, planData) => {
+    return apiCall(`api/v1/inpatient/discharge-planning/${dischargePlanId}`, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(planData),
+    });
+  },
+  
+  // Phê duyệt discharge planning (Thường bác sĩ sẽ dùng nút này)
+  approveDischargePlanning: async (dischargePlanId) => {
+    return apiCall(`api/v1/inpatient/discharge-planning/${dischargePlanId}/approve`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+  
+  // Thực hiện xuất viện
+  executeDischarge: async (stayId, dischargeData) => {
+    return apiCall(`api/v1/inpatient/stays/${stayId}/discharge`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(dischargeData),
+    });
+  },
+  
+  // === HÀM MỚI: Đặt lệnh xuất viện ===
+  orderDischarge: async (stayId, reason) => {
+    // Lưu ý: Tôi gửi reason dưới dạng query param cho an toàn với request POST đơn giản
+    // Nếu backend nhận JSON body { "reason": "..." } thì sửa lại body bên dưới
+    return apiCall(`api/v1/inpatient/stays/${stayId}/order-discharge?reason=${encodeURIComponent(reason)}`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+        // 'Content-Type': 'application/json' // Bật dòng này nếu gửi body
+      },
+      // body: JSON.stringify({ reason }) // Dùng dòng này nếu backend nhận JSON
+    });
+  },
+  
+  // === HÀM MỚI: Hủy lệnh xuất viện ===
+  cancelDischargeOrder: async (stayId, reason) => {
+    return apiCall(`api/v1/inpatient/stays/${stayId}/cancel-discharge-order?reason=${encodeURIComponent(reason)}`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
 };
 
 export default {
@@ -956,5 +1119,7 @@ export default {
   admissionRequestAPI,
   patientListAPI,
   medicationOrderAPI,
+  doctorDischargePlanningAPI,
+  doctorBedAPI,
 };
 

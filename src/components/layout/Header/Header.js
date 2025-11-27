@@ -44,7 +44,7 @@ const Header = () => {
       <div className="header-top">
         <div className="container header-top-container">
           <Link to="/" className="logo">
-            <img src={logo} alt="Benh vien Phu Yen logo" />
+            <img src={logo} alt="Bệnh viện TrinityCare logo" />
           </Link>
           <div className="header-contact-info">
             <div className="contact-item">
@@ -55,7 +55,7 @@ const Header = () => {
               </div>
               <div className="text-wrapper">
                 <span>Cấp cứu</span>
-                <strong>84 04 372 766</strong>
+                <strong>024 1138 884</strong>
               </div>
             </div>
             <div className="contact-item">
@@ -66,7 +66,7 @@ const Header = () => {
               </div>
               <div className="text-wrapper">
                 <span>Hotline</span>
-                <strong>84 04 372 766</strong>
+                <strong>024 8345 555</strong>
               </div>
             </div>
           </div>

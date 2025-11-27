@@ -20,7 +20,7 @@ const Footer = () => {
         <div className="container newsletter-container">
           <div className="newsletter-text">
             <h4>Đăng ký nhận thông tin</h4>
-            <p>Nhận thông báo về các thông tin mới của Bệnh viên quốc tế Phú Yên</p>
+            <p>Nhận thông báo về các thông tin mới của Bệnh viện TrinityCare</p>
           </div>
           <form className="newsletter-form">
             <img src={emailIcon} alt="email icon" />
@@ -37,7 +37,7 @@ const Footer = () => {
             <ul className="contact-list">
               <li>
                 <img src={addressIcon} alt="address icon" />
-                <div><span>Địa chỉ</span><strong>706 Campfire Ave. Meriden, CT 06450</strong></div>
+                <div><span>Địa chỉ</span><strong>Số 12, Xuân Thủy, Cầu Giấy, Hà Nội</strong></div>
               </li>
               <li>
                 {/* merged image */}
@@ -45,7 +45,7 @@ const Footer = () => {
                   <img src={phoneIcon} alt="phone icon" className="icon-visible" />
                   <img src={phoneIcon} alt="" className="icon-hidden" />
                 </div>
-                <div><span>Điện thoại</span><strong>310-437-2766</strong></div>
+                <div><span>Hotline</span><strong>024 8345 555</strong></div>
               </li>
               <li>
                 {/* merged image */}
@@ -53,7 +53,7 @@ const Footer = () => {
                   <img src={phoneIcon} alt="emergency icon" className="icon-visible" />
                   <img src={phoneIcon} alt="" className="icon-hidden" />
                 </div>
-                <div><span>Cấp cứu</span><strong>310-437-2766</strong></div>
+                <div><span>Cấp cứu</span><strong>024 1138 884</strong></div>
               </li>
               <li>
                 <img src={faxIcon} alt="fax icon" />

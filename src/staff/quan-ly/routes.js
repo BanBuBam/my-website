@@ -11,6 +11,7 @@ import RoleListPage from './pages/roles/RoleListPage';
 import AdmissionRequestPage from './pages/inpatient/AdmissionRequestPage';
 import SupplierManagementPage from './pages/nha-cung-cap/SupplierManagementPage';
 import CabinetManagementPage from './pages/tu-thuoc/CabinetManagementPage';
+import AdmissionRequestDetailPage from "./pages/inpatient/AdmissionRequestDetailPage";
 
 const AdminRoutes = () => {
     return (
@@ -50,6 +51,7 @@ const AdminRoutes = () => {
 
                 {/* Admission Requests */}
                 <Route path="yeu-cau-nhap-vien" element={<AdmissionRequestPage />} />
+                <Route path="yeu-cau-nhap-vien/:id" element={<AdmissionRequestDetailPage />} /> {/* Do trang chi tiết lấy ra tên biến là id */}
 
                 {/* Leaves */}
                 <Route path="leaves" element={<div>Trang Danh sách Nghỉ phép</div>} />
