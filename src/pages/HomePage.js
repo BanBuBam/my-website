@@ -66,7 +66,7 @@ const HomePage = () => {
       {/* Hero Section */}
       <section className="hero-section">
         <div className="hero-content">
-          <h1>Bệnh viện Quốc tế Phú Yên</h1>
+          <h1>Bệnh viện TrinityCare</h1>
           <p className="hero-subtitle">
             Chăm sóc sức khỏe toàn diện với đội ngũ y bác sĩ giàu kinh nghiệm
           </p>
@@ -142,21 +142,21 @@ const HomePage = () => {
       {/* CTA Section */}
       <section className="cta-section">
         <div className="cta-content">
-          <h2>Cần hỗ trợ y tế?</h2>
+          <h2 style={{color: "white"}}>Cần hỗ trợ y tế?</h2>
           <p>Đội ngũ của chúng tôi luôn sẵn sàng hỗ trợ bạn 24/7</p>
           <div className="cta-info">
             <div className="cta-item">
               <FiPhone />
               <div>
                 <span>Hotline</span>
-                <strong>84 04 372 766</strong>
+                <strong>024 8345 555</strong>
               </div>
             </div>
             <div className="cta-item">
               <FiMapPin />
               <div>
                 <span>Địa chỉ</span>
-                <strong>706 Campfire Ave. Meriden, CT 06450</strong>
+                <strong>Số 12, Xuân Thủy, Cầu Giấy, Hà Nội</strong>
               </div>
             </div>
           </div>

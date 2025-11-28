@@ -220,3 +220,54 @@
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
 }
+/* ... (CSS cũ) ... */
+
+/* Style cho nút Gán giường (Giữ nguyên code cũ của bạn) */
+.request-detail-page .detail-header .btn-assign-bed {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background: #10b981;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    /* margin-left: auto;  <-- BỎ dòng này đi vì chúng ta đã bọc trong div header-actions */
+}
+.request-detail-page .detail-header .btn-assign-bed:hover {
+    background: #059669;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+/* === ADDED: STYLE CHO NÚT HOÀN THÀNH === */
+.request-detail-page .detail-header .btn-complete {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background: #3b82f6; /* Màu xanh dương để khác biệt với nút Gán giường */
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.request-detail-page .detail-header .btn-complete:hover {
+    background: #2563eb;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.request-detail-page .detail-header .btn-complete:disabled {
+    background: #93c5fd;
+    cursor: not-allowed;
+    transform: none;
+}

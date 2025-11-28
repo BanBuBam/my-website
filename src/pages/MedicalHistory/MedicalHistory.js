@@ -138,27 +138,35 @@ const MedicalHistory = () => {
   };
 
   const getStatusColor = (status) => {
+    const normalizedStatus = status?.toUpperCase();
     const statusColors = {
-      'Completed': '#38a169',
-      'Confirmed': '#3182ce',
-      'Pending': '#d69e2e',
-      'Canceled': '#e53e3e',
-      'NoShow': '#9f7aea',
-      'Reject': '#e53e3e'
+      'COMPLETED': '#10b981',
+      'CONFIRMED': '#3b82f6',
+      'PENDING': '#f59e0b',
+      'CANCELED': '#ef4444',
+      'CANCELLED': '#ef4444',
+      'NOSHOW': '#8b5cf6',
+      'NO_SHOW': '#8b5cf6',
+      'REJECT': '#dc2626',
+      'REJECTED': '#dc2626'
     };
-    return statusColors[status] || '#718096';
+    return statusColors[normalizedStatus] || '#6b7280';
   };
 
   const getStatusText = (status) => {
+    const normalizedStatus = status?.toUpperCase();
     const statusTexts = {
-      'Completed': 'Hoàn thành',
-      'Confirmed': 'Đã xác nhận',
-      'Pending': 'Chờ xử lý',
-      'Canceled': 'Đã hủy',
-      'NoShow': 'Không đến',
-      'Reject': 'Từ chối'
+      'COMPLETED': 'Hoàn thành',
+      'CONFIRMED': 'Đã xác nhận',
+      'PENDING': 'Chờ xử lý',
+      'CANCELED': 'Đã hủy',
+      'CANCELLED': 'Đã hủy',
+      'NOSHOW': 'Không đến',
+      'NO_SHOW': 'Không đến',
+      'REJECT': 'Từ chối',
+      'REJECTED': 'Từ chối'
     };
-    return statusTexts[status] || status;
+    return statusTexts[normalizedStatus] || status;
   };
 
   const formatDate = (dateString) => {

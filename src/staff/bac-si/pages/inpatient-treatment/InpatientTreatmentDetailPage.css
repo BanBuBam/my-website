@@ -666,3 +666,33 @@
     }
 }
 
+/* Thêm vào file InpatientTreatmentDetailPage.css */
+
+/* Nút Đặt lệnh xuất viện - Màu tím hoặc xanh đậm để gây chú ý */
+.btn-order-discharge {
+    background-color: #7c3aed; /* Màu tím */
+    color: black;
+}
+.btn-order-discharge:hover {
+    background-color: #6d28d9;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px rgba(124, 58, 237, 0.2);
+}
+
+/* Nút Hủy lệnh xuất viện - Màu cam/đỏ nhạt để cảnh báo */
+.btn-cancel-discharge-order {
+    background-color: #f59e0b; /* Màu cam */
+    color: black;
+}
+.btn-cancel-discharge-order:hover {
+    background-color: #d97706;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px rgba(245, 158, 11, 0.2);
+}
+
+/* Style cho Badge trạng thái DISCHARGE_ORDERED */
+.status-discharge_ordered {
+    background-color: #ede9fe;
+    color: #6d28d9;
+    border: 1px solid #ddd6fe;
+}

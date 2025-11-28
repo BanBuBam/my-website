@@ -53,7 +53,7 @@ const DoctorLayout = () => {
                             <li>
                                 <NavLink to="/staff/bac-si/lich-lam-viec">
                                     <FiClock />
-                                    <span>Lịch làm việc cá nhân</span>
+                                    <span>//Lịch làm việc cá nhân</span>
                                 </NavLink>
                             </li>
                         </ul>
@@ -72,7 +72,7 @@ const DoctorLayout = () => {
                             <li>
                                 <NavLink to="/staff/bac-si/danh-sach-cho-kham">
                                     <FiList />
-                                    <span>Danh sách chờ khám</span>
+                                    <span>//Danh sách chờ khám</span>
                                 </NavLink>
                             </li>
                             <li>
@@ -84,37 +84,37 @@ const DoctorLayout = () => {
                             <li>
                                 <NavLink to="/staff/bac-si/encounters">
                                     <FiUsers />
-                                    <span>Quản lý Encounters</span>
+                                    <span>Quản lý Lượt khám</span>
                                 </NavLink>
                             </li>
                             <li>
                                 <NavLink to="/staff/bac-si/encounter-vital">
                                     <FiActivity />
-                                    <span>Vital Signs</span>
+                                    <span>Quản lý dấu hiệu sinh tồn</span>
                                 </NavLink>
                             </li>
                             <li>
                                 <NavLink to="/staff/bac-si/clinical-notes">
                                     <FiFileText />
-                                    <span>Clinical Notes</span>
+                                    <span>Quản lý Ghi chú y khoa (Clinic Notes)</span>
                                 </NavLink>
                             </li>
                             <li>
                                 <NavLink to="/staff/bac-si/lab-test-order">
                                     <FiClipboard />
-                                    <span>Lab Test Order</span>
+                                    <span>Quản lý Yêu cầu xét nghiệm</span>
                                 </NavLink>
                             </li>
                             <li>
                                 <NavLink to="/staff/bac-si/imaging-order">
                                     <FiFileText />
-                                    <span>Imaging Order</span>
+                                    <span>Quản lý Xét nghiệm hình ảnh</span>
                                 </NavLink>
                             </li>
                             <li>
                                 <NavLink to="/staff/bac-si/prescription">
                                     <FiEdit3 />
-                                    <span>Prescription</span>
+                                    <span>Quản lý đơn thuốc</span>
                                 </NavLink>
                             </li>
 
@@ -144,7 +144,8 @@ const DoctorLayout = () => {
                                 </NavLink>
                             </li>
                             <li>
-                                <NavLink to="/staff/bac-si/benh-nhan-noi-tru">
+                                {/*<NavLink to="/staff/bac-si/benh-nhan-noi-tru">*/}
+                                <NavLink to="/staff/bac-si/danh-sach-benh-nhan">
                                     <FiUsers />
                                     <span>Danh sách bệnh nhân</span>
                                 </NavLink>
@@ -158,13 +159,13 @@ const DoctorLayout = () => {
                             <li>
                                 <NavLink to="/staff/bac-si/benh-an-dien-tu">
                                     <FiFolder />
-                                    <span>Bệnh án điện tử</span>
+                                    <span>//Bệnh án điện tử</span>
                                 </NavLink>
                             </li>
                             <li>
                                 <NavLink to="/staff/bac-si/ke-y-lenh">
                                     <FiEdit3 />
-                                    <span>Kê y lệnh</span>
+                                    <span>//Kê y lệnh</span>
                                 </NavLink>
                             </li>
                             <li>
@@ -176,7 +177,7 @@ const DoctorLayout = () => {
                             <li>
                                 <NavLink to="/staff/bac-si/theo-doi-dien-bien">
                                     <FiTrendingUp />
-                                    <span>Theo dõi diễn biến</span>
+                                    <span>//Theo dõi diễn biến</span>
                                 </NavLink>
                             </li>
                         </ul>
@@ -195,13 +196,13 @@ const DoctorLayout = () => {
                             <li>
                                 <NavLink to="/staff/bac-si/ho-so-benh-an">
                                     <FiFolder />
-                                    <span>Hồ sơ bệnh án</span>
+                                    <span>//Hồ sơ bệnh án</span>
                                 </NavLink>
                             </li>
                             <li>
                                 <NavLink to="/staff/bac-si/lich-su-kham-benh">
                                     <FiClock />
-                                    <span>Lịch sử khám bệnh</span>
+                                    <span>//Lịch sử khám bệnh</span>
                                 </NavLink>
                             </li>
                         </ul>
@@ -214,13 +215,13 @@ const DoctorLayout = () => {
                             <li>
                                 <NavLink to="/staff/bac-si/lich-phau-thuat">
                                     <FiCalendar />
-                                    <span>Lịch phẫu thuật</span>
+                                    <span>//Lịch phẫu thuật</span>
                                 </NavLink>
                             </li>
                             <li>
                                 <NavLink to="/staff/bac-si/phieu-phau-thuat">
                                     <FiFileText />
-                                    <span>Phiếu phẫu thuật</span>
+                                    <span>//Phiếu phẫu thuật</span>
                                 </NavLink>
                             </li>
                         </ul>
@@ -233,7 +234,7 @@ const DoctorLayout = () => {
                             <li>
                                 <NavLink to="/staff/bac-si/cap-cuu">
                                     <FiAlertCircle />
-                                    <span>Emergency Encounters</span>
+                                    <span>Lượt khám cấp cứu (Emerging Encounter)</span>
                                 </NavLink>
                             </li>
                         </ul>

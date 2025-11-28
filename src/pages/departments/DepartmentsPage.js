@@ -226,8 +226,8 @@ const DepartmentsPage = () => {
           <h2>Cần tư vấn về chuyên khoa?</h2>
           <p>Liên hệ với chúng tôi để được tư vấn và hỗ trợ</p>
           <div className="dept-cta-actions">
-            <a href="tel:84043727766" className="btn btn-primary">
-              <FiPhone /> Gọi ngay: 84 04 372 766
+            <a href="tel:0248345555" className="btn btn-primary">
+              <FiPhone /> Gọi ngay: 024 8345 555
             </a>
             <a href="/dat-lich-kham" className="btn btn-secondary">
               Đặt lịch khám

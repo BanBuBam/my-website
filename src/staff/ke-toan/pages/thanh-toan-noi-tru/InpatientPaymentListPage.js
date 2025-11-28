@@ -1,50 +1,24 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { nurseInpatientStayAPI, nurseDepartmentAPI } from '../../../../services/staff/nurseAPI';
-import { FiSearch, FiAlertCircle , FiUser, FiCalendar, FiActivity } from 'react-icons/fi';
-import './InpatientTreatmentPage.css';
+import { financeInpatientAPI } from '../../../../services/staff/financeAPI';
+import { FiSearch, FiAlertCircle, FiUser, FiCalendar, FiActivity } from 'react-icons/fi';
+import './InpatientPaymentListPage.css';
 
-const InpatientTreatmentPage = () => {
+const InpatientPaymentListPage = () => {
     const [stays, setStays] = useState([]);
     const [filteredStays, setFilteredStays] = useState([]);
-    const [departments, setDepartments] = useState([]);
-    const [selectedDepartmentId, setSelectedDepartmentId] = useState('');
     const [loading, setLoading] = useState(true);
-    const [loadingDepartments, setLoadingDepartments] = useState(false);
     const [error, setError] = useState(null);
     const [searchTerm, setSearchTerm] = useState('');
     
     const navigate = useNavigate();
-
-    // Fetch danh sách departments
-    const fetchDepartments = async () => {
-        try {
-            setLoadingDepartments(true);
-            const response = await nurseDepartmentAPI.getDepartments();
-            if (response && response.data) {
-                setDepartments(response.data.content);
-            }
-        } catch (err) {
-            console.error('Error loading departments:', err);
-        } finally {
-            setLoadingDepartments(false);
-        }
-    };
-
+    
     // Fetch danh sách điều trị nội trú
-    const fetchStays = async (departmentId = '') => {
+    const fetchStays = async () => {
         setLoading(true);
         setError(null);
         try {
-            let response;
-            if (departmentId) {
-                // Fetch by department
-                response = await nurseInpatientStayAPI.getStaysByDepartment(departmentId);
-            } else {
-                // Fetch all active stays
-                response = await nurseInpatientStayAPI.getActiveStays();
-            }
-
+            const response = await financeInpatientAPI.getActiveInpatientStays();
             if (response && response.data) {
                 setStays(response.data);
                 setFilteredStays(response.data);
@@ -60,19 +34,10 @@ const InpatientTreatmentPage = () => {
             setLoading(false);
         }
     };
-
+    
     useEffect(() => {
-        fetchDepartments();
         fetchStays();
     }, []);
-
-    // Handle department filter change
-    const handleDepartmentChange = (e) => {
-        const departmentId = e.target.value;
-        setSelectedDepartmentId(departmentId);
-        setSearchTerm(''); // Reset search when changing department
-        fetchStays(departmentId);
-    };
     
     // Lọc theo tên bệnh nhân hoặc mã bệnh nhân
     useEffect(() => {
@@ -84,14 +49,15 @@ const InpatientTreatmentPage = () => {
                 stay.patientName?.toLowerCase().includes(term) ||
                 stay.patientCode?.toLowerCase().includes(term) ||
                 stay.bedNumber?.toLowerCase().includes(term) ||
-                stay.roomNumber?.toLowerCase().includes(term)
+                stay.roomNumber?.toLowerCase().includes(term) ||
+                stay.departmentName?.toLowerCase().includes(term)
             );
             setFilteredStays(filtered);
         }
     }, [searchTerm, stays]);
     
     const handleViewDetail = (inpatientStayId) => {
-        navigate(`/staff/dieu-duong/dieu-tri-noi-tru/${inpatientStayId}`);
+        navigate(`/staff/tai-chinh/thanh-toan-noi-tru/${inpatientStayId}`);
     };
     
     const formatDate = (dateString) => {
@@ -101,13 +67,13 @@ const InpatientTreatmentPage = () => {
     };
     
     return (
-        <div className="inpatient-treatment-page">
+        <div className="inpatient-payment-list-page">
             {/* Page Header */}
             <div className="page-header">
                 <div className="header-content">
-                    <FiSearch className="header-icon" />
+                    <FiActivity className="header-icon" />
                     <div>
-                        <h1>Quản lý Điều trị Nội trú</h1>
+                        <h1>Thanh toán Nội trú</h1>
                         <p>Danh sách bệnh nhân đang điều trị nội trú</p>
                     </div>
                 </div>
@@ -115,33 +81,14 @@ const InpatientTreatmentPage = () => {
             
             {/* Filter Section */}
             <div className="filter-section">
-                <div className="filter-controls">
-                    <div className="department-filter">
-                        <select
-                            value={selectedDepartmentId}
-                            onChange={handleDepartmentChange}
-                            disabled={loadingDepartments}
-                            className="department-select"
-                        >
-                            <option value="">
-                                {loadingDepartments ? 'Đang tải...' : 'Tất cả khoa'}
-                            </option>
-                            {departments.map(dept => (
-                                <option key={dept.id} value={dept.id}>
-                                    {dept.departmentName}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
-                    <div className="search-box">
-                        <FiSearch />
-                        <input
-                            type="text"
-                            placeholder="Tìm theo tên bệnh nhân, mã BN, số giường, số phòng..."
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                        />
-                    </div>
+                <div className="search-box">
+                    <FiSearch />
+                    <input
+                        type="text"
+                        placeholder="Tìm theo tên bệnh nhân, mã BN, số giường, khoa..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                    />
                 </div>
                 <div className="filter-stats">
                     <span className="stat-badge">
@@ -216,8 +163,12 @@ const StayCard = ({ stay, onCardClick }) => {
             <div className="card-body">
                 <div className="info-grid">
                     <div className="info-item">
-                        <label><FiSearch /> Giường:</label>
+                        <label>Giường:</label>
                         <span>{stay.bedDisplay || `${stay.bedNumber} - ${stay.roomNumber}`}</span>
+                    </div>
+                    <div className="info-item">
+                        <label>Khoa:</label>
+                        <span>{stay.departmentName || '-'}</span>
                     </div>
                     <div className="info-item">
                         <label><FiCalendar /> Ngày nhập viện:</label>
@@ -231,24 +182,20 @@ const StayCard = ({ stay, onCardClick }) => {
                         <label>Loại nhập viện:</label>
                         <span>{stay.admissionTypeDisplay || stay.admissionType}</span>
                     </div>
+                    <div className="info-item">
+                        <label>Bác sĩ điều trị:</label>
+                        <span>{stay.attendingDoctorName || 'Loading...'}</span>
+                    </div>
                 </div>
                 
                 <div className="diagnosis-section">
                     <label>Chẩn đoán:</label>
                     <p>{stay.admissionDiagnosis || '-'}</p>
                 </div>
-                
-                <div className="doctor-info">
-                    <label>Bác sĩ điều trị:</label>
-                    <span>{stay.attendingDoctorName || 'Loading...'}</span>
-                    {stay.attendingDoctorSpecialization && (
-                        <span className="specialization"> - {stay.attendingDoctorSpecialization}</span>
-                    )}
-                </div>
             </div>
         </div>
     );
 };
 
-export default InpatientTreatmentPage;
+export default InpatientPaymentListPage;
 

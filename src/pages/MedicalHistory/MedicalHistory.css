@@ -90,25 +90,36 @@
 
 .status-badge {
   display: inline-block;
-  padding: 6px 12px;
+  padding: 6px 14px;
   border-radius: 20px;
   color: white;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 600;
   text-align: center;
-  min-width: 80px;
+  min-width: 100px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
+}
+
+.status-badge:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
 }
 
 .status-badge.large {
-  padding: 8px 16px;
+  padding: 10px 18px;
   font-size: 14px;
-  min-width: 100px;
+  min-width: 120px;
+  border-radius: 24px;
 }
 
 .status-badge.small {
-  padding: 4px 8px;
+  padding: 4px 10px;
   font-size: 11px;
-  min-width: 60px;
+  min-width: 70px;
+  border-radius: 16px;
 }
 
 .booking-info {
@@ -137,35 +148,41 @@
 }
 
 .view-detail-btn {
-  background-color: #38a169;
+  background-color: #3b82f6;
   color: white;
   border: none;
   padding: 10px 20px;
-  border-radius: 6px;
+  border-radius: 8px;
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(59, 130, 246, 0.2);
 }
 
 .view-detail-btn:hover {
-  background-color: #2f855a;
+  background-color: #2563eb;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px rgba(59, 130, 246, 0.3);
 }
 
 .cancel-booking-btn {
-  background-color: #e53e3e;
+  background-color: #ef4444;
   color: white;
   border: none;
   padding: 10px 20px;
-  border-radius: 6px;
+  border-radius: 8px;
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(239, 68, 68, 0.2);
 }
 
 .cancel-booking-btn:hover {
-  background-color: #c53030;
+  background-color: #dc2626;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px rgba(239, 68, 68, 0.3);
 }
 
 

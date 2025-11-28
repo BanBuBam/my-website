@@ -22,6 +22,9 @@ import ImagingOrderPage from './pages/imaging/ImagingOrderPage';
 import PrescriptionPage from './pages/prescription/PrescriptionPage';
 import ClinicalNotesPage from './pages/clinicalnotes/ClinicalNotesPage';
 import PatientListPage from './pages/patient-list/PatientListPage';
+import MedicationOrderGroupsPage from "./pages/medication-order-group/MedicationOrderGroupsPage";
+import DoctorDischargePlanningPage from "./pages/discharge/DoctorDischargePlanningPage";
+import BedTransferPage from "./pages/inpatient-treatment/BedTransferPage";
 
 const DoctorRoutes = () => {
     return (
@@ -43,6 +46,9 @@ const DoctorRoutes = () => {
                 <Route path="tao-yeu-cau-nhap-vien/:encounterId" element={<CreateAdmissionRequestPage />} />
                 <Route path="benh-nhan-noi-tru" element={<InpatientPage />} />
                 <Route path="dieu-tri-noi-tru" element={<InpatientTreatmentListPage />} />
+                <Route path="dieu-tri-noi-tru/:inpatientStayId/medication-groups" element={<MedicationOrderGroupsPage />} />
+                <Route path="dieu-tri-noi-tru/:inpatientStayId/discharge-planning" element={<DoctorDischargePlanningPage />} />
+                <Route path="dieu-tri-noi-tru/:inpatientStayId/chuyen-giuong" element={<BedTransferPage />} />
                 <Route path="dieu-tri-noi-tru/:inpatientStayId" element={<InpatientTreatmentDetailPage />} />
                 <Route path="dieu-tri-noi-tru/:inpatientStayId/tao-nhom-y-lenh" element={<CreateMedicationOrderGroupPage />} />
                 <Route path="dieu-tri-noi-tru/:inpatientStayId/tao-y-lenh-le" element={<CreateSingleMedicationOrderPage />} />

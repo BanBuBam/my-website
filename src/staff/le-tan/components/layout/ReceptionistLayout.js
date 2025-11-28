@@ -56,7 +56,7 @@ const ReceptionistLayout = () => {
             <li>
               <NavLink to="/staff/le-tan/booking">
                 <FiList />
-                <span>Danh sách Booking</span>
+                <span>Danh sách Đặt lịch khám</span>
               </NavLink>
             </li>
             <li>
