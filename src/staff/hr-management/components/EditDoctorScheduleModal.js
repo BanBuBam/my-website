@@ -85,7 +85,8 @@ const EditDoctorScheduleModal = ({ isOpen, onClose, onSubmit, schedule }) => {
 
   const fetchClinics = async () => {
     try {
-      const response = await hrDoctorScheduleAPI.getClinics();
+      // Gọi API với pagination (lấy tất cả clinics, size=100)
+      const response = await hrDoctorScheduleAPI.getClinics('', 0, 100);
       console.log('Clinics response:', response);
 
       if (response.content && Array.isArray(response.content)) {

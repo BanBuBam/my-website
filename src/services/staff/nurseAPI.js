@@ -340,8 +340,18 @@ export const nurseAdmissionRequestAPI = {
 // API Departments
 export const nurseDepartmentAPI = {
   // Lấy danh sách departments
-  getDepartments: async () => {
-    return apiCall('api/v1/departments', {
+  getDepartments: async (name = '', page = 0, size = 10) => {
+    const params = new URLSearchParams({
+      page: page.toString(),
+      size: size.toString(),
+    });
+
+    // Thêm name nếu có
+    if (name && name.trim() !== '') {
+      params.append('name', name.trim());
+    }
+
+    return apiCall(`api/v1/departments?${params.toString()}`, {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${getAccessToken()}`,
@@ -553,8 +563,18 @@ export const nurseBedAPI = {
   /**
    * Lấy danh sách tất cả các khoa
    */
-  getDepartments: async () => {
-    return apiCall('api/v1/departments', {
+  getDepartments: async (name = '', page = 0, size = 10) => {
+    const params = new URLSearchParams({
+      page: page.toString(),
+      size: size.toString(),
+    });
+
+    // Thêm name nếu có
+    if (name && name.trim() !== '') {
+      params.append('name', name.trim());
+    }
+
+    return apiCall(`api/v1/departments?${params.toString()}`, {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${getAccessToken()}`,

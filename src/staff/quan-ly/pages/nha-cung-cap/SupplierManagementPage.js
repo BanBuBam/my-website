@@ -51,7 +51,7 @@ const SupplierManagementPage = () => {
             } else if (viewMode === 'deleted') {
                 response = await adminSupplierAPI.getDeletedSuppliers(page, 20);
             } else {
-                response = await adminSupplierAPI.getAllSuppliers(page, 20);
+                response = await adminSupplierAPI.getAllSuppliers('', page, 20);
             }
 
             if (response && response.data) {

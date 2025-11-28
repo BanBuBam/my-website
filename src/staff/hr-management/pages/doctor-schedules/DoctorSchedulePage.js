@@ -12,11 +12,20 @@ const DoctorSchedulePage = () => {
   const [showEditModal, setShowEditModal] = useState(false);
   const [selectedSchedule, setSelectedSchedule] = useState(null);
 
+  // Helper function to get today's date in YYYY-MM-DD format
+  const getTodayDate = () => {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const day = String(today.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
   // Filter states
-  const [viewMode, setViewMode] = useState('all'); // 'all', 'doctor', 'clinic', 'date', 'dateRange'
+  const [viewMode, setViewMode] = useState('today'); // 'today', 'all', 'doctor', 'clinic', 'date', 'dateRange'
   const [selectedDoctor, setSelectedDoctor] = useState('');
   const [selectedClinic, setSelectedClinic] = useState('');
-  const [selectedDate, setSelectedDate] = useState('');
+  const [selectedDate, setSelectedDate] = useState(getTodayDate()); // Mặc định là hôm nay
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
 
@@ -38,9 +47,12 @@ const DoctorSchedulePage = () => {
 
   const fetchInitialData = async () => {
     try {
-      const clinicsResponse = await hrDoctorScheduleAPI.getClinics();
+      // Gọi API với pagination (lấy tất cả clinics, size=100)
+      const clinicsResponse = await hrDoctorScheduleAPI.getClinics('', 0, 100);
       if (clinicsResponse.content && Array.isArray(clinicsResponse.content)) {
         setClinics(clinicsResponse.content);
+      } else if (clinicsResponse.data && clinicsResponse.data.content && Array.isArray(clinicsResponse.data.content)) {
+        setClinics(clinicsResponse.data.content);
       }
     } catch (err) {
       console.error('Error fetching initial data:', err);
@@ -62,6 +74,12 @@ const DoctorSchedulePage = () => {
       });
 
       switch (viewMode) {
+        case 'today':
+          // Lấy lịch làm việc của tất cả bác sĩ hôm nay
+          console.log('📞 Calling getSchedulesByDate with today:', selectedDate);
+          response = await hrDoctorScheduleAPI.getSchedulesByDate(selectedDate);
+          break;
+
         case 'doctor':
           if (selectedDoctor) {
             console.log('📞 Calling getSchedulesByDoctor with doctorId:', selectedDoctor);
@@ -89,6 +107,10 @@ const DoctorSchedulePage = () => {
           if (selectedDoctor && selectedDate) {
             console.log('📞 Calling getScheduleByDoctorAndDate with:', selectedDoctor, selectedDate);
             response = await hrDoctorScheduleAPI.getScheduleByDoctorAndDate(selectedDoctor, selectedDate);
+          } else if (selectedDate) {
+            // Nếu chỉ có date mà không có doctor, lấy tất cả bác sĩ trong ngày đó
+            console.log('📞 Only date selected, calling getSchedulesByDate');
+            response = await hrDoctorScheduleAPI.getSchedulesByDate(selectedDate);
           } else if (selectedDoctor) {
             console.log('📞 Doctor selected but no date, calling getSchedulesByDoctor');
             response = await hrDoctorScheduleAPI.getSchedulesByDoctor(selectedDoctor);
@@ -111,9 +133,14 @@ const DoctorSchedulePage = () => {
           }
           break;
 
-        default:
-          console.log('📞 Default case: fetching all schedules');
+        case 'all':
+          console.log('📞 Fetching all schedules');
           response = await hrDoctorScheduleAPI.getDoctorSchedules();
+          break;
+
+        default:
+          console.log('📞 Default case: fetching schedules for today');
+          response = await hrDoctorScheduleAPI.getSchedulesByDate(getTodayDate());
       }
 
       console.log('✅ Schedules response:', response);
@@ -307,10 +334,10 @@ const DoctorSchedulePage = () => {
   };
 
   const resetFilters = () => {
-    setViewMode('all');
+    setViewMode('today');
     setSelectedDoctor('');
     setSelectedClinic('');
-    setSelectedDate('');
+    setSelectedDate(getTodayDate());
     setStartDate('');
     setEndDate('');
     setDoctors([]);
@@ -334,9 +361,21 @@ const DoctorSchedulePage = () => {
           <h1>Lịch làm việc Bác sĩ</h1>
           <p className="page-subtitle">Quản lý lịch làm việc của các bác sĩ</p>
         </div>
-        <button className="btn-primary" onClick={() => setShowAddModal(true)}>
-          <FiPlus /> Thêm Lịch làm việc
-        </button>
+        <div style={{ display: 'flex', gap: '12px' }}>
+          <button
+            className="btn-secondary"
+            onClick={() => {
+              setViewMode('today');
+              setSelectedDate(getTodayDate());
+            }}
+            style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
+          >
+            <FiCalendar /> Hôm nay
+          </button>
+          <button className="btn-primary" onClick={() => setShowAddModal(true)}>
+            <FiPlus /> Thêm Lịch làm việc
+          </button>
+        </div>
       </div>
 
       {/* Modals */}
@@ -372,10 +411,11 @@ const DoctorSchedulePage = () => {
           <div className="filter-group">
             <label>Chế độ xem:</label>
             <select value={viewMode} onChange={(e) => setViewMode(e.target.value)}>
+              <option value="today">🗓️ Lịch hôm nay ({selectedDate})</option>
               <option value="all">Tất cả lịch làm việc</option>
               <option value="doctor">Theo bác sĩ</option>
               <option value="clinic">Theo phòng khám & ngày</option>
-              <option value="date">Theo bác sĩ & ngày</option>
+              <option value="date">Theo ngày</option>
               <option value="dateRange">Theo bác sĩ & khoảng thời gian</option>
             </select>
           </div>

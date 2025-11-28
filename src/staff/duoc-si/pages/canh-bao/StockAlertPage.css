@@ -1,0 +1,596 @@
+/* StockAlertPage.css */
+
+.stock-alert-page {
+    padding: 1.5rem;
+    background-color: #f0f2f5;
+    min-height: 100vh;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+
+/* --- Page Header --- */
+.stock-alert-page .page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.stock-alert-page .header-left h2 {
+    margin: 0;
+    color: #1a1a1a;
+    font-size: 1.6rem;
+    font-weight: 700;
+}
+
+.stock-alert-page .header-left p {
+    margin: 5px 0 0;
+    color: #666;
+}
+
+.stock-alert-page .btn-refresh {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0.6rem 1.2rem;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 500;
+    color: #333;
+    transition: all 0.2s;
+}
+
+.stock-alert-page .btn-refresh:hover {
+    background-color: #f8f9fa;
+    border-color: #007bff;
+    color: #007bff;
+}
+
+.spinning {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin { 100% { transform: rotate(360deg); } }
+
+/* --- Summary Cards --- */
+.stock-alert-page .alert-summary {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.stock-alert-page .alert-card {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    display: flex;
+    align-items: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    transition: transform 0.2s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.stock-alert-page .alert-card:hover {
+    transform: translateY(-3px);
+}
+
+.card-total { border-left: 5px solid #2196f3; }
+.card-total .card-icon { background: #e3f2fd; color: #2196f3; }
+
+.card-critical { border-left: 5px solid #d32f2f; }
+.card-critical .card-icon { background: #ffebee; color: #d32f2f; }
+
+.card-unack { border-left: 5px solid #ff9800; }
+.card-unack .card-icon { background: #fff3e0; color: #ff9800; }
+
+.card-overdue { border-left: 5px solid #5d4037; }
+.card-overdue .card-icon { background: #efebe9; color: #5d4037; }
+
+.stock-alert-page .card-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    margin-right: 1rem;
+    flex-shrink: 0;
+}
+
+.stock-alert-page .card-info h3 {
+    margin: 0;
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #2c3e50;
+}
+
+.stock-alert-page .card-info p {
+    margin: 0;
+    color: #666;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+/* --- Alert Filters (FIX ICON SPACING) --- */
+.stock-alert-page .alert-filters {
+    background: white;
+    padding: 1rem;
+    border-radius: 10px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    margin-bottom: 1.5rem;
+    display: flex;
+    gap: 1.5rem;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+/* Style cho ô tìm kiếm */
+.stock-alert-page .search-group { 
+    display: flex; 
+    align-items: center; 
+    background: #f8f9fa; 
+    border-radius: 8px; 
+    padding: 0 12px; /* Padding bao quanh container */
+    flex: 1; 
+    min-width: 250px;
+    gap: 10px; /* Khoảng cách giữa icon và text */
+    border: 1px solid transparent;
+    transition: border-color 0.2s;
+}
+
+.stock-alert-page .search-group:focus-within {
+    border-color: #007bff;
+    background: #fff;
+}
+
+.stock-alert-page .search-group input { 
+    border: none; 
+    background: transparent; 
+    padding: 10px 0; /* Quan trọng: Reset padding ngang */
+    width: 100%; 
+    outline: none; 
+    font-size: 0.95rem;
+    color: #333;
+    margin: 0;
+}
+
+.stock-alert-page .search-icon { 
+    color: #888; 
+    font-size: 1.2rem; 
+    flex-shrink: 0; 
+}
+
+/* Style cho Dropdown Filters */
+.stock-alert-page .filter-group {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.stock-alert-page .select-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.stock-alert-page .filter-icon {
+    position: absolute;
+    left: 10px;
+    color: #666;
+    z-index: 1;
+}
+
+.stock-alert-page .filter-group select {
+    padding: 0.6rem 1rem 0.6rem 2rem; /* Padding left để né icon nếu có */
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    outline: none;
+    cursor: pointer;
+    font-size: 0.9rem;
+    background-color: #fff;
+    color: #333;
+}
+
+.stock-alert-page .btn-clear {
+    background: none;
+    border: none;
+    color: #dc3545;
+    cursor: pointer;
+    font-size: 0.9rem;
+    text-decoration: underline;
+    padding: 0 5px;
+}
+
+/* --- Alerts Sections --- */
+.stock-alert-page .alerts-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+    gap: 1.5rem;
+}
+
+.stock-alert-page .alert-section {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    margin-bottom: 1.5rem;
+}
+
+/* Overdue */
+.stock-alert-page .overdue-section {
+    border: 1px solid #e57373;
+    background: #fffafa;
+}
+.stock-alert-page .overdue-section .section-header h3 { color: #c62828; }
+.stock-alert-page .row-overdue { background-color: #fff8f8; }
+
+.stock-alert-page .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 0.8rem;
+}
+
+.stock-alert-page .section-header h3 {
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.stock-alert-page .text-orange { color: #ff9800; }
+.stock-alert-page .text-red { color: #f44336; }
+.stock-alert-page .text-dark-red { color: #b71c1c; }
+
+.stock-alert-page .btn-link {
+    background: none;
+    border: none;
+    color: #007bff;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-weight: 500;
+    font-size: 0.9rem;
+}
+.stock-alert-page .btn-link:hover { text-decoration: underline; }
+
+.stock-alert-page .btn-icon-action {
+    background: none;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: #6c757d;
+    transition: all 0.2s;
+}
+.stock-alert-page .btn-icon-action:hover {
+    background: #e3f2fd;
+    color: #007bff;
+    border-color: #007bff;
+}
+
+/* --- Tables --- */
+.stock-alert-page .table-responsive {
+    overflow-x: auto;
+}
+
+.stock-alert-page .alert-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.stock-alert-page .alert-table th {
+    text-align: left;
+    padding: 0.8rem;
+    color: #6c757d;
+    font-weight: 600;
+    font-size: 0.85rem;
+    border-bottom: 2px solid #f1f1f1;
+    white-space: nowrap;
+}
+
+.stock-alert-page .alert-table td {
+    padding: 0.8rem;
+    border-bottom: 1px solid #f5f5f5;
+    font-size: 0.9rem;
+    color: #333;
+    vertical-align: middle;
+}
+
+.stock-alert-page .alert-table tr:last-child td { border-bottom: none; }
+
+.stock-alert-page .row-unread {
+    background-color: #f8fbff;
+    position: relative;
+}
+.stock-alert-page .row-unread td:first-child::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 3px;
+    height: 70%;
+    background-color: #007bff;
+    border-radius: 0 4px 4px 0;
+}
+
+.stock-alert-page .fw-bold { font-weight: 600; }
+.stock-alert-page .text-muted { color: #888; font-size: 0.8rem; }
+.stock-alert-page .text-danger { color: #dc3545; }
+.stock-alert-page .text-success { color: #28a745; }
+
+/* --- Badges --- */
+.stock-alert-page .severity-badge {
+    padding: 3px 8px;
+    border-radius: 6px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    display: inline-block;
+    min-width: 65px;
+    text-align: center;
+}
+
+.stock-alert-page .severity-badge.critical { background-color: #ffebee; color: #b71c1c; border: 1px solid #ffcdd2; }
+.stock-alert-page .severity-badge.high { background-color: #fff3e0; color: #e65100; border: 1px solid #ffe0b2; }
+.stock-alert-page .severity-badge.medium { background-color: #fff8e1; color: #f57f17; border: 1px solid #ffecb3; }
+.stock-alert-page .severity-badge.low { background-color: #f1f8e9; color: #33691e; border: 1px solid #dcedc8; }
+
+.stock-alert-page .type-badge {
+    background: #e3f2fd;
+    color: #0d47a1;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    border: 1px solid #bbdefb;
+}
+
+/* --- Modal --- */
+.stock-alert-page .modal-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    animation: fadeIn 0.3s ease;
+}
+
+.stock-alert-page .modal-content {
+    background: white;
+    border-radius: 12px;
+    width: 550px;
+    max-width: 90%;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    animation: slideUp 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    max-height: 90vh;
+}
+
+.stock-alert-page .modal-header {
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.stock-alert-page .modal-header h3 { margin: 0; font-size: 1.2rem; color: #333; }
+
+.stock-alert-page .btn-close {
+    background: none; border: none; cursor: pointer; font-size: 1.2rem; color: #999;
+    transition: color 0.2s;
+}
+.stock-alert-page .btn-close:hover { color: #333; }
+
+.stock-alert-page .modal-body { 
+    padding: 1.5rem;
+    overflow-y: auto;
+}
+
+.stock-alert-page .detail-row {
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: baseline;
+}
+
+.stock-alert-page .detail-label {
+    width: 110px;
+    font-weight: 600;
+    color: #666;
+    flex-shrink: 0;
+}
+
+.stock-alert-page .detail-value {
+    color: #333;
+}
+
+.stock-alert-page .detail-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin: 1.5rem 0;
+    background: #f8f9fa;
+    padding: 1rem;
+    border-radius: 8px;
+}
+
+.stock-alert-page .detail-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.stock-alert-page .detail-box span { font-size: 0.85rem; color: #666; margin-bottom: 4px; }
+.stock-alert-page .detail-box strong { font-size: 1.2rem; color: #007bff; }
+
+.stock-alert-page .detail-message {
+    background: #fff3e0;
+    padding: 1rem;
+    border-radius: 6px;
+    color: #e65100;
+    margin: 0;
+    flex: 1;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    border: 1px solid #ffe0b2;
+}
+
+.stock-alert-page .modal-footer {
+    padding: 1rem 1.5rem;
+    border-top: 1px solid #eee;
+    display: flex;
+    justify-content: flex-end;
+    background-color: #fcfcfc;
+    border-radius: 0 0 12px 12px;
+}
+
+.stock-alert-page .btn-secondary {
+    background: #e0e0e0; border: none; padding: 0.6rem 1.2rem; border-radius: 6px; cursor: pointer;
+    font-weight: 500; color: #333;
+    transition: background 0.2s;
+}
+.stock-alert-page .btn-secondary:hover { background: #d5d5d5; }
+
+/* Urgent Banner */
+.stock-alert-page .urgent-banner {
+    background: linear-gradient(135deg, #ff5252 0%, #d32f2f 100%);
+    color: white;
+    padding: 1.5rem;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 12px rgba(211, 47, 47, 0.3);
+    animation: slideDown 0.5s ease;
+}
+
+.stock-alert-page .urgent-icon {
+    font-size: 2.5rem;
+    margin-right: 1.5rem;
+    background: rgba(255,255,255,0.2);
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.stock-alert-page .btn-urgent-action {
+    background: white;
+    color: #d32f2f;
+    border: none;
+    padding: 0.6rem 1.2rem;
+    border-radius: 20px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+.stock-alert-page .btn-urgent-action:hover { transform: scale(1.05); }
+
+.bell-ring { animation: ring 2s infinite; }
+
+@keyframes ring { 
+    0%, 100% { transform: rotate(0); } 
+    10%, 90% { transform: rotate(10deg); } 
+    50% { transform: rotate(-10deg); } 
+}
+@keyframes slideDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+@media (max-width: 992px) {
+    .stock-alert-page .alerts-container { grid-template-columns: 1fr; }
+}
+
+/* StockAlertPage.css */
+
+/* ... (Giữ nguyên tất cả style cũ) ... */
+
+/* --- Stats Modal Specific --- */
+.modal-stats {
+    width: 600px;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.stats-box {
+    background: #f8f9fa;
+    padding: 1.2rem;
+    border-radius: 8px;
+    text-align: center;
+    border: 1px solid #e9ecef;
+}
+
+.stats-box label {
+    display: block;
+    font-size: 0.9rem;
+    color: #6c757d;
+    margin-bottom: 0.5rem;
+}
+
+.stats-box strong {
+    font-size: 1.5rem;
+    color: #2196f3;
+}
+
+.stats-list {
+    margin-bottom: 1.5rem;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.stats-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.8rem 1.2rem;
+    border-bottom: 1px solid #eee;
+}
+
+.stats-item:last-child {
+    border-bottom: none;
+}
+
+.stats-item span:first-child {
+    font-weight: 500;
+    color: #333;
+}
+
+.stats-item span:last-child {
+    background: #e3f2fd;
+    color: #007bff;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+    .alerts-container { grid-template-columns: 1fr; }
+}

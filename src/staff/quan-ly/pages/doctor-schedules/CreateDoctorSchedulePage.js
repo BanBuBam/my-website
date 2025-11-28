@@ -45,9 +45,12 @@ const CreateDoctorSchedulePage = () => {
     const fetchClinics = async () => {
         try {
             setLoading(true);
-            const response = await adminClinicAPI.getClinics();
+            // Gọi API với pagination (lấy tất cả clinics, size=100)
+            const response = await adminClinicAPI.getClinics('', 0, 100);
             if (response && response.content) {
                 setClinics(response.content);
+            } else if (response && response.data && response.data.content) {
+                setClinics(response.data.content);
             }
         } catch (err) {
             console.error('Error fetching clinics:', err);

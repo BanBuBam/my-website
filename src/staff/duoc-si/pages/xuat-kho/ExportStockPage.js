@@ -1,497 +1,350 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import pharmacistAPI from '../../../../services/staff/pharmacistAPI';
 import './ExportStockPage.css';
-import { FiPlus, FiSearch, FiEye, FiPrinter, FiFilter } from 'react-icons/fi';
+import { 
+  FaPlus, FaSearch, FaEye, FaEdit, FaFileExport, FaTrash, FaSave, FaTimes 
+} from 'react-icons/fa';
 
 const ExportStockPage = () => {
-    const [showCreateModal, setShowCreateModal] = useState(false);
-    const [showDetailModal, setShowDetailModal] = useState(false);
-    const [selectedExport, setSelectedExport] = useState(null);
-    const [searchTerm, setSearchTerm] = useState('');
-    const [filterDate, setFilterDate] = useState('');
-    const [filterStatus, setFilterStatus] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [issues, setIssues] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
 
-    // Mock data - Danh sách phiếu xuất kho
-    const [exportRecords] = useState([
-        {
-            id: 'PXK001',
-            date: '06/10/2025',
-            prescriptionId: 'DT001',
-            patientName: 'Nguyễn Văn A',
-            department: 'Khoa Nội',
-            totalAmount: 850000,
-            status: 'Đã xuất',
-            createdBy: 'Dược sĩ Trần B',
-            medicines: [
-                { id: 1, name: 'Paracetamol 500mg', unit: 'Viên', quantity: 20, price: 5000, batch: 'LOT001', expiry: '12/2026' },
-                { id: 2, name: 'Amoxicillin 500mg', unit: 'Viên', quantity: 30, price: 8000, batch: 'LOT002', expiry: '06/2026' },
-                { id: 3, name: 'Vitamin C 1000mg', unit: 'Viên', quantity: 50, price: 3000, batch: 'LOT003', expiry: '09/2026' }
-            ]
-        },
-        {
-            id: 'PXK002',
-            date: '05/10/2025',
-            prescriptionId: 'DT002',
-            patientName: 'Trần Thị B',
-            department: 'Khoa Ngoại',
-            totalAmount: 1200000,
-            status: 'Đã xuất',
-            createdBy: 'Dược sĩ Lê C',
-            medicines: [
-                { id: 1, name: 'Cefixime 200mg', unit: 'Viên', quantity: 20, price: 15000, batch: 'LOT004', expiry: '03/2027' },
-                { id: 2, name: 'Omeprazole 20mg', unit: 'Viên', quantity: 30, price: 10000, batch: 'LOT005', expiry: '08/2026' }
-            ]
-        },
-        {
-            id: 'PXK003',
-            date: '04/10/2025',
-            prescriptionId: 'DT003',
-            patientName: 'Lê Văn C',
-            department: 'Khoa Nhi',
-            totalAmount: 650000,
-            status: 'Chờ xuất',
-            createdBy: 'Dược sĩ Trần B',
-            medicines: [
-                { id: 1, name: 'Siro ho trẻ em', unit: 'Chai', quantity: 2, price: 45000, batch: 'LOT006', expiry: '11/2025' },
-                { id: 2, name: 'Paracetamol 250mg', unit: 'Viên', quantity: 40, price: 3000, batch: 'LOT007', expiry: '05/2026' }
-            ]
-        }
-    ]);
+  // Data hỗ trợ cho Form
+  const [departments, setDepartments] = useState([]);
+  const [stockList, setStockList] = useState([]);
 
-    // Form state cho tạo phiếu xuất
-    const [formData, setFormData] = useState({
-        prescriptionId: '',
-        patientName: '',
-        department: '',
-        note: '',
-        medicines: []
-    });
+  // Modal State
+  const [showModal, setShowModal] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [selectedIssue, setSelectedIssue] = useState(null);
 
-    // State cho thêm thuốc vào phiếu
-    const [medicineSearch, setMedicineSearch] = useState('');
-    const [selectedMedicines, setSelectedMedicines] = useState([]);
+  // Form State
+  const [formData, setFormData] = useState({
+    issueType: 'DEPARTMENT_ISSUE',
+    departmentId: '',
+    notes: '',
+    items: [] //Array of { stockId, quantity, stockName(display only) }
+  });
 
-    // Mock data - Danh sách thuốc có sẵn trong kho
-    const availableMedicines = [
-        { id: 1, name: 'Paracetamol 500mg', unit: 'Viên', stock: 1000, price: 5000, batch: 'LOT001', expiry: '12/2026' },
-        { id: 2, name: 'Amoxicillin 500mg', unit: 'Viên', stock: 800, price: 8000, batch: 'LOT002', expiry: '06/2026' },
-        { id: 3, name: 'Vitamin C 1000mg', unit: 'Viên', stock: 1500, price: 3000, batch: 'LOT003', expiry: '09/2026' },
-        { id: 4, name: 'Cefixime 200mg', unit: 'Viên', stock: 500, price: 15000, batch: 'LOT004', expiry: '03/2027' },
-        { id: 5, name: 'Omeprazole 20mg', unit: 'Viên', stock: 600, price: 10000, batch: 'LOT005', expiry: '08/2026' }
-    ];
+  // --- 1. INITIAL DATA FETCHING ---
+  useEffect(() => {
+    fetchIssues();
+    fetchSupportData();
+  }, []);
 
-    // Filter records
-    const filteredRecords = exportRecords.filter(record => {
-        const matchSearch = record.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                          record.patientName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                          record.prescriptionId.toLowerCase().includes(searchTerm.toLowerCase());
-        const matchDate = filterDate ? record.date.includes(filterDate) : true;
-        const matchStatus = filterStatus ? record.status === filterStatus : true;
-        return matchSearch && matchDate && matchStatus;
-    });
+  const fetchIssues = async () => {
+    setLoading(true);
+    try {
+      const res = await pharmacistAPI.goodsIssueAPI.getAll();
+      if (res?.status === 'OK') setIssues(res.data);
+    } catch (e) { console.error(e); } 
+    finally { setLoading(false); }
+  };
 
-    const formatCurrency = (amount) => {
-        return amount.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
-    };
+  const fetchSupportData = async () => {
+    try {
+      const deptRes = await pharmacistAPI.pharmacistDepartmentAPI.getDepartments();
+      if (deptRes?.status === 'OK') setDepartments(deptRes.data);
 
-    const handleViewDetail = (record) => {
-        setSelectedExport(record);
-        setShowDetailModal(true);
-    };
+      const stockRes = await pharmacistAPI.pharmacistInventoryAPI.getInventory();
+      if (stockRes?.status === 'OK') setStockList(stockRes.data);
+    } catch (e) { console.error(e); }
+  };
 
-    const handleAddMedicine = (medicine) => {
-        const exists = selectedMedicines.find(m => m.id === medicine.id);
-        if (!exists) {
-            setSelectedMedicines([...selectedMedicines, { ...medicine, exportQuantity: 1 }]);
-        }
-    };
+  // --- 2. FORM HANDLERS ---
+  const handleOpenCreate = () => {
+    setIsEditing(false);
+    setFormData({ issueType: 'DEPARTMENT_ISSUE', departmentId: '', notes: '', items: [] });
+    setShowModal(true);
+  };
 
-    const handleRemoveMedicine = (medicineId) => {
-        setSelectedMedicines(selectedMedicines.filter(m => m.id !== medicineId));
-    };
-
-    const handleQuantityChange = (medicineId, quantity) => {
-        setSelectedMedicines(selectedMedicines.map(m => 
-            m.id === medicineId ? { ...m, exportQuantity: parseInt(quantity) || 0 } : m
-        ));
-    };
-
-    const handleSubmitExport = (e) => {
-        e.preventDefault();
-        if (selectedMedicines.length === 0) {
-            alert('Vui lòng chọn ít nhất một loại thuốc!');
-            return;
-        }
-        alert('Tạo phiếu xuất kho thành công!');
-        setShowCreateModal(false);
-        setSelectedMedicines([]);
+  const handleOpenEdit = async (id) => {
+    setLoading(true);
+    try {
+      const res = await pharmacistAPI.goodsIssueAPI.getById(id);
+      if (res?.status === 'OK') {
+        const data = res.data;
+        // Map data từ API về format của Form
         setFormData({
-            prescriptionId: '',
-            patientName: '',
-            department: '',
-            note: '',
-            medicines: []
+          id: data.id,
+          issueType: data.issueType,
+          departmentId: data.departmentId,
+          notes: data.notes,
+          items: data.items.map(i => ({
+            stockId: i.stockId,
+            quantity: i.quantity,
+            stockName: i.stockName // Giả sử API trả về tên để hiển thị
+          }))
         });
-    };
+        setIsEditing(true);
+        setShowModal(true);
+      }
+    } catch (e) { console.error(e); alert("Lỗi tải chi tiết"); } 
+    finally { setLoading(false); }
+  };
 
-    const calculateTotal = () => {
-        return selectedMedicines.reduce((sum, m) => sum + (m.price * m.exportQuantity), 0);
-    };
+  const handleAddItem = () => {
+    setFormData({
+      ...formData,
+      items: [...formData.items, { stockId: '', quantity: 1 }]
+    });
+  };
 
+  const handleRemoveItem = (index) => {
+    const newItems = [...formData.items];
+    newItems.splice(index, 1);
+    setFormData({ ...formData, items: newItems });
+  };
+
+  const handleItemChange = (index, field, value) => {
+    const newItems = [...formData.items];
+    newItems[index][field] = value;
+    setFormData({ ...formData, items: newItems });
+  };
+
+  const handleSubmit = async () => {
+    // Validation cơ bản
+    if (!formData.departmentId && formData.issueType === 'DEPARTMENT_ISSUE') {
+      alert("Vui lòng chọn Khoa phòng"); return;
+    }
+    if (formData.items.length === 0) {
+      alert("Vui lòng thêm ít nhất 1 mặt hàng"); return;
+    }
+    for (let item of formData.items) {
+      if (!item.stockId || item.quantity <= 0) {
+        alert("Vui lòng chọn thuốc và nhập số lượng hợp lệ"); return;
+      }
+    }
+
+    setLoading(true);
+    try {
+      const payload = {
+        issueType: formData.issueType,
+        departmentId: formData.departmentId,
+        notes: formData.notes,
+        items: formData.items.map(i => ({ stockId: i.stockId, quantity: parseInt(i.quantity) }))
+      };
+
+      let res;
+      if (isEditing) {
+        res = await pharmacistAPI.goodsIssueAPI.update(formData.id, payload);
+      } else {
+        res = await pharmacistAPI.goodsIssueAPI.create(payload);
+      }
+
+      if (res?.status === 'OK') {
+        alert(isEditing ? "Cập nhật thành công!" : "Tạo phiếu xuất thành công!");
+        setShowModal(false);
+        fetchIssues();
+      } else {
+        alert(res?.message || "Thao tác thất bại");
+      }
+    } catch (e) { console.error(e); alert("Lỗi hệ thống"); } 
+    finally { setLoading(false); }
+  };
+
+  // --- 3. RENDER HELPERS ---
+  const getStatusBadge = (status) => {
+    const styles = {
+      DRAFT: { bg: '#e6f7ff', color: '#1890ff', border: '#91d5ff' },
+      APPROVED: { bg: '#f6ffed', color: '#52c41a', border: '#b7eb8f' },
+      COMPLETED: { bg: '#f6ffed', color: '#52c41a', border: '#b7eb8f' },
+      CANCELLED: { bg: '#fff1f0', color: '#ff4d4f', border: '#ffa39e' }
+    };
+    const style = styles[status] || styles.DRAFT;
     return (
-        <div className="export-stock-page">
-            {/* Header */}
-            <div className="page-header">
-                <div>
-                    <h2>Quản lý Xuất kho</h2>
-                    <p>Theo dõi và quản lý các phiếu xuất thuốc</p>
-                </div>
-                <button className="btn-create" onClick={() => setShowCreateModal(true)}>
-                    <FiPlus /> Tạo phiếu xuất kho
-                </button>
-            </div>
-
-            {/* Stats */}
-            <div className="stats-section">
-                <div className="stat-card">
-                    <h3>{exportRecords.length}</h3>
-                    <p>Tổng phiếu xuất</p>
-                </div>
-                <div className="stat-card success">
-                    <h3>{exportRecords.filter(r => r.status === 'Đã xuất').length}</h3>
-                    <p>Đã xuất</p>
-                </div>
-                <div className="stat-card warning">
-                    <h3>{exportRecords.filter(r => r.status === 'Chờ xuất').length}</h3>
-                    <p>Chờ xuất</p>
-                </div>
-                <div className="stat-card info">
-                    <h3>{formatCurrency(exportRecords.reduce((sum, r) => sum + r.totalAmount, 0))}</h3>
-                    <p>Tổng giá trị</p>
-                </div>
-            </div>
-
-            {/* Filters */}
-            <div className="filter-section">
-                <div className="search-box">
-                    <FiSearch />
-                    <input
-                        type="text"
-                        placeholder="Tìm theo mã phiếu, tên bệnh nhân, mã đơn thuốc..."
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                    />
-                </div>
-                <input
-                    type="date"
-                    className="date-filter"
-                    value={filterDate}
-                    onChange={(e) => setFilterDate(e.target.value)}
-                />
-                <select
-                    className="status-filter"
-                    value={filterStatus}
-                    onChange={(e) => setFilterStatus(e.target.value)}
-                >
-                    <option value="">Tất cả trạng thái</option>
-                    <option value="Đã xuất">Đã xuất</option>
-                    <option value="Chờ xuất">Chờ xuất</option>
-                </select>
-            </div>
-
-            {/* Export Records Table */}
-            <div className="records-table">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Mã phiếu</th>
-                            <th>Ngày xuất</th>
-                            <th>Mã đơn thuốc</th>
-                            <th>Bệnh nhân</th>
-                            <th>Khoa</th>
-                            <th>Tổng tiền</th>
-                            <th>Trạng thái</th>
-                            <th>Người tạo</th>
-                            <th>Thao tác</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {filteredRecords.map((record) => (
-                            <tr key={record.id}>
-                                <td className="code">{record.id}</td>
-                                <td>{record.date}</td>
-                                <td className="prescription-id">{record.prescriptionId}</td>
-                                <td>{record.patientName}</td>
-                                <td>{record.department}</td>
-                                <td className="amount">{formatCurrency(record.totalAmount)}</td>
-                                <td>
-                                    <span className={`status-badge ${record.status === 'Đã xuất' ? 'success' : 'warning'}`}>
-                                        {record.status}
-                                    </span>
-                                </td>
-                                <td>{record.createdBy}</td>
-                                <td className="actions">
-                                    <button className="btn-icon" onClick={() => handleViewDetail(record)} title="Xem chi tiết">
-                                        <FiEye />
-                                    </button>
-                                    <button className="btn-icon" title="In phiếu">
-                                        <FiPrinter />
-                                    </button>
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-            </div>
-
-            {/* Modal Create Export */}
-            {showCreateModal && (
-                <div className="modal-overlay" onClick={() => setShowCreateModal(false)}>
-                    <div className="modal-content large" onClick={(e) => e.stopPropagation()}>
-                        <div className="modal-header">
-                            <h3>Tạo phiếu xuất kho</h3>
-                            <button className="btn-close" onClick={() => setShowCreateModal(false)}>×</button>
-                        </div>
-                        <form onSubmit={handleSubmitExport}>
-                            <div className="modal-body">
-                                {/* Thông tin chung */}
-                                <div className="form-section">
-                                    <h4>Thông tin chung</h4>
-                                    <div className="form-row">
-                                        <div className="form-group">
-                                            <label>Mã đơn thuốc:</label>
-                                            <input
-                                                type="text"
-                                                value={formData.prescriptionId}
-                                                onChange={(e) => setFormData({...formData, prescriptionId: e.target.value})}
-                                                placeholder="Nhập mã đơn thuốc"
-                                            />
-                                        </div>
-                                        <div className="form-group">
-                                            <label>Tên bệnh nhân: <span className="required">*</span></label>
-                                            <input
-                                                type="text"
-                                                value={formData.patientName}
-                                                onChange={(e) => setFormData({...formData, patientName: e.target.value})}
-                                                placeholder="Nhập tên bệnh nhân"
-                                                required
-                                            />
-                                        </div>
-                                        <div className="form-group">
-                                            <label>Khoa:</label>
-                                            <input
-                                                type="text"
-                                                value={formData.department}
-                                                onChange={(e) => setFormData({...formData, department: e.target.value})}
-                                                placeholder="Nhập tên khoa"
-                                            />
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {/* Chọn thuốc */}
-                                <div className="form-section">
-                                    <h4>Chọn thuốc xuất kho</h4>
-                                    <div className="medicine-search">
-                                        <FiSearch />
-                                        <input
-                                            type="text"
-                                            placeholder="Tìm kiếm thuốc..."
-                                            value={medicineSearch}
-                                            onChange={(e) => setMedicineSearch(e.target.value)}
-                                        />
-                                    </div>
-                                    <div className="medicine-list">
-                                        {availableMedicines
-                                            .filter(m => m.name.toLowerCase().includes(medicineSearch.toLowerCase()))
-                                            .map(medicine => (
-                                                <div key={medicine.id} className="medicine-item">
-                                                    <div className="medicine-info">
-                                                        <strong>{medicine.name}</strong>
-                                                        <span>Tồn kho: {medicine.stock} {medicine.unit}</span>
-                                                        <span>Giá: {formatCurrency(medicine.price)}</span>
-                                                        <span>Lô: {medicine.batch} - HSD: {medicine.expiry}</span>
-                                                    </div>
-                                                    <button
-                                                        type="button"
-                                                        className="btn-add-medicine"
-                                                        onClick={() => handleAddMedicine(medicine)}
-                                                        disabled={selectedMedicines.find(m => m.id === medicine.id)}
-                                                    >
-                                                        <FiPlus /> Thêm
-                                                    </button>
-                                                </div>
-                                            ))}
-                                    </div>
-                                </div>
-
-                                {/* Danh sách thuốc đã chọn */}
-                                {selectedMedicines.length > 0 && (
-                                    <div className="form-section">
-                                        <h4>Danh sách thuốc xuất ({selectedMedicines.length})</h4>
-                                        <table className="selected-medicines-table">
-                                            <thead>
-                                                <tr>
-                                                    <th>Tên thuốc</th>
-                                                    <th>Đơn vị</th>
-                                                    <th>Số lượng xuất</th>
-                                                    <th>Đơn giá</th>
-                                                    <th>Thành tiền</th>
-                                                    <th>Thao tác</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                {selectedMedicines.map(medicine => (
-                                                    <tr key={medicine.id}>
-                                                        <td>{medicine.name}</td>
-                                                        <td>{medicine.unit}</td>
-                                                        <td>
-                                                            <input
-                                                                type="number"
-                                                                min="1"
-                                                                max={medicine.stock}
-                                                                value={medicine.exportQuantity}
-                                                                onChange={(e) => handleQuantityChange(medicine.id, e.target.value)}
-                                                                className="quantity-input"
-                                                            />
-                                                        </td>
-                                                        <td>{formatCurrency(medicine.price)}</td>
-                                                        <td className="amount">{formatCurrency(medicine.price * medicine.exportQuantity)}</td>
-                                                        <td>
-                                                            <button
-                                                                type="button"
-                                                                className="btn-remove"
-                                                                onClick={() => handleRemoveMedicine(medicine.id)}
-                                                            >
-                                                                Xóa
-                                                            </button>
-                                                        </td>
-                                                    </tr>
-                                                ))}
-                                            </tbody>
-                                            <tfoot>
-                                                <tr>
-                                                    <td colSpan="4" className="text-right"><strong>Tổng cộng:</strong></td>
-                                                    <td className="amount"><strong>{formatCurrency(calculateTotal())}</strong></td>
-                                                    <td></td>
-                                                </tr>
-                                            </tfoot>
-                                        </table>
-                                    </div>
-                                )}
-
-                                {/* Ghi chú */}
-                                <div className="form-group">
-                                    <label>Ghi chú:</label>
-                                    <textarea
-                                        value={formData.note}
-                                        onChange={(e) => setFormData({...formData, note: e.target.value})}
-                                        rows="3"
-                                        placeholder="Nhập ghi chú (nếu có)"
-                                    />
-                                </div>
-                            </div>
-
-                            <div className="modal-footer">
-                                <button type="button" className="btn-cancel" onClick={() => setShowCreateModal(false)}>
-                                    Hủy
-                                </button>
-                                <button type="submit" className="btn-submit">
-                                    Tạo phiếu xuất
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            )}
-
-            {/* Modal Detail */}
-            {showDetailModal && selectedExport && (
-                <div className="modal-overlay" onClick={() => setShowDetailModal(false)}>
-                    <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-                        <div className="modal-header">
-                            <h3>Chi tiết phiếu xuất kho</h3>
-                            <button className="btn-close" onClick={() => setShowDetailModal(false)}>×</button>
-                        </div>
-                        <div className="modal-body">
-                            <div className="detail-info">
-                                <div className="info-row">
-                                    <span className="label">Mã phiếu:</span>
-                                    <span className="value">{selectedExport.id}</span>
-                                </div>
-                                <div className="info-row">
-                                    <span className="label">Ngày xuất:</span>
-                                    <span className="value">{selectedExport.date}</span>
-                                </div>
-                                <div className="info-row">
-                                    <span className="label">Mã đơn thuốc:</span>
-                                    <span className="value">{selectedExport.prescriptionId}</span>
-                                </div>
-                                <div className="info-row">
-                                    <span className="label">Bệnh nhân:</span>
-                                    <span className="value">{selectedExport.patientName}</span>
-                                </div>
-                                <div className="info-row">
-                                    <span className="label">Khoa:</span>
-                                    <span className="value">{selectedExport.department}</span>
-                                </div>
-                                <div className="info-row">
-                                    <span className="label">Trạng thái:</span>
-                                    <span className={`status-badge ${selectedExport.status === 'Đã xuất' ? 'success' : 'warning'}`}>
-                                        {selectedExport.status}
-                                    </span>
-                                </div>
-                                <div className="info-row">
-                                    <span className="label">Người tạo:</span>
-                                    <span className="value">{selectedExport.createdBy}</span>
-                                </div>
-                            </div>
-
-                            <h4>Danh sách thuốc</h4>
-                            <table className="detail-table">
-                                <thead>
-                                    <tr>
-                                        <th>STT</th>
-                                        <th>Tên thuốc</th>
-                                        <th>Đơn vị</th>
-                                        <th>Số lượng</th>
-                                        <th>Đơn giá</th>
-                                        <th>Thành tiền</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {selectedExport.medicines.map((medicine, index) => (
-                                        <tr key={medicine.id}>
-                                            <td>{index + 1}</td>
-                                            <td>{medicine.name}</td>
-                                            <td>{medicine.unit}</td>
-                                            <td>{medicine.quantity}</td>
-                                            <td>{formatCurrency(medicine.price)}</td>
-                                            <td className="amount">{formatCurrency(medicine.price * medicine.quantity)}</td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                                <tfoot>
-                                    <tr>
-                                        <td colSpan="5" className="text-right"><strong>Tổng cộng:</strong></td>
-                                        <td className="amount"><strong>{formatCurrency(selectedExport.totalAmount)}</strong></td>
-                                    </tr>
-                                </tfoot>
-                            </table>
-                        </div>
-                        <div className="modal-footer">
-                            <button className="btn-print">
-                                <FiPrinter /> In phiếu
-                            </button>
-                            <button className="btn-cancel" onClick={() => setShowDetailModal(false)}>
-                                Đóng
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
-        </div>
+      <span style={{
+        padding: '4px 8px', borderRadius: '4px', fontSize: '12px', fontWeight: 'bold',
+        backgroundColor: style.bg, color: style.color, border: `1px solid ${style.border}`
+      }}>
+        {status}
+      </span>
     );
+  };
+
+  return (
+    <div className="export-stock-page">
+      <div className="page-header">
+        <h1 className="page-title">Quản lý Xuất kho (Goods Issue)</h1>
+      </div>
+
+      {/* TOOLBAR */}
+      <div className="toolbar">
+        <div className="search-group">
+          <input 
+            type="text" 
+            placeholder="Tìm theo mã phiếu, ghi chú..." 
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+          <button className="btn-search"><FaSearch/></button>
+        </div>
+        <button className="btn-create" onClick={handleOpenCreate}>
+          <FaPlus/> Tạo Phiếu Xuất
+        </button>
+      </div>
+
+      {/* TABLE */}
+      <div className="table-container">
+        <table className="data-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Loại xuất</th>
+              <th>Khoa/Phòng nhận</th>
+              <th>Ghi chú</th>
+              <th>Ngày tạo</th>
+              <th>Trạng thái</th>
+              <th className="text-center">Thao tác</th>
+            </tr>
+          </thead>
+          <tbody>
+            {issues.length > 0 ? issues.map(item => (
+              <tr key={item.id}>
+                <td>#{item.id}</td>
+                <td>{item.issueType}</td>
+                <td>{item.departmentName || '-'}</td>
+                <td>{item.notes}</td>
+                <td>{item.createdAt ? new Date(item.createdAt).toLocaleDateString('vi-VN') : '-'}</td>
+                <td>{getStatusBadge(item.status || 'DRAFT')}</td>
+                <td className="text-center">
+                  {/* Chỉ cho sửa nếu là DRAFT */}
+                  {(item.status === 'DRAFT' || !item.status) && (
+                    <button className="btn-icon edit" onClick={() => handleOpenEdit(item.id)} title="Sửa">
+                      <FaEdit/>
+                    </button>
+                  )}
+                  <button className="btn-icon view" title="Xem chi tiết" onClick={() => handleOpenEdit(item.id)}>
+                    <FaEye/>
+                  </button>
+                </td>
+              </tr>
+            )) : (
+              <tr><td colSpan="7" className="text-center">Chưa có phiếu xuất kho nào.</td></tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+
+      {/* MODAL FORM */}
+      {showModal && (
+        <div className="modal-overlay">
+          <div className="modal-content large-modal">
+            <div className="modal-header">
+              <h2>{isEditing ? `Cập nhật Phiếu #${formData.id}` : 'Tạo Phiếu Xuất Kho'}</h2>
+              <button className="close-btn" onClick={() => setShowModal(false)}><FaTimes/></button>
+            </div>
+            
+            <div className="modal-body">
+              {/* General Info */}
+              <div className="form-grid">
+                <div className="form-group">
+                  <label>Loại xuất kho</label>
+                  <select 
+                    value={formData.issueType}
+                    onChange={(e) => setFormData({...formData, issueType: e.target.value})}
+                    disabled={isEditing} // Không cho sửa loại khi đã tạo
+                  >
+                    <option value="DEPARTMENT_ISSUE">Xuất cho Khoa/Phòng</option>
+                    <option value="DISPOSAL">Xuất Hủy</option>
+                    <option value="TRANSFER">Chuyển kho</option>
+                  </select>
+                </div>
+                
+                {formData.issueType === 'DEPARTMENT_ISSUE' && (
+                  <div className="form-group">
+                    <label>Khoa/Phòng nhận</label>
+                    <select 
+                      value={formData.departmentId}
+                      onChange={(e) => setFormData({...formData, departmentId: e.target.value})}
+                    >
+                      <option value="">-- Chọn khoa --</option>
+                      {departments.map(d => (
+                        <option key={d.departmentId} value={d.departmentId}>{d.departmentName}</option>
+                      ))}
+                    </select>
+                  </div>
+                )}
+
+                <div className="form-group full-width">
+                  <label>Ghi chú</label>
+                  <input 
+                    type="text" 
+                    value={formData.notes}
+                    onChange={(e) => setFormData({...formData, notes: e.target.value})}
+                    placeholder="Nhập lý do xuất kho..."
+                  />
+                </div>
+              </div>
+
+              {/* Items List */}
+              <div className="items-section">
+                <div className="section-header">
+                  <h3>Danh sách Hàng hóa</h3>
+                  <button className="btn-secondary small" onClick={handleAddItem}><FaPlus/> Thêm dòng</button>
+                </div>
+                
+                <table className="sub-table">
+                  <thead>
+                    <tr>
+                      <th style={{width: '50%'}}>Tên Thuốc / Vật tư</th>
+                      <th style={{width: '20%'}}>Số lượng</th>
+                      <th style={{width: '10%'}}>Xóa</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {formData.items.map((item, index) => (
+                      <tr key={index}>
+                        <td>
+                          <select 
+                            value={item.stockId}
+                            onChange={(e) => handleItemChange(index, 'stockId', e.target.value)}
+                            className="item-select"
+                          >
+                            <option value="">-- Chọn mặt hàng --</option>
+                            {stockList.map(s => (
+                              <option key={s.id} value={s.id}>
+                                {s.medicineName || s.name} (Tồn: {s.stockQuantity})
+                              </option>
+                            ))}
+                          </select>
+                        </td>
+                        <td>
+                          <input 
+                            type="number" 
+                            min="1"
+                            value={item.quantity}
+                            onChange={(e) => handleItemChange(index, 'quantity', e.target.value)}
+                            className="qty-input"
+                          />
+                        </td>
+                        <td className="text-center">
+                          <button className="btn-icon delete" onClick={() => handleRemoveItem(index)}>
+                            <FaTrash/>
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                    {formData.items.length === 0 && (
+                      <tr><td colSpan="3" className="text-center">Chưa có mặt hàng nào.</td></tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div className="modal-footer">
+              <button className="btn-cancel" onClick={() => setShowModal(false)}>Hủy bỏ</button>
+              <button className="btn-save" onClick={handleSubmit} disabled={loading}>
+                <FaSave/> {loading ? 'Đang lưu...' : 'Lưu Phiếu'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
 };
 
 export default ExportStockPage;
-

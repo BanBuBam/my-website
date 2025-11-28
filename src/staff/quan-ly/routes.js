@@ -12,6 +12,7 @@ import AdmissionRequestPage from './pages/inpatient/AdmissionRequestPage';
 import SupplierManagementPage from './pages/nha-cung-cap/SupplierManagementPage';
 import CabinetManagementPage from './pages/tu-thuoc/CabinetManagementPage';
 import AdmissionRequestDetailPage from "./pages/inpatient/AdmissionRequestDetailPage";
+import LockedCabinetsPage from './pages/tu-thuoc/LockedCabinetsPage';
 
 const AdminRoutes = () => {
     return (
@@ -70,6 +71,7 @@ const AdminRoutes = () => {
 
                 {/* Cabinet Management */}
                 <Route path="tu-thuoc" element={<CabinetManagementPage />} />
+                <Route path="tu-thuoc/locked" element={<LockedCabinetsPage />} />
 
                 {/* Legacy routes */}
                 <Route path="users" element={<UserListPage />} />

@@ -139,8 +139,8 @@ const BedMapPage = () => {
                 if (response && response.data) {
                     setDepartments(response.data.content);
                     // Tự động chọn khoa đầu tiên
-                    if (response.data.length > 0) {
-                        setSelectedDepartment(response.data[0].id);
+                    if (deptData.length > 0) {
+                        setSelectedDepartment(deptData[0].id);
                     }
                 }
             } catch (err) {
