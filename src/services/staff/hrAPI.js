@@ -181,9 +181,19 @@ export const hrDashboardAPI = {
 // API Quản lý Nhân viên (Employee Management)
 export const hrEmployeeAPI = {
   // Lấy danh sách nhân viên
-  getEmployees: async (params = {}) => {
-    const queryString = new URLSearchParams(params).toString();
-    return apiCall(`api/v1/employees${queryString ? `?${queryString}` : ''}`, {
+  getEmployees: async (name = '', page = 0, size = 10, additionalParams = {}) => {
+    const params = new URLSearchParams({
+      page: page.toString(),
+      size: size.toString(),
+      ...additionalParams,
+    });
+
+    // Thêm name nếu có
+    if (name && name.trim() !== '') {
+      params.append('name', name.trim());
+    }
+
+    return apiCall(`api/v1/employees?${params.toString()}`, {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${getAccessToken()}`,
@@ -272,9 +282,18 @@ export const hrEmployeeAPI = {
     });
   },
 
-  // Tìm kiếm nhân viên theo tên
-  searchByName: async (name) => {
-    return apiCall(`api/v1/employees/name/${encodeURIComponent(name)}`, {
+  // Tìm kiếm nhân viên theo tên (sử dụng API mới)
+  searchByName: async (name, page = 0, size = 10) => {
+    const params = new URLSearchParams({
+      page: page.toString(),
+      size: size.toString(),
+    });
+
+    if (name && name.trim() !== '') {
+      params.append('name', name.trim());
+    }
+
+    return apiCall(`api/v1/employees?${params.toString()}`, {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${getAccessToken()}`,

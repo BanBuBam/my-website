@@ -404,8 +404,18 @@ export const pharmacistPrescriptionAPI = {
 // API Quản lý nhà cung cấp
 export const pharmacistSupplierAPI = {
   // Lấy danh sách nhà cung cấp
-  getSuppliers: async () => {
-    return apiCall('api/v1/suppliers', {
+  getSuppliers: async (searchTerm = '', page = 0, size = 20) => {
+    const params = new URLSearchParams({
+      page: page.toString(),
+      size: size.toString(),
+    });
+
+    // Thêm searchTerm nếu có
+    if (searchTerm && searchTerm.trim() !== '') {
+      params.append('searchTerm', searchTerm.trim());
+    }
+
+    return apiCall(`api/v1/suppliers?${params.toString()}`, {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${getAccessToken()}`,
@@ -452,17 +462,22 @@ export const pharmacistExpiryAPI = {
 // API Medicines
 export const medicineAPI = {
   // Lấy danh sách medicines
-  getMedicines: async (page = 0, size = 100, sort = ['medicineName,asc']) => {
+  getMedicines: async (keyword = '', page = 0, size = 20, sort = ['medicineName,asc']) => {
     const params = new URLSearchParams({
       page: page.toString(),
       size: size.toString(),
     });
 
+    // Thêm keyword nếu có
+    if (keyword && keyword.trim() !== '') {
+      params.append('keyword', keyword.trim());
+    }
+
     if (sort && sort.length > 0) {
       sort.forEach(s => params.append('sort', s));
     }
 
-    return apiCall(`api/v1/medicines`, {
+    return apiCall(`api/v1/medicines?${params.toString()}`, {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${getAccessToken()}`,
@@ -753,8 +768,18 @@ export const medicationOrderGroupAPI = {
 // ==================== Department API ====================
 export const pharmacistDepartmentAPI = {
   // Lấy danh sách khoa phòng
-  getDepartments: async () => {
-    return apiCall('api/v1/departments', {
+  getDepartments: async (name = '', page = 0, size = 10) => {
+    const params = new URLSearchParams({
+      page: page.toString(),
+      size: size.toString(),
+    });
+
+    // Thêm name nếu có
+    if (name && name.trim() !== '') {
+      params.append('name', name.trim());
+    }
+
+    return apiCall(`api/v1/departments?${params.toString()}`, {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${getAccessToken()}`,
@@ -1619,6 +1644,45 @@ export const pharmacistMedicalSupplyAPI = {
     });
   },
 };
+export const goodsIssueAPI = {
+  // 1. Tạo phiếu xuất kho mới
+  // POST /api/v1/goods-issues
+  create: async (data) => {
+    return apiCall('api/v1/goods-issues', {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${getAccessToken()}` },
+      body: JSON.stringify(data),
+    });
+  },
+
+  // 2. Lấy chi tiết phiếu xuất kho
+  // GET /api/v1/goods-issues/{id}
+  getById: async (id) => {
+    return apiCall(`api/v1/goods-issues/${id}`, {
+      method: 'GET',
+      headers: { 'Authorization': `Bearer ${getAccessToken()}` },
+    });
+  },
+
+  // 3. Lấy danh sách phiếu xuất kho
+  // GET /api/v1/goods-issues
+  getAll: async () => {
+    return apiCall('api/v1/goods-issues', {
+      method: 'GET',
+      headers: { 'Authorization': `Bearer ${getAccessToken()}` },
+    });
+  },
+
+  // 4. Cập nhật phiếu xuất kho (chỉ DRAFT)
+  // PUT /api/v1/goods-issues/{id}
+  update: async (id, data) => {
+    return apiCall(`api/v1/goods-issues/${id}`, {
+      method: 'PUT',
+      headers: { 'Authorization': `Bearer ${getAccessToken()}` },
+      body: JSON.stringify(data),
+    });
+  },
+};
 
 export default {
   pharmacistAuthAPI,
@@ -1639,4 +1703,5 @@ export default {
   pharmacistStockAlertAPI,
   pharmacistInteractionAPI,
   pharmacistMedicalSupplyAPI,
+  goodsIssueAPI,
 };

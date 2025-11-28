@@ -85,12 +85,6 @@ const PharmacistLayout = () => {
                         <div className="category-header">Quản lý kho</div>
                         <ul>
                             <li>
-                                <NavLink to="/staff/duoc-si/ton-kho">
-                                    <FiPackage />
-                                    <span>Tồn kho</span>
-                                </NavLink>
-                            </li>
-                            <li>
                                 <NavLink to="/staff/duoc-si/inventory">
                                     <FiArchive />
                                     <span>Danh mục thuốc</span>

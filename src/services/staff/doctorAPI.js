@@ -646,11 +646,16 @@ export const serviceAPI = {
 // API Medicines
 export const medicineAPI = {
   // Lấy danh sách medicines
-  getMedicines: async (page = 0, size = 100, sort = ['medicineName,asc']) => {
+  getMedicines: async (keyword = '', page = 0, size = 20, sort = ['medicineName,asc']) => {
     const params = new URLSearchParams({
       page: page.toString(),
       size: size.toString(),
     });
+
+    // Thêm keyword nếu có
+    if (keyword && keyword.trim() !== '') {
+      params.append('keyword', keyword.trim());
+    }
 
     if (sort && sort.length > 0) {
       sort.forEach(s => params.append('sort', s));
@@ -668,8 +673,18 @@ export const medicineAPI = {
 // API Departments
 export const departmentAPI = {
   // Lấy danh sách departments
-  getDepartments: async () => {
-    return apiCall('api/v1/departments', {
+  getDepartments: async (name = '', page = 0, size = 10) => {
+    const params = new URLSearchParams({
+      page: page.toString(),
+      size: size.toString(),
+    });
+
+    // Thêm name nếu có
+    if (name && name.trim() !== '') {
+      params.append('name', name.trim());
+    }
+
+    return apiCall(`api/v1/departments?${params.toString()}`, {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${getAccessToken()}`,

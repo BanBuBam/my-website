@@ -103,10 +103,19 @@ export const adminDashboardAPI = {
 // API Quản lý nhân viên
 export const adminEmployeeAPI = {
   // Lấy danh sách nhân viên
-  getEmployees: async (params) => {
-    const queryString = params ? new URLSearchParams(params).toString() : '';
-    const endpoint = queryString ? `api/v1/employees?${queryString}` : 'api/v1/employees';
-    return apiCall(endpoint, {
+  getEmployees: async (name = '', page = 0, size = 10, additionalParams = {}) => {
+    const params = new URLSearchParams({
+      page: page.toString(),
+      size: size.toString(),
+      ...additionalParams,
+    });
+
+    // Thêm name nếu có
+    if (name && name.trim() !== '') {
+      params.append('name', name.trim());
+    }
+
+    return apiCall(`api/v1/employees?${params.toString()}`, {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${getAccessToken()}`,
@@ -200,8 +209,18 @@ export const adminEmployeeAPI = {
 // API Quản lý phòng ban
 export const adminDepartmentAPI = {
   // Lấy danh sách phòng ban
-  getDepartments: async () => {
-    return apiCall('api/v1/departments', {
+  getDepartments: async (name = '', page = 0, size = 10) => {
+    const params = new URLSearchParams({
+      page: page.toString(),
+      size: size.toString(),
+    });
+
+    // Thêm name nếu có
+    if (name && name.trim() !== '') {
+      params.append('name', name.trim());
+    }
+
+    return apiCall(`api/v1/departments?${params.toString()}`, {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${getAccessToken()}`,
@@ -235,8 +254,18 @@ export const adminDepartmentAPI = {
 // API Quản lý phòng khám
 export const adminClinicAPI = {
   // Lấy danh sách phòng khám
-  getClinics: async () => {
-    return apiCall('api/v1/clinics', {
+  getClinics: async (keyword = '', page = 0, size = 20) => {
+    const params = new URLSearchParams({
+      page: page.toString(),
+      size: size.toString(),
+    });
+
+    // Thêm keyword nếu có
+    if (keyword && keyword.trim() !== '') {
+      params.append('keyword', keyword.trim());
+    }
+
+    return apiCall(`api/v1/clinics?${params.toString()}`, {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${getAccessToken()}`,
@@ -550,9 +579,19 @@ export const adminSupplierAPI = {
   },
 
   // 4. Lấy danh sách tất cả nhà cung cấp (Get All Suppliers - Paginated)
-  // GET /api/v1/suppliers?page={page}&size={size}
-  getAllSuppliers: async (page = 0, size = 20) => {
-    return apiCall(`api/v1/suppliers?page=${page}&size=${size}`, {
+  // GET /api/v1/suppliers?searchTerm={optional}&page={page}&size={size}
+  getAllSuppliers: async (searchTerm = '', page = 0, size = 20) => {
+    const params = new URLSearchParams({
+      page: page.toString(),
+      size: size.toString(),
+    });
+
+    // Thêm searchTerm nếu có
+    if (searchTerm && searchTerm.trim() !== '') {
+      params.append('searchTerm', searchTerm.trim());
+    }
+
+    return apiCall(`api/v1/suppliers?${params.toString()}`, {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${getAccessToken()}`,
@@ -560,15 +599,11 @@ export const adminSupplierAPI = {
     });
   },
 
-  // 5. Tìm kiếm nhà cung cấp (Search Suppliers)
-  // GET /api/v1/suppliers/search?searchTerm={searchTerm}
-  searchSuppliers: async (searchTerm) => {
-    return apiCall(`api/v1/suppliers/search?searchTerm=${encodeURIComponent(searchTerm)}`, {
-      method: 'GET',
-      headers: {
-        'Authorization': `Bearer ${getAccessToken()}`,
-      },
-    });
+  // 5. Tìm kiếm nhà cung cấp (Search Suppliers) - DEPRECATED, sử dụng getAllSuppliers thay thế
+  // GET /api/v1/suppliers/search?searchTerm={searchTerm} - DEPRECATED
+  searchSuppliers: async (searchTerm, page = 0, size = 20) => {
+    // Chuyển sang sử dụng API mới
+    return adminSupplierAPI.getAllSuppliers(searchTerm, page, size);
   },
 
   // 6. Xóa nhà cung cấp (Soft Delete Supplier)
