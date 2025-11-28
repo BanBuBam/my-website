@@ -44,6 +44,18 @@ const FinanceLayout = () => {
                         <div className="category-header">Quản lý hóa đơn</div>
                         <ul>
                             <li>
+                                <NavLink to="/staff/tai-chinh/thanh-toan-ngoai-tru">
+                                    <FiDollarSign />
+                                    <span>Thanh toán ngoại trú</span>
+                                </NavLink>
+                            </li>
+                            <li>
+                                <NavLink to="/staff/tai-chinh/thanh-toan-noi-tru">
+                                    <FiDollarSign />
+                                    <span>Thanh toán nội trú</span>
+                                </NavLink>
+                            </li>
+                            <li>
                                 <NavLink to="/staff/tai-chinh/ds-hoa-don">
                                     <FiList />
                                     <span>Danh sách hóa đơn</span>

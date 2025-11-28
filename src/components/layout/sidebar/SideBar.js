@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import './SideBar.css';
 
@@ -13,10 +13,35 @@ import arrowDown from '../../../assets/icons/arrow-down.png';
 
 const Sidebar = () => {
   const [openMenu, setOpenMenu] = useState(null);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   const toggleMenu = (menuName) => {
     setOpenMenu(openMenu === menuName ? null : menuName);
   };
+
+  // Kiểm tra trạng thái đăng nhập
+  useEffect(() => {
+    const checkLoginStatus = () => {
+      const accessToken = localStorage.getItem('accessToken');
+      setIsLoggedIn(!!accessToken);
+    };
+
+    // Kiểm tra lần đầu
+    checkLoginStatus();
+
+    // Lắng nghe sự kiện thay đổi trạng thái đăng nhập
+    const handleLoginStatusChange = () => {
+      checkLoginStatus();
+    };
+
+    window.addEventListener('loginStatusChanged', handleLoginStatusChange);
+    window.addEventListener('storage', checkLoginStatus);
+
+    return () => {
+      window.removeEventListener('loginStatusChanged', handleLoginStatusChange);
+      window.removeEventListener('storage', checkLoginStatus);
+    };
+  }, []);
 
   return (
     <aside className="sidebar">
@@ -29,36 +54,35 @@ const Sidebar = () => {
       </div>
 
       <nav className="sidebar-nav">
-        <div className="nav-section user-account">
-          <h4>Tài khoản</h4>
-          <ul>
-            <li><Link to="/login">Đăng nhập</Link></li>
-            <li><Link to="/register">Đăng ký</Link></li>
-            <li><Link to="/cap-nhat-thong-tin">Cập nhật thông tin</Link></li>
-            <li><Link to="/medical-info">Thông tin y tế</Link></li>
-            <li><Link to="/forgot-password">Quên mật khẩu</Link></li>
-            <li><Link to="/reset-password">Đặt lại mật khẩu</Link></li>
-            <li><Link to="/change-password">Đổi mật khẩu</Link></li>
-            <li><Link to="/refresh-token">Làm mới Token</Link></li>
-          </ul>
-        </div>
+        {/* Chỉ hiển thị phần Tài khoản khi chưa đăng nhập */}
+        {!isLoggedIn && (
+          <div className="nav-section user-account">
+            <h4>Tài khoản</h4>
+            <ul>
+              <li><Link to="/login">Đăng nhập</Link></li>
+              <li><Link to="/register">Đăng ký</Link></li>
+              <li><Link to="/forgot-password">Quên mật khẩu</Link></li>
+            </ul>
+          </div>
+        )}
 
-        <div className="nav-section quick-actions">
-          <h4>Dịch vụ khám chữa bệnh</h4>
-          <ul>
-              {/*<li><Link to="/login">Đăng nhập</Link></li>*/}
-              {/*<li><Link to="/register">Đăng ký</Link></li>*/}
-              {/*<li><Link to="/homepage">Trang chủ</Link></li>*/}
+        {/* Hiển thị dịch vụ khi đã đăng nhập */}
+        {isLoggedIn && (
+          <div className="nav-section quick-actions">
+            <h4>Dịch vụ khám chữa bệnh</h4>
+            <ul>
               <li><Link to="/cap-nhat-thong-tin">Cập nhật thông tin</Link></li>
+              <li><Link to="/medical-info">Thông tin y tế</Link></li>
+              <li><Link to="/change-password">Đổi mật khẩu</Link></li>
               <li><Link to="/lich-su-kham">Lịch sử khám</Link></li>
-            <li><Link to="/dat-lich-kham">Đặt lịch khám</Link></li>
-            <li><Link to="/trang-thai-dat-lich">Trạng thái đặt lịch</Link></li>
-            <li><Link to="/hoa-don-benh-nhan">Hóa đơn bệnh nhân</Link></li>
-            <li><Link to="/goi-kham">Gói khám</Link></li>
-            <li><Link to="/tra-cuu-ket-qua">Tra cứu kết quả</Link></li>
-            <li><Link to="/thanh-toan">Thanh toán</Link></li>
-          </ul>
-        </div>
+              <li><Link to="/dat-lich-kham">Đặt lịch khám</Link></li>
+              <li><Link to="/trang-thai-dat-lich">Trạng thái đặt lịch</Link></li>
+              <li><Link to="/hoa-don-benh-nhan">Hóa đơn bệnh nhân</Link></li>
+              <li><Link to="/goi-kham">Gói khám</Link></li>
+              <li><Link to="/tra-cuu-ket-qua">Tra cứu kết quả</Link></li>
+            </ul>
+          </div>
+        )}
 
         <div className="nav-section main-navigation">
           <h4>Thông tin bệnh viện</h4>
@@ -91,14 +115,14 @@ const Sidebar = () => {
             <img src={phoneIcon} alt="Phone" />
             <div>
               <span>Cấp cứu</span>
-              <strong>84 04 372 766</strong>
+              <strong>024 1138 884</strong>
             </div>
           </div>
           <div className="contact-item">
             <img src={phoneIcon} alt="Phone" />
             <div>
               <span>Hotline</span>
-              <strong>84 04 372 766</strong>
+              <strong>024 8345 555</strong>
             </div>
           </div>
         </div>

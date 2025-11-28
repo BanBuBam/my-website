@@ -456,6 +456,16 @@ export const adminAdmissionRequestAPI = {
       body: JSON.stringify(requestData),
     });
   },
+  
+  getAllRequests: async (page = 0, size = 10) => {
+    // Lưu ý: Backend Spring Boot thường dùng query params: ?page=0&size=10
+    return apiCall(`api/v1/admission-requests?page=${page}&size=${size}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
 
   // Lấy danh sách yêu cầu chờ xác nhận
   getPendingRequests: async () => {
@@ -520,6 +530,28 @@ export const adminAdmissionRequestAPI = {
       headers: {
         'Authorization': `Bearer ${getAccessToken()}`,
       },
+    });
+  },
+  
+  // === ADDED: LẤY CHI TIẾT YÊU CẦU ===
+  getRequestDetail: async (admissionRequestId) => {
+    return apiCall(`api/v1/admission-requests/${admissionRequestId}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+  
+  // === ADDED: CẬP NHẬT YÊU CẦU ===
+  updateRequest: async (admissionRequestId, data) => {
+    return apiCall(`api/v1/admission-requests/${admissionRequestId}`, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(data),
     });
   },
 };

@@ -1,0 +1,671 @@
+/* DoctorDischargePlanningPage.css */
+.doctor-discharge-page {
+    padding: 24px;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.doctor-discharge-page .discharge-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    background: white;
+    padding: 24px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    gap: 20px;
+}
+
+.doctor-discharge-page .header-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex: 1;
+}
+
+.doctor-discharge-page .header-title {
+    flex: 1;
+}
+
+.doctor-discharge-page .header-title h1 {
+    margin: 0 0 4px 0;
+    font-size: 1.5rem;
+    color: #1f2937;
+    font-weight: 600;
+}
+
+.doctor-discharge-page .patient-info {
+    margin: 0;
+    color: #6b7280;
+    font-size: 0.95rem;
+}
+
+/* Header Actions Layout */
+.doctor-discharge-page .header-actions {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+/* Order/Cancel Discharge Buttons */
+.doctor-discharge-page .btn-order-discharge,
+.doctor-discharge-page .btn-cancel-discharge-order {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 18px;
+    border: none;
+    border-radius: 8px;
+    font-weight: 500;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+}
+
+.doctor-discharge-page .btn-order-discharge {
+    background-color: #10b981;
+    color: white;
+}
+
+.doctor-discharge-page .btn-order-discharge:hover:not(:disabled) {
+    background-color: #059669;
+    box-shadow: 0 4px 6px rgba(16, 185, 129, 0.3);
+    transform: translateY(-1px);
+}
+
+.doctor-discharge-page .btn-cancel-discharge-order {
+    background-color: #ef4444;
+    color: white;
+}
+
+.doctor-discharge-page .btn-cancel-discharge-order:hover:not(:disabled) {
+    background-color: #dc2626;
+    box-shadow: 0 4px 6px rgba(239, 68, 68, 0.3);
+    transform: translateY(-1px);
+}
+
+/* Style riêng cho nút Phê duyệt (quan trọng với Bác sĩ) */
+.doctor-discharge-page .btn-approve {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 18px;
+    background-color: #10b981;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 500;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+}
+
+.doctor-discharge-page .btn-approve:hover:not(:disabled) {
+    background-color: #059669;
+    box-shadow: 0 4px 6px rgba(16, 185, 129, 0.3);
+    transform: translateY(-1px);
+}
+
+.doctor-discharge-page .btn-execute {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 18px;
+    background-color: #3b82f6;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 500;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+}
+
+.doctor-discharge-page .btn-execute:hover:not(:disabled) {
+    background-color: #2563eb;
+    box-shadow: 0 4px 6px rgba(59, 130, 246, 0.3);
+    transform: translateY(-1px);
+}
+
+/* Common button styles */
+.doctor-discharge-page .btn-create,
+.doctor-discharge-page .btn-edit,
+.doctor-discharge-page .btn-back,
+.doctor-discharge-page .btn-retry {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 18px;
+    border-radius: 8px;
+    font-weight: 500;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+}
+
+.doctor-discharge-page .btn-create {
+    background-color: #3b82f6;
+    color: white;
+    border: none;
+}
+
+.doctor-discharge-page .btn-create:hover:not(:disabled) {
+    background-color: #2563eb;
+    box-shadow: 0 4px 6px rgba(59, 130, 246, 0.3);
+    transform: translateY(-1px);
+}
+
+.doctor-discharge-page .btn-edit {
+    background-color: #f97316;
+    color: white;
+    border: none;
+}
+
+.doctor-discharge-page .btn-edit:hover:not(:disabled) {
+    background-color: #ea580c;
+    box-shadow: 0 4px 6px rgba(249, 115, 22, 0.3);
+    transform: translateY(-1px);
+}
+
+.doctor-discharge-page .btn-back {
+    background: white;
+    color: #6b7280;
+    border: 1px solid #e5e7eb;
+}
+
+.doctor-discharge-page .btn-back:hover:not(:disabled) {
+    background: #f9fafb;
+    border-color: #3b82f6;
+    color: #3b82f6;
+}
+
+.doctor-discharge-page .btn-create-empty {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    background-color: #3b82f6;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 500;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.doctor-discharge-page .btn-create-empty:hover:not(:disabled) {
+    background-color: #2563eb;
+    box-shadow: 0 4px 6px rgba(59, 130, 246, 0.3);
+    transform: translateY(-1px);
+}
+
+/* Loading and Error States */
+.doctor-discharge-page .loading-container,
+.doctor-discharge-page .error-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 80px 20px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.doctor-discharge-page .loading-container svg,
+.doctor-discharge-page .error-container svg {
+    font-size: 64px;
+    margin-bottom: 16px;
+    color: #3b82f6;
+}
+
+.doctor-discharge-page .error-container svg {
+    color: #ef4444;
+}
+
+.doctor-discharge-page .loading-container p,
+.doctor-discharge-page .error-container p {
+    color: #6b7280;
+    font-size: 1rem;
+    margin: 0 0 16px 0;
+}
+
+.doctor-discharge-page .spinner {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* Empty State */
+.doctor-discharge-page .empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 80px 20px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    text-align: center;
+}
+
+.doctor-discharge-page .empty-state svg {
+    font-size: 64px;
+    color: #9ca3af;
+    margin-bottom: 16px;
+}
+
+.doctor-discharge-page .empty-state h3 {
+    margin: 0 0 8px 0;
+    color: #1f2937;
+    font-size: 1.25rem;
+}
+
+.doctor-discharge-page .empty-state p {
+    margin: 0 0 24px 0;
+    color: #6b7280;
+    font-size: 0.95rem;
+}
+
+/* Discharge Plan Content */
+.doctor-discharge-page .discharge-plan-content {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+}
+
+/* Status Section */
+.doctor-discharge-page .plan-status-section {
+    padding: 20px 24px;
+    background: #f9fafb;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.doctor-discharge-page .status-badges {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.doctor-discharge-page .badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.doctor-discharge-page .badge.approved {
+    background-color: #d1fae5;
+    color: #065f46;
+}
+
+.doctor-discharge-page .badge.pending-approval {
+    background-color: #fef3c7;
+    color: #92400e;
+}
+
+.doctor-discharge-page .badge.status-draft {
+    background-color: #e5e7eb;
+    color: #374151;
+}
+
+.doctor-discharge-page .badge.status-active {
+    background-color: #dbeafe;
+    color: #1e40af;
+}
+
+.doctor-discharge-page .badge.status-completed {
+    background-color: #d1fae5;
+    color: #065f46;
+}
+
+.doctor-discharge-page .badge.transfer-yes {
+    background-color: #fef3c7;
+    color: #92400e;
+}
+
+.doctor-discharge-page .badge.transfer-no {
+    background-color: #e5e7eb;
+    color: #6b7280;
+}
+
+/* Plan Sections */
+.doctor-discharge-page .plan-section {
+    padding: 24px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.doctor-discharge-page .plan-section:last-child {
+    border-bottom: none;
+}
+
+.doctor-discharge-page .plan-section h2 {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0 0 20px 0;
+    font-size: 1.125rem;
+    color: #1f2937;
+    font-weight: 600;
+}
+
+.doctor-discharge-page .plan-section h2 svg {
+    color: #3b82f6;
+    font-size: 1.25rem;
+}
+
+/* Info Grid */
+.doctor-discharge-page .info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+}
+
+.doctor-discharge-page .info-item {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.doctor-discharge-page .info-item label {
+    font-size: 0.875rem;
+    color: #6b7280;
+    font-weight: 500;
+}
+
+.doctor-discharge-page .info-item span {
+    font-size: 0.95rem;
+    color: #1f2937;
+    font-weight: 400;
+}
+
+.doctor-discharge-page .info-item.full-width {
+    grid-column: 1 / -1;
+}
+
+/* Info Detail */
+.doctor-discharge-page .info-detail {
+    margin-bottom: 20px;
+}
+
+.doctor-discharge-page .info-detail:last-child {
+    margin-bottom: 0;
+}
+
+.doctor-discharge-page .info-detail label {
+    display: block;
+    font-size: 0.875rem;
+    color: #6b7280;
+    font-weight: 500;
+    margin-bottom: 8px;
+}
+
+.doctor-discharge-page .info-detail p {
+    margin: 0;
+    font-size: 0.95rem;
+    color: #1f2937;
+    line-height: 1.6;
+    white-space: pre-wrap;
+}
+
+/* Metadata Section */
+.doctor-discharge-page .metadata-section {
+    background: #f9fafb;
+}
+
+/* Modal Styles */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 20px;
+}
+
+.modal-content {
+    background: white;
+    border-radius: 12px;
+    max-width: 600px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
+}
+
+.modal-content.form-modal {
+    max-width: 800px;
+}
+
+.modal-content.modal-lg {
+    max-width: 900px;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 24px;
+    border-bottom: 1px solid #e5e7eb;
+    background: #f9fafb;
+}
+
+.modal-header h2,
+.modal-header h3 {
+    margin: 0;
+    font-size: 1.25rem;
+    color: #1f2937;
+    font-weight: 600;
+}
+
+.btn-close {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: #6b7280;
+    cursor: pointer;
+    padding: 0;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    transition: all 0.2s;
+}
+
+.btn-close:hover:not(:disabled) {
+    background: #e5e7eb;
+    color: #1f2937;
+}
+
+.btn-close:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.modal-body {
+    padding: 24px;
+}
+
+.modal-footer,
+.dialog-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    padding: 20px 24px;
+    border-top: 1px solid #e5e7eb;
+    background: #f9fafb;
+}
+
+.btn-cancel,
+.btn-confirm {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: 500;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+}
+
+.btn-cancel {
+    background: white;
+    color: #6b7280;
+    border: 1px solid #d1d5db;
+}
+
+.btn-cancel:hover:not(:disabled) {
+    background: #f9fafb;
+    border-color: #9ca3af;
+}
+
+.btn-confirm {
+    background: #3b82f6;
+    color: white;
+    border: none;
+}
+
+.btn-confirm:hover:not(:disabled) {
+    background: #2563eb;
+    box-shadow: 0 4px 6px rgba(59, 130, 246, 0.3);
+}
+
+.btn-cancel:disabled,
+.btn-confirm:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Form Styles */
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.form-group.full-width {
+    grid-column: 1 / -1;
+}
+
+.form-group label {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #374151;
+}
+
+.form-group .required {
+    color: #ef4444;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea,
+.form-control {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    color: #1f2937;
+    transition: all 0.2s;
+    font-family: inherit;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus,
+.form-control:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.form-group textarea {
+    resize: vertical;
+    min-height: 80px;
+}
+
+.form-group input[type="checkbox"] {
+    width: auto;
+    margin-right: 8px;
+}
+
+/* Alert Message */
+.alert-message {
+    padding: 12px 16px;
+    background: #fef3c7;
+    border: 1px solid #fbbf24;
+    border-radius: 8px;
+    color: #92400e;
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .doctor-discharge-page {
+        padding: 16px;
+    }
+
+    .doctor-discharge-page .discharge-header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 16px;
+    }
+
+    .doctor-discharge-page .header-left {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .doctor-discharge-page .header-actions {
+        justify-content: stretch;
+    }
+
+    .doctor-discharge-page .header-actions button {
+        flex: 1;
+        justify-content: center;
+    }
+
+    .doctor-discharge-page .info-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .modal-content {
+        max-width: 100%;
+        max-height: 95vh;
+    }
+}

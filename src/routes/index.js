@@ -28,6 +28,12 @@ import VisionPage from '../pages/about/VisionPage';
 // Departments page
 import DepartmentsPage from '../pages/departments/DepartmentsPage';
 
+// Medical Services page
+import MedicalServicesPage from '../pages/services/MedicalServicesPage';
+
+// Contact page
+import ContactPage from '../pages/contact/ContactPage';
+
 // Support page
 import CustomerSupportPage from '../pages/support/CustomerSupportPage';
 
@@ -65,6 +71,12 @@ const AppRoutes = () => {
 
         {/* Departments page */}
         <Route path="/chuyen-khoa" element={<DepartmentsPage />} />
+
+        {/* Medical Services page */}
+        <Route path="/dich-vu" element={<MedicalServicesPage />} />
+
+        {/* Contact page */}
+        <Route path="/lien-he" element={<ContactPage />} />
 
         {/* Support page */}
         <Route path="/ho-tro" element={<CustomerSupportPage />} />

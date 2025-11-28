@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { nurseAdmissionRequestAPI } from '../../../../services/staff/nurseAPI';
-import { FiArrowLeft, FiAlertCircle, FiCheck, FiUser, FiClipboard, FiGrid, FiClock } from 'react-icons/fi';
+import {FiArrowLeft, FiAlertCircle, FiCheck, FiUser, FiClipboard, FiGrid, FiClock, FiCheckCircle} from 'react-icons/fi';
 import './RequestDetailPage.css';
 import AssignBedModal from './AssignBedModal';
 
@@ -47,6 +47,9 @@ const RequestDetailPage = () => {
     // Lấy requestId từ URL
     const { requestId } = useParams();
     const navigate = useNavigate();
+    
+    // === ADDED: STATE CHO LOADING KHI HOÀN THÀNH ===
+    const [completing, setCompleting] = useState(false);
     
     // useEffect(() => {
     //     if (!requestId) {
@@ -107,6 +110,28 @@ const RequestDetailPage = () => {
         fetchDetail(); // Tải lại dữ liệu trang để cập nhật
     };
     
+    // === ADDED: HÀM XỬ LÝ HOÀN THÀNH NHẬP VIỆN ===
+    const handleComplete = async () => {
+        if (!window.confirm(`Xác nhận hoàn thành thủ tục nhập viện cho bệnh nhân ${request.patientName}?`)) {
+            return;
+        }
+        
+        setCompleting(true);
+        try {
+            const response = await nurseAdmissionRequestAPI.completeAdmissionRequest(requestId);
+            
+            // Hiển thị thông báo từ server hoặc thông báo mặc định
+            alert(response.message || 'Hoàn thành nhập viện thành công!');
+            
+            // Tải lại dữ liệu để cập nhật trạng thái mới (ADMITTED)
+            fetchDetail();
+        } catch (err) {
+            alert('Lỗi: ' + (err.message || 'Không thể hoàn thành nhập viện'));
+        } finally {
+            setCompleting(false);
+        }
+    };
+    
     if (loading) {
         return <div className="detail-loading">Đang tải chi tiết yêu cầu...</div>;
     }
@@ -131,13 +156,35 @@ const RequestDetailPage = () => {
                     <p>Mã bệnh nhân: {request.patientCode}</p>
                 </div>
                 
-                {/* === ĐÂY LÀ NÚT GÁN GIƯỜNG BẠN MUỐN THÊM === */}
-                {/* Nó chỉ hiển thị nếu giường CHƯA được gán */}
-                {!request.assignedBedCode && (
-                    <button className="btn-assign-bed" onClick={() => setIsModalOpen(true)}>
-                        <FiGrid /> Gán giường
-                    </button>
-                )}
+                {/*/!* === ĐÂY LÀ NÚT GÁN GIƯỜNG BẠN MUỐN THÊM === *!/*/}
+                {/*/!* Nó chỉ hiển thị nếu giường CHƯA được gán *!/*/}
+                {/*{!request.assignedBedCode && (*/}
+                {/*    <button className="btn-assign-bed" onClick={() => setIsModalOpen(true)}>*/}
+                {/*        <FiGrid /> Gán giường*/}
+                {/*    </button>*/}
+                {/*)}*/}
+                {/* === BUTTONS SECTION === */}
+                <div className="header-actions" style={{ display: 'flex', gap: '12px', marginLeft: 'auto' }}>
+                    
+                    {/* Nút Gán giường (Giữ nguyên logic cũ: Hiện khi chưa có giường) */}
+                    {!request.assignedBedCode && !request.isCompleted && (
+                        <button className="btn-assign-bed" onClick={() => setIsModalOpen(true)}>
+                            <FiGrid /> Gán giường
+                        </button>
+                    )}
+                    
+                    {/* === ADDED: NÚT HOÀN THÀNH === */}
+                    {/* Hiện khi ĐÃ CÓ giường VÀ CHƯA hoàn thành */}
+                    {/*{request.assignedBedCode && !request.isCompleted && (*/}
+                        <button
+                            className="btn-complete"
+                            onClick={handleComplete}
+                            disabled={completing}
+                        >
+                            <FiCheckCircle /> {completing ? 'Đang xử lý...' : 'Hoàn thành'}
+                        </button>
+                    {/*)}*/}
+                </div>
             </div>
             
             {/* Thông tin chính và Trạng thái */}

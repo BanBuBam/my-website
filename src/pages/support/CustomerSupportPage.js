@@ -25,28 +25,28 @@ const CustomerSupportPage = () => {
     {
       icon: <FiPhone />,
       title: 'Hotline',
-      content: '84 04 372 766',
+      content: '024 8345 555',
       description: 'Hỗ trợ 24/7',
       color: '#0ea5e9'
     },
     {
       icon: <FiPhone />,
       title: 'Cấp cứu',
-      content: '84 04 372 766',
+      content: '024 1138 884',
       description: 'Luôn sẵn sàng',
       color: '#dc2626'
     },
     {
       icon: <FiMail />,
       title: 'Email',
-      content: 'unreal@outlook.com',
+      content: 'contact@trinitycare.vn',
       description: 'Phản hồi trong 24h',
       color: '#8dc63f'
     },
     {
       icon: <FiMapPin />,
       title: 'Địa chỉ',
-      content: '706 Campfire Ave. Meriden, CT 06450',
+      content: 'Số 12, Xuân Thủy, Cầu Giấy, Hà Nội',
       description: 'Đến thăm chúng tôi',
       color: '#a855f7'
     }

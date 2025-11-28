@@ -717,7 +717,7 @@ export const medicationOrderGroupAPI = {
 
   // Từ chối/Hủy nhóm y lệnh
   cancelMedicationOrderGroup: async (groupId, reason) => {
-    return apiCall(`api/v1/medication-order-groups/${groupId}/cancel`, {
+    return apiCall(`api/v1/medication-order-groups/${groupId}/cancel?reason=${reason}`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${getAccessToken()}`,
@@ -739,7 +739,7 @@ export const medicationOrderGroupAPI = {
 
   // Tạm dừng nhóm y lệnh
   discontinueMedicationOrderGroup: async (groupId, reason) => {
-    return apiCall(`api/v1/medication-order-groups/${groupId}/discontinue`, {
+    return apiCall(`api/v1/medication-order-groups/${groupId}/discontinue?reason=${reason}`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${getAccessToken()}`,

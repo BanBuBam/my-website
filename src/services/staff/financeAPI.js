@@ -206,11 +206,118 @@ export const financeReportAPI = {
   },
 };
 
+// API Quản lý Encounters (Thanh toán ngoại trú)
+export const financeEncounterAPI = {
+  // Lấy danh sách encounters
+  getEncounters: async (params = {}) => {
+    const queryParams = new URLSearchParams();
+
+    if (params.page !== undefined) queryParams.append('page', params.page);
+    if (params.size !== undefined) queryParams.append('size', params.size);
+    if (params.sort) {
+      params.sort.forEach(s => queryParams.append('sort', s));
+    }
+    if (params.status) queryParams.append('status', params.status);
+    if (params.patientName) queryParams.append('patientName', params.patientName);
+    if (params.patientCode) queryParams.append('patientCode', params.patientCode);
+    if (params.startDate) queryParams.append('startDate', params.startDate);
+    if (params.endDate) queryParams.append('endDate', params.endDate);
+
+    return apiCall(`api/v1/encounters?${queryParams.toString()}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Lấy chi tiết encounter
+  getEncounterDetail: async (encounterId) => {
+    return apiCall(`api/v1/encounters/${encounterId}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+};
+
+// API Tạo hóa đơn từ encounter
+export const financeInvoiceGenerationAPI = {
+  // Tạo hóa đơn từ encounter
+  generateInvoice: async (invoiceData) => {
+    return apiCall('api/v1/payments/generate-invoice', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+      body: JSON.stringify(invoiceData),
+    });
+  },
+};
+
+// API Giao dịch thanh toán
+export const financeTransactionAPI = {
+  // Thanh toán hóa đơn
+  processPayment: async (paymentData) => {
+    return apiCall('api/v1/transactions/process-payment', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+      body: JSON.stringify(paymentData),
+    });
+  },
+
+  // Đặt cọc (Advance Payment)
+  advancePayment: async (patientId, amount, paymentMethod) => {
+    const params = new URLSearchParams({
+      patientId: patientId,
+      amount: amount,
+      paymentMethod: paymentMethod,
+    });
+
+    return apiCall(`api/v1/transactions/advance-payment?${params.toString()}`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+};
+
+// API Quản lý điều trị nội trú (cho cashier)
+export const financeInpatientAPI = {
+  // Lấy danh sách điều trị nội trú đang hoạt động
+  getActiveInpatientStays: async () => {
+    return apiCall('api/v1/inpatient/stays/active', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Lấy chi tiết điều trị nội trú
+  getInpatientStayDetail: async (inpatientStayId) => {
+    return apiCall(`api/v1/inpatient/stays/${inpatientStayId}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+};
+
 export default {
   financeAuthAPI,
   financeDashboardAPI,
   financeInvoiceAPI,
   financePaymentAPI,
   financeReportAPI,
+  financeEncounterAPI,
+  financeInvoiceGenerationAPI,
+  financeTransactionAPI,
+  financeInpatientAPI,
 };
 

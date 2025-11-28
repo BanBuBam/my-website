@@ -391,14 +391,15 @@ const MedicationOrderGroupDetailPage = () => {
                         <FiXCircle />
                         <span>Từ chối</span>
                     </button>
-                    <button className="btn-action btn-dispense" onClick={handleDispense}>
-                        <FiTruck />
-                        <span>Xuất kho</span>
-                    </button>
                     <button className="btn-action btn-prepare" onClick={handlePrepare}>
                         <FiClock />
                         <span>Chuẩn bị</span>
                     </button>
+                    <button className="btn-action btn-dispense" onClick={handleDispense}>
+                        <FiTruck />
+                        <span>Xuất kho</span>
+                    </button>
+                    
                     <button className="btn-action btn-hold" onClick={handleHold}>
                         <FiPause />
                         <span>Tạm dừng</span>

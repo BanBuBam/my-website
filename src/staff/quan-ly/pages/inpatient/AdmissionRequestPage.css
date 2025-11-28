@@ -755,3 +755,52 @@
     }
 }
 
+/* Thêm vào cuối file AdmissionRequestPage.css */
+
+/* Pagination Controls */
+.admission-request-page .pagination-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 24px;
+    padding-top: 20px;
+    border-top: 1px solid #e5e7eb;
+}
+
+.admission-request-page .pagination-info {
+    color: #6b7280;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.admission-request-page .pagination-buttons {
+    display: flex;
+    gap: 12px;
+}
+
+.admission-request-page .btn-page {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    background: white;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    color: #374151;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.admission-request-page .btn-page:hover:not(:disabled) {
+    background: #f3f4f6;
+    border-color: #9ca3af;
+}
+
+.admission-request-page .btn-page:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background: #f9fafb;
+}
+
