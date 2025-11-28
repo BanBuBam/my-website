@@ -20,9 +20,11 @@ const InpatientTreatmentPage = () => {
     const fetchDepartments = async () => {
         try {
             setLoadingDepartments(true);
-            const response = await nurseDepartmentAPI.getDepartments();
-            if (response && response.data) {
-                setDepartments(response.data);
+            const response = await nurseDepartmentAPI.getDepartments('', 0, 30);
+            if (response && (response.status === 'OK' || response.code === 200)) {
+                // Response mới có cấu trúc: data.content (paginated)
+                const deptData = response.data?.content || response.data || [];
+                setDepartments(deptData);
             }
         } catch (err) {
             console.error('Error loading departments:', err);

@@ -666,8 +666,18 @@ export const hrDoctorScheduleAPI = {
   },
 
   // Lấy danh sách phòng khám
-  getClinics: async () => {
-    return apiCall('api/clinics', {
+  getClinics: async (keyword = '', page = 0, size = 20) => {
+    const params = new URLSearchParams({
+      page: page.toString(),
+      size: size.toString(),
+    });
+
+    // Thêm keyword nếu có
+    if (keyword && keyword.trim() !== '') {
+      params.append('keyword', keyword.trim());
+    }
+
+    return apiCall(`api/v1/clinics?${params.toString()}`, {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${getAccessToken()}`,
@@ -677,7 +687,7 @@ export const hrDoctorScheduleAPI = {
 
   // Lấy danh sách bác sĩ theo phòng khám
   getDoctorsByClinic: async (clinicId) => {
-    return apiCall(`api/clinics/${clinicId}/doctors`, {
+    return apiCall(`api/v1/clinics/${clinicId}/doctors`, {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${getAccessToken()}`,
@@ -748,6 +758,16 @@ export const hrDoctorScheduleAPI = {
   // Lấy lịch làm việc của phòng khám trong 1 ngày
   getSchedulesByClinicAndDate: async (clinicId, date) => {
     return apiCall(`api/v1/doctor-schedules/clinic/${clinicId}/date/${date}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Lấy lịch làm việc của tất cả bác sĩ trong 1 ngày
+  getSchedulesByDate: async (date) => {
+    return apiCall(`api/v1/doctor-schedules/date/${date}/doctors`, {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${getAccessToken()}`,
@@ -1441,26 +1461,52 @@ export const hrTimeOffAPI = {
 
   // ===== ACTION OPERATIONS =====
   // Phê duyệt đơn nghỉ phép
-  approveTimeOffRequest: async (id, note = '') => {
+  approveTimeOffRequest: async (id, reviewNotes = '') => {
+    // Lấy employeeAccountId từ localStorage
+    const reviewedByEmployeeId = localStorage.getItem('employeeAccountId');
+
+    if (!reviewedByEmployeeId) {
+      throw new Error('Không tìm thấy thông tin nhân viên. Vui lòng đăng nhập lại.');
+    }
+
     return apiCall(`api/v1/time-off-requests/${id}/approve`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${getAccessToken()}`,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ note }),
+      body: JSON.stringify({
+        reviewedByEmployeeId,
+        reviewNotes,
+        status: 'APPROVED',
+      }),
     });
   },
 
   // Từ chối đơn nghỉ phép
-  rejectTimeOffRequest: async (id, reason) => {
+  rejectTimeOffRequest: async (id, reviewNotes) => {
+    // Lấy employeeAccountId từ localStorage
+    const reviewedByEmployeeId = localStorage.getItem('employeeAccountId');
+
+    if (!reviewedByEmployeeId) {
+      throw new Error('Không tìm thấy thông tin nhân viên. Vui lòng đăng nhập lại.');
+    }
+
+    if (!reviewNotes || reviewNotes.trim() === '') {
+      throw new Error('Vui lòng nhập lý do từ chối.');
+    }
+
     return apiCall(`api/v1/time-off-requests/${id}/reject`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${getAccessToken()}`,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ reason }),
+      body: JSON.stringify({
+        reviewedByEmployeeId,
+        reviewNotes,
+        status: 'REJECTED',
+      }),
     });
   },
 

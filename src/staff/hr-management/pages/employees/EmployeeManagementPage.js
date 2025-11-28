@@ -4,6 +4,7 @@ import { hrEmployeeAPI } from '../../../../services/staff/hrAPI';
 import { FiPlus, FiEdit2, FiTrash2, FiSearch, FiFilter, FiUserX, FiUserCheck } from 'react-icons/fi';
 import AddEmployeeModal from '../../components/AddEmployeeModal';
 import EditEmployeeModal from '../../components/EditEmployeeModal';
+import Pagination from '../../../../components/Pagination';
 
 const EmployeeManagementPage = () => {
   const [employees, setEmployees] = useState([]);
@@ -22,10 +23,18 @@ const EmployeeManagementPage = () => {
     deletedCount: 0
   });
 
+  // Pagination states
+  const [currentPage, setCurrentPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalElements, setTotalElements] = useState(0);
+  const [pageSize, setPageSize] = useState(20);
+  const [isFirst, setIsFirst] = useState(true);
+  const [isLast, setIsLast] = useState(true);
+
   useEffect(() => {
     fetchEmployees();
     fetchStats();
-  }, []);
+  }, [currentPage]); // Re-fetch when page changes
 
   const fetchStats = async () => {
     try {
@@ -58,7 +67,7 @@ const EmployeeManagementPage = () => {
         return;
       }
 
-      const response = await hrEmployeeAPI.getEmployees();
+      const response = await hrEmployeeAPI.getEmployees('', currentPage, pageSize);
       console.log('Employees response:', response);
 
       // Handle different response structures
@@ -66,19 +75,34 @@ const EmployeeManagementPage = () => {
         // If data is an array
         if (Array.isArray(response.data)) {
           setEmployees(response.data);
+          setTotalElements(response.data.length);
+          setTotalPages(1);
         }
-        // If data is an object with items/content property
+        // If data is an object with items/content property (paginated)
         else if (response.data.items) {
           setEmployees(response.data.items);
+          setTotalElements(response.data.totalElements || response.data.items.length);
+          setTotalPages(response.data.totalPages || 1);
         } else if (response.data.content) {
           setEmployees(response.data.content);
+          // Extract pagination metadata
+          setTotalElements(response.data.totalElements || 0);
+          setTotalPages(response.data.totalPages || 1);
+          setIsFirst(response.data.first !== undefined ? response.data.first : true);
+          setIsLast(response.data.last !== undefined ? response.data.last : true);
         } else {
           setEmployees([]);
+          setTotalElements(0);
+          setTotalPages(1);
         }
       } else if (Array.isArray(response)) {
         setEmployees(response);
+        setTotalElements(response.length);
+        setTotalPages(1);
       } else {
         setEmployees([]);
+        setTotalElements(0);
+        setTotalPages(1);
       }
     } catch (err) {
       const errorMessage = err.message || 'Không thể tải danh sách nhân viên';
@@ -310,18 +334,24 @@ const EmployeeManagementPage = () => {
     setSearchCode('');
     setFilterDepartment('');
     setFilterRole('');
+    setCurrentPage(0); // Reset to first page
     fetchEmployees(); // Reload all employees
+  };
+
+  const handlePageChange = (newPage) => {
+    setCurrentPage(newPage);
+    window.scrollTo({ top: 0, behavior: 'smooth' }); // Scroll to top when changing page
   };
 
   const filteredEmployees = employees.filter(emp => {
     // Get name from different possible structures
     const fullName = emp.person ? `${emp.person.lastName} ${emp.person.firstName}` :
+                     emp.fullName ||
                      emp.name ||
                      `${emp.lastName || ''} ${emp.firstName || ''}`.trim();
     const email = emp.person?.email || emp.email || '';
-    const phone = emp.person?.phoneNumber || emp.phone || '';
+    const phone = emp.person?.phoneNumber || emp.phoneNumber || emp.phone || '';
     const employeeCode = emp.employeeCode || '';
-    const departmentId = emp.department?.id?.toString() || '';
     const roleType = emp.roleType || '';
 
     // Search by name, email, phone
@@ -334,15 +364,16 @@ const EmployeeManagementPage = () => {
     const matchesCode = !searchCode ||
                        employeeCode.toLowerCase().includes(searchCode.toLowerCase());
 
-    // Filter by department ID
-    const matchesDepartment = !filterDepartment ||
-                             departmentId === filterDepartment;
-
     // Filter by role type (exact match, case-sensitive)
     const matchesRole = !filterRole ||
                        roleType === filterRole;
 
-    return matchesSearch && matchesCode && matchesDepartment && matchesRole;
+    // NOTE: Không filter theo department ở client-side vì:
+    // 1. API searchByDepartment đã trả về đúng employees của department đó
+    // 2. Response mới không có departmentId field, chỉ có departmentName
+    // 3. User phải click "Tìm kiếm" để gọi API filter theo department
+
+    return matchesSearch && matchesCode && matchesRole;
   });
 
   if (loading) {
@@ -380,7 +411,7 @@ const EmployeeManagementPage = () => {
         <div className="stat-card stat-inactive">
           <div className="stat-icon">🚫</div>
           <div className="stat-content">
-            <div className="stat-label">Nghỉ việc</div>
+            <div className="stat-label">Đã xóa</div>
             <div className="stat-value">{stats.deletedCount}</div>
           </div>
         </div>
@@ -582,6 +613,17 @@ const EmployeeManagementPage = () => {
           </tbody>
         </table>
       </div>
+
+      {/* Pagination */}
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        totalElements={totalElements}
+        pageSize={pageSize}
+        onPageChange={handlePageChange}
+        isFirst={isFirst}
+        isLast={isLast}
+      />
 
       <AddEmployeeModal
         isOpen={showAddModal}

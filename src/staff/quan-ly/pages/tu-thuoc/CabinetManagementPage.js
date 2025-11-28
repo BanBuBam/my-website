@@ -3,6 +3,7 @@ import './CabinetManagementPage.css';
 import { FiRefreshCw, FiPlus, FiEdit2, FiTrash2, FiEye, FiSearch, FiLock, FiUnlock, FiAlertTriangle, FiClock, FiTool, FiPackage } from 'react-icons/fi';
 import { adminCabinetAPI, adminDepartmentAPI, adminEmployeeAPI } from '../../../../services/staff/adminAPI';
 import { useNavigate } from 'react-router-dom';
+import Pagination from '../../../../components/Pagination';
 
 const CabinetManagementPage = () => {
     const navigate = useNavigate();
@@ -187,9 +188,10 @@ const CabinetManagementPage = () => {
     // Load danh sách khoa phòng
     const loadDepartments = async () => {
         try {
-            const response = await adminDepartmentAPI.getDepartments();
-            if (response && (response.status === 'success' || response.code === 200 || response.OK)) {
-                const deptData = Array.isArray(response.data) ? response.data : [];
+            const response = await adminDepartmentAPI.getDepartments('', 0, 30);
+            if (response && (response.status === 'OK' || response.code === 200 || response.status === 'success')) {
+                // Response mới có cấu trúc: data.content (paginated)
+                const deptData = response.data?.content || response.data || [];
                 setDepartments(deptData);
             }
         } catch (err) {
@@ -1217,28 +1219,15 @@ const CabinetManagementPage = () => {
             )}
 
             {/* Pagination */}
-            {pagination.totalPages > 1 && (
-                <div className="pagination-controls">
-                    <button
-                        className="btn-page"
-                        onClick={() => handlePageChange(pagination.currentPage - 1)}
-                        disabled={pagination.currentPage === 0 || loading}
-                    >
-                        ← Trang trước
-                    </button>
-                    <span className="page-info">
-                        Trang {pagination.currentPage + 1} / {pagination.totalPages}
-                        {' '}({pagination.totalElements} tủ)
-                    </span>
-                    <button
-                        className="btn-page"
-                        onClick={() => handlePageChange(pagination.currentPage + 1)}
-                        disabled={pagination.currentPage >= pagination.totalPages - 1 || loading}
-                    >
-                        Trang sau →
-                    </button>
-                </div>
-            )}
+            <Pagination
+                currentPage={pagination.currentPage}
+                totalPages={pagination.totalPages}
+                totalElements={pagination.totalElements}
+                pageSize={pagination.pageSize}
+                onPageChange={handlePageChange}
+                isFirst={pagination.currentPage === 0}
+                isLast={pagination.currentPage >= pagination.totalPages - 1}
+            />
 
             {/* Create Cabinet Modal */}
             {showCreateModal && (
