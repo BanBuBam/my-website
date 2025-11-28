@@ -4,6 +4,7 @@ import { FiRefreshCw, FiPlus, FiEdit2, FiTrash2, FiEye, FiSearch, FiLock, FiUnlo
 // Import API của Dược sĩ thay vì Admin
 import { pharmacistCabinetAPI, pharmacistDepartmentAPI, pharmacistEmployeeAPI } from '../../../../services/staff/pharmacistAPI';
 import { useNavigate } from 'react-router-dom';
+import Pagination from '../../../../components/Pagination';
 
 const CabinetManagementPage = () => {
     const navigate = useNavigate();
@@ -174,9 +175,10 @@ const CabinetManagementPage = () => {
     // Load danh sách khoa phòng
     const loadDepartments = async () => {
         try {
-            const response = await pharmacistDepartmentAPI.getDepartments();
-            if (response && (response.status === 'success' || response.code === 200 || response.OK)) {
-                const deptData = Array.isArray(response.data) ? response.data : [];
+            const response = await pharmacistDepartmentAPI.getDepartments('', 0, 30);
+            if (response && (response.status === 'OK' || response.code === 200 || response.status === 'success')) {
+                // Response mới có cấu trúc: data.content (paginated)
+                const deptData = response.data?.content || response.data || [];
                 setDepartments(deptData);
             }
         } catch (err) {
@@ -666,13 +668,15 @@ const CabinetManagementPage = () => {
             ) : <div className="empty-state"><p>📦 Không có tủ nào</p></div>}
 
             {/* Pagination */}
-            {pagination.totalPages > 1 && (
-                <div className="pagination-controls">
-                    <button className="btn-page" onClick={() => handlePageChange(pagination.currentPage - 1)} disabled={pagination.currentPage === 0 || loading}>← Trang trước</button>
-                    <span className="page-info">Trang {pagination.currentPage + 1} / {pagination.totalPages} ({pagination.totalElements} tủ)</span>
-                    <button className="btn-page" onClick={() => handlePageChange(pagination.currentPage + 1)} disabled={pagination.currentPage >= pagination.totalPages - 1 || loading}>Trang sau →</button>
-                </div>
-            )}
+            <Pagination
+                currentPage={pagination.currentPage}
+                totalPages={pagination.totalPages}
+                totalElements={pagination.totalElements}
+                pageSize={pagination.pageSize}
+                onPageChange={handlePageChange}
+                isFirst={pagination.currentPage === 0}
+                isLast={pagination.currentPage >= pagination.totalPages - 1}
+            />
 
             {/* --- MODALS --- */}
 

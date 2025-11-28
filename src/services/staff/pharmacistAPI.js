@@ -768,7 +768,7 @@ export const medicationOrderGroupAPI = {
 // ==================== Department API ====================
 export const pharmacistDepartmentAPI = {
   // Lấy danh sách khoa phòng
-  getDepartments: async (name = '', page = 0, size = 10) => {
+  getDepartments: async (name = '', page = 0, size = 30) => {
     const params = new URLSearchParams({
       page: page.toString(),
       size: size.toString(),
