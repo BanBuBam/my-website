@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './EmployeeStatusPage.css';
 import { hrEmployeeStatusAPI, hrEmployeeAPI } from '../../../../services/staff/hrAPI';
-import { FiActivity, FiCheckCircle, FiXCircle, FiClock, FiPlus, FiX, FiCalendar, FiUser } from 'react-icons/fi';
+import { FiActivity, FiCheckCircle, FiXCircle, FiClock, FiPlus, FiX, FiCalendar, FiUser, FiFilter, FiLayers } from 'react-icons/fi';
 
 const EmployeeStatusPage = () => {
   const [availabilityData, setAvailabilityData] = useState([]);
@@ -491,114 +491,335 @@ const EmployeeStatusPage = () => {
         </button>
       </div>
 
-      {/* Filter Section - Employee Mode */}
-      {viewMode === 'employee' && (
-        <div className="filter-section">
-        <div className="filter-group">
-          <label>
-            <FiUser /> Chọn nhân viên:
-          </label>
-          <select
-            value={selectedEmployee}
-            onChange={(e) => setSelectedEmployee(e.target.value)}
-            className="employee-select"
-          >
-            <option value="">-- Chọn nhân viên --</option>
-            {employees.map((emp) => (
-              <option key={emp.employeeId} value={emp.employeeId}>
-                {emp.fullName} ({emp.employeeCode})
-              </option>
-            ))}
-          </select>
-        </div>
+      {/* FILTER SECTION - New design matching InventoryTransactionsPage */}
+      {(viewMode === 'employee' || viewMode === 'date') && (
+        <div style={{
+          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+          padding: '2rem',
+          borderRadius: '16px',
+          marginBottom: '1.5rem',
+          boxShadow: '0 10px 30px rgba(102, 126, 234, 0.3)',
+          position: 'relative',
+          overflow: 'hidden'
+        }}>
+          {/* Decorative Background Pattern */}
+          <div style={{
+            position: 'absolute',
+            top: 0,
+            right: 0,
+            width: '300px',
+            height: '300px',
+            background: 'radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%)',
+            borderRadius: '50%',
+            transform: 'translate(30%, -30%)',
+            pointerEvents: 'none'
+          }}></div>
 
-        <div className="filter-group">
-          <label>Lọc theo loại:</label>
-          <select value={filterType} onChange={(e) => setFilterType(e.target.value)}>
-            <option value="">Tất cả</option>
-            <option value="AVAILABLE">Sẵn sàng</option>
-            <option value="UNAVAILABLE">Không sẵn sàng</option>
-            <option value="BUSY">Bận</option>
-          </select>
-        </div>
+          {/* Header */}
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            marginBottom: '1.5rem',
+            position: 'relative',
+            zIndex: 1
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+              <div style={{
+                background: 'rgba(255, 255, 255, 0.2)',
+                backdropFilter: 'blur(10px)',
+                padding: '0.75rem',
+                borderRadius: '12px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+              }}>
+                <FiFilter size={20} style={{ color: '#fff' }} />
+              </div>
+              <div>
+                <h3 style={{
+                  margin: 0,
+                  fontSize: '1.25rem',
+                  fontWeight: '700',
+                  color: '#fff',
+                  textShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                }}>
+                  {viewMode === 'employee' ? 'Bộ lọc theo nhân viên' : 'Bộ lọc theo ngày'}
+                </h3>
+                <p style={{
+                  margin: 0,
+                  fontSize: '0.85rem',
+                  color: 'rgba(255, 255, 255, 0.9)',
+                  marginTop: '0.25rem'
+                }}>
+                  {viewMode === 'employee' ? 'Chọn nhân viên và lọc theo tiêu chí' : 'Xem nhân viên sẵn sàng/không sẵn sàng theo ngày'}
+                </p>
+              </div>
+            </div>
 
-          <div className="filter-group date-range-toggle">
-            <label className="checkbox-label">
-              <input
-                type="checkbox"
-                checked={useDateRange}
-                onChange={handleDateRangeToggle}
-              />
-              <FiCalendar /> Lọc theo khoảng thời gian
-            </label>
+            {/* Filter Status Badge */}
+            {(selectedEmployee || filterType || useDateRange) && (
+              <div style={{
+                background: 'rgba(255, 255, 255, 0.95)',
+                backdropFilter: 'blur(10px)',
+                color: '#28a745',
+                padding: '0.5rem 1rem',
+                borderRadius: '25px',
+                fontSize: '0.9rem',
+                fontWeight: '600',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.5rem',
+                boxShadow: '0 4px 12px rgba(0,0,0,0.15)'
+              }}>
+                <FiCheckCircle size={16} />
+                <span>Đang lọc</span>
+              </div>
+            )}
           </div>
-        </div>
-      )}
 
-      {/* Date Range Filter - Employee Mode */}
-      {viewMode === 'employee' && useDateRange && (
-        <div className="date-range-section">
-          <div className="date-range-group">
-            <div className="date-input-group">
-              <label>Từ ngày:</label>
-              <input
-                type="date"
-                value={startDate}
-                onChange={(e) => setStartDate(e.target.value)}
-                className="date-input"
-              />
-            </div>
-            <div className="date-input-group">
-              <label>Đến ngày:</label>
-              <input
-                type="date"
-                value={endDate}
-                onChange={(e) => setEndDate(e.target.value)}
-                className="date-input"
-              />
-            </div>
-            <div className="date-range-info">
-              {startDate && endDate && (
-                <span className="info-text">
-                  <FiClock /> Hiển thị dữ liệu từ {formatDate(startDate)} đến {formatDate(endDate)}
-                </span>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
+          {/* Filter Content Card */}
+          <div style={{
+            background: 'rgba(255, 255, 255, 0.98)',
+            backdropFilter: 'blur(20px)',
+            borderRadius: '16px',
+            padding: '2rem',
+            boxShadow: '0 8px 32px rgba(0,0,0,0.1)',
+            position: 'relative',
+            zIndex: 1
+          }}>
+            {/* Employee Mode Filters */}
+            {viewMode === 'employee' && (
+              <>
+                <div style={{ marginBottom: '1.5rem' }}>
+                  <div style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.5rem',
+                    marginBottom: '1rem',
+                    paddingBottom: '0.75rem',
+                    borderBottom: '2px solid #f0f0f0'
+                  }}>
+                    <FiUser size={18} style={{ color: '#667eea' }} />
+                    <h4 style={{ margin: 0, fontSize: '1rem', fontWeight: '600', color: '#2d3748' }}>
+                      Chọn nhân viên và lọc
+                    </h4>
+                  </div>
 
-      {/* Date Filter - Date Mode */}
-      {viewMode === 'date' && (
-        <div className="date-filter-section">
-          <div className="date-filter-group">
-            <label>
-              <FiCalendar /> Chọn ngày xem:
-            </label>
-            <input
-              type="date"
-              value={selectedDate}
-              onChange={(e) => setSelectedDate(e.target.value)}
-              className="date-input-large"
-            />
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem' }}>
+                    <div>
+                      <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem', fontSize: '0.9rem', fontWeight: '600', color: '#4a5568' }}>
+                        <FiUser size={14} style={{ color: '#667eea' }} />
+                        Chọn nhân viên
+                      </label>
+                      <select
+                        value={selectedEmployee}
+                        onChange={(e) => setSelectedEmployee(e.target.value)}
+                        style={{
+                          width: '100%',
+                          padding: '0.75rem 1rem',
+                          border: '2px solid #e2e8f0',
+                          borderRadius: '10px',
+                          fontSize: '0.95rem',
+                          backgroundColor: '#fff',
+                          cursor: 'pointer',
+                          outline: 'none',
+                          boxSizing: 'border-box'
+                        }}
+                      >
+                        <option value="">-- Chọn nhân viên --</option>
+                        {employees.map((emp) => (
+                          <option key={emp.employeeId} value={emp.employeeId}>
+                            {emp.fullName} ({emp.employeeCode})
+                          </option>
+                        ))}
+                      </select>
+                    </div>
 
-            <div className="filter-group">
-              <label>Loại tình trạng:</label>
-              <select
-                value={dateViewType}
-                onChange={(e) => setDateViewType(e.target.value)}
-                className="date-view-type-select"
-              >
-                <option value="available">Sẵn sàng</option>
-                <option value="unavailable">Không sẵn sàng</option>
-              </select>
-            </div>
+                    <div>
+                      <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem', fontSize: '0.9rem', fontWeight: '600', color: '#4a5568' }}>
+                        <FiLayers size={14} style={{ color: '#667eea' }} />
+                        Lọc theo loại
+                      </label>
+                      <select
+                        value={filterType}
+                        onChange={(e) => setFilterType(e.target.value)}
+                        style={{
+                          width: '100%',
+                          padding: '0.75rem 1rem',
+                          border: '2px solid #e2e8f0',
+                          borderRadius: '10px',
+                          fontSize: '0.95rem',
+                          backgroundColor: '#fff',
+                          cursor: 'pointer',
+                          outline: 'none',
+                          boxSizing: 'border-box'
+                        }}
+                      >
+                        <option value="">-- Tất cả --</option>
+                        <option value="AVAILABLE">Sẵn sàng</option>
+                        <option value="UNAVAILABLE">Không sẵn sàng</option>
+                        <option value="BUSY">Bận</option>
+                      </select>
+                    </div>
 
-            <div className="date-info">
-              <span className="info-text">
-                <FiUser /> Hiển thị nhân viên {dateViewType === 'available' ? 'sẵn sàng' : 'không sẵn sàng'} ngày {formatDate(selectedDate)}
-              </span>
-            </div>
+                    <div>
+                      <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem', fontSize: '0.9rem', fontWeight: '600', color: '#4a5568' }}>
+                        <input
+                          type="checkbox"
+                          checked={useDateRange}
+                          onChange={handleDateRangeToggle}
+                          style={{ marginRight: '0.25rem' }}
+                        />
+                        <FiCalendar size={14} style={{ color: '#667eea' }} />
+                        Lọc theo khoảng thời gian
+                      </label>
+                      {useDateRange ? (
+                        <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                          <input
+                            type="date"
+                            value={startDate}
+                            onChange={(e) => setStartDate(e.target.value)}
+                            style={{
+                              flex: 1,
+                              padding: '0.75rem 0.5rem',
+                              border: '2px solid #e2e8f0',
+                              borderRadius: '10px',
+                              fontSize: '0.9rem',
+                              outline: 'none',
+                              boxSizing: 'border-box'
+                            }}
+                          />
+                          <span style={{ color: '#718096' }}>→</span>
+                          <input
+                            type="date"
+                            value={endDate}
+                            onChange={(e) => setEndDate(e.target.value)}
+                            style={{
+                              flex: 1,
+                              padding: '0.75rem 0.5rem',
+                              border: '2px solid #e2e8f0',
+                              borderRadius: '10px',
+                              fontSize: '0.9rem',
+                              outline: 'none',
+                              boxSizing: 'border-box'
+                            }}
+                          />
+                        </div>
+                      ) : (
+                        <div style={{
+                          padding: '0.75rem 1rem',
+                          border: '2px dashed #e2e8f0',
+                          borderRadius: '10px',
+                          color: '#a0aec0',
+                          fontSize: '0.9rem',
+                          textAlign: 'center'
+                        }}>
+                          Bật checkbox để lọc theo ngày
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Date Range Info */}
+                {useDateRange && startDate && endDate && (
+                  <div style={{
+                    padding: '0.75rem 1rem',
+                    background: '#f0f9ff',
+                    borderRadius: '10px',
+                    border: '1px solid #bee3f8',
+                    textAlign: 'center'
+                  }}>
+                    <span style={{ color: '#2b6cb0', fontSize: '0.9rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
+                      <FiClock size={16} /> Hiển thị dữ liệu từ <strong>{formatDate(startDate)}</strong> đến <strong>{formatDate(endDate)}</strong>
+                    </span>
+                  </div>
+                )}
+              </>
+            )}
+
+            {/* Date Mode Filters */}
+            {viewMode === 'date' && (
+              <div>
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.5rem',
+                  marginBottom: '1rem',
+                  paddingBottom: '0.75rem',
+                  borderBottom: '2px solid #f0f0f0'
+                }}>
+                  <FiCalendar size={18} style={{ color: '#667eea' }} />
+                  <h4 style={{ margin: 0, fontSize: '1rem', fontWeight: '600', color: '#2d3748' }}>
+                    Xem theo ngày
+                  </h4>
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '1rem' }}>
+                  <div>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem', fontSize: '0.9rem', fontWeight: '600', color: '#4a5568' }}>
+                      <FiCalendar size={14} style={{ color: '#667eea' }} />
+                      Chọn ngày xem
+                    </label>
+                    <input
+                      type="date"
+                      value={selectedDate}
+                      onChange={(e) => setSelectedDate(e.target.value)}
+                      style={{
+                        width: '100%',
+                        padding: '0.75rem 1rem',
+                        border: '2px solid #e2e8f0',
+                        borderRadius: '10px',
+                        fontSize: '0.95rem',
+                        outline: 'none',
+                        boxSizing: 'border-box'
+                      }}
+                    />
+                  </div>
+
+                  <div>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem', fontSize: '0.9rem', fontWeight: '600', color: '#4a5568' }}>
+                      <FiLayers size={14} style={{ color: '#667eea' }} />
+                      Loại tình trạng
+                    </label>
+                    <select
+                      value={dateViewType}
+                      onChange={(e) => setDateViewType(e.target.value)}
+                      style={{
+                        width: '100%',
+                        padding: '0.75rem 1rem',
+                        border: '2px solid #e2e8f0',
+                        borderRadius: '10px',
+                        fontSize: '0.95rem',
+                        backgroundColor: '#fff',
+                        cursor: 'pointer',
+                        outline: 'none',
+                        boxSizing: 'border-box'
+                      }}
+                    >
+                      <option value="available">Sẵn sàng</option>
+                      <option value="unavailable">Không sẵn sàng</option>
+                    </select>
+                  </div>
+                </div>
+
+                {/* Date Info */}
+                <div style={{
+                  marginTop: '1rem',
+                  padding: '0.75rem 1rem',
+                  background: '#f0f9ff',
+                  borderRadius: '10px',
+                  border: '1px solid #bee3f8',
+                  textAlign: 'center'
+                }}>
+                  <span style={{ color: '#2b6cb0', fontSize: '0.9rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
+                    <FiUser size={16} /> Hiển thị nhân viên <strong>{dateViewType === 'available' ? 'sẵn sàng' : 'không sẵn sàng'}</strong> ngày <strong>{formatDate(selectedDate)}</strong>
+                  </span>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       )}

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import '../shared/SchedulePage.css';
 import { hrDoctorScheduleAPI } from '../../../../services/staff/hrAPI';
-import { FiPlus, FiEdit2, FiTrash2, FiCalendar, FiFilter, FiClock, FiUser, FiSearch } from 'react-icons/fi';
+import { FiPlus, FiEdit2, FiTrash2, FiCalendar, FiFilter, FiClock, FiUser, FiSearch, FiCheckCircle, FiX, FiHome } from 'react-icons/fi';
 import AddDoctorScheduleModal from '../../components/AddDoctorScheduleModal';
 import EditDoctorScheduleModal from '../../components/EditDoctorScheduleModal';
 
@@ -397,97 +397,310 @@ const DoctorSchedulePage = () => {
         />
       )}
 
-      {/* Filter Section */}
-      <div className="filter-section">
-        <div className="filter-header">
-          <FiFilter />
-          <h3>Bộ lọc</h3>
-          <button className="btn-reset" onClick={resetFilters}>
-            Đặt lại
-          </button>
-        </div>
+      {/* FILTER SECTION - New design matching InventoryTransactionsPage */}
+      <div style={{
+        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        padding: '2rem',
+        borderRadius: '16px',
+        marginBottom: '1.5rem',
+        boxShadow: '0 10px 30px rgba(102, 126, 234, 0.3)',
+        position: 'relative',
+        overflow: 'hidden'
+      }}>
+        {/* Decorative Background Pattern */}
+        <div style={{
+          position: 'absolute',
+          top: 0,
+          right: 0,
+          width: '300px',
+          height: '300px',
+          background: 'radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%)',
+          borderRadius: '50%',
+          transform: 'translate(30%, -30%)',
+          pointerEvents: 'none'
+        }}></div>
 
-        <div className="filter-controls">
-          <div className="filter-group">
-            <label>Chế độ xem:</label>
-            <select value={viewMode} onChange={(e) => setViewMode(e.target.value)}>
-              <option value="today">🗓️ Lịch hôm nay ({selectedDate})</option>
-              <option value="all">Tất cả lịch làm việc</option>
-              <option value="doctor">Theo bác sĩ</option>
-              <option value="clinic">Theo phòng khám & ngày</option>
-              <option value="date">Theo ngày</option>
-              <option value="dateRange">Theo bác sĩ & khoảng thời gian</option>
-            </select>
+        {/* Header */}
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          marginBottom: '1.5rem',
+          position: 'relative',
+          zIndex: 1
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            <div style={{
+              background: 'rgba(255, 255, 255, 0.2)',
+              backdropFilter: 'blur(10px)',
+              padding: '0.75rem',
+              borderRadius: '12px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+            }}>
+              <FiFilter size={20} style={{ color: '#fff' }} />
+            </div>
+            <div>
+              <h3 style={{
+                margin: 0,
+                fontSize: '1.25rem',
+                fontWeight: '700',
+                color: '#fff',
+                textShadow: '0 2px 4px rgba(0,0,0,0.1)'
+              }}>
+                Bộ lọc lịch làm việc
+              </h3>
+              <p style={{
+                margin: 0,
+                fontSize: '0.85rem',
+                color: 'rgba(255, 255, 255, 0.9)',
+                marginTop: '0.25rem'
+              }}>
+                Chọn chế độ xem và lọc theo các tiêu chí
+              </p>
+            </div>
           </div>
 
-          {(viewMode === 'clinic' || viewMode === 'doctor' || viewMode === 'date' || viewMode === 'dateRange') && (
-            <div className="filter-group">
-              <label>Phòng khám:</label>
-              <select
-                value={selectedClinic}
-                onChange={(e) => handleClinicChange(e.target.value)}
-              >
-                <option value="">-- Chọn phòng khám --</option>
-                {clinics.map((clinic) => (
-                  <option key={clinic.clinicId} value={clinic.clinicId}>
-                    {clinic.clinicName}
-                  </option>
-                ))}
-              </select>
-            </div>
-          )}
+          {/* Filter Status Badge */}
+          <div style={{
+            background: 'rgba(255, 255, 255, 0.95)',
+            backdropFilter: 'blur(10px)',
+            color: viewMode !== 'today' ? '#28a745' : '#667eea',
+            padding: '0.5rem 1rem',
+            borderRadius: '25px',
+            fontSize: '0.9rem',
+            fontWeight: '600',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.5rem',
+            boxShadow: '0 4px 12px rgba(0,0,0,0.15)'
+          }}>
+            {viewMode !== 'today' ? <FiCheckCircle size={16} /> : <FiCalendar size={16} />}
+            <span>{viewMode === 'today' ? `Lịch hôm nay` : 'Đang lọc'}</span>
+          </div>
+        </div>
 
-          {(viewMode === 'doctor' || viewMode === 'date' || viewMode === 'dateRange') && selectedClinic && (
-            <div className="filter-group">
-              <label>Bác sĩ:</label>
-              <select
-                value={selectedDoctor}
-                onChange={(e) => handleDoctorChange(e.target.value)}
-              >
-                <option value="">-- Chọn bác sĩ --</option>
-                {doctors.map((doctor) => (
-                  <option
-                    key={doctor.doctorEmployeeId || doctor.employeeId || doctor.id}
-                    value={doctor.doctorEmployeeId || doctor.employeeId || doctor.id}
+        {/* Filter Content Card */}
+        <div style={{
+          background: 'rgba(255, 255, 255, 0.98)',
+          backdropFilter: 'blur(20px)',
+          borderRadius: '16px',
+          padding: '2rem',
+          boxShadow: '0 8px 32px rgba(0,0,0,0.1)',
+          position: 'relative',
+          zIndex: 1
+        }}>
+          {/* View Mode Section */}
+          <div style={{ marginBottom: '1.5rem' }}>
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.5rem',
+              marginBottom: '1rem',
+              paddingBottom: '0.75rem',
+              borderBottom: '2px solid #f0f0f0'
+            }}>
+              <FiCalendar size={18} style={{ color: '#667eea' }} />
+              <h4 style={{ margin: 0, fontSize: '1rem', fontWeight: '600', color: '#2d3748' }}>
+                Chế độ xem
+              </h4>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: viewMode === 'dateRange' ? 'repeat(4, 1fr)' : 'repeat(3, 1fr)', gap: '1rem' }}>
+              <div>
+                <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem', fontSize: '0.9rem', fontWeight: '600', color: '#4a5568' }}>
+                  <FiClock size={14} style={{ color: '#667eea' }} />
+                  Chế độ xem
+                </label>
+                <select
+                  value={viewMode}
+                  onChange={(e) => setViewMode(e.target.value)}
+                  style={{
+                    width: '100%',
+                    padding: '0.75rem 1rem',
+                    border: '2px solid #e2e8f0',
+                    borderRadius: '10px',
+                    fontSize: '0.95rem',
+                    backgroundColor: '#fff',
+                    cursor: 'pointer',
+                    outline: 'none',
+                    boxSizing: 'border-box'
+                  }}
+                >
+                  <option value="today">🗓️ Lịch hôm nay ({selectedDate})</option>
+                  <option value="all">Tất cả lịch làm việc</option>
+                  <option value="doctor">Theo bác sĩ</option>
+                  <option value="clinic">Theo phòng khám & ngày</option>
+                  <option value="date">Theo ngày</option>
+                  <option value="dateRange">Theo bác sĩ & khoảng thời gian</option>
+                </select>
+              </div>
+
+              {(viewMode === 'clinic' || viewMode === 'doctor' || viewMode === 'date' || viewMode === 'dateRange') && (
+                <div>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem', fontSize: '0.9rem', fontWeight: '600', color: '#4a5568' }}>
+                    <FiHome size={14} style={{ color: '#667eea' }} />
+                    Phòng khám
+                  </label>
+                  <select
+                    value={selectedClinic}
+                    onChange={(e) => handleClinicChange(e.target.value)}
+                    style={{
+                      width: '100%',
+                      padding: '0.75rem 1rem',
+                      border: '2px solid #e2e8f0',
+                      borderRadius: '10px',
+                      fontSize: '0.95rem',
+                      backgroundColor: '#fff',
+                      cursor: 'pointer',
+                      outline: 'none',
+                      boxSizing: 'border-box'
+                    }}
                   >
-                    {doctor.employeeName || doctor.doctorName || doctor.name} - {doctor.employeeCode || doctor.doctorCode || doctor.code}
-                  </option>
-                ))}
-              </select>
-            </div>
-          )}
+                    <option value="">-- Chọn phòng khám --</option>
+                    {clinics.map((clinic) => (
+                      <option key={clinic.clinicId} value={clinic.clinicId}>
+                        {clinic.clinicName}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
 
-          {(viewMode === 'clinic' || viewMode === 'date') && (
-            <div className="filter-group">
-              <label>Ngày:</label>
-              <input
-                type="date"
-                value={selectedDate}
-                onChange={(e) => setSelectedDate(e.target.value)}
-              />
-            </div>
-          )}
+              {(viewMode === 'doctor' || viewMode === 'date' || viewMode === 'dateRange') && selectedClinic && (
+                <div>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem', fontSize: '0.9rem', fontWeight: '600', color: '#4a5568' }}>
+                    <FiUser size={14} style={{ color: '#667eea' }} />
+                    Bác sĩ
+                  </label>
+                  <select
+                    value={selectedDoctor}
+                    onChange={(e) => handleDoctorChange(e.target.value)}
+                    style={{
+                      width: '100%',
+                      padding: '0.75rem 1rem',
+                      border: '2px solid #e2e8f0',
+                      borderRadius: '10px',
+                      fontSize: '0.95rem',
+                      backgroundColor: '#fff',
+                      cursor: 'pointer',
+                      outline: 'none',
+                      boxSizing: 'border-box'
+                    }}
+                  >
+                    <option value="">-- Chọn bác sĩ --</option>
+                    {doctors.map((doctor) => (
+                      <option
+                        key={doctor.doctorEmployeeId || doctor.employeeId || doctor.id}
+                        value={doctor.doctorEmployeeId || doctor.employeeId || doctor.id}
+                      >
+                        {doctor.employeeName || doctor.doctorName || doctor.name} - {doctor.employeeCode || doctor.doctorCode || doctor.code}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
 
-          {viewMode === 'dateRange' && (
-            <>
-              <div className="filter-group">
-                <label>Từ ngày:</label>
-                <input
-                  type="date"
-                  value={startDate}
-                  onChange={(e) => setStartDate(e.target.value)}
-                />
-              </div>
-              <div className="filter-group">
-                <label>Đến ngày:</label>
-                <input
-                  type="date"
-                  value={endDate}
-                  onChange={(e) => setEndDate(e.target.value)}
-                />
-              </div>
-            </>
-          )}
+              {(viewMode === 'clinic' || viewMode === 'date') && (
+                <div>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem', fontSize: '0.9rem', fontWeight: '600', color: '#4a5568' }}>
+                    <FiCalendar size={14} style={{ color: '#667eea' }} />
+                    Ngày
+                  </label>
+                  <input
+                    type="date"
+                    value={selectedDate}
+                    onChange={(e) => setSelectedDate(e.target.value)}
+                    style={{
+                      width: '100%',
+                      padding: '0.75rem 1rem',
+                      border: '2px solid #e2e8f0',
+                      borderRadius: '10px',
+                      fontSize: '0.95rem',
+                      outline: 'none',
+                      boxSizing: 'border-box'
+                    }}
+                  />
+                </div>
+              )}
+
+              {viewMode === 'dateRange' && (
+                <>
+                  <div>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem', fontSize: '0.9rem', fontWeight: '600', color: '#4a5568' }}>
+                      <FiCalendar size={14} style={{ color: '#667eea' }} />
+                      Từ ngày
+                    </label>
+                    <input
+                      type="date"
+                      value={startDate}
+                      onChange={(e) => setStartDate(e.target.value)}
+                      style={{
+                        width: '100%',
+                        padding: '0.75rem 1rem',
+                        border: '2px solid #e2e8f0',
+                        borderRadius: '10px',
+                        fontSize: '0.95rem',
+                        outline: 'none',
+                        boxSizing: 'border-box'
+                      }}
+                    />
+                  </div>
+                  <div>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem', fontSize: '0.9rem', fontWeight: '600', color: '#4a5568' }}>
+                      <FiCalendar size={14} style={{ color: '#667eea' }} />
+                      Đến ngày
+                    </label>
+                    <input
+                      type="date"
+                      value={endDate}
+                      onChange={(e) => setEndDate(e.target.value)}
+                      style={{
+                        width: '100%',
+                        padding: '0.75rem 1rem',
+                        border: '2px solid #e2e8f0',
+                        borderRadius: '10px',
+                        fontSize: '0.95rem',
+                        outline: 'none',
+                        boxSizing: 'border-box'
+                      }}
+                    />
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
+
+          {/* Reset Button */}
+          <div style={{
+            display: 'flex',
+            justifyContent: 'center',
+            paddingTop: '1rem',
+            borderTop: '2px solid #f0f0f0'
+          }}>
+            <button
+              onClick={resetFilters}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.5rem',
+                padding: '0.75rem 1.5rem',
+                background: '#fff',
+                border: '2px solid #e2e8f0',
+                borderRadius: '10px',
+                color: '#4a5568',
+                fontSize: '0.95rem',
+                fontWeight: '600',
+                cursor: 'pointer',
+                transition: 'all 0.2s ease'
+              }}
+            >
+              <FiX size={16} />
+              Đặt lại bộ lọc
+            </button>
+          </div>
         </div>
       </div>
 
