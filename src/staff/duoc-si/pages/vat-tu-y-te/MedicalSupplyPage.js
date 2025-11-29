@@ -1,22 +1,32 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect, useCallback } from 'react';
 import pharmacistAPI from '../../../../services/staff/pharmacistAPI';
 import './MedicalSupplyPage.css';
-import { 
-  FaSearch, FaEye, FaCheck, FaTimes, FaBoxOpen, FaHistory, FaInfoCircle, FaBan, FaChartBar, FaDatabase, FaTrashAlt, FaUndo
+import {
+  FaSearch, FaEye, FaCheck, FaTimes, FaBoxOpen, FaInfoCircle, FaBan, FaChartBar, FaDatabase, FaTrashAlt, FaUndo, FaRedo
 } from 'react-icons/fa';
 
 const MedicalSupplyPage = () => {
-  const navigate = useNavigate();
-  
   // --- MAIN STATE ---
   const [tableData, setTableData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
-  const [searchType, setSearchType] = useState('PATIENT'); // PATIENT, ENCOUNTER, CATEGORY, CODE
-  
+  const [searchType, setSearchType] = useState('ALL'); // ALL, PATIENT, ENCOUNTER, CATEGORY, CODE
+
+  // Pagination
+  const [pagination, setPagination] = useState({
+    page: 0,
+    size: 10,
+    totalElements: 0,
+    totalPages: 0
+  });
+
+  // Filter state
+  const [filterStatus, setFilterStatus] = useState('');
+  const [filterType, setFilterType] = useState('');
+  const [filterPriority, setFilterPriority] = useState('');
+
   // State cho danh mục
-  const [categories, setCategories] = useState([]); 
+  const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState('');
 
   // State Modal Chi tiết đơn
@@ -45,7 +55,45 @@ const MedicalSupplyPage = () => {
   const [softDeleteStats, setSoftDeleteStats] = useState(null);
   const [dataList, setDataList] = useState([]);
 
-  // --- 1. FETCH CATEGORIES (Khởi tạo) ---
+  // --- 1. FETCH ALL PRESCRIPTIONS (Khởi tạo khi load trang) ---
+  const fetchAllPrescriptions = useCallback(async (page = 0) => {
+    setLoading(true);
+    try {
+      const params = {
+        page: page,
+        size: pagination.size,
+      };
+      if (filterStatus) params.status = filterStatus;
+      if (filterType) params.type = filterType;
+      if (filterPriority) params.priority = filterPriority;
+
+      const response = await pharmacistAPI.pharmacistMedicalSupplyAPI.getAll(params);
+      if (response && response.status === 'OK' && response.data) {
+        const content = response.data.content || [];
+        setTableData(content);
+        setPagination(prev => ({
+          ...prev,
+          page: response.data.number || 0,
+          totalElements: response.data.totalElements || 0,
+          totalPages: response.data.totalPages || 0
+        }));
+      } else {
+        setTableData([]);
+      }
+    } catch (error) {
+      console.error("Lỗi lấy danh sách đơn vật tư:", error);
+      setTableData([]);
+    } finally {
+      setLoading(false);
+    }
+  }, [pagination.size, filterStatus, filterType, filterPriority]);
+
+  // Load data khi trang được mở
+  useEffect(() => {
+    fetchAllPrescriptions();
+  }, [fetchAllPrescriptions]);
+
+  // Fetch categories
   useEffect(() => {
     const fetchCategories = async () => {
       try {
@@ -65,8 +113,14 @@ const MedicalSupplyPage = () => {
 
   // --- 2. SEARCH FUNCTION ---
   const handleSearch = async () => {
+    // Nếu tìm kiếm ALL mà không có search term, load lại toàn bộ
+    if (searchType === 'ALL') {
+      fetchAllPrescriptions(0);
+      return;
+    }
+
     if (searchType === 'CATEGORY' && !selectedCategory) return;
-    if (searchType !== 'CATEGORY' && !searchTerm) return;
+    if (searchType !== 'CATEGORY' && searchType !== 'ALL' && !searchTerm) return;
 
     setLoading(true);
     setTableData([]);
@@ -79,14 +133,18 @@ const MedicalSupplyPage = () => {
         response = await pharmacistAPI.pharmacistMedicalSupplyAPI.getPrescriptionsByEncounter(searchTerm);
       } else if (searchType === 'CATEGORY') {
         response = await pharmacistAPI.pharmacistMedicalSupplyAPI.getSuppliesByCategory(selectedCategory);
-      } else {
-         console.warn("Chức năng tìm theo mã đang phát triển");
-         setLoading(false);
-         return;
+      } else if (searchType === 'CODE') {
+        // Tìm theo mã đơn - có thể dùng API getById hoặc search
+        response = await pharmacistAPI.pharmacistMedicalSupplyAPI.getPrescriptionById(searchTerm);
+        if (response && response.status === 'OK' && response.data) {
+          setTableData([response.data]); // Wrap single result in array
+          setLoading(false);
+          return;
+        }
       }
 
       if (response && response.status === 'OK') {
-        setTableData(Array.isArray(response.data) ? response.data : []);
+        setTableData(Array.isArray(response.data) ? response.data : (response.data?.content || []));
       } else {
         setTableData([]);
       }
@@ -96,6 +154,24 @@ const MedicalSupplyPage = () => {
       setTableData([]);
     } finally {
       setLoading(false);
+    }
+  };
+
+  // Refresh data
+  const handleRefresh = () => {
+    setSearchTerm('');
+    setSelectedCategory('');
+    setSearchType('ALL');
+    setFilterStatus('');
+    setFilterType('');
+    setFilterPriority('');
+    fetchAllPrescriptions(0);
+  };
+
+  // Handle page change
+  const handlePageChange = (newPage) => {
+    if (newPage >= 0 && newPage < pagination.totalPages) {
+      fetchAllPrescriptions(newPage);
     }
   };
 
@@ -118,6 +194,104 @@ const MedicalSupplyPage = () => {
   };
 
   // --- 4. ACTIONS: APPROVE, REJECT, DISPENSE, CANCEL ---
+  // Hàm refresh danh sách sau khi thực hiện action
+  const refreshAfterAction = () => {
+    if (searchType === 'ALL') {
+      fetchAllPrescriptions(pagination.page);
+    } else {
+      handleSearch();
+    }
+  };
+
+  // Quick Actions - thao tác nhanh từ bảng danh sách
+  const handleQuickApprove = async (item) => {
+    if (!window.confirm(`Bạn có chắc chắn muốn DUYỆT đơn ${item.prescriptionCode}?`)) return;
+    setLoading(true);
+    try {
+      const response = await pharmacistAPI.pharmacistMedicalSupplyAPI.approvePrescription(item.prescriptionId);
+      if (response && response.status === 'OK') {
+        alert("✅ Đã duyệt đơn thành công!");
+        refreshAfterAction();
+      } else {
+        alert(response?.message || "Duyệt đơn thất bại.");
+      }
+    } catch (error) {
+      console.error("Lỗi khi duyệt:", error);
+      alert("Có lỗi xảy ra khi duyệt đơn.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleQuickReject = async (item) => {
+    const reason = window.prompt(`Nhập lý do từ chối đơn ${item.prescriptionCode}:`);
+    if (reason === null) return;
+    if (reason.trim() === "") {
+      alert("Lý do từ chối không được để trống!");
+      return;
+    }
+    setLoading(true);
+    try {
+      const response = await pharmacistAPI.pharmacistMedicalSupplyAPI.rejectPrescription(item.prescriptionId, reason);
+      if (response && response.status === 'OK') {
+        alert("❌ Đã từ chối đơn thành công!");
+        refreshAfterAction();
+      } else {
+        alert(response?.message || "Từ chối đơn thất bại.");
+      }
+    } catch (error) {
+      console.error("Lỗi khi từ chối:", error);
+      alert("Có lỗi xảy ra khi từ chối đơn.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleQuickDispense = async (item) => {
+    const notes = window.prompt(`Nhập ghi chú cấp phát cho đơn ${item.prescriptionCode} (nếu có):`, "");
+    if (notes === null) return;
+    setLoading(true);
+    try {
+      const response = await pharmacistAPI.pharmacistMedicalSupplyAPI.dispensePrescription(item.prescriptionId, notes);
+      if (response && response.status === 'OK') {
+        alert("📦 Đã cấp phát vật tư thành công!");
+        refreshAfterAction();
+      } else {
+        alert(response?.message || "Cấp phát thất bại.");
+      }
+    } catch (error) {
+      console.error("Lỗi khi cấp phát:", error);
+      alert("Có lỗi xảy ra khi cấp phát.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleQuickCancel = async (item) => {
+    const reason = window.prompt(`Nhập lý do hủy đơn ${item.prescriptionCode}:`);
+    if (reason === null) return;
+    if (reason.trim() === "") {
+      alert("Lý do hủy không được để trống!");
+      return;
+    }
+    if (!window.confirm("⚠️ Hành động này không thể hoàn tác. Bạn chắc chắn muốn hủy đơn này?")) return;
+    setLoading(true);
+    try {
+      const response = await pharmacistAPI.pharmacistMedicalSupplyAPI.cancelPrescription(item.prescriptionId, reason);
+      if (response && response.status === 'OK') {
+        alert("🚫 Đã hủy đơn thành công!");
+        refreshAfterAction();
+      } else {
+        alert(response?.message || "Hủy đơn thất bại.");
+      }
+    } catch (error) {
+      console.error("Lỗi khi hủy:", error);
+      alert("Có lỗi xảy ra khi hủy đơn.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleApprove = async () => {
     if (!selectedItem?.prescriptionId) return;
     if (!window.confirm(`Bạn có chắc chắn muốn DUYỆT đơn ${selectedItem.prescriptionCode}?`)) return;
@@ -126,9 +300,9 @@ const MedicalSupplyPage = () => {
     try {
       const response = await pharmacistAPI.pharmacistMedicalSupplyAPI.approvePrescription(selectedItem.prescriptionId);
       if (response && response.status === 'OK') {
-        alert("Đã duyệt đơn thành công!");
+        alert("✅ Đã duyệt đơn thành công!");
         setShowModal(false);
-        handleSearch();
+        refreshAfterAction();
       } else {
         alert(response?.message || "Duyệt đơn thất bại.");
       }
@@ -153,9 +327,9 @@ const MedicalSupplyPage = () => {
     try {
       const response = await pharmacistAPI.pharmacistMedicalSupplyAPI.rejectPrescription(selectedItem.prescriptionId, reason);
       if (response && response.status === 'OK') {
-        alert("Đã từ chối đơn thành công!");
+        alert("❌ Đã từ chối đơn thành công!");
         setShowModal(false);
-        handleSearch(); 
+        refreshAfterAction();
       } else {
         alert(response?.message || "Từ chối đơn thất bại.");
       }
@@ -176,9 +350,9 @@ const MedicalSupplyPage = () => {
     try {
       const response = await pharmacistAPI.pharmacistMedicalSupplyAPI.dispensePrescription(selectedItem.prescriptionId, notes);
       if (response && response.status === 'OK') {
-        alert("Đã cấp phát vật tư thành công!");
+        alert("📦 Đã cấp phát vật tư thành công!");
         setShowModal(false);
-        handleSearch();
+        refreshAfterAction();
       } else {
         alert(response?.message || "Cấp phát thất bại.");
       }
@@ -198,15 +372,15 @@ const MedicalSupplyPage = () => {
       alert("Lý do hủy không được để trống!");
       return;
     }
-    if (!window.confirm("Hành động này không thể hoàn tác. Bạn chắc chắn muốn hủy đơn này?")) return;
+    if (!window.confirm("⚠️ Hành động này không thể hoàn tác. Bạn chắc chắn muốn hủy đơn này?")) return;
 
     setLoading(true);
     try {
       const response = await pharmacistAPI.pharmacistMedicalSupplyAPI.cancelPrescription(selectedItem.prescriptionId, reason);
       if (response && response.status === 'OK') {
-        alert("Đã hủy đơn thành công!");
+        alert("🚫 Đã hủy đơn thành công!");
         setShowModal(false);
-        handleSearch();
+        refreshAfterAction();
       } else {
         alert(response?.message || "Hủy đơn thất bại.");
       }
@@ -392,11 +566,12 @@ const MedicalSupplyPage = () => {
       </div>
 
       <div className="medical-supply-page">
-        
+
         {/* --- TOOLBAR --- */}
         <div className="search-toolbar">
           <div className="search-group">
-            <select value={searchType} onChange={(e) => { setSearchType(e.target.value); setTableData([]); setSearchTerm(''); setSelectedCategory(''); }} className="search-select">
+            <select value={searchType} onChange={(e) => { setSearchType(e.target.value); if (e.target.value === 'ALL') fetchAllPrescriptions(0); }} className="search-select">
+              <option value="ALL">Tất cả đơn</option>
               <option value="PATIENT">Theo ID Bệnh nhân</option>
               <option value="ENCOUNTER">Theo Mã Lượt khám</option>
               <option value="CATEGORY">Theo Danh mục Vật tư</option>
@@ -412,19 +587,54 @@ const MedicalSupplyPage = () => {
                   </option>
                 ))}
               </select>
-            ) : (
-              <input type="text" placeholder={searchType === 'PATIENT' ? "Nhập ID..." : "Nhập mã..."} value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && handleSearch()} />
-            )}
+            ) : searchType !== 'ALL' ? (
+              <input type="text" placeholder={searchType === 'PATIENT' ? "Nhập ID..." : searchType === 'ENCOUNTER' ? "Nhập mã lượt khám..." : "Nhập mã đơn..."} value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && handleSearch()} />
+            ) : null}
 
-            <button className="btn-search" onClick={handleSearch} disabled={loading}><FaSearch /> Tìm kiếm</button>
+            {searchType !== 'ALL' && (
+              <button className="btn-search" onClick={handleSearch} disabled={loading}><FaSearch /> Tìm kiếm</button>
+            )}
+            <button className="btn-secondary" onClick={handleRefresh} disabled={loading} title="Làm mới"><FaRedo /> Làm mới</button>
           </div>
-          
+
           <div className="action-group">
              <button className="btn-secondary" onClick={handleOpenStats}><FaChartBar/> Thống kê & Lịch sử</button>
              <button className="btn-secondary" onClick={handleOpenDataModal}><FaDatabase/> Dữ liệu & Thùng rác</button>
              <button className="btn-secondary"><FaBoxOpen/> Kho Vật tư</button>
           </div>
         </div>
+
+        {/* --- FILTER BAR (cho chế độ ALL) --- */}
+        {searchType === 'ALL' && (
+          <div className="filter-bar" style={{ marginBottom: '15px', display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap' }}>
+            <label>Trạng thái:</label>
+            <select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)} className="search-select" style={{ minWidth: '140px' }}>
+              <option value="">Tất cả</option>
+              <option value="ORDERED">Đã đặt</option>
+              <option value="APPROVED">Đã duyệt</option>
+              <option value="DISPENSED">Đã cấp</option>
+              <option value="PARTIALLY_DISPENSED">Cấp một phần</option>
+              <option value="REJECTED">Từ chối</option>
+              <option value="CANCELLED">Đã hủy</option>
+            </select>
+            <label>Loại đơn:</label>
+            <select value={filterType} onChange={(e) => setFilterType(e.target.value)} className="search-select" style={{ minWidth: '140px' }}>
+              <option value="">Tất cả</option>
+              <option value="SURGERY">Phẫu thuật</option>
+              <option value="PROCEDURE">Thủ thuật</option>
+              <option value="TREATMENT">Điều trị</option>
+              <option value="EMERGENCY">Cấp cứu</option>
+            </select>
+            <label>Ưu tiên:</label>
+            <select value={filterPriority} onChange={(e) => setFilterPriority(e.target.value)} className="search-select" style={{ minWidth: '120px' }}>
+              <option value="">Tất cả</option>
+              <option value="NORMAL">Bình thường</option>
+              <option value="URGENT">Khẩn</option>
+              <option value="STAT">Cấp cứu</option>
+            </select>
+            <button className="btn-search" onClick={() => fetchAllPrescriptions(0)} disabled={loading}><FaSearch /> Lọc</button>
+          </div>
+        )}
 
         {/* --- DATA TABLE --- */}
         <div className="table-container">
@@ -433,7 +643,7 @@ const MedicalSupplyPage = () => {
               {searchType === 'CATEGORY' ? (
                 <tr><th>Mã VT</th><th>Tên Vật tư</th><th>Danh mục</th><th>Đơn vị</th><th>Tồn kho</th><th className="text-center">Chi tiết Tồn</th></tr>
               ) : (
-                <tr><th>Mã Đơn</th><th>Bệnh nhân</th><th>Loại đơn</th><th>Ngày tạo</th><th>Trạng thái</th><th>Tiến độ</th><th className="text-center">Thao tác</th></tr>
+                <tr><th>Mã Đơn</th><th>Bệnh nhân</th><th>Loại đơn</th><th>Ưu tiên</th><th>Ngày tạo</th><th>Trạng thái</th><th>Ghi chú</th><th className="text-center">Thao tác</th></tr>
               )}
             </thead>
             <tbody>
@@ -456,26 +666,103 @@ const MedicalSupplyPage = () => {
                       </tr>
                     );
                   } else {
+                    // Hiển thị cả chế độ ALL và các chế độ tìm kiếm khác
+                    const getPriorityBadge = (priority) => {
+                      const priorityStyles = {
+                        STAT: { backgroundColor: '#fff1f0', color: '#ff4d4f', border: '1px solid #ffa39e' },
+                        URGENT: { backgroundColor: '#fff7e6', color: '#fa8c16', border: '1px solid #ffd591' },
+                        NORMAL: { backgroundColor: '#f6ffed', color: '#52c41a', border: '1px solid #b7eb8f' }
+                      };
+                      const priorityLabels = { STAT: 'Cấp cứu', URGENT: 'Khẩn', NORMAL: 'Bình thường' };
+                      return <span className="status-badge" style={priorityStyles[priority] || priorityStyles.NORMAL}>{priorityLabels[priority] || priority}</span>;
+                    };
+
+                    const getTypeLabel = (type) => {
+                      const typeLabels = {
+                        SURGERY: 'Phẫu thuật',
+                        PROCEDURE: 'Thủ thuật',
+                        TREATMENT: 'Điều trị',
+                        EMERGENCY: 'Cấp cứu'
+                      };
+                      return typeLabels[type] || type;
+                    };
+
                     return (
                       <tr key={item.prescriptionId || index}>
                         <td><strong>{item.prescriptionCode}</strong></td>
-                        <td>{item.patientName} <br/><small>ID: {item.patientId}</small></td>
-                        <td>{item.prescriptionType}</td>
+                        <td>
+                          {item.patientName || `BN #${item.patientId}`}
+                          <br/><small style={{ color: '#888' }}>ID: {item.patientId} | LK: {item.encounterId}</small>
+                        </td>
+                        <td>{getTypeLabel(item.prescriptionType)}</td>
+                        <td>{getPriorityBadge(item.priority)}</td>
                         <td>{item.createdAt ? new Date(item.createdAt).toLocaleString('vi-VN') : '-'}</td>
                         <td>{getStatusBadge(item.status, item.statusColor)}</td>
-                        <td>{item.dispensingSummary}</td>
-                        <td className="text-center">
-                          <button className="btn-icon" onClick={() => handleViewDetail(item.prescriptionId)}><FaEye /></button>
+                        <td style={{ maxWidth: '150px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={item.notes || item.indication}>
+                          {item.notes || item.indication || '-'}
+                        </td>
+                        <td className="text-center" style={{ whiteSpace: 'nowrap' }}>
+                          <button className="btn-icon" onClick={() => handleViewDetail(item.prescriptionId)} title="Xem chi tiết"><FaEye /></button>
+                          {/* Quick Actions dựa trên status */}
+                          {item.status === 'ORDERED' && (
+                            <>
+                              <button className="btn-icon" style={{ color: '#52c41a' }} onClick={() => handleQuickApprove(item)} title="Duyệt đơn"><FaCheck /></button>
+                              <button className="btn-icon" style={{ color: '#ff4d4f' }} onClick={() => handleQuickReject(item)} title="Từ chối"><FaTimes /></button>
+                            </>
+                          )}
+                          {(item.status === 'APPROVED' || item.status === 'PARTIALLY_DISPENSED') && (
+                            <button className="btn-icon" style={{ color: '#1890ff' }} onClick={() => handleQuickDispense(item)} title="Cấp phát"><FaBoxOpen /></button>
+                          )}
+                          {!['DISPENSED', 'CANCELLED', 'REJECTED'].includes(item.status) && (
+                            <button className="btn-icon" style={{ color: '#888' }} onClick={() => handleQuickCancel(item)} title="Hủy đơn"><FaBan /></button>
+                          )}
                         </td>
                       </tr>
                     );
                   }
               }) : (
-                <tr><td colSpan="7" className="text-center">{loading ? "Đang tải..." : "Không có dữ liệu"}</td></tr>
+                <tr><td colSpan={searchType === 'CATEGORY' ? 6 : 8} className="text-center">{loading ? "Đang tải..." : "Không có dữ liệu"}</td></tr>
               )}
             </tbody>
           </table>
         </div>
+
+        {/* --- PAGINATION (cho chế độ ALL) --- */}
+        {searchType === 'ALL' && pagination.totalPages > 1 && (
+          <div className="pagination-bar" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '10px', marginTop: '15px', marginBottom: '15px' }}>
+            <button
+              className="btn-secondary"
+              onClick={() => handlePageChange(0)}
+              disabled={pagination.page === 0 || loading}
+            >
+              {'<<'}
+            </button>
+            <button
+              className="btn-secondary"
+              onClick={() => handlePageChange(pagination.page - 1)}
+              disabled={pagination.page === 0 || loading}
+            >
+              {'<'}
+            </button>
+            <span style={{ padding: '0 15px' }}>
+              Trang {pagination.page + 1} / {pagination.totalPages} (Tổng: {pagination.totalElements} đơn)
+            </span>
+            <button
+              className="btn-secondary"
+              onClick={() => handlePageChange(pagination.page + 1)}
+              disabled={pagination.page >= pagination.totalPages - 1 || loading}
+            >
+              {'>'}
+            </button>
+            <button
+              className="btn-secondary"
+              onClick={() => handlePageChange(pagination.totalPages - 1)}
+              disabled={pagination.page >= pagination.totalPages - 1 || loading}
+            >
+              {'>>'}
+            </button>
+          </div>
+        )}
 
         {/* --- MODAL 1: PRESCRIPTION DETAIL --- */}
         {showModal && selectedItem && searchType !== 'CATEGORY' && (
@@ -509,17 +796,35 @@ const MedicalSupplyPage = () => {
                   </table>
                 </div>
                 <div className="modal-actions-bar">
-                  {selectedItem.pending && (
+                  {/* ORDERED status: có thể duyệt hoặc từ chối */}
+                  {(selectedItem.status === 'ORDERED' || selectedItem.pending) && (
                     <>
-                      <button className="btn-action approve" onClick={handleApprove}><FaCheck /> Duyệt Đơn</button>
-                      <button className="btn-action reject" onClick={handleReject}><FaTimes /> Từ chối</button>
+                      <button className="btn-action approve" onClick={handleApprove} disabled={loading}>
+                        <FaCheck /> Duyệt Đơn
+                      </button>
+                      <button className="btn-action reject" onClick={handleReject} disabled={loading}>
+                        <FaTimes /> Từ chối
+                      </button>
                     </>
                   )}
-                  {selectedItem.approved && !selectedItem.dispensed && (
-                    <button className="btn-action dispense" onClick={handleDispense}><FaBoxOpen /> Cấp phát</button>
+                  {/* APPROVED status: có thể cấp phát */}
+                  {(selectedItem.status === 'APPROVED' || (selectedItem.approved && !selectedItem.dispensed)) && (
+                    <button className="btn-action dispense" onClick={handleDispense} disabled={loading}>
+                      <FaBoxOpen /> Cấp phát
+                    </button>
                   )}
-                  {!selectedItem.cancelled && !selectedItem.dispensed && (
-                    <button className="btn-action cancel" onClick={handleCancel}><FaBan /> Hủy Đơn</button>
+                  {/* PARTIALLY_DISPENSED status: có thể tiếp tục cấp phát */}
+                  {selectedItem.status === 'PARTIALLY_DISPENSED' && (
+                    <button className="btn-action dispense" onClick={handleDispense} disabled={loading}>
+                      <FaBoxOpen /> Cấp phát tiếp
+                    </button>
+                  )}
+                  {/* Có thể hủy đơn nếu chưa hoàn thành cấp phát và chưa bị hủy */}
+                  {!['DISPENSED', 'CANCELLED', 'REJECTED'].includes(selectedItem.status) &&
+                   !selectedItem.cancelled && !selectedItem.dispensed && (
+                    <button className="btn-action cancel" onClick={handleCancel} disabled={loading}>
+                      <FaBan /> Hủy Đơn
+                    </button>
                   )}
                 </div>
               </div>

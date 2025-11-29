@@ -1406,6 +1406,27 @@ export const pharmacistInteractionAPI = {
 
 // ==================== [NEW] Medical Supply API ====================
 export const pharmacistMedicalSupplyAPI = {
+  // 0. Lấy danh sách tất cả Medical Supplies (có phân trang)
+  // GET /api/v1/medical-supplies?page=0&size=10&status=&type=&priority=
+  getAll: async (params = {}) => {
+    const queryParams = new URLSearchParams();
+    if (params.page !== undefined) queryParams.append('page', params.page);
+    if (params.size !== undefined) queryParams.append('size', params.size);
+    if (params.status) queryParams.append('status', params.status);
+    if (params.type) queryParams.append('type', params.type);
+    if (params.priority) queryParams.append('priority', params.priority);
+
+    const queryString = queryParams.toString();
+    const url = queryString ? `api/v1/medical-supplies?${queryString}` : 'api/v1/medical-supplies';
+
+    return apiCall(url, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
   // 1. Lấy chi tiết đơn vật tư theo ID
   // GET /api/v1/medical-supplies/{prescriptionId}
   getPrescriptionById: async (prescriptionId) => {
@@ -1682,6 +1703,175 @@ export const goodsIssueAPI = {
       body: JSON.stringify(data),
     });
   },
+
+  // 5. Xóa phiếu xuất kho (chỉ DRAFT)
+  // DELETE /api/v1/goods-issues/{id}
+  delete: async (id) => {
+    return apiCall(`api/v1/goods-issues/${id}`, {
+      method: 'DELETE',
+      headers: { 'Authorization': `Bearer ${getAccessToken()}` },
+    });
+  },
+
+  // 6. Duyệt phiếu xuất kho (DRAFT → APPROVED)
+  // POST /api/v1/goods-issues/{id}/approve
+  approve: async (id) => {
+    return apiCall(`api/v1/goods-issues/${id}/approve`, {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${getAccessToken()}` },
+    });
+  },
+
+  // 7. Hoàn thành phiếu xuất kho (APPROVED → COMPLETED)
+  // POST /api/v1/goods-issues/{id}/complete
+  complete: async (id) => {
+    return apiCall(`api/v1/goods-issues/${id}/complete`, {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${getAccessToken()}` },
+    });
+  },
+
+  // 8. Hủy phiếu xuất kho (any status → CANCELLED)
+  // POST /api/v1/goods-issues/{id}/cancel
+  cancel: async (id) => {
+    return apiCall(`api/v1/goods-issues/${id}/cancel`, {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${getAccessToken()}` },
+    });
+  },
+
+  // 9. Lọc theo Status
+  // GET /api/v1/goods-issues/status/{status}
+  getByStatus: async (status) => {
+    return apiCall(`api/v1/goods-issues/status/${status}`, {
+      method: 'GET',
+      headers: { 'Authorization': `Bearer ${getAccessToken()}` },
+    });
+  },
+
+  // 10. Lọc theo Type
+  // GET /api/v1/goods-issues/type/{issueType}
+  getByType: async (issueType) => {
+    return apiCall(`api/v1/goods-issues/type/${issueType}`, {
+      method: 'GET',
+      headers: { 'Authorization': `Bearer ${getAccessToken()}` },
+    });
+  },
+
+  // 11. Lọc theo Department
+  // GET /api/v1/goods-issues/department/{departmentId}
+  getByDepartment: async (departmentId) => {
+    return apiCall(`api/v1/goods-issues/department/${departmentId}`, {
+      method: 'GET',
+      headers: { 'Authorization': `Bearer ${getAccessToken()}` },
+    });
+  },
+
+  // 12. Lọc theo Patient
+  // GET /api/v1/goods-issues/patient/{patientId}
+  getByPatient: async (patientId) => {
+    return apiCall(`api/v1/goods-issues/patient/${patientId}`, {
+      method: 'GET',
+      headers: { 'Authorization': `Bearer ${getAccessToken()}` },
+    });
+  },
+
+  // 13. Lọc theo Date Range
+  // GET /api/v1/goods-issues/date-range?startDate=YYYY-MM-DD&endDate=YYYY-MM-DD
+  getByDateRange: async (startDate, endDate) => {
+    return apiCall(`api/v1/goods-issues/date-range?startDate=${startDate}&endDate=${endDate}`, {
+      method: 'GET',
+      headers: { 'Authorization': `Bearer ${getAccessToken()}` },
+    });
+  },
+
+  // 14. Tìm kiếm phiếu xuất kho
+  // GET /api/v1/goods-issues/search?keyword=...
+  search: async (keyword) => {
+    return apiCall(`api/v1/goods-issues/search?keyword=${encodeURIComponent(keyword)}`, {
+      method: 'GET',
+      headers: { 'Authorization': `Bearer ${getAccessToken()}` },
+    });
+  },
+
+  // 15. Thống kê phiếu xuất kho
+  // GET /api/v1/goods-issues/statistics?startDate=YYYY-MM-DD&endDate=YYYY-MM-DD
+  getStatistics: async (startDate, endDate) => {
+    return apiCall(`api/v1/goods-issues/statistics?startDate=${startDate}&endDate=${endDate}`, {
+      method: 'GET',
+      headers: { 'Authorization': `Bearer ${getAccessToken()}` },
+    });
+  },
+
+  // 16. Lấy phiếu đang chờ duyệt
+  // GET /api/v1/goods-issues/pending-approval?hours=24
+  getPendingApproval: async (hours = 24) => {
+    return apiCall(`api/v1/goods-issues/pending-approval?hours=${hours}`, {
+      method: 'GET',
+      headers: { 'Authorization': `Bearer ${getAccessToken()}` },
+    });
+  },
+
+  // 17. Lấy phiếu đang chờ hoàn thành
+  // GET /api/v1/goods-issues/pending-completion?hours=24
+  getPendingCompletion: async (hours = 24) => {
+    return apiCall(`api/v1/goods-issues/pending-completion?hours=${hours}`, {
+      method: 'GET',
+      headers: { 'Authorization': `Bearer ${getAccessToken()}` },
+    });
+  },
+};
+
+// =============================================
+// STOCK TAKING API - Kiểm kê hàng tồn kho
+// =============================================
+export const stockTakingAPI = {
+  // 1. Tạo phiếu kiểm kê mới (DRAFT status)
+  // POST /api/v1/stock-takings
+  create: async (data) => {
+    return apiCall('api/v1/stock-takings', {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${getAccessToken()}` },
+      body: JSON.stringify(data),
+    });
+  },
+
+  // 2. Lấy chi tiết phiếu kiểm kê
+  // GET /api/v1/stock-takings/{id}
+  getById: async (id) => {
+    return apiCall(`api/v1/stock-takings/${id}`, {
+      method: 'GET',
+      headers: { 'Authorization': `Bearer ${getAccessToken()}` },
+    });
+  },
+
+  // 3. Lấy danh sách phiếu kiểm kê
+  // GET /api/v1/stock-takings
+  getAll: async () => {
+    return apiCall('api/v1/stock-takings', {
+      method: 'GET',
+      headers: { 'Authorization': `Bearer ${getAccessToken()}` },
+    });
+  },
+
+  // 4. Cập nhật phiếu kiểm kê (DRAFT only)
+  // PUT /api/v1/stock-takings/{id}
+  update: async (id, data) => {
+    return apiCall(`api/v1/stock-takings/${id}`, {
+      method: 'PUT',
+      headers: { 'Authorization': `Bearer ${getAccessToken()}` },
+      body: JSON.stringify(data),
+    });
+  },
+
+  // 5. Xóa phiếu kiểm kê (DRAFT only - soft delete)
+  // DELETE /api/v1/stock-takings/{id}
+  delete: async (id) => {
+    return apiCall(`api/v1/stock-takings/${id}`, {
+      method: 'DELETE',
+      headers: { 'Authorization': `Bearer ${getAccessToken()}` },
+    });
+  },
 };
 
 export default {
@@ -1704,4 +1894,5 @@ export default {
   pharmacistInteractionAPI,
   pharmacistMedicalSupplyAPI,
   goodsIssueAPI,
+  stockTakingAPI,
 };

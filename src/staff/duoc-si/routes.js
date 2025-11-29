@@ -9,6 +9,7 @@ import StockReceiptPage from "./pages/nhap-kho/StockReceiptPage";
 import PaymentReceiptPage from "./pages/nhap-kho/PaymentReceiptPage";
 import SupplierPage from "./pages/nha-cung-cap/SupplierPage";
 import InventoryTransactionsPage from "./pages/bien-dong-kho/InventoryTransactionsPage";
+import StockTakingPage from "./pages/kiem-ke-kho/StockTakingPage";
 import CreateSupplierPage from "./pages/nha-cung-cap/CreateSupplierPage";
 import ExportStockPage from "./pages/xuat-kho/ExportStockPage";
 import ExpiryManagementPage from "./pages/han-su-dung/ExpiryManagementPage";
@@ -41,6 +42,7 @@ const PharmacistRoutes = () => {
                 <Route path="tu-thuoc" element={<CabinetManagementPage />} />
                 <Route path="ton-kho-tu-thuoc" element={<CabinetInventoryPage />} />
                 <Route path="bien-dong-kho" element={<InventoryTransactionsPage />} />
+                <Route path="kiem-ke-kho" element={<StockTakingPage />} />
                 <Route path="danh-sach-y-lenh-theo-nhom" element={<MedicationOrderGroupsListPage />} />
                 <Route path="danh-sach-y-lenh-theo-nhom/:groupId" element={<MedicationOrderGroupDetailPage />} />
                 <Route path="tra-cuu-ton-kho" element={<InventoryLookupPage />} />
