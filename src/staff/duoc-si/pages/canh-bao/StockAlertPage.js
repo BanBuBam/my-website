@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import './StockAlertPage.css';
-import { 
-    FiAlertTriangle, FiClock, FiRefreshCw, FiAlertCircle, 
-    FiArrowRight, FiCheckSquare, FiBell, FiActivity, FiEye, FiX, 
-    FiSearch, FiFilter, FiBarChart2 
+import {
+    FiAlertTriangle, FiClock, FiRefreshCw, FiAlertCircle,
+    FiArrowRight, FiCheckSquare, FiBell, FiActivity, FiEye, FiX,
+    FiSearch, FiFilter, FiBarChart2, FiCheck, FiCheckCircle
 } from 'react-icons/fi';
 import { pharmacistStockAlertAPI } from '../../../../services/staff/pharmacistAPI';
 import { useNavigate } from 'react-router-dom';
@@ -11,7 +11,7 @@ import { useNavigate } from 'react-router-dom';
 const StockAlertPage = () => {
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
-    
+
     // State dữ liệu Dashboard
     const [dashboardData, setDashboardData] = useState({
         activeCount: 0,
@@ -39,6 +39,18 @@ const StockAlertPage = () => {
     const [showModal, setShowModal] = useState(false);
     const [showStatsModal, setShowStatsModal] = useState(false);
     const [statistics, setStatistics] = useState(null);
+
+    // State cho chức năng Acknowledge/Resolve
+    const [selectedAlertIds, setSelectedAlertIds] = useState([]);
+    const [showAcknowledgeModal, setShowAcknowledgeModal] = useState(false);
+    const [showResolveModal, setShowResolveModal] = useState(false);
+    const [showBulkAcknowledgeModal, setShowBulkAcknowledgeModal] = useState(false);
+    const [showBulkResolveModal, setShowBulkResolveModal] = useState(false);
+    const [acknowledgeForm, setAcknowledgeForm] = useState({ notes: '', actionTaken: '' });
+    const [resolveForm, setResolveForm] = useState({ resolutionNotes: '' });
+    const [bulkNotes, setBulkNotes] = useState('');
+    const [processingAction, setProcessingAction] = useState(false);
+    const [notification, setNotification] = useState({ show: false, type: '', message: '' });
 
     // Hàm load dữ liệu tổng quan
     const fetchDashboardData = async () => {
@@ -137,6 +149,178 @@ const StockAlertPage = () => {
         }
     };
 
+    // Hiển thị thông báo
+    const showNotification = (type, message) => {
+        setNotification({ show: true, type, message });
+        setTimeout(() => setNotification({ show: false, type: '', message: '' }), 3000);
+    };
+
+    // ========== ACKNOWLEDGE SINGLE ALERT ==========
+    const handleOpenAcknowledgeModal = () => {
+        if (!selectedAlert || selectedAlert.isAcknowledged) return;
+        setAcknowledgeForm({ notes: '', actionTaken: '' });
+        setShowAcknowledgeModal(true);
+    };
+
+    const handleAcknowledgeAlert = async () => {
+        if (!selectedAlert || !acknowledgeForm.notes) {
+            showNotification('error', 'Vui lòng nhập ghi chú!');
+            return;
+        }
+        setProcessingAction(true);
+        try {
+            const response = await pharmacistStockAlertAPI.acknowledgeAlert(
+                selectedAlert.alertId,
+                acknowledgeForm.notes,
+                acknowledgeForm.actionTaken
+            );
+            if (response?.status === 'success' || response?.status === 'OK') {
+                showNotification('success', 'Ghi nhận cảnh báo thành công!');
+                setShowAcknowledgeModal(false);
+                setShowModal(false);
+                await fetchDashboardData();
+            } else {
+                showNotification('error', response?.message || 'Có lỗi xảy ra!');
+            }
+        } catch (error) {
+            console.error("Error acknowledging alert:", error);
+            showNotification('error', 'Có lỗi xảy ra khi ghi nhận cảnh báo!');
+        } finally {
+            setProcessingAction(false);
+        }
+    };
+
+    // ========== RESOLVE SINGLE ALERT ==========
+    const handleOpenResolveModal = () => {
+        if (!selectedAlert || selectedAlert.isResolved) return;
+        setResolveForm({ resolutionNotes: '' });
+        setShowResolveModal(true);
+    };
+
+    const handleResolveAlert = async () => {
+        if (!selectedAlert || !resolveForm.resolutionNotes) {
+            showNotification('error', 'Vui lòng nhập ghi chú xử lý!');
+            return;
+        }
+        setProcessingAction(true);
+        try {
+            const response = await pharmacistStockAlertAPI.resolveAlert(
+                selectedAlert.alertId,
+                resolveForm.resolutionNotes
+            );
+            if (response?.status === 'success' || response?.status === 'OK') {
+                showNotification('success', 'Đánh dấu đã xử lý thành công!');
+                setShowResolveModal(false);
+                setShowModal(false);
+                await fetchDashboardData();
+            } else {
+                showNotification('error', response?.message || 'Có lỗi xảy ra!');
+            }
+        } catch (error) {
+            console.error("Error resolving alert:", error);
+            showNotification('error', 'Có lỗi xảy ra khi xử lý cảnh báo!');
+        } finally {
+            setProcessingAction(false);
+        }
+    };
+
+    // ========== CHECKBOX SELECTION ==========
+    const handleSelectAlert = (alertId) => {
+        setSelectedAlertIds(prev => {
+            if (prev.includes(alertId)) {
+                return prev.filter(id => id !== alertId);
+            } else {
+                return [...prev, alertId];
+            }
+        });
+    };
+
+    const handleSelectAllInTable = (alerts) => {
+        const alertIds = alerts.map(a => a.alertId);
+        const allSelected = alertIds.every(id => selectedAlertIds.includes(id));
+        if (allSelected) {
+            setSelectedAlertIds(prev => prev.filter(id => !alertIds.includes(id)));
+        } else {
+            setSelectedAlertIds(prev => [...new Set([...prev, ...alertIds])]);
+        }
+    };
+
+    const isAlertSelected = (alertId) => selectedAlertIds.includes(alertId);
+
+    // ========== ACKNOWLEDGE MULTIPLE ALERTS ==========
+    const handleOpenBulkAcknowledgeModal = () => {
+        if (selectedAlertIds.length === 0) {
+            showNotification('error', 'Vui lòng chọn ít nhất một cảnh báo!');
+            return;
+        }
+        setBulkNotes('');
+        setShowBulkAcknowledgeModal(true);
+    };
+
+    const handleBulkAcknowledge = async () => {
+        if (!bulkNotes) {
+            showNotification('error', 'Vui lòng nhập ghi chú!');
+            return;
+        }
+        setProcessingAction(true);
+        try {
+            const response = await pharmacistStockAlertAPI.acknowledgeMultipleAlerts(
+                selectedAlertIds,
+                bulkNotes
+            );
+            if (response?.status === 'success' || response?.status === 'OK') {
+                showNotification('success', `Đã ghi nhận ${selectedAlertIds.length} cảnh báo thành công!`);
+                setShowBulkAcknowledgeModal(false);
+                setSelectedAlertIds([]);
+                await fetchDashboardData();
+            } else {
+                showNotification('error', response?.message || 'Có lỗi xảy ra!');
+            }
+        } catch (error) {
+            console.error("Error bulk acknowledging:", error);
+            showNotification('error', 'Có lỗi xảy ra khi ghi nhận cảnh báo!');
+        } finally {
+            setProcessingAction(false);
+        }
+    };
+
+    // ========== RESOLVE MULTIPLE ALERTS ==========
+    const handleOpenBulkResolveModal = () => {
+        if (selectedAlertIds.length === 0) {
+            showNotification('error', 'Vui lòng chọn ít nhất một cảnh báo!');
+            return;
+        }
+        setBulkNotes('');
+        setShowBulkResolveModal(true);
+    };
+
+    const handleBulkResolve = async () => {
+        if (!bulkNotes) {
+            showNotification('error', 'Vui lòng nhập ghi chú xử lý!');
+            return;
+        }
+        setProcessingAction(true);
+        try {
+            const response = await pharmacistStockAlertAPI.resolveMultipleAlerts(
+                selectedAlertIds,
+                bulkNotes
+            );
+            if (response?.status === 'success' || response?.status === 'OK') {
+                showNotification('success', `Đã xử lý ${selectedAlertIds.length} cảnh báo thành công!`);
+                setShowBulkResolveModal(false);
+                setSelectedAlertIds([]);
+                await fetchDashboardData();
+            } else {
+                showNotification('error', response?.message || 'Có lỗi xảy ra!');
+            }
+        } catch (error) {
+            console.error("Error bulk resolving:", error);
+            showNotification('error', 'Có lỗi xảy ra khi xử lý cảnh báo!');
+        } finally {
+            setProcessingAction(false);
+        }
+    };
+
     // Helpers
     const formatDate = (dateString) => {
         if (!dateString) return 'N/A';
@@ -149,12 +333,70 @@ const StockAlertPage = () => {
 
     return (
         <div className="stock-alert-page">
+            {/* NOTIFICATION */}
+            {notification.show && (
+                <div className={`notification notification-${notification.type}`} style={{
+                    position: 'fixed',
+                    top: '20px',
+                    right: '20px',
+                    padding: '1rem 1.5rem',
+                    borderRadius: '8px',
+                    background: notification.type === 'success' ? '#d4edda' : '#f8d7da',
+                    color: notification.type === 'success' ? '#155724' : '#721c24',
+                    border: `1px solid ${notification.type === 'success' ? '#c3e6cb' : '#f5c6cb'}`,
+                    zIndex: 10000,
+                    boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.5rem',
+                    fontWeight: '500'
+                }}>
+                    {notification.type === 'success' ? '✅' : '❌'} {notification.message}
+                </div>
+            )}
+
             <div className="page-header">
                 <div className="header-left">
                     <h2>⚠️ Trung tâm Cảnh báo (Alert Center)</h2>
                     <p>Giám sát và xử lý các sự cố tồn kho</p>
                 </div>
                 <div className="header-right">
+                    {/* Bulk Action Buttons */}
+                    {selectedAlertIds.length > 0 && (
+                        <>
+                            <span style={{
+                                padding: '0.5rem 0.75rem',
+                                background: '#007bff',
+                                color: '#fff',
+                                borderRadius: '4px',
+                                fontSize: '0.85rem',
+                                fontWeight: '600'
+                            }}>
+                                Đã chọn: {selectedAlertIds.length}
+                            </span>
+                            <button
+                                className="btn-primary"
+                                onClick={handleOpenBulkAcknowledgeModal}
+                                style={{ background: '#17a2b8', border: 'none' }}
+                            >
+                                <FiCheck /> Ghi nhận đã chọn
+                            </button>
+                            <button
+                                className="btn-primary"
+                                onClick={handleOpenBulkResolveModal}
+                                style={{ background: '#28a745', border: 'none' }}
+                            >
+                                <FiCheckCircle /> Xử lý đã chọn
+                            </button>
+                            <button
+                                className="btn-secondary"
+                                onClick={() => setSelectedAlertIds([])}
+                                style={{ background: '#6c757d', color: '#fff', border: 'none' }}
+                            >
+                                <FiX /> Bỏ chọn
+                            </button>
+                        </>
+                    )}
                     <button className="btn-secondary" onClick={handleViewStats}>
                         <FiBarChart2 /> Xem thống kê
                     </button>
@@ -244,15 +486,26 @@ const StockAlertPage = () => {
                     <div className="section-header"><h3>Kết quả tìm kiếm ({searchResults.length})</h3></div>
                     <div className="table-responsive">
                         <table className="alert-table">
-                            <thead><tr><th>Mức độ</th><th>Loại</th><th>Sản phẩm</th><th>Thông báo</th><th>Ngày tạo</th><th>Chi tiết</th></tr></thead>
+                            <thead><tr><th>Mức độ</th><th>Loại</th><th>Stock ID</th><th>Thông báo</th><th>Trạng thái</th><th>Chi tiết</th></tr></thead>
                             <tbody>
                                 {searchResults.map((alert, index) => (
-                                    <tr key={index}>
-                                        <td><span className={`severity-badge ${alert.severity?.toLowerCase()}`}>{alert.severity}</span></td>
-                                        <td><span className="type-badge">{alert.alertType}</span></td>
-                                        <td><strong>{alert.itemName}</strong></td>
-                                        <td>{alert.message}</td>
-                                        <td>{formatDate(alert.createdAt)}</td>
+                                    <tr key={alert.alertId || index}>
+                                        <td>
+                                            <span style={{
+                                                padding: '0.25rem 0.5rem',
+                                                borderRadius: '4px',
+                                                fontSize: '0.8rem',
+                                                fontWeight: '600',
+                                                background: alert.severityColor || '#e9ecef',
+                                                color: '#fff'
+                                            }}>
+                                                {alert.severityIcon} {alert.severityLevel || 'N/A'}
+                                            </span>
+                                        </td>
+                                        <td><span className="type-badge">{alert.alertTypeIcon} {alert.alertType}</span></td>
+                                        <td><code style={{ background: '#e9ecef', padding: '2px 6px', borderRadius: '4px' }}>{alert.stockId}</code></td>
+                                        <td style={{ maxWidth: '300px', fontSize: '0.85rem' }}>{alert.alertMessage || alert.summary}</td>
+                                        <td><span style={{ fontSize: '0.85rem' }}>{alert.statusDisplay}</span></td>
                                         <td><button className="btn-icon-action" onClick={() => handleViewDetail(alert.alertId)}><FiEye /></button></td>
                                     </tr>
                                 ))}
@@ -266,17 +519,49 @@ const StockAlertPage = () => {
                     {/* Overdue Alerts */}
                     {overdueAlerts.length > 0 && (
                         <div id="overdue-section" className="alert-section overdue-section">
-                            <div className="section-header"><h3 className="text-dark-red"><FiClock /> Quá hạn xử lý</h3></div>
+                            <div className="section-header"><h3 className="text-dark-red"><FiClock /> Quá hạn xử lý ({overdueAlerts.length})</h3></div>
                             <div className="table-responsive">
                                 <table className="alert-table">
-                                    <thead><tr><th>Mức độ</th><th>Nội dung</th><th>Ngày tạo</th><th>Trạng thái</th><th>Thao tác</th></tr></thead>
+                                    <thead>
+                                        <tr>
+                                            <th style={{ width: '40px' }}>
+                                                <input
+                                                    type="checkbox"
+                                                    checked={overdueAlerts.length > 0 && overdueAlerts.every(a => selectedAlertIds.includes(a.alertId))}
+                                                    onChange={() => handleSelectAllInTable(overdueAlerts)}
+                                                    style={{ cursor: 'pointer', width: '16px', height: '16px' }}
+                                                />
+                                            </th>
+                                            <th>Mức độ</th><th>Loại</th><th>Stock ID</th><th>Thông báo</th><th>Thời gian</th><th>Thao tác</th>
+                                        </tr>
+                                    </thead>
                                     <tbody>
                                         {overdueAlerts.map((alert, index) => (
-                                            <tr key={index} className="row-overdue">
-                                                <td><span className={`severity-badge ${alert.severity?.toLowerCase()}`}>{alert.severity}</span></td>
-                                                <td><strong>{alert.itemName}</strong><br/><small>{alert.message}</small></td>
-                                                <td>{formatDate(alert.createdAt)}</td>
-                                                <td className="text-danger fw-bold">QUÁ HẠN</td>
+                                            <tr key={alert.alertId || index} className="row-overdue" style={{ background: isAlertSelected(alert.alertId) ? '#e3f2fd' : '' }}>
+                                                <td>
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={isAlertSelected(alert.alertId)}
+                                                        onChange={() => handleSelectAlert(alert.alertId)}
+                                                        style={{ cursor: 'pointer', width: '16px', height: '16px' }}
+                                                    />
+                                                </td>
+                                                <td>
+                                                    <span style={{
+                                                        padding: '0.25rem 0.5rem',
+                                                        borderRadius: '4px',
+                                                        fontSize: '0.8rem',
+                                                        fontWeight: '600',
+                                                        background: alert.severityColor || '#dc3545',
+                                                        color: '#fff'
+                                                    }}>
+                                                        {alert.severityIcon} {alert.severityLevel}
+                                                    </span>
+                                                </td>
+                                                <td><span className="type-badge">{alert.alertTypeDisplay || alert.alertType}</span></td>
+                                                <td><code style={{ background: '#f8d7da', color: '#721c24', padding: '2px 6px', borderRadius: '4px' }}>{alert.stockId}</code></td>
+                                                <td style={{ fontSize: '0.85rem' }}>{alert.alertMessage}</td>
+                                                <td className="text-danger fw-bold">{alert.ageHours || 0}h quá hạn</td>
                                                 <td><button className="btn-icon-action" onClick={() => handleViewDetail(alert.alertId)}><FiEye /></button></td>
                                             </tr>
                                         ))}
@@ -295,17 +580,49 @@ const StockAlertPage = () => {
                             </div>
                             <div className="table-responsive">
                                 <table className="alert-table">
-                                    <thead><tr><th>Sản phẩm</th><th>Vị trí</th><th>Tồn</th><th>Định mức</th><th>Chi tiết</th></tr></thead>
+                                    <thead>
+                                        <tr>
+                                            <th style={{ width: '40px' }}>
+                                                <input
+                                                    type="checkbox"
+                                                    checked={quantityAlerts.length > 0 && quantityAlerts.every(a => selectedAlertIds.includes(a.alertId))}
+                                                    onChange={() => handleSelectAllInTable(quantityAlerts)}
+                                                    style={{ cursor: 'pointer', width: '16px', height: '16px' }}
+                                                />
+                                            </th>
+                                            <th>Mức độ</th><th>Stock ID</th><th>Số lượng</th><th>Định mức</th><th>Trạng thái</th><th>Chi tiết</th>
+                                        </tr>
+                                    </thead>
                                     <tbody>
                                         {quantityAlerts.length > 0 ? quantityAlerts.map((item, index) => (
-                                            <tr key={index}>
-                                                <td><strong>{item.itemName}</strong></td>
-                                                <td>{item.cabinetLocation}</td>
-                                                <td className="text-danger fw-bold">{item.currentQuantity}</td>
-                                                <td>{item.reorderLevel}</td>
+                                            <tr key={item.alertId || index} style={{ background: isAlertSelected(item.alertId) ? '#e3f2fd' : '' }}>
+                                                <td>
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={isAlertSelected(item.alertId)}
+                                                        onChange={() => handleSelectAlert(item.alertId)}
+                                                        style={{ cursor: 'pointer', width: '16px', height: '16px' }}
+                                                    />
+                                                </td>
+                                                <td>
+                                                    <span style={{
+                                                        padding: '0.25rem 0.5rem',
+                                                        borderRadius: '4px',
+                                                        fontSize: '0.8rem',
+                                                        fontWeight: '600',
+                                                        background: item.severityColor || '#ffc107',
+                                                        color: '#fff'
+                                                    }}>
+                                                        {item.severityIcon} {item.severityLevel}
+                                                    </span>
+                                                </td>
+                                                <td><code style={{ background: '#fff3cd', color: '#856404', padding: '2px 6px', borderRadius: '4px' }}>{item.stockId}</code></td>
+                                                <td className="text-danger fw-bold" style={{ fontSize: '1.1rem' }}>{item.currentQuantity}</td>
+                                                <td style={{ color: '#6c757d' }}>{item.thresholdQuantity || 'N/A'}</td>
+                                                <td><span style={{ fontSize: '0.85rem' }}>{item.statusDisplay}</span></td>
                                                 <td><button className="btn-icon-action" onClick={() => handleViewDetail(item.alertId)}><FiEye /></button></td>
                                             </tr>
-                                        )) : <tr><td colSpan="5" className="text-center text-muted">✅ Ổn định</td></tr>}
+                                        )) : <tr><td colSpan="7" className="text-center text-muted">✅ Ổn định</td></tr>}
                                     </tbody>
                                 </table>
                             </div>
@@ -319,17 +636,62 @@ const StockAlertPage = () => {
                             </div>
                             <div className="table-responsive">
                                 <table className="alert-table">
-                                    <thead><tr><th>Sản phẩm</th><th>Vị trí</th><th>Thông báo</th><th>Ngày tạo</th><th>Chi tiết</th></tr></thead>
+                                    <thead>
+                                        <tr>
+                                            <th style={{ width: '40px' }}>
+                                                <input
+                                                    type="checkbox"
+                                                    checked={expiryAlerts.length > 0 && expiryAlerts.every(a => selectedAlertIds.includes(a.alertId))}
+                                                    onChange={() => handleSelectAllInTable(expiryAlerts)}
+                                                    style={{ cursor: 'pointer', width: '16px', height: '16px' }}
+                                                />
+                                            </th>
+                                            <th>Mức độ</th><th>Stock ID</th><th>Hạn dùng</th><th>Còn lại</th><th>Trạng thái</th><th>Chi tiết</th>
+                                        </tr>
+                                    </thead>
                                     <tbody>
                                         {expiryAlerts.length > 0 ? expiryAlerts.map((alert, index) => (
-                                            <tr key={index}>
-                                                <td><strong>{alert.itemName}</strong></td>
-                                                <td>{alert.cabinetLocation}</td>
-                                                <td>{alert.message}</td>
-                                                <td>{formatDate(alert.createdAt)}</td>
+                                            <tr key={alert.alertId || index} style={{ background: isAlertSelected(alert.alertId) ? '#e3f2fd' : '' }}>
+                                                <td>
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={isAlertSelected(alert.alertId)}
+                                                        onChange={() => handleSelectAlert(alert.alertId)}
+                                                        style={{ cursor: 'pointer', width: '16px', height: '16px' }}
+                                                    />
+                                                </td>
+                                                <td>
+                                                    <span style={{
+                                                        padding: '0.25rem 0.5rem',
+                                                        borderRadius: '4px',
+                                                        fontSize: '0.8rem',
+                                                        fontWeight: '600',
+                                                        background: alert.severityColor || '#dc3545',
+                                                        color: '#fff'
+                                                    }}>
+                                                        {alert.severityIcon} {alert.severityLevel}
+                                                    </span>
+                                                </td>
+                                                <td><code style={{ background: '#f8d7da', color: '#721c24', padding: '2px 6px', borderRadius: '4px' }}>{alert.stockId}</code></td>
+                                                <td style={{ fontWeight: '600', color: alert.daysToExpiry <= 7 ? '#dc3545' : '#ffc107' }}>
+                                                    {formatDate(alert.expiryDate)}
+                                                </td>
+                                                <td>
+                                                    <span style={{
+                                                        padding: '0.2rem 0.5rem',
+                                                        borderRadius: '12px',
+                                                        fontSize: '0.85rem',
+                                                        fontWeight: '700',
+                                                        background: alert.daysToExpiry <= 7 ? '#dc3545' : alert.daysToExpiry <= 30 ? '#ffc107' : '#28a745',
+                                                        color: '#fff'
+                                                    }}>
+                                                        {alert.daysToExpiry} ngày
+                                                    </span>
+                                                </td>
+                                                <td><span style={{ fontSize: '0.85rem' }}>{alert.statusDisplay}</span></td>
                                                 <td><button className="btn-icon-action" onClick={() => handleViewDetail(alert.alertId)}><FiEye /></button></td>
                                             </tr>
-                                        )) : <tr><td colSpan="5" className="text-center text-muted">✅ Không có cảnh báo</td></tr>}
+                                        )) : <tr><td colSpan="7" className="text-center text-muted">✅ Không có cảnh báo</td></tr>}
                                     </tbody>
                                 </table>
                             </div>
@@ -343,23 +705,303 @@ const StockAlertPage = () => {
                 <div className="modal-overlay" onClick={() => setShowModal(false)}>
                     <div className="modal-content" onClick={e => e.stopPropagation()}>
                         <div className="modal-header">
-                            <h3>Chi tiết Cảnh báo</h3>
+                            <h3>Chi tiết Cảnh báo #{selectedAlert.alertId}</h3>
                             <button className="btn-close" onClick={() => setShowModal(false)}><FiX /></button>
                         </div>
                         <div className="modal-body">
-                            <div className="detail-row"><span className="detail-label">Loại:</span><strong>{selectedAlert.alertType}</strong></div>
-                            <div className="detail-row"><span className="detail-label">Mức độ:</span><span className={`severity-badge ${selectedAlert.severity?.toLowerCase()}`}>{selectedAlert.severity}</span></div>
-                            <div className="detail-row"><span className="detail-label">Sản phẩm:</span><span>{selectedAlert.itemName} ({selectedAlert.itemType})</span></div>
-                            <div className="detail-row"><span className="detail-label">Vị trí:</span><span>{selectedAlert.cabinetLocation}</span></div>
-                            <div className="detail-grid">
-                                <div className="detail-box"><span>Hiện tại</span><strong>{selectedAlert.currentQuantity}</strong></div>
-                                <div className="detail-box"><span>Định mức</span><strong>{selectedAlert.reorderLevel}</strong></div>
+                            {/* Loại & Mức độ */}
+                            <div className="detail-row">
+                                <span className="detail-label">Loại:</span>
+                                <strong>{selectedAlert.alertTypeDisplay || selectedAlert.alertType}</strong>
                             </div>
-                            <div className="detail-row"><span className="detail-label">Thông báo:</span><p className="detail-message">{selectedAlert.message}</p></div>
+                            <div className="detail-row">
+                                <span className="detail-label">Mức độ:</span>
+                                <span style={{
+                                    padding: '0.25rem 0.5rem',
+                                    borderRadius: '4px',
+                                    fontSize: '0.85rem',
+                                    fontWeight: '600',
+                                    background: selectedAlert.severityColor || '#e9ecef',
+                                    color: '#fff'
+                                }}>
+                                    {selectedAlert.severityDisplay || selectedAlert.severityLevel}
+                                </span>
+                            </div>
+
+                            {/* Thông tin Stock */}
+                            <div className="detail-row">
+                                <span className="detail-label">Stock ID:</span>
+                                <code style={{ background: '#e9ecef', padding: '2px 8px', borderRadius: '4px', fontWeight: '600' }}>
+                                    {selectedAlert.stockId}
+                                </code>
+                            </div>
+                            <div className="detail-row">
+                                <span className="detail-label">Loại sản phẩm:</span>
+                                <span>{selectedAlert.itemType === 'MEDICINE' ? '💊 Thuốc' : '🩹 Vật tư'}</span>
+                            </div>
+                            {selectedAlert.cabinetId && (
+                                <div className="detail-row">
+                                    <span className="detail-label">Tủ:</span>
+                                    <span>{selectedAlert.cabinetName || `Cabinet ID: ${selectedAlert.cabinetId}`} {selectedAlert.cabinetLocation ? `(${selectedAlert.cabinetLocation})` : ''}</span>
+                                </div>
+                            )}
+
+                            {/* Thông tin số lượng (cho cảnh báo số lượng) */}
+                            {selectedAlert.isQuantityRelated && (
+                                <div className="detail-grid">
+                                    <div className="detail-box"><span>Số lượng hiện tại</span><strong style={{ color: '#dc3545', fontSize: '1.3rem' }}>{selectedAlert.currentQuantity}</strong></div>
+                                    <div className="detail-box"><span>Định mức</span><strong>{selectedAlert.thresholdQuantity || 'N/A'}</strong></div>
+                                </div>
+                            )}
+
+                            {/* Thông tin hạn dùng (cho cảnh báo hạn dùng) */}
+                            {selectedAlert.isExpiryRelated && (
+                                <div className="detail-grid">
+                                    <div className="detail-box">
+                                        <span>Hạn sử dụng</span>
+                                        <strong style={{ color: selectedAlert.daysToExpiry <= 7 ? '#dc3545' : '#ffc107' }}>
+                                            {formatDate(selectedAlert.expiryDate)}
+                                        </strong>
+                                    </div>
+                                    <div className="detail-box">
+                                        <span>Còn lại</span>
+                                        <strong style={{
+                                            padding: '0.3rem 0.6rem',
+                                            borderRadius: '12px',
+                                            background: selectedAlert.daysToExpiry <= 7 ? '#dc3545' : selectedAlert.daysToExpiry <= 30 ? '#ffc107' : '#28a745',
+                                            color: '#fff'
+                                        }}>
+                                            {selectedAlert.daysToExpiry} ngày
+                                        </strong>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Thông báo chi tiết */}
+                            <div className="detail-row">
+                                <span className="detail-label">Thông báo:</span>
+                                <p className="detail-message" style={{ background: '#f8f9fa', padding: '0.75rem', borderRadius: '6px', margin: '0.5rem 0' }}>
+                                    {selectedAlert.alertMessage}
+                                </p>
+                            </div>
+
+                            {/* Trạng thái */}
+                            <div className="detail-row">
+                                <span className="detail-label">Trạng thái:</span>
+                                <span style={{ fontSize: '1rem' }}>{selectedAlert.statusDisplay}</span>
+                            </div>
+
+                            {/* Flags */}
+                            <div className="detail-row" style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                                {selectedAlert.isCritical && <span style={{ background: '#dc3545', color: '#fff', padding: '0.2rem 0.5rem', borderRadius: '4px', fontSize: '0.8rem' }}>🔴 Nghiêm trọng</span>}
+                                {selectedAlert.requiresImmediateAction && <span style={{ background: '#ff6b6b', color: '#fff', padding: '0.2rem 0.5rem', borderRadius: '4px', fontSize: '0.8rem' }}>⚡ Cần xử lý ngay</span>}
+                                {selectedAlert.isOverdue && <span style={{ background: '#6c757d', color: '#fff', padding: '0.2rem 0.5rem', borderRadius: '4px', fontSize: '0.8rem' }}>⏰ Quá hạn ({selectedAlert.ageHours}h)</span>}
+                                {selectedAlert.isAcknowledged && <span style={{ background: '#17a2b8', color: '#fff', padding: '0.2rem 0.5rem', borderRadius: '4px', fontSize: '0.8rem' }}>✅ Đã ghi nhận</span>}
+                                {selectedAlert.isResolved && <span style={{ background: '#28a745', color: '#fff', padding: '0.2rem 0.5rem', borderRadius: '4px', fontSize: '0.8rem' }}>✓ Đã xử lý</span>}
+                            </div>
+
+                            {/* Thông tin thời gian */}
                             <div className="detail-row"><span className="detail-label">Ngày tạo:</span><span>{formatDateTime(selectedAlert.createdAt)}</span></div>
+                            {selectedAlert.acknowledgedAt && (
+                                <div className="detail-row">
+                                    <span className="detail-label">Ghi nhận bởi:</span>
+                                    <span>{selectedAlert.acknowledgedByEmployeeName} - {formatDateTime(selectedAlert.acknowledgedAt)}</span>
+                                </div>
+                            )}
+                            {selectedAlert.resolvedAt && (
+                                <div className="detail-row">
+                                    <span className="detail-label">Xử lý bởi:</span>
+                                    <span>{selectedAlert.resolvedByEmployeeName} - {formatDateTime(selectedAlert.resolvedAt)}</span>
+                                </div>
+                            )}
+
+                            {/* Summary */}
+                            {selectedAlert.summary && (
+                                <div className="detail-row" style={{ marginTop: '1rem', paddingTop: '1rem', borderTop: '1px solid #e9ecef' }}>
+                                    <span className="detail-label">Tóm tắt:</span>
+                                    <p style={{ fontStyle: 'italic', color: '#6c757d', margin: '0.5rem 0' }}>{selectedAlert.summary}</p>
+                                </div>
+                            )}
                         </div>
-                        <div className="modal-footer">
+                        <div className="modal-footer" style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end' }}>
+                            {/* Nút Ghi nhận - chỉ hiện khi chưa ghi nhận */}
+                            {!selectedAlert.isAcknowledged && (
+                                <button
+                                    className="btn-primary"
+                                    onClick={handleOpenAcknowledgeModal}
+                                    style={{ background: '#17a2b8', border: 'none', display: 'flex', alignItems: 'center', gap: '0.3rem' }}
+                                >
+                                    <FiCheck /> Ghi nhận
+                                </button>
+                            )}
+                            {/* Nút Xử lý - chỉ hiện khi chưa xử lý */}
+                            {!selectedAlert.isResolved && (
+                                <button
+                                    className="btn-primary"
+                                    onClick={handleOpenResolveModal}
+                                    style={{ background: '#28a745', border: 'none', display: 'flex', alignItems: 'center', gap: '0.3rem' }}
+                                >
+                                    <FiCheckCircle /> Đánh dấu đã xử lý
+                                </button>
+                            )}
                             <button className="btn-secondary" onClick={() => setShowModal(false)}>Đóng</button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* MODAL GHI NHẬN CẢNH BÁO ĐƠN */}
+            {showAcknowledgeModal && (
+                <div className="modal-overlay" onClick={() => setShowAcknowledgeModal(false)}>
+                    <div className="modal-content" onClick={e => e.stopPropagation()} style={{ maxWidth: '500px' }}>
+                        <div className="modal-header" style={{ background: '#17a2b8', color: '#fff' }}>
+                            <h3><FiCheck /> Ghi nhận cảnh báo #{selectedAlert?.alertId}</h3>
+                            <button className="btn-close" onClick={() => setShowAcknowledgeModal(false)} style={{ color: '#fff' }}><FiX /></button>
+                        </div>
+                        <div className="modal-body">
+                            <div style={{ marginBottom: '1rem' }}>
+                                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '600' }}>Ghi chú <span style={{ color: '#dc3545' }}>*</span></label>
+                                <textarea
+                                    value={acknowledgeForm.notes}
+                                    onChange={(e) => setAcknowledgeForm(prev => ({ ...prev, notes: e.target.value }))}
+                                    placeholder="Nhập ghi chú về cảnh báo..."
+                                    style={{ width: '100%', padding: '0.75rem', border: '1px solid #ddd', borderRadius: '6px', minHeight: '80px', resize: 'vertical' }}
+                                />
+                            </div>
+                            <div style={{ marginBottom: '1rem' }}>
+                                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '600' }}>Hành động đã thực hiện</label>
+                                <textarea
+                                    value={acknowledgeForm.actionTaken}
+                                    onChange={(e) => setAcknowledgeForm(prev => ({ ...prev, actionTaken: e.target.value }))}
+                                    placeholder="Ví dụ: Đã tạo đơn đặt hàng #PO-2025-123..."
+                                    style={{ width: '100%', padding: '0.75rem', border: '1px solid #ddd', borderRadius: '6px', minHeight: '60px', resize: 'vertical' }}
+                                />
+                            </div>
+                        </div>
+                        <div className="modal-footer" style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end' }}>
+                            <button className="btn-secondary" onClick={() => setShowAcknowledgeModal(false)} disabled={processingAction}>Hủy</button>
+                            <button
+                                className="btn-primary"
+                                onClick={handleAcknowledgeAlert}
+                                disabled={processingAction || !acknowledgeForm.notes}
+                                style={{ background: '#17a2b8', border: 'none' }}
+                            >
+                                {processingAction ? '⏳ Đang xử lý...' : '✅ Xác nhận ghi nhận'}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* MODAL XỬ LÝ CẢNH BÁO ĐƠN */}
+            {showResolveModal && (
+                <div className="modal-overlay" onClick={() => setShowResolveModal(false)}>
+                    <div className="modal-content" onClick={e => e.stopPropagation()} style={{ maxWidth: '500px' }}>
+                        <div className="modal-header" style={{ background: '#28a745', color: '#fff' }}>
+                            <h3><FiCheckCircle /> Xử lý cảnh báo #{selectedAlert?.alertId}</h3>
+                            <button className="btn-close" onClick={() => setShowResolveModal(false)} style={{ color: '#fff' }}><FiX /></button>
+                        </div>
+                        <div className="modal-body">
+                            <div style={{ marginBottom: '1rem' }}>
+                                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '600' }}>Ghi chú xử lý <span style={{ color: '#dc3545' }}>*</span></label>
+                                <textarea
+                                    value={resolveForm.resolutionNotes}
+                                    onChange={(e) => setResolveForm(prev => ({ ...prev, resolutionNotes: e.target.value }))}
+                                    placeholder="Ví dụ: Đã nhập hàng bổ sung, tồn kho hiện tại: 200 viên..."
+                                    style={{ width: '100%', padding: '0.75rem', border: '1px solid #ddd', borderRadius: '6px', minHeight: '100px', resize: 'vertical' }}
+                                />
+                            </div>
+                        </div>
+                        <div className="modal-footer" style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end' }}>
+                            <button className="btn-secondary" onClick={() => setShowResolveModal(false)} disabled={processingAction}>Hủy</button>
+                            <button
+                                className="btn-primary"
+                                onClick={handleResolveAlert}
+                                disabled={processingAction || !resolveForm.resolutionNotes}
+                                style={{ background: '#28a745', border: 'none' }}
+                            >
+                                {processingAction ? '⏳ Đang xử lý...' : '✅ Xác nhận đã xử lý'}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* MODAL GHI NHẬN NHIỀU CẢNH BÁO */}
+            {showBulkAcknowledgeModal && (
+                <div className="modal-overlay" onClick={() => setShowBulkAcknowledgeModal(false)}>
+                    <div className="modal-content" onClick={e => e.stopPropagation()} style={{ maxWidth: '500px' }}>
+                        <div className="modal-header" style={{ background: '#17a2b8', color: '#fff' }}>
+                            <h3><FiCheck /> Ghi nhận {selectedAlertIds.length} cảnh báo</h3>
+                            <button className="btn-close" onClick={() => setShowBulkAcknowledgeModal(false)} style={{ color: '#fff' }}><FiX /></button>
+                        </div>
+                        <div className="modal-body">
+                            <div style={{ background: '#e3f2fd', padding: '1rem', borderRadius: '6px', marginBottom: '1rem' }}>
+                                <strong>Các cảnh báo được chọn:</strong>
+                                <p style={{ margin: '0.5rem 0 0', color: '#1565c0' }}>
+                                    {selectedAlertIds.map(id => `#${id}`).join(', ')}
+                                </p>
+                            </div>
+                            <div style={{ marginBottom: '1rem' }}>
+                                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '600' }}>Ghi chú chung <span style={{ color: '#dc3545' }}>*</span></label>
+                                <textarea
+                                    value={bulkNotes}
+                                    onChange={(e) => setBulkNotes(e.target.value)}
+                                    placeholder="Nhập ghi chú áp dụng cho tất cả cảnh báo đã chọn..."
+                                    style={{ width: '100%', padding: '0.75rem', border: '1px solid #ddd', borderRadius: '6px', minHeight: '100px', resize: 'vertical' }}
+                                />
+                            </div>
+                        </div>
+                        <div className="modal-footer" style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end' }}>
+                            <button className="btn-secondary" onClick={() => setShowBulkAcknowledgeModal(false)} disabled={processingAction}>Hủy</button>
+                            <button
+                                className="btn-primary"
+                                onClick={handleBulkAcknowledge}
+                                disabled={processingAction || !bulkNotes}
+                                style={{ background: '#17a2b8', border: 'none' }}
+                            >
+                                {processingAction ? '⏳ Đang xử lý...' : `✅ Ghi nhận ${selectedAlertIds.length} cảnh báo`}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* MODAL XỬ LÝ NHIỀU CẢNH BÁO */}
+            {showBulkResolveModal && (
+                <div className="modal-overlay" onClick={() => setShowBulkResolveModal(false)}>
+                    <div className="modal-content" onClick={e => e.stopPropagation()} style={{ maxWidth: '500px' }}>
+                        <div className="modal-header" style={{ background: '#28a745', color: '#fff' }}>
+                            <h3><FiCheckCircle /> Xử lý {selectedAlertIds.length} cảnh báo</h3>
+                            <button className="btn-close" onClick={() => setShowBulkResolveModal(false)} style={{ color: '#fff' }}><FiX /></button>
+                        </div>
+                        <div className="modal-body">
+                            <div style={{ background: '#d4edda', padding: '1rem', borderRadius: '6px', marginBottom: '1rem' }}>
+                                <strong>Các cảnh báo được chọn:</strong>
+                                <p style={{ margin: '0.5rem 0 0', color: '#155724' }}>
+                                    {selectedAlertIds.map(id => `#${id}`).join(', ')}
+                                </p>
+                            </div>
+                            <div style={{ marginBottom: '1rem' }}>
+                                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '600' }}>Ghi chú xử lý <span style={{ color: '#dc3545' }}>*</span></label>
+                                <textarea
+                                    value={bulkNotes}
+                                    onChange={(e) => setBulkNotes(e.target.value)}
+                                    placeholder="Nhập ghi chú xử lý áp dụng cho tất cả cảnh báo đã chọn..."
+                                    style={{ width: '100%', padding: '0.75rem', border: '1px solid #ddd', borderRadius: '6px', minHeight: '100px', resize: 'vertical' }}
+                                />
+                            </div>
+                        </div>
+                        <div className="modal-footer" style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end' }}>
+                            <button className="btn-secondary" onClick={() => setShowBulkResolveModal(false)} disabled={processingAction}>Hủy</button>
+                            <button
+                                className="btn-primary"
+                                onClick={handleBulkResolve}
+                                disabled={processingAction || !bulkNotes}
+                                style={{ background: '#28a745', border: 'none' }}
+                            >
+                                {processingAction ? '⏳ Đang xử lý...' : `✅ Xử lý ${selectedAlertIds.length} cảnh báo`}
+                            </button>
                         </div>
                     </div>
                 </div>
