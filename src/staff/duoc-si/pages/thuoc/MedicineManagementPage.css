@@ -1,6 +1,6 @@
 .medicine-management-page {
     padding: 24px;
-    background: #f5f7fa;
+    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
     min-height: 100vh;
 }
 
@@ -10,134 +10,232 @@
     justify-content: space-between;
     align-items: center;
     margin-bottom: 24px;
+    padding: 20px 24px;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+    border: 1px solid #e5e7eb;
 }
 
 .medicine-management-page .header-left {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 16px;
 }
 
 .medicine-management-page .header-icon {
-    font-size: 32px;
-    color: #3b82f6;
+    font-size: 36px;
+    color: #52c41a;
+    background: linear-gradient(135deg, #f6ffed 0%, #d9f7be 100%);
+    padding: 12px;
+    border-radius: 12px;
 }
 
 .medicine-management-page h2 {
     margin: 0;
-    font-size: 28px;
-    font-weight: 600;
+    font-size: 24px;
+    font-weight: 700;
     color: #1f2937;
+    background: linear-gradient(135deg, #1f2937 0%, #374151 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.medicine-management-page .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
 }
 
 .medicine-management-page .btn-refresh {
     display: flex;
     align-items: center;
     gap: 8px;
-    padding: 10px 20px;
+    padding: 12px 24px;
     background: linear-gradient(135deg, #10b981 0%, #059669 100%);
     color: white;
     border: none;
-    border-radius: 8px;
+    border-radius: 10px;
     font-size: 14px;
-    font-weight: 500;
+    font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
 }
 
-.medicine-management-page .btn-refresh:hover {
+.medicine-management-page .btn-refresh:hover:not(:disabled) {
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+    box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
 }
 
-/* Filters Section */
+.medicine-management-page .btn-refresh:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+.medicine-management-page .btn-refresh .spin {
+    animation: spin 1s linear infinite;
+}
+
+/* Filters Section - Modern Card Layout */
 .medicine-management-page .filters-section {
     background: white;
-    border-radius: 12px;
-    padding: 20px;
+    border-radius: 16px;
+    padding: 24px;
     margin-bottom: 24px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    border: 1px solid #e5e7eb;
 }
 
+/* Search Box - Full Width with Button */
 .medicine-management-page .search-box {
     display: flex;
     align-items: center;
     gap: 12px;
-    padding: 12px 16px;
-    background: #f9fafb;
-    border: 1px solid #e5e7eb;
-    border-radius: 8px;
-    margin-bottom: 16px;
+    padding: 14px 18px;
+    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    transition: all 0.3s ease;
+}
+
+.medicine-management-page .search-box:focus-within {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+    background: white;
 }
 
 .medicine-management-page .search-box svg {
-    color: #6b7280;
-    font-size: 20px;
+    color: #64748b;
+    font-size: 22px;
+    flex-shrink: 0;
 }
 
 .medicine-management-page .search-box input {
     flex: 1;
     border: none;
     background: transparent;
-    font-size: 14px;
+    font-size: 15px;
     outline: none;
+    color: #1e293b;
 }
 
+.medicine-management-page .search-box input::placeholder {
+    color: #94a3b8;
+}
+
+.medicine-management-page .search-box .btn-search {
+    padding: 10px 24px;
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+}
+
+.medicine-management-page .search-box .btn-search:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+}
+
+/* Filter Controls - Grid Layout */
 .medicine-management-page .filter-controls {
-    display: flex;
-    gap: 12px;
-    flex-wrap: wrap;
-    align-items: center;
-    margin-bottom: 12px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 16px;
+    align-items: end;
+    margin-bottom: 16px;
+    padding: 16px;
+    background: #f8fafc;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
 }
 
 .medicine-management-page .filter-group {
     display: flex;
-    align-items: center;
-    gap: 8px;
+    flex-direction: column;
+    gap: 6px;
 }
 
-.medicine-management-page .filter-group svg {
-    color: #6b7280;
-    font-size: 18px;
+.medicine-management-page .filter-group > svg {
+    display: none;
+}
+
+.medicine-management-page .filter-group label {
+    font-size: 12px;
+    font-weight: 600;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
 .medicine-management-page .filter-group select {
-    padding: 8px 12px;
-    border: 1px solid #e5e7eb;
-    border-radius: 6px;
+    padding: 10px 14px;
+    border: 2px solid #e2e8f0;
+    border-radius: 10px;
     font-size: 14px;
     background: white;
     cursor: pointer;
     outline: none;
-    transition: all 0.2s;
+    transition: all 0.2s ease;
+    color: #334155;
+    font-weight: 500;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2364748b' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 36px;
+}
+
+.medicine-management-page .filter-group select:hover {
+    border-color: #cbd5e1;
 }
 
 .medicine-management-page .filter-group select:focus {
     border-color: #3b82f6;
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
 }
 
+/* Clear Filter Button */
 .medicine-management-page .btn-clear-filters {
-    padding: 8px 16px;
-    background: #ef4444;
+    padding: 10px 20px;
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
     color: white;
     border: none;
-    border-radius: 6px;
+    border-radius: 10px;
     font-size: 14px;
-    font-weight: 500;
+    font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    height: 42px;
 }
 
 .medicine-management-page .btn-clear-filters:hover {
-    background: #dc2626;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
 }
 
+/* Results Count - Badge Style */
 .medicine-management-page .results-count {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
     font-size: 14px;
-    color: #6b7280;
-    font-weight: 500;
+    color: #475569;
+    font-weight: 600;
+    padding: 10px 18px;
+    background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+    border: 1px solid #86efac;
+    border-radius: 25px;
 }
 
 /* Error Message */
@@ -302,43 +400,190 @@
     color: #6b7280;
 }
 
+/* Button Icon View */
+.medicine-management-page .btn-icon {
+    width: 36px;
+    height: 36px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 16px;
+}
+
+.medicine-management-page .btn-icon.view {
+    background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);
+    color: #0284c7;
+    border: 1px solid #7dd3fc;
+}
+
+.medicine-management-page .btn-icon.view:hover {
+    background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+    color: white;
+    transform: scale(1.1);
+    box-shadow: 0 4px 12px rgba(14, 165, 233, 0.4);
+}
+
 /* Pagination */
 .medicine-management-page .pagination {
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 16px;
+    gap: 12px;
     margin-top: 24px;
-    padding: 20px;
+    padding: 16px 24px;
     background: white;
     border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+    border: 1px solid #e5e7eb;
 }
 
 .medicine-management-page .btn-page {
-    padding: 8px 16px;
-    background: #3b82f6;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 18px;
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
     color: white;
     border: none;
-    border-radius: 6px;
+    border-radius: 8px;
     font-size: 14px;
-    font-weight: 500;
+    font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
 }
 
 .medicine-management-page .btn-page:hover:not(:disabled) {
-    background: #2563eb;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
 }
 
 .medicine-management-page .btn-page:disabled {
-    background: #d1d5db;
+    background: #e5e7eb;
+    color: #9ca3af;
     cursor: not-allowed;
 }
 
 .medicine-management-page .page-info {
     font-size: 14px;
+    color: #475569;
+    font-weight: 600;
+    padding: 10px 20px;
+    background: #f1f5f9;
+    border-radius: 8px;
+}
+
+/* Modal Overlay */
+.medicine-management-page .modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.medicine-management-page .modal-content {
+    background: white;
+    border-radius: 16px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.medicine-management-page .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 24px;
+    background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+    border-bottom: 2px solid #86efac;
+}
+
+.medicine-management-page .modal-header h2 {
+    margin: 0;
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    color: #166534;
+}
+
+.medicine-management-page .close-btn {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: white;
+    border: 2px solid #e5e7eb;
+    border-radius: 50%;
+    font-size: 24px;
+    cursor: pointer;
     color: #6b7280;
+    transition: all 0.3s ease;
+}
+
+.medicine-management-page .close-btn:hover {
+    background: #ef4444;
+    border-color: #ef4444;
+    color: white;
+}
+
+.medicine-management-page .modal-body {
+    padding: 24px;
+}
+
+.medicine-management-page .detail-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 12px;
+    background: #f8fafc;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+}
+
+.medicine-management-page .detail-item label {
+    font-size: 12px;
+    font-weight: 600;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.medicine-management-page .detail-item span {
+    font-size: 15px;
+    color: #1e293b;
     font-weight: 500;
 }
 
@@ -355,8 +600,7 @@
     }
 
     .medicine-management-page .filter-controls {
-        flex-direction: column;
-        align-items: stretch;
+        grid-template-columns: 1fr;
     }
 
     .medicine-management-page .filter-group {
@@ -372,7 +616,16 @@
     }
 
     .medicine-management-page .medicines-table {
-        min-width: 800px;
+        min-width: 900px;
+    }
+
+    .medicine-management-page .pagination {
+        flex-wrap: wrap;
+    }
+
+    .medicine-management-page .modal-content {
+        width: 95%;
+        max-height: 95vh;
     }
 }
 

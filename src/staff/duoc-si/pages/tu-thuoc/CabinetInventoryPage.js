@@ -295,15 +295,19 @@ const CabinetInventoryPage = () => {
     const loadMedicines = async () => {
         try {
             setLoadingMedicines(true);
-            const response = await medicineAPI.getMedicines(0, 1000);
+            // API: GET /api/v1/medicines?page=0&size=1000&sort=medicineName,asc
+            const response = await medicineAPI.getMedicines('', 0, 1000);
             console.log('Medicines API Response:', response);
 
-            if (response && response.content) {
-                // Response structure: { content: [...], totalPages, totalElements }
+            // Response format: { message, status, data: { content: [...], totalPages, ... }, code }
+            if (response?.status === 'OK' && response?.data?.content) {
+                setMedicines(response.data.content);
+            } else if (response?.data && Array.isArray(response.data)) {
+                // Trường hợp data là array trực tiếp
+                setMedicines(response.data);
+            } else if (response?.content) {
+                // Fallback cho format cũ
                 setMedicines(response.content);
-            } else if (response && Array.isArray(response)) {
-                // Direct array response
-                setMedicines(response);
             } else {
                 console.warn('Unexpected response structure:', response);
                 setMedicines([]);
@@ -418,26 +422,22 @@ const CabinetInventoryPage = () => {
             }
         }
 
-        // Prepare data for API
+        // Prepare data for API - sử dụng snake_case theo format backend
         const items = restockItems.map(item => ({
-            itemType: item.itemType,
-            itemId: parseInt(item.itemId),
+            item_type: item.itemType,
+            item_id: parseInt(item.itemId),
             quantity: parseInt(item.quantity),
-            batchNumber: item.batchNumber,
-            expiryDate: item.expiryDate,
-            // unitPrice: parseFloat(item.unitPrice)
+            batch_number: item.batchNumber,
+            expiry_date: item.expiryDate,
+            unit_price: parseFloat(item.unitPrice) || 0
         }));
 
-        const restockData = [{
-            cabinetId: selectedCabinet.cabinetId,
-            // operationType: 'RESTOCK',
-            items: items,
-            // notes: restockNotes
-        }];
+        // API expects array of items directly, not wrapped in object
+        const restockData = items;
 
         console.log('=== RESTOCK DEBUG ===');
         console.log('Cabinet ID:', selectedCabinet.cabinetId);
-        console.log('Restock Data:', restockData);
+        console.log('Restock Data (snake_case):', restockData);
         console.log('Items:', items);
 
         try {
@@ -1117,11 +1117,12 @@ const CabinetInventoryPage = () => {
                                                             onChange={(e) => handleUpdateRestockItem(index, 'itemId', e.target.value)}
                                                             required
                                                             disabled={loadingMedicines}
+                                                            style={{ fontSize: '0.9rem' }}
                                                         >
-                                                            <option value="">-- Chọn thuốc --</option>
+                                                            <option value="">{loadingMedicines ? '⏳ Đang tải...' : '-- Chọn thuốc --'}</option>
                                                             {medicines.map(med => (
                                                                 <option key={med.medicineId} value={med.medicineId}>
-                                                                    {med.medicineName}
+                                                                    [{med.sku}] {med.medicineName} - {med.unit} ({med.manufacturer})
                                                                 </option>
                                                             ))}
                                                         </select>

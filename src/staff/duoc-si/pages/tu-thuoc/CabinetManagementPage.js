@@ -771,40 +771,44 @@ const CabinetManagementPage = () => {
                     <div className="modal-content modal-large" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '1200px' }}>
                         <div className="modal-header"><h3>📦 Tồn kho - {selectedCabinet.cabinetLocation}</h3><button className="btn-close" onClick={() => setShowInventoryModal(false)}>✕</button></div>
                         <div className="modal-body">
-                            {loadingInventory ? <div className="loading-state" style={{ textAlign: 'center', padding: '3rem' }}><p>⏳ Đang tải tồn kho...</p></div> : inventoryData ? (
+                            {loadingInventory ? <div className="loading-state" style={{ textAlign: 'center', padding: '3rem' }}><p>⏳ Đang tải tồn kho...</p></div> : inventoryData && Array.isArray(inventoryData) ? (
                                 <>
-                                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem', marginBottom: '1.5rem', padding: '1rem', background: '#f8f9fa', borderRadius: '8px' }}>
-                                        <div><div style={{ fontSize: '0.85rem', color: '#6c757d' }}>Vị trí</div><div style={{ fontWeight: '600' }}>{inventoryData.cabinetLocation}</div></div>
-                                        <div><div style={{ fontSize: '0.85rem', color: '#6c757d' }}>Tổng items</div><div style={{ fontWeight: '600', color: '#007bff' }}>{inventoryData.totalItems}</div></div>
-                                        <div><div style={{ fontSize: '0.85rem', color: '#6c757d' }}>Tỷ lệ</div><div style={{ fontWeight: '600' }}>{inventoryData.utilizationPercent}%</div></div>
+                                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '1rem', marginBottom: '1.5rem', padding: '1rem', background: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)', borderRadius: '12px', border: '1px solid #dee2e6' }}>
+                                        <div style={{ textAlign: 'center' }}><div style={{ fontSize: '0.8rem', color: '#6c757d', textTransform: 'uppercase' }}>📍 Vị trí</div><div style={{ fontWeight: '700', fontSize: '1.1rem' }}>{selectedCabinet.cabinetLocation}</div></div>
+                                        <div style={{ textAlign: 'center' }}><div style={{ fontSize: '0.8rem', color: '#6c757d', textTransform: 'uppercase' }}>📦 Tổng mặt hàng</div><div style={{ fontWeight: '700', fontSize: '1.5rem', color: '#007bff' }}>{inventoryData.length}</div></div>
+                                        <div style={{ textAlign: 'center' }}><div style={{ fontSize: '0.8rem', color: '#6c757d', textTransform: 'uppercase' }}>💊 Thuốc</div><div style={{ fontWeight: '700', fontSize: '1.5rem', color: '#28a745' }}>{inventoryData.filter(i => i.item_type === 'MEDICINE').length}</div></div>
+                                        <div style={{ textAlign: 'center' }}><div style={{ fontSize: '0.8rem', color: '#6c757d', textTransform: 'uppercase' }}>🩹 Vật tư</div><div style={{ fontWeight: '700', fontSize: '1.5rem', color: '#fd7e14' }}>{inventoryData.filter(i => i.item_type === 'SUPPLY').length}</div></div>
                                     </div>
                                     <div style={{ marginBottom: '1rem', display: 'flex', justifyContent: 'flex-end' }}>
                                         <button className="btn-refresh" onClick={handleRefreshInventory} disabled={loadingInventory}><FiRefreshCw className={loadingInventory ? 'spinning' : ''} /> Làm mới</button>
                                     </div>
-                                    {inventoryData.items && inventoryData.items.length > 0 ? (
+                                    {inventoryData.length > 0 ? (
                                         <div className="cabinet-table-container">
                                             <table className="cabinet-table">
                                                 <thead>
                                                     <tr>
-                                                        <th>STT</th><th>Stock ID</th><th>Tên thuốc/Vật tư</th><th>Loại</th><th>Số lượng</th>
-                                                        <th>Mức đặt lại</th><th>Mức tối đa</th><th>Số lô</th><th>Hạn sử dụng</th><th>Trạng thái</th>
+                                                        <th>STT</th><th>Stock ID</th><th>Tên thuốc/Vật tư</th><th>Loại</th><th>Số lô</th>
+                                                        <th>Số lượng</th><th>Hạn sử dụng</th><th>Trạng thái</th><th>Cập nhật</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                    {inventoryData.items.map((item, index) => {
-                                                        const isLow = item.quantityOnHand <= item.reorderLevel;
-                                                        const isExp = isExpiredDate(item.expiryDate);
-                                                        const isNearExp = isExpiringWithin30Days(item.expiryDate);
+                                                    {inventoryData.map((item, index) => {
+                                                        const isExp = isExpiredDate(item.expiry_date);
+                                                        const isNearExp = isExpiringWithin30Days(item.expiry_date);
+                                                        const isLow = item.quantity <= 10;
                                                         return (
-                                                            <tr key={item.stockId || index} style={{ background: isExp ? '#fff5f5' : isNearExp ? '#fffbf0' : 'transparent' }}>
-                                                                <td>{index + 1}</td><td>{item.stockId}</td><td><strong>{item.itemName}</strong></td>
-                                                                <td><span className={`badge badge-type-${(item.itemType || 'MEDICINE').toLowerCase()}`}>{item.itemType}</span></td>
-                                                                <td><span style={{ color: isLow ? '#dc3545' : '#28a745', fontWeight: 'bold' }}>{item.quantityOnHand}{isLow && ' ⚠️'}</span></td>
-                                                                <td>{item.reorderLevel}</td><td>{item.maxStockLevel}</td><td>{item.batchNumber}</td>
+                                                            <tr key={item.stock_id || index} style={{ background: isExp ? '#fff5f5' : isNearExp ? '#fffbf0' : 'transparent' }}>
+                                                                <td>{index + 1}</td>
+                                                                <td><code style={{ background: '#e9ecef', padding: '2px 6px', borderRadius: '4px' }}>{item.stock_id}</code></td>
+                                                                <td><strong>{item.item_name}</strong></td>
+                                                                <td><span className={`badge badge-type-${(item.item_type || 'MEDICINE').toLowerCase()}`}>{item.item_type === 'MEDICINE' ? '💊 Thuốc' : '🩹 Vật tư'}</span></td>
+                                                                <td><code style={{ background: '#e3f2fd', color: '#1565c0', padding: '2px 6px', borderRadius: '4px' }}>{item.batch_number || 'N/A'}</code></td>
+                                                                <td><span style={{ color: isLow ? '#dc3545' : '#28a745', fontWeight: 'bold', fontSize: '1rem' }}>{item.quantity}{isLow && ' ⚠️'}</span></td>
                                                                 <td style={{ color: isExp ? '#dc3545' : isNearExp ? '#ffc107' : 'inherit', fontWeight: (isExp || isNearExp) ? 'bold' : 'normal' }}>
-                                                                    {formatDate(item.expiryDate)}{isExp && ' ❌'}{!isExp && isNearExp && ' ⚠️'}
+                                                                    {formatDate(item.expiry_date)}{isExp && ' ❌'}{!isExp && isNearExp && ' ⚠️'}
                                                                 </td>
-                                                                <td><span className={`badge ${getInventoryStatusBadgeClass(item.status)}`}>{getInventoryStatusLabel(item.status)}</span></td>
+                                                                <td><span className={`badge ${item.status === 'AVAILABLE' ? 'badge-success' : 'badge-secondary'}`}>{item.status === 'AVAILABLE' ? '✅ Sẵn sàng' : item.status}</span></td>
+                                                                <td style={{ fontSize: '0.8rem', color: '#6c757d' }}>{item.last_updated ? new Date(item.last_updated).toLocaleDateString('vi-VN') : '-'}</td>
                                                             </tr>
                                                         );
                                                     })}
