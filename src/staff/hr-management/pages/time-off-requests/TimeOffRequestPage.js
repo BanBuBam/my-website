@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './TimeOffRequestPage.css';
 import { hrTimeOffAPI, hrEmployeeAPI } from '../../../../services/staff/hrAPI';
-import { FiPlus, FiFilter } from 'react-icons/fi';
+import { FiPlus, FiFilter, FiCalendar, FiClock, FiSearch, FiCheckCircle, FiX, FiLayers } from 'react-icons/fi';
 import AddTimeOffRequestModal from '../../components/AddTimeOffRequestModal';
 import EditTimeOffRequestModal from '../../components/EditTimeOffRequestModal';
 import TimeOffRequestDetailModal from '../../components/TimeOffRequestDetailModal';
@@ -536,64 +536,213 @@ const TimeOffRequestPage = () => {
             ))}
           </div>
 
-          <div className="filter-section">
-            <div className="filter-row">
-              <select
-                value={filterLeaveType}
-                onChange={(e) => setFilterLeaveType(e.target.value)}
-                className="filter-select"
-              >
-                <option value="">Tất cả loại nghỉ</option>
-                <option value="ANNUAL_LEAVE">Nghỉ phép năm</option>
-                <option value="SICK_LEAVE">Nghỉ ốm</option>
-                <option value="PERSONAL_LEAVE">Nghỉ cá nhân</option>
-                <option value="MATERNITY_LEAVE">Nghỉ thai sản</option>
-                <option value="UNPAID_LEAVE">Nghỉ không lương</option>
-                <option value="EMERGENCY_LEAVE">Nghỉ khẩn cấp</option>
-                <option value="STUDY_LEAVE">Nghỉ học tập</option>
-              </select>
+          {/* FILTER SECTION - New design matching InventoryTransactionsPage */}
+          <div style={{
+            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            padding: '1.5rem',
+            borderRadius: '16px',
+            marginBottom: '1.5rem',
+            boxShadow: '0 10px 30px rgba(102, 126, 234, 0.3)',
+            position: 'relative',
+            overflow: 'hidden'
+          }}>
+            {/* Decorative Background Pattern */}
+            <div style={{
+              position: 'absolute',
+              top: 0,
+              right: 0,
+              width: '200px',
+              height: '200px',
+              background: 'radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%)',
+              borderRadius: '50%',
+              transform: 'translate(30%, -30%)',
+              pointerEvents: 'none'
+            }}></div>
 
-              <div className="date-range-filter">
-                <label className="filter-label">
-                  <input
-                    type="checkbox"
-                    checked={useServerDateFilter}
-                    onChange={(e) => setUseServerDateFilter(e.target.checked)}
-                    className="filter-checkbox"
-                  />
-                  <span>Lọc theo khoảng thời gian</span>
-                </label>
-
-                {useServerDateFilter && (
-                  <div className="date-inputs">
-                    <input
-                      type="date"
-                      value={filterDateRange.start}
-                      onChange={(e) => setFilterDateRange({ ...filterDateRange, start: e.target.value })}
-                      className="filter-date"
-                    />
-                    <span className="date-separator">đến</span>
-                    <input
-                      type="date"
-                      value={filterDateRange.end}
-                      onChange={(e) => setFilterDateRange({ ...filterDateRange, end: e.target.value })}
-                      className="filter-date"
-                    />
-                  </div>
-                )}
+            {/* Header */}
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              marginBottom: '1rem',
+              position: 'relative',
+              zIndex: 1
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                <div style={{
+                  background: 'rgba(255, 255, 255, 0.2)',
+                  backdropFilter: 'blur(10px)',
+                  padding: '0.6rem',
+                  borderRadius: '10px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}>
+                  <FiFilter size={18} style={{ color: '#fff' }} />
+                </div>
+                <h3 style={{
+                  margin: 0,
+                  fontSize: '1.1rem',
+                  fontWeight: '700',
+                  color: '#fff'
+                }}>
+                  Bộ lọc đơn xin nghỉ
+                </h3>
               </div>
 
-              <button
-                className="btn-reset"
-                onClick={() => {
-                  setFilterLeaveType('');
-                  setFilterDateRange({ start: '', end: '' });
-                  setUseServerDateFilter(false);
-                }}
-              >
-                <FiFilter />
-                Xóa Bộ Lọc
-              </button>
+              {/* Filter Status Badge */}
+              {(filterLeaveType || useServerDateFilter) && (
+                <div style={{
+                  background: 'rgba(255, 255, 255, 0.95)',
+                  color: '#28a745',
+                  padding: '0.4rem 0.8rem',
+                  borderRadius: '20px',
+                  fontSize: '0.85rem',
+                  fontWeight: '600',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.4rem'
+                }}>
+                  <FiCheckCircle size={14} />
+                  <span>Đang lọc</span>
+                </div>
+              )}
+            </div>
+
+            {/* Filter Content Card */}
+            <div style={{
+              background: 'rgba(255, 255, 255, 0.98)',
+              backdropFilter: 'blur(20px)',
+              borderRadius: '12px',
+              padding: '1.5rem',
+              boxShadow: '0 8px 32px rgba(0,0,0,0.1)',
+              position: 'relative',
+              zIndex: 1
+            }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem', alignItems: 'end' }}>
+                {/* Leave Type Filter */}
+                <div>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem', fontSize: '0.9rem', fontWeight: '600', color: '#4a5568' }}>
+                    <FiLayers size={14} style={{ color: '#667eea' }} />
+                    Loại nghỉ phép
+                  </label>
+                  <select
+                    value={filterLeaveType}
+                    onChange={(e) => setFilterLeaveType(e.target.value)}
+                    style={{
+                      width: '100%',
+                      padding: '0.75rem 1rem',
+                      border: '2px solid #e2e8f0',
+                      borderRadius: '10px',
+                      fontSize: '0.95rem',
+                      backgroundColor: '#fff',
+                      cursor: 'pointer',
+                      outline: 'none',
+                      boxSizing: 'border-box'
+                    }}
+                  >
+                    <option value="">-- Tất cả loại nghỉ --</option>
+                    <option value="ANNUAL_LEAVE">Nghỉ phép năm</option>
+                    <option value="SICK_LEAVE">Nghỉ ốm</option>
+                    <option value="PERSONAL_LEAVE">Nghỉ cá nhân</option>
+                    <option value="MATERNITY_LEAVE">Nghỉ thai sản</option>
+                    <option value="UNPAID_LEAVE">Nghỉ không lương</option>
+                    <option value="EMERGENCY_LEAVE">Nghỉ khẩn cấp</option>
+                    <option value="STUDY_LEAVE">Nghỉ học tập</option>
+                  </select>
+                </div>
+
+                {/* Date Range Filter */}
+                <div>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem', fontSize: '0.9rem', fontWeight: '600', color: '#4a5568' }}>
+                    <input
+                      type="checkbox"
+                      checked={useServerDateFilter}
+                      onChange={(e) => setUseServerDateFilter(e.target.checked)}
+                      style={{ marginRight: '0.25rem' }}
+                    />
+                    <FiCalendar size={14} style={{ color: '#667eea' }} />
+                    Lọc theo thời gian
+                  </label>
+                  {useServerDateFilter ? (
+                    <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                      <input
+                        type="date"
+                        value={filterDateRange.start}
+                        onChange={(e) => setFilterDateRange({ ...filterDateRange, start: e.target.value })}
+                        style={{
+                          flex: 1,
+                          padding: '0.75rem 0.5rem',
+                          border: '2px solid #e2e8f0',
+                          borderRadius: '10px',
+                          fontSize: '0.9rem',
+                          outline: 'none',
+                          boxSizing: 'border-box'
+                        }}
+                      />
+                      <span style={{ color: '#718096' }}>→</span>
+                      <input
+                        type="date"
+                        value={filterDateRange.end}
+                        onChange={(e) => setFilterDateRange({ ...filterDateRange, end: e.target.value })}
+                        style={{
+                          flex: 1,
+                          padding: '0.75rem 0.5rem',
+                          border: '2px solid #e2e8f0',
+                          borderRadius: '10px',
+                          fontSize: '0.9rem',
+                          outline: 'none',
+                          boxSizing: 'border-box'
+                        }}
+                      />
+                    </div>
+                  ) : (
+                    <div style={{
+                      padding: '0.75rem 1rem',
+                      border: '2px dashed #e2e8f0',
+                      borderRadius: '10px',
+                      color: '#a0aec0',
+                      fontSize: '0.9rem',
+                      textAlign: 'center'
+                    }}>
+                      Bật checkbox để lọc theo ngày
+                    </div>
+                  )}
+                </div>
+
+                {/* Reset Button */}
+                <div>
+                  <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.9rem', fontWeight: '600', color: 'transparent' }}>
+                    Actions
+                  </label>
+                  <button
+                    onClick={() => {
+                      setFilterLeaveType('');
+                      setFilterDateRange({ start: '', end: '' });
+                      setUseServerDateFilter(false);
+                    }}
+                    style={{
+                      width: '100%',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '0.5rem',
+                      padding: '0.75rem 1rem',
+                      background: '#fff',
+                      border: '2px solid #e2e8f0',
+                      borderRadius: '10px',
+                      color: '#4a5568',
+                      fontSize: '0.95rem',
+                      fontWeight: '600',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s ease'
+                    }}
+                  >
+                    <FiX size={16} />
+                    Xóa bộ lọc
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
 

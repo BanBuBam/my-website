@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './WorkShiftPage.css';
 import { hrWorkShiftAPI } from '../../../../services/staff/hrAPI';
-import { FiPlus, FiEdit2, FiTrash2, FiClock, FiX, FiSearch, FiFilter } from 'react-icons/fi';
+import { FiPlus, FiEdit2, FiTrash2, FiClock, FiX, FiSearch, FiFilter, FiCheckCircle, FiLayers, FiHome, FiChevronDown, FiChevronUp } from 'react-icons/fi';
 
 const WorkShiftPage = () => {
   const [shifts, setShifts] = useState([]);
@@ -420,87 +420,292 @@ const WorkShiftPage = () => {
         </div>
       </div>
 
-      {/* Filter Section */}
-      <div className="filter-section">
-        <div className="section-header" onClick={() => setShowFilter(!showFilter)}>
-          <h3>
-            <FiFilter /> Bộ lọc nâng cao
-          </h3>
-          <button className="toggle-btn">
-            {showFilter ? '▲' : '▼'}
-          </button>
+      {/* FILTER SECTION - New design matching InventoryTransactionsPage */}
+      <div style={{
+        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        padding: '2rem',
+        borderRadius: '16px',
+        marginBottom: '1.5rem',
+        boxShadow: '0 10px 30px rgba(102, 126, 234, 0.3)',
+        position: 'relative',
+        overflow: 'hidden'
+      }}>
+        {/* Decorative Background Pattern */}
+        <div style={{
+          position: 'absolute',
+          top: 0,
+          right: 0,
+          width: '300px',
+          height: '300px',
+          background: 'radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%)',
+          borderRadius: '50%',
+          transform: 'translate(30%, -30%)',
+          pointerEvents: 'none'
+        }}></div>
+
+        {/* Header */}
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            marginBottom: showFilter ? '1.5rem' : 0,
+            position: 'relative',
+            zIndex: 1,
+            cursor: 'pointer'
+          }}
+          onClick={() => setShowFilter(!showFilter)}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            <div style={{
+              background: 'rgba(255, 255, 255, 0.2)',
+              backdropFilter: 'blur(10px)',
+              padding: '0.75rem',
+              borderRadius: '12px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+            }}>
+              <FiFilter size={20} style={{ color: '#fff' }} />
+            </div>
+            <div>
+              <h3 style={{
+                margin: 0,
+                fontSize: '1.25rem',
+                fontWeight: '700',
+                color: '#fff',
+                textShadow: '0 2px 4px rgba(0,0,0,0.1)'
+              }}>
+                Bộ lọc nâng cao
+              </h3>
+              <p style={{
+                margin: 0,
+                fontSize: '0.85rem',
+                color: 'rgba(255, 255, 255, 0.9)',
+                marginTop: '0.25rem'
+              }}>
+                Click để {showFilter ? 'thu gọn' : 'mở rộng'} bộ lọc
+              </p>
+            </div>
+          </div>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+            {/* Filter Status Badge */}
+            {searchResult && searchResult.type && (
+              <div style={{
+                background: 'rgba(255, 255, 255, 0.95)',
+                backdropFilter: 'blur(10px)',
+                color: '#28a745',
+                padding: '0.5rem 1rem',
+                borderRadius: '25px',
+                fontSize: '0.9rem',
+                fontWeight: '600',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.5rem',
+                boxShadow: '0 4px 12px rgba(0,0,0,0.15)'
+              }}>
+                <FiCheckCircle size={16} />
+                <span>Đang lọc ({shifts.length} kết quả)</span>
+              </div>
+            )}
+
+            {/* Toggle Button */}
+            <div style={{
+              background: 'rgba(255, 255, 255, 0.2)',
+              backdropFilter: 'blur(10px)',
+              padding: '0.5rem',
+              borderRadius: '8px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}>
+              {showFilter ? <FiChevronUp size={20} style={{ color: '#fff' }} /> : <FiChevronDown size={20} style={{ color: '#fff' }} />}
+            </div>
+          </div>
         </div>
 
+        {/* Filter Content Card */}
         {showFilter && (
-          <div className="filter-content">
-            <div className="filter-row">
-              <div className="filter-group">
-                <label>Loại tìm kiếm <span className="required">*</span></label>
-                <select
-                  value={filterType}
-                  onChange={(e) => setFilterType(e.target.value)}
-                  className="filter-select"
-                >
-                  <option value="all">Tất cả ca làm việc</option>
-                  <option value="active">Ca đang hoạt động</option>
-                  <option value="current">Ca hiện tại</option>
-                  <option value="weekend">Ca cuối tuần</option>
-                  <option value="holiday">Ca ngày lễ</option>
-                  <option value="type">Theo loại ca</option>
-                  <option value="department">Theo phòng ban</option>
-                </select>
+          <div style={{
+            background: 'rgba(255, 255, 255, 0.98)',
+            backdropFilter: 'blur(20px)',
+            borderRadius: '16px',
+            padding: '2rem',
+            boxShadow: '0 8px 32px rgba(0,0,0,0.1)',
+            position: 'relative',
+            zIndex: 1
+          }}>
+            {/* Filter Options Section */}
+            <div style={{ marginBottom: '1.5rem' }}>
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.5rem',
+                marginBottom: '1rem',
+                paddingBottom: '0.75rem',
+                borderBottom: '2px solid #f0f0f0'
+              }}>
+                <FiLayers size={18} style={{ color: '#667eea' }} />
+                <h4 style={{ margin: 0, fontSize: '1rem', fontWeight: '600', color: '#2d3748' }}>
+                  Tùy chọn lọc
+                </h4>
               </div>
 
-              {filterType === 'type' && (
-                <div className="filter-group">
-                  <label>Loại ca làm việc <span className="required">*</span></label>
+              <div style={{ display: 'grid', gridTemplateColumns: filterType === 'type' || filterType === 'department' ? 'repeat(2, 1fr)' : '1fr', gap: '1rem' }}>
+                <div>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem', fontSize: '0.9rem', fontWeight: '600', color: '#4a5568' }}>
+                    <FiSearch size={14} style={{ color: '#667eea' }} />
+                    Loại tìm kiếm <span style={{ color: '#e53e3e' }}>*</span>
+                  </label>
                   <select
-                    value={shiftType}
-                    onChange={(e) => setShiftType(e.target.value)}
-                    className="filter-select"
+                    value={filterType}
+                    onChange={(e) => setFilterType(e.target.value)}
+                    style={{
+                      width: '100%',
+                      padding: '0.75rem 1rem',
+                      border: '2px solid #e2e8f0',
+                      borderRadius: '10px',
+                      fontSize: '0.95rem',
+                      backgroundColor: '#fff',
+                      cursor: 'pointer',
+                      outline: 'none',
+                      boxSizing: 'border-box'
+                    }}
                   >
-                    <option value="">-- Chọn loại ca --</option>
-                    <option value="MORNING_SHIFT">Ca sáng</option>
-                    <option value="AFTERNOON_SHIFT">Ca chiều</option>
-                    <option value="EVENING_SHIFT">Ca tối</option>
-                    <option value="NIGHT_SHIFT">Ca đêm</option>
-                    <option value="FULL_DAY">Ca cả ngày</option>
-                    <option value="FLEXIBLE">Ca linh hoạt</option>
-                    <option value="ON_CALL">Ca trực</option>
+                    <option value="all">Tất cả ca làm việc</option>
+                    <option value="active">Ca đang hoạt động</option>
+                    <option value="current">Ca hiện tại</option>
+                    <option value="weekend">Ca cuối tuần</option>
+                    <option value="holiday">Ca ngày lễ</option>
+                    <option value="type">Theo loại ca</option>
+                    <option value="department">Theo phòng ban</option>
                   </select>
                 </div>
-              )}
 
-              {filterType === 'department' && (
-                <div className="filter-group">
-                  <label>ID Phòng ban <span className="required">*</span></label>
-                  <input
-                    type="number"
-                    value={departmentId}
-                    onChange={(e) => setDepartmentId(e.target.value)}
-                    placeholder="Nhập ID phòng ban"
-                    className="filter-input"
-                  />
-                </div>
-              )}
+                {filterType === 'type' && (
+                  <div>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem', fontSize: '0.9rem', fontWeight: '600', color: '#4a5568' }}>
+                      <FiClock size={14} style={{ color: '#667eea' }} />
+                      Loại ca làm việc <span style={{ color: '#e53e3e' }}>*</span>
+                    </label>
+                    <select
+                      value={shiftType}
+                      onChange={(e) => setShiftType(e.target.value)}
+                      style={{
+                        width: '100%',
+                        padding: '0.75rem 1rem',
+                        border: '2px solid #e2e8f0',
+                        borderRadius: '10px',
+                        fontSize: '0.95rem',
+                        backgroundColor: '#fff',
+                        cursor: 'pointer',
+                        outline: 'none',
+                        boxSizing: 'border-box'
+                      }}
+                    >
+                      <option value="">-- Chọn loại ca --</option>
+                      <option value="MORNING_SHIFT">Ca sáng</option>
+                      <option value="AFTERNOON_SHIFT">Ca chiều</option>
+                      <option value="EVENING_SHIFT">Ca tối</option>
+                      <option value="NIGHT_SHIFT">Ca đêm</option>
+                      <option value="FULL_DAY">Ca cả ngày</option>
+                      <option value="FLEXIBLE">Ca linh hoạt</option>
+                      <option value="ON_CALL">Ca trực</option>
+                    </select>
+                  </div>
+                )}
+
+                {filterType === 'department' && (
+                  <div>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem', fontSize: '0.9rem', fontWeight: '600', color: '#4a5568' }}>
+                      <FiHome size={14} style={{ color: '#667eea' }} />
+                      ID Phòng ban <span style={{ color: '#e53e3e' }}>*</span>
+                    </label>
+                    <input
+                      type="number"
+                      value={departmentId}
+                      onChange={(e) => setDepartmentId(e.target.value)}
+                      placeholder="Nhập ID phòng ban"
+                      style={{
+                        width: '100%',
+                        padding: '0.75rem 1rem',
+                        border: '2px solid #e2e8f0',
+                        borderRadius: '10px',
+                        fontSize: '0.95rem',
+                        outline: 'none',
+                        boxSizing: 'border-box'
+                      }}
+                    />
+                  </div>
+                )}
+              </div>
             </div>
 
-            <div className="filter-actions">
+            {/* Action Buttons */}
+            <div style={{
+              display: 'flex',
+              justifyContent: 'center',
+              gap: '1rem',
+              paddingTop: '1rem',
+              borderTop: '2px solid #f0f0f0'
+            }}>
               <button
-                className="btn-filter"
                 onClick={handleFilterSearch}
                 disabled={searching}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.5rem',
+                  padding: '0.75rem 1.5rem',
+                  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                  border: 'none',
+                  borderRadius: '10px',
+                  color: '#fff',
+                  fontSize: '0.95rem',
+                  fontWeight: '600',
+                  cursor: searching ? 'not-allowed' : 'pointer',
+                  opacity: searching ? 0.7 : 1,
+                  transition: 'all 0.2s ease'
+                }}
               >
-                <FiSearch /> {searching ? 'Đang lọc...' : 'Áp dụng bộ lọc'}
+                <FiSearch size={16} />
+                {searching ? 'Đang lọc...' : 'Áp dụng bộ lọc'}
               </button>
-              <button className="btn-clear-filter" onClick={handleClearFilter}>
-                <FiX /> Xóa bộ lọc
+              <button
+                onClick={handleClearFilter}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.5rem',
+                  padding: '0.75rem 1.5rem',
+                  background: '#fff',
+                  border: '2px solid #e2e8f0',
+                  borderRadius: '10px',
+                  color: '#4a5568',
+                  fontSize: '0.95rem',
+                  fontWeight: '600',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease'
+                }}
+              >
+                <FiX size={16} />
+                Xóa bộ lọc
               </button>
             </div>
 
+            {/* Filter Result Info */}
             {searchResult && searchResult.type && (
-              <div className="filter-result-info">
-                <span>
+              <div style={{
+                marginTop: '1rem',
+                padding: '0.75rem 1rem',
+                background: '#f0f9ff',
+                borderRadius: '10px',
+                border: '1px solid #bee3f8',
+                textAlign: 'center'
+              }}>
+                <span style={{ color: '#2b6cb0', fontSize: '0.9rem' }}>
                   Đang hiển thị: <strong>
                     {filterType === 'all' && 'Tất cả ca làm việc'}
                     {filterType === 'active' && 'Ca đang hoạt động'}

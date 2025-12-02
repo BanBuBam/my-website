@@ -63,6 +63,45 @@
   font-weight: 600;
 }
 
+.toolbar-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.btn-refresh {
+  background: white;
+  color: #595959;
+  border: 1px solid #d9d9d9;
+  padding: 8px 15px;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s;
+}
+
+.btn-refresh:hover {
+  background: #1890ff;
+  color: white;
+  border-color: #1890ff;
+}
+
+.btn-refresh:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn-refresh .spinning {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
 /* Table */
 .table-container {
   background: white;
@@ -158,9 +197,301 @@
 
 .modal-footer {
   padding: 15px 20px; border-top: 1px solid #f0f0f0;
-  display: flex; justify-content: flex-end; gap: 10px;
+  display: flex; justify-content: space-between; gap: 10px;
+}
+
+.modal-footer .footer-left {
+  display: flex;
+  gap: 10px;
+}
+
+.modal-footer .footer-right {
+  display: flex;
+  gap: 10px;
 }
 
 .btn-cancel { padding: 8px 20px; border: 1px solid #d9d9d9; background: white; border-radius: 4px; cursor: pointer; }
 .btn-save { padding: 8px 20px; border: none; background: #1890ff; color: white; border-radius: 4px; cursor: pointer; display: flex; align-items: center; gap: 5px; }
 .btn-save:disabled { opacity: 0.6; cursor: not-allowed; }
+
+/* Action Buttons */
+.btn-primary {
+  padding: 8px 20px;
+  border: none;
+  background: #1890ff;
+  color: white;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 14px;
+}
+
+.btn-primary:hover { background: #40a9ff; }
+.btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.btn-success {
+  padding: 8px 20px;
+  border: none;
+  background: #52c41a;
+  color: white;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 14px;
+}
+
+.btn-success:hover { background: #73d13d; }
+.btn-success:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.btn-warning {
+  padding: 8px 20px;
+  border: none;
+  background: #fa8c16;
+  color: white;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 14px;
+}
+
+.btn-warning:hover { background: #ffa940; }
+.btn-warning:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.btn-danger {
+  padding: 8px 20px;
+  border: none;
+  background: #ff4d4f;
+  color: white;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 14px;
+}
+
+.btn-danger:hover { background: #ff7875; }
+.btn-danger:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.btn-secondary {
+  padding: 8px 20px;
+  border: 1px solid #d9d9d9;
+  background: white;
+  color: #595959;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 14px;
+}
+
+.btn-secondary:hover { border-color: #40a9ff; color: #1890ff; }
+.btn-secondary:disabled { opacity: 0.6; cursor: not-allowed; }
+
+/* Expand Button */
+.btn-expand {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #1890ff;
+  font-size: 14px;
+  padding: 4px;
+  border-radius: 4px;
+  transition: all 0.2s;
+}
+
+.btn-expand:hover {
+  background: #e6f7ff;
+}
+
+/* Expanded Row */
+.expanded-row {
+  background: #fafafa;
+}
+
+.detail-row {
+  background: #f5f5f5;
+}
+
+.detail-row td {
+  padding: 0 !important;
+}
+
+.detail-content {
+  padding: 20px;
+  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+  border-left: 4px solid #1890ff;
+  margin: 0;
+}
+
+.detail-header {
+  margin-bottom: 15px;
+}
+
+.detail-header h4 {
+  margin: 0 0 8px 0;
+  color: #1890ff;
+  font-size: 16px;
+}
+
+.detail-header .notes {
+  margin: 0;
+  color: #666;
+  font-size: 13px;
+  background: #fff;
+  padding: 8px 12px;
+  border-radius: 4px;
+  border: 1px solid #e8e8e8;
+}
+
+/* Items Table in Detail */
+.items-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.items-table th {
+  background: #1890ff;
+  color: white;
+  padding: 10px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  text-align: left;
+}
+
+.items-table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid #f0f0f0;
+  font-size: 13px;
+}
+
+.items-table tbody tr:hover {
+  background: #f5f5f5;
+}
+
+.items-table tfoot {
+  background: #fafafa;
+}
+
+.items-table tfoot td {
+  padding: 12px;
+  font-weight: 600;
+}
+
+.text-right {
+  text-align: right;
+}
+
+/* Sub text */
+.sub-text {
+  color: #999;
+  font-size: 11px;
+  margin-left: 4px;
+}
+
+/* Expiry Status */
+.expiry-status {
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.expiry-status.valid {
+  background: #f6ffed;
+  color: #52c41a;
+}
+
+.expiry-status.expiring {
+  background: #fff7e6;
+  color: #fa8c16;
+}
+
+.expiry-status.expired {
+  background: #fff1f0;
+  color: #ff4d4f;
+}
+
+/* No items message */
+.no-items {
+  text-align: center;
+  color: #999;
+  padding: 20px;
+  background: #fafafa;
+  border-radius: 4px;
+}
+
+/* Detail Footer */
+.detail-footer {
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 1px solid #e8e8e8;
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  font-size: 12px;
+  color: #666;
+}
+
+.detail-footer span {
+  background: #f5f5f5;
+  padding: 4px 10px;
+  border-radius: 4px;
+}
+
+/* Detail Info Grid for Modal */
+.detail-info-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 15px;
+  margin-bottom: 20px;
+  background: #fafafa;
+  padding: 20px;
+  border-radius: 8px;
+  border: 1px solid #e8e8e8;
+}
+
+.detail-info-grid .info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.detail-info-grid .info-item.full-width {
+  grid-column: span 3;
+}
+
+.detail-info-grid .info-item label {
+  font-size: 12px;
+  color: #8c8c8c;
+  font-weight: 500;
+}
+
+.detail-info-grid .info-item span {
+  font-size: 14px;
+  color: #262626;
+}
+
+/* Items section in modal */
+.modal-body .items-section {
+  margin-top: 20px;
+}
+
+.modal-body .items-section h3 {
+  margin: 0 0 15px 0;
+  font-size: 16px;
+  color: #1890ff;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #1890ff;
+}

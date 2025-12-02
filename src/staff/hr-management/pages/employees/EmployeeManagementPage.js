@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './EmployeeManagementPage.css';
 import { hrEmployeeAPI } from '../../../../services/staff/hrAPI';
-import { FiPlus, FiEdit2, FiTrash2, FiSearch, FiFilter, FiUserX, FiUserCheck } from 'react-icons/fi';
+import { FiPlus, FiEdit2, FiTrash2, FiSearch, FiFilter, FiUserX, FiUserCheck, FiX, FiCheckCircle, FiUsers, FiRefreshCw } from 'react-icons/fi';
 import AddEmployeeModal from '../../components/AddEmployeeModal';
 import EditEmployeeModal from '../../components/EditEmployeeModal';
 import Pagination from '../../../../components/Pagination';
@@ -424,73 +424,324 @@ const EmployeeManagementPage = () => {
         </div>
       </div>
 
-      <div className="filter-section">
-        <div className="search-box">
-          <FiSearch />
-          <input
-            type="text"
-            placeholder="Tìm kiếm theo tên, email, SĐT..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
-          />
+      {/* FILTER SECTION - New design matching InventoryTransactionsPage */}
+      <div style={{
+        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        padding: '2rem',
+        borderRadius: '16px',
+        marginBottom: '1.5rem',
+        boxShadow: '0 10px 30px rgba(102, 126, 234, 0.3)',
+        position: 'relative',
+        overflow: 'hidden'
+      }}>
+        {/* Decorative Background Pattern */}
+        <div style={{
+          position: 'absolute',
+          top: 0,
+          right: 0,
+          width: '300px',
+          height: '300px',
+          background: 'radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%)',
+          borderRadius: '50%',
+          transform: 'translate(30%, -30%)',
+          pointerEvents: 'none'
+        }}></div>
+
+        {/* Header */}
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          marginBottom: '1.5rem',
+          position: 'relative',
+          zIndex: 1
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            <div style={{
+              background: 'rgba(255, 255, 255, 0.2)',
+              backdropFilter: 'blur(10px)',
+              padding: '0.75rem',
+              borderRadius: '12px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+            }}>
+              <FiFilter size={20} style={{ color: '#fff' }} />
+            </div>
+            <div>
+              <h3 style={{
+                margin: 0,
+                fontSize: '1.25rem',
+                fontWeight: '700',
+                color: '#fff',
+                textShadow: '0 2px 4px rgba(0,0,0,0.1)'
+              }}>
+                Bộ lọc tìm kiếm
+              </h3>
+              <p style={{
+                margin: 0,
+                fontSize: '0.85rem',
+                color: 'rgba(255, 255, 255, 0.9)',
+                marginTop: '0.25rem'
+              }}>
+                Tìm kiếm và lọc nhân viên theo các tiêu chí
+              </p>
+            </div>
+          </div>
+
+          {/* Filter Status Badge */}
+          {(searchTerm || searchCode || filterDepartment || filterRole) ? (
+            <div style={{
+              background: 'rgba(255, 255, 255, 0.95)',
+              backdropFilter: 'blur(10px)',
+              color: '#28a745',
+              padding: '0.5rem 1rem',
+              borderRadius: '25px',
+              fontSize: '0.9rem',
+              fontWeight: '600',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.5rem',
+              boxShadow: '0 4px 12px rgba(0,0,0,0.15)'
+            }}>
+              <FiCheckCircle size={16} />
+              <span>Đang áp dụng bộ lọc</span>
+            </div>
+          ) : (
+            <div style={{
+              background: 'rgba(255, 255, 255, 0.95)',
+              backdropFilter: 'blur(10px)',
+              color: '#667eea',
+              padding: '0.5rem 1rem',
+              borderRadius: '25px',
+              fontSize: '0.9rem',
+              fontWeight: '600',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.5rem',
+              boxShadow: '0 4px 12px rgba(0,0,0,0.15)'
+            }}>
+              <FiUsers size={16} />
+              <span>Tất cả nhân viên</span>
+            </div>
+          )}
         </div>
 
-        <div className="search-box">
-          <FiSearch />
-          <input
-            type="text"
-            placeholder="Tìm theo mã nhân viên..."
-            value={searchCode}
-            onChange={(e) => setSearchCode(e.target.value)}
-            onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
-          />
+        {/* Filter Content Card */}
+        <div style={{
+          background: 'rgba(255, 255, 255, 0.98)',
+          backdropFilter: 'blur(20px)',
+          borderRadius: '16px',
+          padding: '2rem',
+          boxShadow: '0 8px 32px rgba(0,0,0,0.1)',
+          position: 'relative',
+          zIndex: 1
+        }}>
+          {/* Search Section */}
+          <div style={{ marginBottom: '1.5rem' }}>
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.5rem',
+              marginBottom: '1rem',
+              paddingBottom: '0.75rem',
+              borderBottom: '2px solid #f0f0f0'
+            }}>
+              <FiSearch size={18} style={{ color: '#667eea' }} />
+              <h4 style={{ margin: 0, fontSize: '1rem', fontWeight: '600', color: '#2d3748' }}>
+                Tìm kiếm
+              </h4>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '1rem' }}>
+              <div>
+                <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem', fontSize: '0.9rem', fontWeight: '600', color: '#4a5568' }}>
+                  <FiSearch size={14} style={{ color: '#667eea' }} />
+                  Tìm theo tên, email, SĐT
+                </label>
+                <input
+                  type="text"
+                  placeholder="Nhập từ khóa tìm kiếm..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
+                  style={{
+                    width: '100%',
+                    padding: '0.75rem 1rem',
+                    border: '2px solid #e2e8f0',
+                    borderRadius: '10px',
+                    fontSize: '0.95rem',
+                    transition: 'all 0.2s ease',
+                    outline: 'none',
+                    boxSizing: 'border-box'
+                  }}
+                />
+              </div>
+
+              <div>
+                <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem', fontSize: '0.9rem', fontWeight: '600', color: '#4a5568' }}>
+                  <FiSearch size={14} style={{ color: '#667eea' }} />
+                  Tìm theo mã nhân viên
+                </label>
+                <input
+                  type="text"
+                  placeholder="Nhập mã nhân viên..."
+                  value={searchCode}
+                  onChange={(e) => setSearchCode(e.target.value)}
+                  onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
+                  style={{
+                    width: '100%',
+                    padding: '0.75rem 1rem',
+                    border: '2px solid #e2e8f0',
+                    borderRadius: '10px',
+                    fontSize: '0.95rem',
+                    transition: 'all 0.2s ease',
+                    outline: 'none',
+                    boxSizing: 'border-box'
+                  }}
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Filter Section */}
+          <div style={{ marginBottom: '1.5rem' }}>
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.5rem',
+              marginBottom: '1rem',
+              paddingBottom: '0.75rem',
+              borderBottom: '2px solid #f0f0f0'
+            }}>
+              <FiFilter size={18} style={{ color: '#667eea' }} />
+              <h4 style={{ margin: 0, fontSize: '1rem', fontWeight: '600', color: '#2d3748' }}>
+                Phân loại
+              </h4>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '1rem' }}>
+              <div>
+                <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem', fontSize: '0.9rem', fontWeight: '600', color: '#4a5568' }}>
+                  <FiUsers size={14} style={{ color: '#667eea' }} />
+                  Phòng ban
+                </label>
+                <select
+                  value={filterDepartment}
+                  onChange={(e) => setFilterDepartment(e.target.value)}
+                  style={{
+                    width: '100%',
+                    padding: '0.75rem 1rem',
+                    border: '2px solid #e2e8f0',
+                    borderRadius: '10px',
+                    fontSize: '0.95rem',
+                    backgroundColor: '#fff',
+                    cursor: 'pointer',
+                    outline: 'none',
+                    boxSizing: 'border-box'
+                  }}
+                >
+                  <option value="">-- Tất cả phòng ban --</option>
+                  <option value="1">Khoa Nội</option>
+                  <option value="2">Khoa Ngoại</option>
+                  <option value="3">Khoa Sản</option>
+                  <option value="4">Khoa Nhi</option>
+                  <option value="5">Khoa Mắt</option>
+                  <option value="6">Khoa Tai Mũi Họng</option>
+                  <option value="7">Khoa Da Liễu</option>
+                  <option value="8">Phòng Xét nghiệm</option>
+                  <option value="9">Phòng Dược</option>
+                  <option value="10">Phòng Kế toán</option>
+                  <option value="11">Phòng Hành chính</option>
+                </select>
+              </div>
+
+              <div>
+                <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem', fontSize: '0.9rem', fontWeight: '600', color: '#4a5568' }}>
+                  <FiUserCheck size={14} style={{ color: '#667eea' }} />
+                  Vai trò
+                </label>
+                <select
+                  value={filterRole}
+                  onChange={(e) => setFilterRole(e.target.value)}
+                  style={{
+                    width: '100%',
+                    padding: '0.75rem 1rem',
+                    border: '2px solid #e2e8f0',
+                    borderRadius: '10px',
+                    fontSize: '0.95rem',
+                    backgroundColor: '#fff',
+                    cursor: 'pointer',
+                    outline: 'none',
+                    boxSizing: 'border-box'
+                  }}
+                >
+                  <option value="">-- Tất cả vai trò --</option>
+                  <option value="RECEPTIONIST">Lễ tân</option>
+                  <option value="DOCTOR">Bác sĩ</option>
+                  <option value="NURSE">Điều dưỡng</option>
+                  <option value="PHARMACIST">Dược sĩ</option>
+                  <option value="LAB_TECH">Kỹ thuật viên</option>
+                  <option value="CASHIER">Thu ngân</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          {/* Action Buttons */}
+          <div style={{
+            display: 'flex',
+            justifyContent: 'center',
+            gap: '1rem',
+            paddingTop: '1rem',
+            borderTop: '2px solid #f0f0f0'
+          }}>
+            <button
+              onClick={handleResetFilters}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.5rem',
+                padding: '0.75rem 1.5rem',
+                background: '#fff',
+                border: '2px solid #e2e8f0',
+                borderRadius: '10px',
+                color: '#4a5568',
+                fontSize: '0.95rem',
+                fontWeight: '600',
+                cursor: 'pointer',
+                transition: 'all 0.2s ease'
+              }}
+            >
+              <FiX size={16} />
+              Xóa bộ lọc
+            </button>
+            <button
+              onClick={handleSearch}
+              disabled={loading}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.5rem',
+                padding: '0.75rem 2rem',
+                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                border: 'none',
+                borderRadius: '10px',
+                color: '#fff',
+                fontSize: '0.95rem',
+                fontWeight: '600',
+                cursor: loading ? 'not-allowed' : 'pointer',
+                opacity: loading ? 0.7 : 1,
+                transition: 'all 0.2s ease',
+                boxShadow: '0 4px 15px rgba(102, 126, 234, 0.4)'
+              }}
+            >
+              {loading ? <FiRefreshCw size={16} className="spinning" /> : <FiSearch size={16} />}
+              {loading ? 'Đang tìm...' : 'Tìm kiếm'}
+            </button>
+          </div>
         </div>
-
-        <div className="filter-box">
-          <FiFilter />
-          <select
-            value={filterDepartment}
-            onChange={(e) => setFilterDepartment(e.target.value)}
-          >
-            <option value="">Tất cả phòng ban</option>
-            <option value="1">Khoa Nội</option>
-            <option value="2">Khoa Ngoại</option>
-            <option value="3">Khoa Sản</option>
-            <option value="4">Khoa Nhi</option>
-            <option value="5">Khoa Mắt</option>
-            <option value="6">Khoa Tai Mũi Họng</option>
-            <option value="7">Khoa Da Liễu</option>
-            <option value="8">Phòng Xét nghiệm</option>
-            <option value="9">Phòng Dược</option>
-            <option value="10">Phòng Kế toán</option>
-            <option value="11">Phòng Hành chính</option>
-          </select>
-        </div>
-
-        <div className="filter-box">
-          <FiFilter />
-          <select
-            value={filterRole}
-            onChange={(e) => setFilterRole(e.target.value)}
-          >
-            <option value="">Tất cả vai trò</option>
-            <option value="RECEPTIONIST">Lễ tân</option>
-            <option value="DOCTOR">Bác sĩ</option>
-            <option value="NURSE">Điều dưỡng</option>
-            <option value="PHARMACIST">Dược sĩ</option>
-            <option value="LAB_TECH">Kỹ thuật viên</option>
-            <option value="CASHIER">Thu ngân</option>
-          </select>
-        </div>
-
-        <button className="btn-search" onClick={handleSearch}>
-          <FiSearch /> Tìm kiếm
-        </button>
-
-        <button className="btn-reset" onClick={handleResetFilters}>
-          Đặt lại
-        </button>
       </div>
 
       {error && (

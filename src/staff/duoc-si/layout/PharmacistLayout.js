@@ -126,7 +126,12 @@ const PharmacistLayout = () => {
                                     <span>Biến động kho</span>
                                 </NavLink>
                             </li>
-                            
+                            <li>
+                                <NavLink to="/staff/duoc-si/kiem-ke-kho">
+                                    <FiClipboard />
+                                    <span>Kiểm kê hàng tồn kho</span>
+                                </NavLink>
+                            </li>
                             <li>
                                 <NavLink to="/staff/duoc-si/han-su-dung">
                                     <FiAlertCircle />

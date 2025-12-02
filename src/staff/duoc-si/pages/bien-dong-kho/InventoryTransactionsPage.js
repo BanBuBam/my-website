@@ -3256,11 +3256,11 @@ const InventoryTransactionsPage = () => {
                                                 <tr>
                                                     <th style={{ width: '50px' }}>STT</th>
                                                     <th style={{ width: '80px' }}>ID</th>
-                                                    <th style={{ width: '120px' }}>Loại</th>
-                                                    <th style={{ width: '100px', textAlign: 'right' }}>Số lượng</th>
-                                                    <th>Lý do</th>
+                                                    <th style={{ width: '130px' }}>Loại</th>
+                                                    <th style={{ width: '150px', textAlign: 'center' }}>Số lượng</th>
+                                                    <th style={{ width: '120px' }}>Lý do</th>
                                                     <th style={{ width: '150px' }}>Thời gian</th>
-                                                    <th style={{ width: '150px' }}>Người thực hiện</th>
+                                                    <th>Ghi chú</th>
                                                     <th style={{ width: '100px', textAlign: 'center' }}>Trạng thái</th>
                                                 </tr>
                                             </thead>
@@ -3272,24 +3272,51 @@ const InventoryTransactionsPage = () => {
                                                             #{movement.movementId}
                                                         </td>
                                                         <td>
-                                                            {getOperationTypeBadge(movement.movementType || movement.operationType)}
+                                                            <span style={{
+                                                                display: 'inline-flex',
+                                                                alignItems: 'center',
+                                                                gap: '0.25rem',
+                                                                padding: '0.25rem 0.5rem',
+                                                                borderRadius: '4px',
+                                                                fontSize: '0.85rem',
+                                                                fontWeight: '600',
+                                                                background: movement.movementType === 'IN' ? '#d4edda' : '#f8d7da',
+                                                                color: movement.movementColor || (movement.movementType === 'IN' ? '#155724' : '#721c24')
+                                                            }}>
+                                                                {movement.movementIcon || (movement.movementType === 'IN' ? '↓' : '↑')}
+                                                                {movement.movementTypeDisplay || (movement.movementType === 'IN' ? 'Nhập kho' : 'Xuất kho')}
+                                                            </span>
                                                         </td>
-                                                        <td style={{
-                                                            textAlign: 'right',
-                                                            fontWeight: '600',
-                                                            color: (movement.movementType === 'IN' || movement.movementType === 'RETURN') ? '#28a745' : '#dc3545'
-                                                        }}>
-                                                            {(movement.movementType === 'IN' || movement.movementType === 'RETURN') ? '+' : '-'}
-                                                            {movement.quantity}
-                                                        </td>
-                                                        <td style={{ maxWidth: '200px' }}>
-                                                            {movement.movementReason || movement.reason || '-'}
-                                                        </td>
-                                                        <td style={{ fontSize: '0.9rem' }}>
-                                                            {formatDateTime(movement.movementDate || movement.transactionDate)}
+                                                        <td style={{ textAlign: 'center' }}>
+                                                            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+                                                                <span style={{
+                                                                    fontWeight: '700',
+                                                                    fontSize: '1rem',
+                                                                    color: movement.movementType === 'IN' ? '#28a745' : '#dc3545'
+                                                                }}>
+                                                                    {movement.movementType === 'IN' ? '+' : '-'}{movement.quantityMoved || movement.quantity || 0}
+                                                                </span>
+                                                                <span style={{ fontSize: '0.75rem', color: '#6c757d' }}>
+                                                                    {movement.quantityBefore} → {movement.quantityAfter}
+                                                                </span>
+                                                            </div>
                                                         </td>
                                                         <td>
-                                                            {movement.performedByEmployeeName || movement.employeeName || '-'}
+                                                            <span style={{
+                                                                padding: '0.2rem 0.4rem',
+                                                                borderRadius: '4px',
+                                                                fontSize: '0.8rem',
+                                                                background: '#e9ecef',
+                                                                color: '#495057'
+                                                            }}>
+                                                                {movement.movementReason || movement.reason || '-'}
+                                                            </span>
+                                                        </td>
+                                                        <td style={{ fontSize: '0.85rem' }}>
+                                                            {formatDateTime(movement.movementDate || movement.transactionDate)}
+                                                        </td>
+                                                        <td style={{ fontSize: '0.85rem', color: '#6c757d', maxWidth: '200px' }}>
+                                                            {movement.notes || movement.summary || '-'}
                                                         </td>
                                                         <td style={{ textAlign: 'center' }}>
                                                             {movement.isReversed ? (
@@ -3301,9 +3328,9 @@ const InventoryTransactionsPage = () => {
                                                                     color: '#721c24',
                                                                     fontWeight: '600'
                                                                 }}>
-                                                                    Đã hủy
+                                                                    ❌ Đã hủy
                                                                 </span>
-                                                            ) : (
+                                                            ) : movement.canBeReversed ? (
                                                                 <span style={{
                                                                     padding: '0.25rem 0.5rem',
                                                                     borderRadius: '4px',
@@ -3312,7 +3339,18 @@ const InventoryTransactionsPage = () => {
                                                                     color: '#155724',
                                                                     fontWeight: '600'
                                                                 }}>
-                                                                    Hoạt động
+                                                                    ✅ Hoạt động
+                                                                </span>
+                                                            ) : (
+                                                                <span style={{
+                                                                    padding: '0.25rem 0.5rem',
+                                                                    borderRadius: '4px',
+                                                                    fontSize: '0.8rem',
+                                                                    background: '#e9ecef',
+                                                                    color: '#6c757d',
+                                                                    fontWeight: '600'
+                                                                }}>
+                                                                    🔒 Đã khóa
                                                                 </span>
                                                             )}
                                                         </td>

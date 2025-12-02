@@ -1869,56 +1869,49 @@ const CabinetManagementPage = () => {
                                 <div className="loading-state" style={{ textAlign: 'center', padding: '3rem' }}>
                                     <p>⏳ Đang tải tồn kho...</p>
                                 </div>
-                            ) : inventoryData ? (
+                            ) : inventoryData && Array.isArray(inventoryData) ? (
                                 <>
                                     {/* Cabinet Summary */}
                                     <div style={{
                                         display: 'grid',
-                                        gridTemplateColumns: 'repeat(3, 1fr)',
+                                        gridTemplateColumns: 'repeat(4, 1fr)',
                                         gap: '1rem',
                                         marginBottom: '1.5rem',
                                         padding: '1rem',
-                                        background: '#f8f9fa',
-                                        borderRadius: '8px'
+                                        background: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)',
+                                        borderRadius: '12px',
+                                        border: '1px solid #dee2e6'
                                     }}>
-                                        <div>
-                                            <div style={{ fontSize: '0.85rem', color: '#6c757d', marginBottom: '0.25rem' }}>
-                                                Vị trí tủ
+                                        <div style={{ textAlign: 'center', padding: '0.5rem' }}>
+                                            <div style={{ fontSize: '0.8rem', color: '#6c757d', marginBottom: '0.25rem', textTransform: 'uppercase' }}>
+                                                📍 Vị trí tủ
                                             </div>
-                                            <div style={{ fontWeight: '600', fontSize: '1rem' }}>
-                                                {inventoryData.cabinetLocation || selectedCabinet.cabinetLocation}
-                                            </div>
-                                        </div>
-                                        <div>
-                                            <div style={{ fontSize: '0.85rem', color: '#6c757d', marginBottom: '0.25rem' }}>
-                                                Tổng số items
-                                            </div>
-                                            <div style={{ fontWeight: '600', fontSize: '1rem', color: '#007bff' }}>
-                                                {inventoryData.totalItems || 0}
+                                            <div style={{ fontWeight: '700', fontSize: '1.1rem', color: '#495057' }}>
+                                                {selectedCabinet.cabinetLocation}
                                             </div>
                                         </div>
-                                        <div>
-                                            <div style={{ fontSize: '0.85rem', color: '#6c757d', marginBottom: '0.25rem' }}>
-                                                Tỷ lệ sử dụng
+                                        <div style={{ textAlign: 'center', padding: '0.5rem' }}>
+                                            <div style={{ fontSize: '0.8rem', color: '#6c757d', marginBottom: '0.25rem', textTransform: 'uppercase' }}>
+                                                📦 Tổng mặt hàng
                                             </div>
-                                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                                                <div style={{
-                                                    flex: 1,
-                                                    height: '8px',
-                                                    background: '#e9ecef',
-                                                    borderRadius: '4px',
-                                                    overflow: 'hidden'
-                                                }}>
-                                                    <div style={{
-                                                        width: `${inventoryData.utilizationPercent || 0}%`,
-                                                        height: '100%',
-                                                        background: getUtilizationColor(inventoryData.utilizationPercent || 0),
-                                                        transition: 'width 0.3s ease'
-                                                    }}></div>
-                                                </div>
-                                                <span style={{ fontWeight: '600', fontSize: '0.9rem' }}>
-                                                    {inventoryData.utilizationPercent || 0}%
-                                                </span>
+                                            <div style={{ fontWeight: '700', fontSize: '1.5rem', color: '#007bff' }}>
+                                                {inventoryData.length}
+                                            </div>
+                                        </div>
+                                        <div style={{ textAlign: 'center', padding: '0.5rem' }}>
+                                            <div style={{ fontSize: '0.8rem', color: '#6c757d', marginBottom: '0.25rem', textTransform: 'uppercase' }}>
+                                                💊 Thuốc
+                                            </div>
+                                            <div style={{ fontWeight: '700', fontSize: '1.5rem', color: '#28a745' }}>
+                                                {inventoryData.filter(i => i.item_type === 'MEDICINE').length}
+                                            </div>
+                                        </div>
+                                        <div style={{ textAlign: 'center', padding: '0.5rem' }}>
+                                            <div style={{ fontSize: '0.8rem', color: '#6c757d', marginBottom: '0.25rem', textTransform: 'uppercase' }}>
+                                                🩹 Vật tư
+                                            </div>
+                                            <div style={{ fontWeight: '700', fontSize: '1.5rem', color: '#fd7e14' }}>
+                                                {inventoryData.filter(i => i.item_type === 'SUPPLY').length}
                                             </div>
                                         </div>
                                     </div>
@@ -1937,7 +1930,7 @@ const CabinetManagementPage = () => {
                                     </div>
 
                                     {/* Inventory Items Table */}
-                                    {inventoryData.items && inventoryData.items.length > 0 ? (
+                                    {inventoryData.length > 0 ? (
                                         <div className="cabinet-table-container">
                                             <table className="cabinet-table">
                                                 <thead>
@@ -1946,56 +1939,57 @@ const CabinetManagementPage = () => {
                                                         <th>Stock ID</th>
                                                         <th>Tên thuốc/Vật tư</th>
                                                         <th>Loại</th>
-                                                        <th>Số lượng</th>
-                                                        <th>Mức đặt lại</th>
-                                                        <th>Mức tối đa</th>
                                                         <th>Số lô</th>
+                                                        <th>Số lượng</th>
                                                         <th>Hạn sử dụng</th>
                                                         <th>Trạng thái</th>
+                                                        <th>Cập nhật</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                    {inventoryData.items.map((item, index) => {
-                                                        const isLowStock = item.quantityOnHand <= item.reorderLevel;
-                                                        const isExpiringSoon = isExpiringWithin30Days(item.expiryDate);
-                                                        const isExpired = isExpiredDate(item.expiryDate);
+                                                    {inventoryData.map((item, index) => {
+                                                        const isExpiringSoon = isExpiringWithin30Days(item.expiry_date);
+                                                        const isExpired = isExpiredDate(item.expiry_date);
+                                                        const isLowStock = item.quantity <= 10;
 
                                                         return (
-                                                            <tr key={item.stockId || index} style={{
+                                                            <tr key={item.stock_id || index} style={{
                                                                 background: isExpired ? '#fff5f5' : isExpiringSoon ? '#fffbf0' : 'transparent'
                                                             }}>
                                                                 <td>{index + 1}</td>
-                                                                <td>{item.stockId}</td>
-                                                                <td><strong>{item.itemName}</strong></td>
+                                                                <td><code style={{ background: '#e9ecef', padding: '2px 6px', borderRadius: '4px' }}>{item.stock_id}</code></td>
+                                                                <td><strong>{item.item_name}</strong></td>
                                                                 <td>
-                                                                    <span className={`badge badge-type-${(item.itemType || 'MEDICINE').toLowerCase()}`}>
-                                                                        {item.itemType || 'MEDICINE'}
+                                                                    <span className={`badge badge-type-${(item.item_type || 'MEDICINE').toLowerCase()}`}>
+                                                                        {item.item_type === 'MEDICINE' ? '💊 Thuốc' : '🩹 Vật tư'}
                                                                     </span>
                                                                 </td>
+                                                                <td><code style={{ background: '#e3f2fd', color: '#1565c0', padding: '2px 6px', borderRadius: '4px' }}>{item.batch_number || 'N/A'}</code></td>
                                                                 <td>
                                                                     <span style={{
                                                                         color: isLowStock ? '#dc3545' : '#28a745',
-                                                                        fontWeight: 'bold'
+                                                                        fontWeight: 'bold',
+                                                                        fontSize: '1rem'
                                                                     }}>
-                                                                        {item.quantityOnHand}
+                                                                        {item.quantity}
                                                                         {isLowStock && ' ⚠️'}
                                                                     </span>
                                                                 </td>
-                                                                <td>{item.reorderLevel}</td>
-                                                                <td>{item.maxStockLevel}</td>
-                                                                <td>{item.batchNumber || 'N/A'}</td>
                                                                 <td style={{
                                                                     color: isExpired ? '#dc3545' : isExpiringSoon ? '#ffc107' : 'inherit',
                                                                     fontWeight: (isExpired || isExpiringSoon) ? 'bold' : 'normal'
                                                                 }}>
-                                                                    {formatDate(item.expiryDate)}
+                                                                    {formatDate(item.expiry_date)}
                                                                     {isExpired && ' ❌'}
                                                                     {!isExpired && isExpiringSoon && ' ⚠️'}
                                                                 </td>
                                                                 <td>
-                                                                    <span className={`badge ${getInventoryStatusBadgeClass(item.status)}`}>
-                                                                        {getInventoryStatusLabel(item.status)}
+                                                                    <span className={`badge ${item.status === 'AVAILABLE' ? 'badge-success' : 'badge-secondary'}`}>
+                                                                        {item.status === 'AVAILABLE' ? '✅ Sẵn sàng' : item.status}
                                                                     </span>
+                                                                </td>
+                                                                <td style={{ fontSize: '0.8rem', color: '#6c757d' }}>
+                                                                    {item.last_updated ? new Date(item.last_updated).toLocaleDateString('vi-VN') : '-'}
                                                                 </td>
                                                             </tr>
                                                         );
