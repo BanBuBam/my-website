@@ -56,6 +56,12 @@ const FinanceLayout = () => {
                                 </NavLink>
                             </li>
                             <li>
+                                <NavLink to="/staff/tai-chinh/quan-ly-hoa-don">
+                                    <FiFileText />
+                                    <span>Quản lý hóa đơn</span>
+                                </NavLink>
+                            </li>
+                            <li>
                                 <NavLink to="/staff/tai-chinh/ds-hoa-don">
                                     <FiList />
                                     <span>Danh sách hóa đơn</span>

@@ -93,50 +93,50 @@ export const financeDashboardAPI = {
 };
 
 // API Quản lý hóa đơn
-export const financeInvoiceAPI = {
-  // Lấy danh sách hóa đơn
-  getInvoices: async (params) => {
-    const queryString = new URLSearchParams(params).toString();
-    return apiCall(`api/v1/finance/invoices?${queryString}`, {
-      method: 'GET',
-      headers: {
-        'Authorization': `Bearer ${getAccessToken()}`,
-      },
-    });
-  },
-
-  // Lấy chi tiết hóa đơn
-  getInvoiceDetail: async (invoiceId) => {
-    return apiCall(`api/v1/finance/invoices/${invoiceId}`, {
-      method: 'GET',
-      headers: {
-        'Authorization': `Bearer ${getAccessToken()}`,
-      },
-    });
-  },
-
-  // Tạo hóa đơn
-  createInvoice: async (invoiceData) => {
-    return apiCall('api/v1/finance/invoices', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${getAccessToken()}`,
-      },
-      body: JSON.stringify(invoiceData),
-    });
-  },
-
-  // Cập nhật hóa đơn
-  updateInvoice: async (invoiceId, invoiceData) => {
-    return apiCall(`api/v1/finance/invoices/${invoiceId}`, {
-      method: 'PUT',
-      headers: {
-        'Authorization': `Bearer ${getAccessToken()}`,
-      },
-      body: JSON.stringify(invoiceData),
-    });
-  },
-};
+// export const financeInvoiceAPI = {
+//   // Lấy danh sách hóa đơn
+//   getInvoices: async (params) => {
+//     const queryString = new URLSearchParams(params).toString();
+//     return apiCall(`api/v1/invoices?${queryString}`, {
+//       method: 'GET',
+//       headers: {
+//         'Authorization': `Bearer ${getAccessToken()}`,
+//       },
+//     });
+//   },
+//
+//   // Lấy chi tiết hóa đơn
+//   getInvoiceDetail: async (invoiceId) => {
+//     return apiCall(`api/v1/invoices/${invoiceId}`, {
+//       method: 'GET',
+//       headers: {
+//         'Authorization': `Bearer ${getAccessToken()}`,
+//       },
+//     });
+//   },
+//
+//   // Tạo hóa đơn
+//   createInvoice: async (invoiceData) => {
+//     return apiCall('api/v1/invoices', {
+//       method: 'POST',
+//       headers: {
+//         'Authorization': `Bearer ${getAccessToken()}`,
+//       },
+//       body: JSON.stringify(invoiceData),
+//     });
+//   },
+//
+//   // Cập nhật hóa đơn
+//   updateInvoice: async (invoiceId, invoiceData) => {
+//     return apiCall(`api/v1/finance/invoices/${invoiceId}`, {
+//       method: 'PUT',
+//       headers: {
+//         'Authorization': `Bearer ${getAccessToken()}`,
+//       },
+//       body: JSON.stringify(invoiceData),
+//     });
+//   },
+// };
 
 // API Thanh toán
 export const financePaymentAPI = {
@@ -256,6 +256,80 @@ export const financeInvoiceGenerationAPI = {
   },
 };
 
+// API Quản lý hóa đơn
+export const financeInvoiceAPI = {
+  // Tìm kiếm hóa đơn với bộ lọc
+  searchInvoices: async (filters) => {
+    const params = new URLSearchParams();
+
+    if (filters.patientId) params.append('patientId', filters.patientId);
+    if (filters.status) params.append('status', filters.status);
+    if (filters.paymentStatus) params.append('paymentStatus', filters.paymentStatus);
+    if (filters.fromDate) params.append('fromDate', filters.fromDate);
+    if (filters.toDate) params.append('toDate', filters.toDate);
+    if (filters.page !== undefined) params.append('page', filters.page);
+    if (filters.size !== undefined) params.append('size', filters.size);
+    if (filters.sort) params.append('sort', filters.sort);
+
+    return apiCall(`api/v1/invoices/search?${params.toString()}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Lấy chi tiết hóa đơn theo ID
+  getInvoiceById: async (invoiceId) => {
+    return apiCall(`api/v1/invoices/${invoiceId}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Lấy hóa đơn theo encounter ID
+  getInvoiceByEncounterId: async (encounterId) => {
+    return apiCall(`api/v1/payments/invoice/encounter/${encounterId}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Lấy danh sách items của hóa đơn
+  getInvoiceItems: async (invoiceId) => {
+    return apiCall(`api/v1/invoice-items/invoice/${invoiceId}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Lấy danh sách hoàn tiền theo invoice ID
+  getRefundsByInvoiceId: async (invoiceId) => {
+    return apiCall(`api/v1/transactions/invoice/${invoiceId}/refunds`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Lấy danh sách giao dịch theo invoice ID
+  getTransactionsByInvoiceId: async (invoiceId) => {
+    return apiCall(`api/v1/transactions/invoice/${invoiceId}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+};
+
 // API Giao dịch thanh toán
 export const financeTransactionAPI = {
   // Thanh toán hóa đơn
@@ -284,6 +358,22 @@ export const financeTransactionAPI = {
       },
     });
   },
+
+  // Sử dụng tiền tạm ứng
+  useAdvanceDeposit: async (patientId, invoiceId, amount) => {
+    const params = new URLSearchParams({
+      patientId: patientId,
+      invoiceId: invoiceId,
+      amount: amount,
+    });
+
+    return apiCall(`api/v1/deposits/use?${params.toString()}`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
 };
 
 // API Quản lý điều trị nội trú (cho cashier)
@@ -301,6 +391,73 @@ export const financeInpatientAPI = {
   // Lấy chi tiết điều trị nội trú
   getInpatientStayDetail: async (inpatientStayId) => {
     return apiCall(`api/v1/inpatient/stays/${inpatientStayId}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Lấy số dư tạm ứng của bệnh nhân
+  getAdvanceBalance: async (patientId) => {
+    return apiCall(`api/v1/transactions/patient/${patientId}/advance-balance`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Tạo hóa đơn nội trú
+  generateInpatientInvoice: async (invoiceData) => {
+    return apiCall('api/v1/payments/generate-invoice', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+      body: JSON.stringify(invoiceData),
+    });
+  },
+
+  // Thanh toán hóa đơn nội trú
+  processInpatientPayment: async (paymentData) => {
+    return apiCall('api/v1/transactions/process-payment', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+      body: JSON.stringify(paymentData),
+    });
+  },
+
+  // Hoàn tiền
+  processRefund: async (refundData) => {
+    return apiCall('api/v1/transactions/process-refund', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+      body: JSON.stringify(refundData),
+    });
+  },
+
+  // Lấy danh sách giao dịch theo inpatient stay ID
+  getTransactionsByStayId: async (stayId, transactionType = null) => {
+    let url = `api/v1/deposits/inpatient-stay/${stayId}/transactions`;
+    if (transactionType) {
+      url += `?transactionType=${transactionType}`;
+    }
+    return apiCall(url, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Lấy hóa đơn theo inpatient stay ID
+  getInvoiceByStayId: async (stayId) => {
+    return apiCall(`api/v1/invoices/${stayId}`, {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${getAccessToken()}`,

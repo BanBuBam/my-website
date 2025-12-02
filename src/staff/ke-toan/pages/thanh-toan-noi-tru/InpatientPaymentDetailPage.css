@@ -63,49 +63,101 @@
 }
 
 .inpatient-payment-detail-page .header-actions {
-    display: flex;
-    gap: 12px;
+    display: grid;
+    grid-template-columns: repeat(3, auto);
+    gap: 10px;
+    justify-content: flex-end;
 }
 
-.inpatient-payment-detail-page .btn-refresh {
+/* Common button styles for header actions */
+.inpatient-payment-detail-page .header-actions button {
     display: flex;
     align-items: center;
-    gap: 8px;
-    padding: 10px 20px;
-    background-color: #3b82f6;
+    gap: 6px;
+    padding: 8px 16px;
     color: white;
     border: none;
     border-radius: 8px;
     font-weight: 500;
+    font-size: 0.9rem;
     cursor: pointer;
     transition: all 0.2s;
+    white-space: nowrap;
+}
+
+.inpatient-payment-detail-page .btn-refresh {
+    background-color: #3b82f6;
 }
 
 .inpatient-payment-detail-page .btn-refresh:hover {
     background-color: #2563eb;
+    box-shadow: 0 2px 4px rgba(59, 130, 246, 0.3);
+}
+
+.inpatient-payment-detail-page .btn-view-invoice {
+    background-color: #6366f1;
+}
+
+.inpatient-payment-detail-page .btn-view-invoice:hover:not(:disabled) {
+    background-color: #4f46e5;
+    box-shadow: 0 2px 4px rgba(99, 102, 241, 0.3);
+}
+
+.inpatient-payment-detail-page .btn-view-invoice:disabled {
+    background-color: #9ca3af;
+    cursor: not-allowed;
 }
 
 .inpatient-payment-detail-page .btn-advance-payment {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 10px 20px;
     background-color: #f59e0b;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.2s;
 }
 
 .inpatient-payment-detail-page .btn-advance-payment:hover {
     background-color: #d97706;
+    box-shadow: 0 2px 4px rgba(245, 158, 11, 0.3);
 }
 
-/* Status Section */
-.inpatient-payment-detail-page .status-section {
+.inpatient-payment-detail-page .btn-create-invoice {
+    background-color: #10b981;
+}
+
+.inpatient-payment-detail-page .btn-create-invoice:hover {
+    background-color: #059669;
+    box-shadow: 0 2px 4px rgba(16, 185, 129, 0.3);
+}
+
+.inpatient-payment-detail-page .btn-payment {
+    background-color: #8b5cf6;
+}
+
+.inpatient-payment-detail-page .btn-payment:hover {
+    background-color: #7c3aed;
+    box-shadow: 0 2px 4px rgba(139, 92, 246, 0.3);
+}
+
+.inpatient-payment-detail-page .btn-refund {
+    background-color: #ef4444;
+}
+
+.inpatient-payment-detail-page .btn-refund:hover {
+    background-color: #dc2626;
+    box-shadow: 0 2px 4px rgba(239, 68, 68, 0.3);
+}
+
+.inpatient-payment-detail-page .btn-refund:hover {
+    background-color: #dc2626;
+}
+
+/* Status and Balance Section */
+.inpatient-payment-detail-page .status-balance-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     margin-bottom: 20px;
+    background: white;
+    padding: 16px 20px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .inpatient-payment-detail-page .status-badge {
@@ -114,6 +166,30 @@
     border-radius: 8px;
     font-size: 14px;
     font-weight: 600;
+}
+
+.inpatient-payment-detail-page .balance-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.inpatient-payment-detail-page .balance-info label {
+    font-size: 14px;
+    color: #6b7280;
+    font-weight: 500;
+}
+
+.inpatient-payment-detail-page .balance-amount {
+    font-size: 18px;
+    color: #10b981;
+    font-weight: 700;
+}
+
+.inpatient-payment-detail-page .balance-loading {
+    font-size: 14px;
+    color: #9ca3af;
+    font-style: italic;
 }
 
 .inpatient-payment-detail-page .status-active {
@@ -290,12 +366,18 @@
     border-top: 1px solid #e5e7eb;
 }
 
-/* Advance Form */
-.advance-form .form-group {
+/* Form Styles (shared for all forms) */
+.advance-form .form-group,
+.invoice-form .form-group,
+.payment-form .form-group,
+.refund-form .form-group {
     margin-bottom: 20px;
 }
 
-.advance-form .form-group label {
+.advance-form .form-group label,
+.invoice-form .form-group label,
+.payment-form .form-group label,
+.refund-form .form-group label {
     display: block;
     margin-bottom: 8px;
     font-weight: 500;
@@ -303,12 +385,23 @@
     font-size: 0.95rem;
 }
 
-.advance-form .form-group label .required {
+.advance-form .form-group label .required,
+.invoice-form .form-group label .required,
+.payment-form .form-group label .required,
+.refund-form .form-group label .required {
     color: #ef4444;
 }
 
 .advance-form .form-group input,
-.advance-form .form-group select {
+.advance-form .form-group select,
+.invoice-form .form-group input,
+.invoice-form .form-group select,
+.invoice-form .form-group textarea,
+.payment-form .form-group input,
+.payment-form .form-group select,
+.refund-form .form-group input,
+.refund-form .form-group select,
+.refund-form .form-group textarea {
     width: 100%;
     padding: 10px;
     border: 1px solid #d1d5db;
@@ -318,58 +411,118 @@
 }
 
 .advance-form .form-group input:focus,
-.advance-form .form-group select:focus {
+.advance-form .form-group select:focus,
+.invoice-form .form-group input:focus,
+.invoice-form .form-group select:focus,
+.invoice-form .form-group textarea:focus,
+.payment-form .form-group input:focus,
+.payment-form .form-group select:focus,
+.refund-form .form-group input:focus,
+.refund-form .form-group select:focus,
+.refund-form .form-group textarea:focus {
     outline: none;
     border-color: #3b82f6;
     box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
-/* Advance Result */
-.advance-result .success-message {
+.loading-select {
+    padding: 10px;
+    color: #6b7280;
+    font-style: italic;
+    background-color: #f9fafb;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+}
+
+.invoice-form .form-group.checkbox-group {
+    margin-top: 16px;
+}
+
+.invoice-form .form-group.checkbox-group label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+}
+
+.invoice-form .form-group.checkbox-group input[type="checkbox"] {
+    width: auto;
+    cursor: pointer;
+}
+
+/* Result Styles (shared for all results) */
+.advance-result .success-message,
+.invoice-result .success-message,
+.payment-result .success-message,
+.refund-result .success-message {
     text-align: center;
     margin-bottom: 24px;
 }
 
-.advance-result .success-icon {
+.advance-result .success-icon,
+.invoice-result .success-icon,
+.payment-result .success-icon,
+.refund-result .success-icon {
     font-size: 48px;
     color: #10b981;
     margin-bottom: 12px;
 }
 
-.advance-result .success-message h4 {
+.advance-result .success-message h4,
+.invoice-result .success-message h4,
+.payment-result .success-message h4,
+.refund-result .success-message h4 {
     margin: 0;
     color: #1f2937;
     font-size: 1.25rem;
 }
 
-.advance-result .advance-details {
+.advance-result .advance-details,
+.invoice-result .invoice-details,
+.payment-result .payment-details,
+.refund-result .refund-details {
     background-color: #f9fafb;
     padding: 20px;
     border-radius: 8px;
 }
 
-.advance-result .detail-row {
+.advance-result .detail-row,
+.invoice-result .detail-row,
+.payment-result .detail-row,
+.refund-result .detail-row {
     display: flex;
     justify-content: space-between;
     padding: 12px 0;
     border-bottom: 1px solid #e5e7eb;
 }
 
-.advance-result .detail-row:last-child {
+.advance-result .detail-row:last-child,
+.invoice-result .detail-row:last-child,
+.payment-result .detail-row:last-child,
+.refund-result .detail-row:last-child {
     border-bottom: none;
 }
 
-.advance-result .detail-row .label {
+.advance-result .detail-row .label,
+.invoice-result .detail-row .label,
+.payment-result .detail-row .label,
+.refund-result .detail-row .label {
     font-weight: 500;
     color: #6b7280;
 }
 
-.advance-result .detail-row .value {
+.advance-result .detail-row .value,
+.invoice-result .detail-row .value,
+.payment-result .detail-row .value,
+.refund-result .detail-row .value {
     color: #1f2937;
     font-weight: 500;
 }
 
-.advance-result .detail-row .value.highlight {
+.advance-result .detail-row .value.highlight,
+.invoice-result .detail-row .value.highlight,
+.payment-result .detail-row .value.highlight,
+.refund-result .detail-row .value.highlight {
     color: #10b981;
     font-size: 1.1rem;
     font-weight: 600;
@@ -409,32 +562,65 @@
     background: #059669;
 }
 
+.btn-use-advance {
+    background: #f59e0b;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-use-advance:hover:not(:disabled) {
+    background: #d97706;
+}
+
 .btn-cancel:disabled,
-.btn-confirm:disabled {
+.btn-confirm:disabled,
+.btn-use-advance:disabled {
     opacity: 0.5;
     cursor: not-allowed;
 }
 
 /* Responsive */
+@media (max-width: 1024px) {
+    .inpatient-payment-detail-page .header-actions {
+        grid-template-columns: repeat(2, auto);
+    }
+}
+
 @media (max-width: 768px) {
     .inpatient-payment-detail-page {
         padding: 16px;
     }
-    
+
     .inpatient-payment-detail-page .page-header {
         flex-direction: column;
-        align-items: flex-start;
+        align-items: stretch;
+        gap: 12px;
     }
-    
+
     .inpatient-payment-detail-page .header-actions {
-        width: 100%;
-        flex-direction: column;
+        grid-template-columns: 1fr;
+        justify-content: stretch;
     }
-    
+
     .inpatient-payment-detail-page .header-actions button {
         width: 100%;
+        justify-content: center;
     }
-    
+
+    .inpatient-payment-detail-page .status-balance-section {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+
     .inpatient-payment-detail-page .info-grid {
         grid-template-columns: 1fr;
     }

@@ -1,0 +1,429 @@
+/* Transaction List Page */
+.transaction-list-page {
+    padding: 24px;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+/* Page Header */
+.transaction-list-page .page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    gap: 16px;
+}
+
+.transaction-list-page .btn-back {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background: white;
+    color: #6b7280;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.transaction-list-page .btn-back:hover {
+    background: #f9fafb;
+    border-color: #3b82f6;
+    color: #3b82f6;
+}
+
+.transaction-list-page .header-content {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex: 1;
+}
+
+.transaction-list-page .header-icon {
+    font-size: 32px;
+    color: #3b82f6;
+}
+
+.transaction-list-page .header-content h1 {
+    margin: 0;
+    font-size: 24px;
+    color: #1a1a1a;
+}
+
+.transaction-list-page .header-content p {
+    margin: 4px 0 0 0;
+    color: #666;
+    font-size: 13px;
+}
+
+.transaction-list-page .header-actions {
+    display: flex;
+    gap: 12px;
+}
+
+.transaction-list-page .btn-refresh {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background-color: #3b82f6;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.transaction-list-page .btn-refresh:hover {
+    background-color: #2563eb;
+}
+
+/* Filter Section */
+.transaction-list-page .filter-section {
+    background: white;
+    padding: 20px 24px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+}
+
+.transaction-list-page .filter-group {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.transaction-list-page .filter-group svg {
+    color: #6b7280;
+    font-size: 18px;
+}
+
+.transaction-list-page .filter-group label {
+    font-size: 14px;
+    color: #6b7280;
+    font-weight: 500;
+}
+
+.transaction-list-page .filter-group select {
+    padding: 10px 16px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 14px;
+    background: white;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.transaction-list-page .filter-group select:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.transaction-list-page .stats {
+    display: flex;
+    gap: 12px;
+}
+
+.transaction-list-page .stat-badge {
+    padding: 8px 16px;
+    background: #dbeafe;
+    color: #3b82f6;
+    border-radius: 8px;
+    font-size: 14px;
+}
+
+.transaction-list-page .stat-badge strong {
+    font-weight: 600;
+}
+
+/* States */
+.transaction-list-page .loading-state,
+.transaction-list-page .error-state,
+.transaction-list-page .empty-state {
+    background: white;
+    padding: 60px 24px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+.transaction-list-page .loading-state svg,
+.transaction-list-page .error-state svg,
+.transaction-list-page .empty-state svg {
+    font-size: 48px;
+    color: #9ca3af;
+    margin-bottom: 16px;
+}
+
+.transaction-list-page .loading-state .spinner {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.transaction-list-page .error-state svg {
+    color: #ef4444;
+}
+
+/* Transactions Grid */
+.transaction-list-page .transactions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(500px, 1fr));
+    gap: 20px;
+}
+
+/* Transaction Card */
+.transaction-card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    transition: all 0.3s ease;
+}
+
+.transaction-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+}
+
+.transaction-card .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 16px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.transaction-card .card-title h3 {
+    margin: 0 0 4px 0;
+    font-size: 18px;
+    color: #1a1a1a;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.transaction-card .card-title h3 svg {
+    color: #3b82f6;
+}
+
+.transaction-card .transaction-date {
+    font-size: 13px;
+    color: #6b7280;
+}
+
+.transaction-card .badges {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    align-items: flex-end;
+}
+
+.transaction-card .badge {
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+/* Transaction Type Badges */
+.transaction-card .type-advance {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.transaction-card .type-payment {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+.transaction-card .type-refund {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.transaction-card .type-advance-used {
+    background: #e0e7ff;
+    color: #3730a3;
+}
+
+/* Status Badges */
+.transaction-card .status-completed {
+    background: #dcfce7;
+    color: #16a34a;
+}
+
+.transaction-card .status-pending {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.transaction-card .status-cancelled {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.transaction-card .status-failed {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+/* Card Body */
+.transaction-card .card-body {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.transaction-card .info-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+}
+
+.transaction-card .info-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.transaction-card .info-item label {
+    font-size: 12px;
+    color: #6b7280;
+    font-weight: 500;
+}
+
+.transaction-card .info-item span {
+    font-size: 14px;
+    color: #1a1a1a;
+    font-weight: 500;
+}
+
+.transaction-card .info-item .amount-highlight {
+    color: #3b82f6;
+    font-weight: 700;
+    font-size: 18px;
+}
+
+/* Waiver Info */
+.transaction-card .waiver-info {
+    background: #fef3c7;
+    padding: 16px;
+    border-radius: 8px;
+    border-left: 4px solid #f59e0b;
+}
+
+.transaction-card .waiver-info h4 {
+    margin: 0 0 12px 0;
+    font-size: 14px;
+    color: #92400e;
+    font-weight: 600;
+}
+
+.transaction-card .waiver-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+}
+
+.transaction-card .waiver-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.transaction-card .waiver-item.full-width {
+    grid-column: 1 / -1;
+}
+
+.transaction-card .waiver-item label {
+    font-size: 12px;
+    color: #92400e;
+    font-weight: 500;
+}
+
+.transaction-card .waiver-item span {
+    font-size: 13px;
+    color: #78350f;
+    font-weight: 500;
+}
+
+/* Notes Section */
+.transaction-card .notes-section {
+    background: #f9fafb;
+    padding: 12px;
+    border-radius: 8px;
+    border-left: 4px solid #3b82f6;
+}
+
+.transaction-card .notes-section label {
+    font-size: 12px;
+    color: #6b7280;
+    font-weight: 600;
+    display: block;
+    margin-bottom: 6px;
+}
+
+.transaction-card .notes-section p {
+    margin: 0;
+    font-size: 14px;
+    color: #374151;
+    line-height: 1.5;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .transaction-list-page {
+        padding: 16px;
+    }
+
+    .transaction-list-page .page-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .transaction-list-page .header-actions {
+        width: 100%;
+    }
+
+    .transaction-list-page .header-actions button {
+        width: 100%;
+    }
+
+    .transaction-list-page .filter-section {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .transaction-list-page .stats {
+        width: 100%;
+        flex-direction: column;
+    }
+
+    .transaction-list-page .transactions-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .transaction-card .info-grid,
+    .transaction-card .waiver-grid {
+        grid-template-columns: 1fr;
+    }
+}
+

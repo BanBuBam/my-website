@@ -329,6 +329,37 @@ export const doctorBedAPI = {
 
 // API Emergency Encounter
 export const doctorEmergencyAPI = {
+  // Lấy danh sách cấp cứu đang hoạt động
+  getActiveEmergencies: async () => {
+    return apiCall('api/v1/emergency/encounters/active', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Lấy chi tiết cấp cứu
+  getEmergencyDetail: async (emergencyEncounterId) => {
+    return apiCall(`api/v1/emergency/encounters/${emergencyEncounterId}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Tạo yêu cầu cấp cứu mới (direct - không cần encounter trước)
+  createEmergency: async (emergencyData) => {
+    return apiCall('api/v1/emergency/encounters/direct', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+      body: JSON.stringify(emergencyData),
+    });
+  },
+
   // Lấy danh sách emergency encounter theo doctor
   getEmergencyEncountersByDoctor: async (doctorId) => {
     return apiCall(`api/v1/emergency/encounters/doctor/${doctorId}`, {
@@ -354,6 +385,26 @@ export const doctorEmergencyAPI = {
   getVitalSigns: async (encounterId) => {
     return apiCall(`api/v1/encounters/${encounterId}/vitals`, {
       method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Phân công điều dưỡng cho emergency encounter
+  assignNurse: async (emergencyEncounterId, nurseId) => {
+    return apiCall(`api/v1/emergency/encounters/${emergencyEncounterId}/assign-nurse?nurseId=${nurseId}`, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Phân công bác sĩ cho emergency encounter
+  assignDoctor: async (emergencyEncounterId, doctorId) => {
+    return apiCall(`api/v1/emergency/encounters/${emergencyEncounterId}/assign-doctor?doctorId=${doctorId}`, {
+      method: 'PUT',
       headers: {
         'Authorization': `Bearer ${getAccessToken()}`,
       },
@@ -754,6 +805,43 @@ export const departmentAPI = {
   },
 };
 
+// API Employees
+export const employeeAPI = {
+  // Lấy danh sách nhân viên theo role
+  getEmployeesByRole: async (role, page = 0, size = 100) => {
+    const params = new URLSearchParams({
+      page: page.toString(),
+      size: size.toString(),
+    });
+    return apiCall(`api/v1/employees/role/${role}?${params.toString()}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Lấy danh sách điều dưỡng
+  getNurses: async (page = 0, size = 100) => {
+    return employeeAPI.getEmployeesByRole('NURSE', page, size);
+  },
+
+  // Lấy danh sách bác sĩ
+  getDoctors: async (page = 0, size = 100) => {
+    return employeeAPI.getEmployeesByRole('DOCTOR', page, size);
+  },
+
+  // Lấy danh sách bác sĩ theo khoa
+  getDoctorsByDepartment: async (departmentId) => {
+    return apiCall(`api/v1/employees/department/${departmentId}/role/DOCTOR`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+};
+
 // API Inpatient Treatment (Điều trị nội trú)
 export const doctorInpatientTreatmentAPI = {
   // Lấy danh sách điều trị nội trú đang hoạt động
@@ -918,6 +1006,21 @@ export const patientListAPI = {
       : 'api/v1/patient/admin';
 
     return apiCall(endpoint, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Tìm kiếm bệnh nhân theo tên (cho emergency)
+  searchPatientsByName: async (name, page = 0, size = 10) => {
+    const params = new URLSearchParams({
+      name: name,
+      page: page.toString(),
+      size: size.toString(),
+    });
+    return apiCall(`api/v1/patient/admin/search?${params.toString()}`, {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${getAccessToken()}`,
@@ -1130,6 +1233,7 @@ export default {
   serviceAPI,
   medicineAPI,
   departmentAPI,
+  employeeAPI,
   doctorInpatientTreatmentAPI,
   admissionRequestAPI,
   patientListAPI,

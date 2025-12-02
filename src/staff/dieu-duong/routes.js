@@ -18,6 +18,10 @@ import MedicationManagementPage from './pages/medication/MedicationManagementPag
 import MedicationInpatientPage from "./pages/medication/MedicationInpatientPage";
 import SafetyAssessmentInpatientPage from "./pages/safety-assessment/SafetyAssessmentInpatientPage";
 import VitalSignsPage from './pages/vitalsigns/VitalSignsPage';
+import EmergencyListPage from './pages/emergency/EmergencyListPage';
+import EmergencyDetailPage from './pages/emergency/EmergencyDetailPage';
+import EmergencyEncounterDetailPage from './pages/emergency/EncounterDetailPage';
+import CreateEmergencyPage from './pages/emergency/CreateEmergencyPage';
 
 const NurseRoutes = () => {
     return (
@@ -41,6 +45,10 @@ const NurseRoutes = () => {
                 <Route path="chuyen-giuong" element={<BedTransferPage />} />
                 <Route path="y-lenh" element={<OrdersPage />} />
                 <Route path="vital-signs" element={<VitalSignsPage />} />
+                <Route path="cap-cuu" element={<EmergencyListPage />} />
+                <Route path="cap-cuu/tao-moi" element={<CreateEmergencyPage />} />
+                <Route path="cap-cuu/emergency/:emergencyEncounterId" element={<EmergencyDetailPage />} />
+                <Route path="cap-cuu/encounter/:encounterId" element={<EmergencyEncounterDetailPage />} />
             </Route>
         </Routes>
     );
