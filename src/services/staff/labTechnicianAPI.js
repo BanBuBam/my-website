@@ -128,8 +128,52 @@ export const labTechnicianResultAPI = {
   },
 };
 
+// API Diagnostic Orders (Emergency)
+export const labTechnicianDiagnosticAPI = {
+  // Lấy danh sách diagnostic orders đang chờ xác nhận
+  getPendingDiagnosticOrders: async () => {
+    return apiCall('api/v1/emergency/diagnostic-orders/pending', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Lấy chi tiết diagnostic order
+  getDiagnosticOrderDetail: async (orderId) => {
+    return apiCall(`api/v1/emergency/diagnostic-orders/${orderId}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Tìm diagnostic orders theo encounter ID
+  getDiagnosticOrdersByEncounter: async (emergencyEncounterId) => {
+    return apiCall(`api/v1/emergency/diagnostic-orders/encounter/${emergencyEncounterId}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Lấy tất cả diagnostic orders
+  getAllDiagnosticOrders: async () => {
+    return apiCall('api/v1/emergency/diagnostic-orders', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+};
+
 export default {
   labTechnicianOrderAPI,
   labTechnicianResultAPI,
+  labTechnicianDiagnosticAPI,
 };
 

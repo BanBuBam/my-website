@@ -11,7 +11,8 @@ import {
   FiCalendar,
   FiSearch,
   FiList,
-  FiDollarSign
+  FiDollarSign,
+  FiAlertCircle
 } from 'react-icons/fi';
 
 const ReceptionistLayout = () => {
@@ -63,6 +64,12 @@ const ReceptionistLayout = () => {
               <NavLink to="/staff/le-tan/payment">
                 <FiDollarSign />
                 <span>Thanh toán</span>
+              </NavLink>
+            </li>
+            <li>
+              <NavLink to="/staff/le-tan/cap-cuu">
+                <FiAlertCircle />
+                <span>Quản lý Cấp cứu</span>
               </NavLink>
             </li>
             {/* ------------------------------------ */}

@@ -165,6 +165,19 @@ const NurseLayout = () => {
                         </ul>
                     </div>
 
+                    {/* Cấp cứu */}
+                    <div className="nav-category">
+                        <div className="category-header">Cấp cứu</div>
+                        <ul>
+                            <li>
+                                <NavLink to="/staff/dieu-duong/cap-cuu">
+                                    <FiActivity />
+                                    <span>Quản lý Cấp cứu</span>
+                                </NavLink>
+                            </li>
+                        </ul>
+                    </div>
+
                     {/* Báo cáo */}
                     <div className="nav-category">
                         <div className="category-header">Báo cáo</div>

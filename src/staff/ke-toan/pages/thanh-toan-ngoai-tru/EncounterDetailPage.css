@@ -54,80 +54,142 @@
 }
 
 .encounter-detail-page .header-actions {
-    display: flex;
-    gap: 12px;
+    display: grid;
+    grid-template-columns: repeat(3, auto);
+    gap: 10px;
+    justify-content: flex-end;
 }
 
-.encounter-detail-page .btn-refresh {
+/* Common button styles for header actions */
+.encounter-detail-page .header-actions button {
     display: flex;
     align-items: center;
-    gap: 8px;
-    padding: 10px 20px;
-    background-color: #3b82f6;
+    gap: 6px;
+    padding: 8px 16px;
     color: white;
     border: none;
     border-radius: 8px;
     font-weight: 500;
+    font-size: 0.9rem;
     cursor: pointer;
     transition: all 0.2s;
+    white-space: nowrap;
+}
+
+.encounter-detail-page .btn-refresh {
+    background-color: #3b82f6;
 }
 
 .encounter-detail-page .btn-refresh:hover {
     background-color: #2563eb;
+    box-shadow: 0 2px 4px rgba(59, 130, 246, 0.3);
 }
 
-.encounter-detail-page .btn-create-invoice {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 10px 20px;
-    background-color: #10b981;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.2s;
+.encounter-detail-page .btn-view-invoice {
+    background-color: #6366f1;
 }
 
-.encounter-detail-page .btn-create-invoice:hover {
-    background-color: #059669;
+.encounter-detail-page .btn-view-invoice:hover:not(:disabled) {
+    background-color: #4f46e5;
+    box-shadow: 0 2px 4px rgba(99, 102, 241, 0.3);
 }
 
-.encounter-detail-page .btn-payment {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 10px 20px;
+.encounter-detail-page .btn-view-invoice:disabled {
+    background-color: #9ca3af;
+    cursor: not-allowed;
+}
+
+.encounter-detail-page .btn-view-transactions {
     background-color: #8b5cf6;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.2s;
 }
 
-.encounter-detail-page .btn-payment:hover {
+.encounter-detail-page .btn-view-transactions:hover {
     background-color: #7c3aed;
+    box-shadow: 0 2px 4px rgba(139, 92, 246, 0.3);
+}
+
+.encounter-detail-page .btn-view-refunds {
+    background-color: #ef4444;
+}
+
+.encounter-detail-page .btn-view-refunds:hover {
+    background-color: #dc2626;
+    box-shadow: 0 2px 4px rgba(239, 68, 68, 0.3);
 }
 
 .encounter-detail-page .btn-advance-payment {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 10px 20px;
     background-color: #f59e0b;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.2s;
 }
 
 .encounter-detail-page .btn-advance-payment:hover {
     background-color: #d97706;
+    box-shadow: 0 2px 4px rgba(245, 158, 11, 0.3);
+}
+
+.encounter-detail-page .btn-payment {
+    background-color: #10b981;
+}
+
+.encounter-detail-page .btn-payment:hover {
+    background-color: #059669;
+    box-shadow: 0 2px 4px rgba(16, 185, 129, 0.3);
+}
+
+.encounter-detail-page .btn-create-invoice {
+    background-color: #ec4899;
+}
+
+.encounter-detail-page .btn-create-invoice:hover {
+    background-color: #db2777;
+    box-shadow: 0 2px 4px rgba(236, 72, 153, 0.3);
+}
+
+/* Advance Balance Section */
+.encounter-detail-page .advance-balance-section {
+    margin-bottom: 24px;
+}
+
+.encounter-detail-page .balance-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 12px;
+    padding: 24px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.encounter-detail-page .balance-icon {
+    font-size: 48px;
+    color: white;
+    opacity: 0.9;
+}
+
+.encounter-detail-page .balance-content {
+    flex: 1;
+}
+
+.encounter-detail-page .balance-content label {
+    display: block;
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 0.95rem;
+    margin-bottom: 8px;
+    font-weight: 500;
+}
+
+.encounter-detail-page .balance-amount {
+    display: block;
+    color: white;
+    font-size: 2rem;
+    font-weight: 700;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.encounter-detail-page .balance-loading {
+    display: block;
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 1.2rem;
+    font-style: italic;
 }
 
 /* Encounter Info Section */
@@ -495,13 +557,38 @@
     background: #059669;
 }
 
+.btn-use-advance {
+    background: #f59e0b;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-use-advance:hover:not(:disabled) {
+    background: #d97706;
+}
+
 .btn-cancel:disabled,
-.btn-confirm:disabled {
+.btn-confirm:disabled,
+.btn-use-advance:disabled {
     opacity: 0.5;
     cursor: not-allowed;
 }
 
 /* Responsive */
+@media (max-width: 1024px) {
+    .encounter-detail-page .header-actions {
+        grid-template-columns: repeat(2, auto);
+    }
+}
+
 @media (max-width: 768px) {
     .encounter-detail-page {
         padding: 16px;
@@ -509,16 +596,18 @@
     
     .encounter-detail-page .page-header {
         flex-direction: column;
-        align-items: flex-start;
+        align-items: stretch;
+        gap: 12px;
     }
     
     .encounter-detail-page .header-actions {
-        width: 100%;
-        flex-direction: column;
+        grid-template-columns: 1fr;
+        justify-content: stretch;
     }
     
     .encounter-detail-page .header-actions button {
         width: 100%;
+        justify-content: center;
     }
     
     .encounter-detail-page .encounter-info-section {
