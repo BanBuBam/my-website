@@ -22,7 +22,7 @@ const StaffLoginModal = ({ isOpen, onClose }) => {
       'LAB_TECH': '/staff/ky-thuat-vien/dashboard',
       'PHARMACIST': '/staff/duoc-si/dashboard',
       'RECEPTIONIST': '/staff/le-tan/dashboard',
-      'CASHIER': '/staff/ke-toan/dashboard',
+      'CASHIER': '/staff/tai-chinh/dashboard',
       'MANAGER': '/staff/quan-ly/dashboard',
       'ADMIN': '/staff/admin/dashboard',
       'HR_MANAGER': '/staff/hr/dashboard'

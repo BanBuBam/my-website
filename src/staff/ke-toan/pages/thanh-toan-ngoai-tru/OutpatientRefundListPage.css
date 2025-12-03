@@ -1,0 +1,471 @@
+.outpatient-refund-page {
+    padding: 24px;
+    background-color: #f5f7fa;
+    min-height: 100vh;
+}
+
+/* Header */
+.outpatient-refund-page .page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.outpatient-refund-page .header-title h1 {
+    margin: 0 0 4px 0;
+    font-size: 24px;
+    color: #1a1a1a;
+}
+
+.outpatient-refund-page .header-title p {
+    margin: 0;
+    font-size: 14px;
+    color: #666;
+}
+
+.outpatient-refund-page .header-actions {
+    display: flex;
+    gap: 12px;
+}
+
+.outpatient-refund-page .btn-back,
+.outpatient-refund-page .btn-refresh,
+.outpatient-refund-page .btn-create-refund {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.outpatient-refund-page .btn-back {
+    background: #f0f0f0;
+    color: #333;
+}
+
+.outpatient-refund-page .btn-back:hover {
+    background: #e0e0e0;
+}
+
+.outpatient-refund-page .btn-refresh {
+    background: #4a90e2;
+    color: white;
+}
+
+.outpatient-refund-page .btn-refresh:hover {
+    background: #357abd;
+}
+
+.outpatient-refund-page .btn-create-refund {
+    background: #28a745;
+    color: white;
+}
+
+.outpatient-refund-page .btn-create-refund:hover {
+    background: #218838;
+}
+
+/* Sections */
+.outpatient-refund-page .refunds-section,
+.outpatient-refund-page .transactions-section {
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 24px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.outpatient-refund-page .section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid #f0f0f0;
+}
+
+.outpatient-refund-page .section-header h2 {
+    margin: 0;
+    font-size: 18px;
+    color: #1a1a1a;
+}
+
+.outpatient-refund-page .count-badge {
+    background: #e3f2fd;
+    color: #1976d2;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+/* Tables */
+.outpatient-refund-page .refunds-table,
+.outpatient-refund-page .transactions-table {
+    overflow-x: auto;
+}
+
+.outpatient-refund-page table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.outpatient-refund-page table thead {
+    background: #f8f9fa;
+}
+
+.outpatient-refund-page table th {
+    padding: 12px;
+    text-align: left;
+    font-size: 13px;
+    font-weight: 600;
+    color: #555;
+    border-bottom: 2px solid #e0e0e0;
+}
+
+.outpatient-refund-page table td {
+    padding: 12px;
+    font-size: 14px;
+    color: #333;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.outpatient-refund-page table tbody tr:hover {
+    background: #f8f9fa;
+}
+
+.outpatient-refund-page .patient-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.outpatient-refund-page .patient-name {
+    font-weight: 500;
+    color: #1a1a1a;
+}
+
+.outpatient-refund-page .patient-id {
+    font-size: 12px;
+    color: #666;
+}
+
+.outpatient-refund-page .amount {
+    font-weight: 600;
+    color: #28a745;
+}
+
+.outpatient-refund-page .notes {
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Status badges */
+.outpatient-refund-page .status-badge {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.outpatient-refund-page .status-completed {
+    background: #d4edda;
+    color: #155724;
+}
+
+.outpatient-refund-page .status-pending {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.outpatient-refund-page .status-failed {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.outpatient-refund-page .status-cancelled {
+    background: #e2e3e5;
+    color: #383d41;
+}
+
+.outpatient-refund-page .status-default {
+    background: #e0e0e0;
+    color: #333;
+}
+
+/* Empty state */
+.outpatient-refund-page .empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: #999;
+}
+
+.outpatient-refund-page .empty-icon {
+    font-size: 48px;
+    margin-bottom: 16px;
+    opacity: 0.5;
+}
+
+.outpatient-refund-page .empty-state p {
+    margin: 0;
+    font-size: 16px;
+}
+
+/* Loading */
+.outpatient-refund-page .loading-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 400px;
+    color: #666;
+}
+
+.outpatient-refund-page .spinner {
+    font-size: 48px;
+    animation: spin 1s linear infinite;
+    margin-bottom: 16px;
+    color: #4a90e2;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* Error */
+.outpatient-refund-page .error-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 400px;
+    color: #dc3545;
+}
+
+.outpatient-refund-page .error-icon {
+    font-size: 48px;
+    margin-bottom: 16px;
+}
+
+.outpatient-refund-page .error-container p {
+    margin-bottom: 20px;
+    font-size: 16px;
+}
+
+/* Modal */
+.outpatient-refund-page .modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.outpatient-refund-page .modal-content {
+    background: white;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 600px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+.outpatient-refund-page .modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.outpatient-refund-page .modal-header h3 {
+    margin: 0;
+    font-size: 20px;
+    color: #1a1a1a;
+}
+
+.outpatient-refund-page .btn-close {
+    background: none;
+    border: none;
+    font-size: 24px;
+    color: #666;
+    cursor: pointer;
+    padding: 0;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    transition: all 0.2s;
+}
+
+.outpatient-refund-page .btn-close:hover {
+    background: #f0f0f0;
+    color: #333;
+}
+
+.outpatient-refund-page .modal-body {
+    padding: 20px;
+}
+
+.outpatient-refund-page .refund-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.outpatient-refund-page .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.outpatient-refund-page .form-group label {
+    font-size: 14px;
+    font-weight: 500;
+    color: #333;
+}
+
+.outpatient-refund-page .required {
+    color: #dc3545;
+}
+
+.outpatient-refund-page .form-group input,
+.outpatient-refund-page .form-group select,
+.outpatient-refund-page .form-group textarea {
+    padding: 10px 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 14px;
+    font-family: inherit;
+    transition: border-color 0.2s;
+}
+
+.outpatient-refund-page .form-group input:focus,
+.outpatient-refund-page .form-group select:focus,
+.outpatient-refund-page .form-group textarea:focus {
+    outline: none;
+    border-color: #4a90e2;
+}
+
+.outpatient-refund-page .modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    padding: 20px;
+    border-top: 1px solid #e0e0e0;
+}
+
+.outpatient-refund-page .btn-cancel,
+.outpatient-refund-page .btn-confirm {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.outpatient-refund-page .btn-cancel {
+    background: #f0f0f0;
+    color: #333;
+}
+
+.outpatient-refund-page .btn-cancel:hover {
+    background: #e0e0e0;
+}
+
+.outpatient-refund-page .btn-confirm {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #28a745;
+    color: white;
+}
+
+.outpatient-refund-page .btn-confirm:hover {
+    background: #218838;
+}
+
+.outpatient-refund-page .btn-confirm:disabled,
+.outpatient-refund-page .btn-cancel:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Refund Result */
+.outpatient-refund-page .refund-result {
+    text-align: center;
+}
+
+.outpatient-refund-page .success-message {
+    margin-bottom: 24px;
+}
+
+.outpatient-refund-page .success-icon {
+    font-size: 64px;
+    color: #28a745;
+    margin-bottom: 12px;
+}
+
+.outpatient-refund-page .success-message h4 {
+    margin: 0;
+    font-size: 20px;
+    color: #1a1a1a;
+}
+
+.outpatient-refund-page .result-details {
+    text-align: left;
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 6px;
+}
+
+.outpatient-refund-page .detail-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.outpatient-refund-page .detail-row:last-child {
+    border-bottom: none;
+}
+
+.outpatient-refund-page .detail-row .label {
+    font-size: 14px;
+    color: #666;
+}
+
+.outpatient-refund-page .detail-row .value {
+    font-size: 14px;
+    font-weight: 500;
+    color: #1a1a1a;
+}
+
+.outpatient-refund-page .detail-row .value.highlight {
+    color: #28a745;
+    font-size: 16px;
+}

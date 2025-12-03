@@ -1,0 +1,767 @@
+.emergency-list-page {
+    padding: 24px;
+    background-color: #f5f7fa;
+    min-height: 100vh;
+}
+
+/* Header */
+.emergency-list-page .page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.emergency-list-page .header-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.emergency-list-page .header-icon {
+    font-size: 40px;
+    color: #ef4444;
+}
+
+.emergency-list-page .page-header h1 {
+    margin: 0 0 4px 0;
+    font-size: 24px;
+    color: #1a1a1a;
+}
+
+.emergency-list-page .page-header p {
+    margin: 0;
+    font-size: 14px;
+    color: #666;
+}
+
+.emergency-list-page .header-actions {
+    display: flex;
+    gap: 12px;
+}
+
+.emergency-list-page .btn-refresh {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background: #3b82f6;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.emergency-list-page .btn-refresh:hover:not(:disabled) {
+    background: #2563eb;
+}
+
+.emergency-list-page .btn-refresh:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.emergency-list-page .btn-create {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background: #10b981;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.emergency-list-page .btn-create:hover {
+    background: #059669;
+}
+
+.emergency-list-page .spinning {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* Tabs */
+.emergency-list-page .tabs-container {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 24px;
+    background: white;
+    padding: 8px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.emergency-list-page .tab-button {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 20px;
+    background: transparent;
+    color: #666;
+    border: none;
+    border-radius: 8px;
+    font-weight: 500;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.emergency-list-page .tab-button:hover {
+    background: #f3f4f6;
+    color: #1a1a1a;
+}
+
+.emergency-list-page .tab-button.active {
+    background: #3b82f6;
+    color: white;
+}
+
+/* Encounters Section */
+.emergency-list-page .encounters-section {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.emergency-list-page .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid #f0f0f0;
+}
+
+.emergency-list-page .section-header h2 {
+    margin: 0;
+    font-size: 18px;
+    color: #1a1a1a;
+}
+
+.emergency-list-page .count-badge {
+    background: #e3f2fd;
+    color: #1976d2;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+/* Encounters Table */
+.emergency-list-page .encounters-table {
+    overflow-x: auto;
+}
+
+.emergency-list-page .encounters-table table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.emergency-list-page .encounters-table thead {
+    background: #f8f9fa;
+}
+
+.emergency-list-page .encounters-table th {
+    padding: 12px;
+    text-align: left;
+    font-size: 13px;
+    font-weight: 600;
+    color: #555;
+    border-bottom: 2px solid #e0e0e0;
+}
+
+.emergency-list-page .encounters-table td {
+    padding: 12px;
+    font-size: 14px;
+    color: #333;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.emergency-list-page .encounters-table tbody tr:hover {
+    background: #f8f9fa;
+}
+
+.emergency-list-page .btn-view-small {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    background: #3b82f6;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.emergency-list-page .btn-view-small:hover {
+    background: #2563eb;
+}
+
+.emergency-list-page .status-planned {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+.emergency-list-page .status-arrived {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.emergency-list-page .status-in-progress {
+    background: #ddd6fe;
+    color: #5b21b6;
+}
+
+.emergency-list-page .status-finished {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.emergency-list-page .status-cancelled {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.emergency-list-page .status-default {
+    background: #f3f4f6;
+    color: #4b5563;
+}
+
+/* Pagination */
+.emergency-list-page .pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 16px;
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid #e5e7eb;
+}
+
+.emergency-list-page .pagination-btn {
+    padding: 8px 16px;
+    background: #3b82f6;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.emergency-list-page .pagination-btn:hover:not(:disabled) {
+    background: #2563eb;
+}
+
+.emergency-list-page .pagination-btn:disabled {
+    background: #d1d5db;
+    cursor: not-allowed;
+}
+
+.emergency-list-page .pagination-info {
+    font-size: 14px;
+    color: #666;
+}
+
+/* Create Emergency Section */
+.emergency-list-page .create-emergency-section {
+    background: white;
+    border-radius: 12px;
+    padding: 60px 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    text-align: center;
+}
+
+/* Stats Section */
+.emergency-list-page .stats-section {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.emergency-list-page .stat-card {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.emergency-list-page .stat-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    color: white;
+}
+
+.emergency-list-page .stat-icon.total {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.emergency-list-page .stat-icon.critical {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+}
+
+.emergency-list-page .stat-icon.urgent {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+}
+
+.emergency-list-page .stat-icon.exceeded {
+    background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+}
+
+.emergency-list-page .stat-value {
+    font-size: 28px;
+    font-weight: 700;
+    color: #1a1a1a;
+}
+
+.emergency-list-page .stat-label {
+    font-size: 14px;
+    color: #666;
+}
+
+/* Error Message */
+.emergency-list-page .error-message {
+    background: #fee2e2;
+    color: #991b1b;
+    padding: 16px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+/* Empty State */
+.emergency-list-page .empty-state {
+    background: white;
+    padding: 60px 20px;
+    border-radius: 12px;
+    text-align: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.emergency-list-page .empty-icon {
+    font-size: 64px;
+    color: #d1d5db;
+    margin-bottom: 16px;
+}
+
+.emergency-list-page .empty-state h3 {
+    margin: 0 0 8px 0;
+    font-size: 20px;
+    color: #1a1a1a;
+}
+
+.emergency-list-page .empty-state p {
+    margin: 0;
+    color: #666;
+}
+
+/* Emergency Grid */
+.emergency-list-page .emergency-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+    gap: 20px;
+}
+
+/* Emergency Card */
+.emergency-list-page .emergency-card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+    transition: all 0.2s;
+}
+
+.emergency-list-page .emergency-card:hover {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+}
+
+/* Card Header */
+.emergency-list-page .card-header {
+    padding: 16px;
+    background: #f9fafb;
+    border-bottom: 1px solid #e5e7eb;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.emergency-list-page .header-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.emergency-list-page .category-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.emergency-list-page .category-red {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.emergency-list-page .category-orange {
+    background: #ffedd5;
+    color: #9a3412;
+}
+
+.emergency-list-page .category-yellow {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.emergency-list-page .category-green {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.emergency-list-page .category-blue {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+.emergency-list-page .priority-score {
+    font-size: 12px;
+    color: #666;
+    font-weight: 500;
+}
+
+.emergency-list-page .status-badge {
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.emergency-list-page .status-red {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.emergency-list-page .status-orange {
+    background: #ffedd5;
+    color: #9a3412;
+}
+
+.emergency-list-page .status-yellow {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.emergency-list-page .status-green {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.emergency-list-page .status-blue {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+.emergency-list-page .status-gray {
+    background: #f3f4f6;
+    color: #4b5563;
+}
+
+/* Card Body */
+.emergency-list-page .card-body {
+    padding: 16px;
+}
+
+.emergency-list-page .info-section {
+    margin-bottom: 12px;
+}
+
+.emergency-list-page .info-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.emergency-list-page .info-icon {
+    font-size: 20px;
+    color: #3b82f6;
+}
+
+.emergency-list-page .patient-name {
+    font-size: 16px;
+    font-weight: 600;
+    color: #1a1a1a;
+}
+
+.emergency-list-page .patient-code {
+    font-size: 13px;
+    color: #666;
+}
+
+.emergency-list-page .complaint-section {
+    margin-bottom: 12px;
+    padding: 12px;
+    background: #f9fafb;
+    border-radius: 8px;
+}
+
+.emergency-list-page .complaint-label {
+    font-size: 12px;
+    color: #666;
+    margin-bottom: 4px;
+}
+
+.emergency-list-page .complaint-text {
+    font-size: 14px;
+    color: #1a1a1a;
+    line-height: 1.5;
+}
+
+.emergency-list-page .time-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    padding: 12px;
+    background: #f9fafb;
+    border-radius: 8px;
+}
+
+.emergency-list-page .time-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.emergency-list-page .time-icon {
+    font-size: 16px;
+    color: #3b82f6;
+}
+
+.emergency-list-page .time-label {
+    font-size: 11px;
+    color: #666;
+}
+
+.emergency-list-page .time-value {
+    font-size: 13px;
+    color: #1a1a1a;
+    font-weight: 500;
+}
+
+.emergency-list-page .wait-time {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    background: #dbeafe;
+    color: #1e40af;
+    border-radius: 12px;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.emergency-list-page .wait-time.exceeded {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.emergency-list-page .exceeded-badge {
+    background: #dc2626;
+    color: white;
+    padding: 2px 8px;
+    border-radius: 8px;
+    font-size: 11px;
+}
+
+.emergency-list-page .additional-info {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.emergency-list-page .info-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: #666;
+}
+
+.emergency-list-page .info-item .icon {
+    font-size: 14px;
+}
+
+.emergency-list-page .pain-score {
+    background: #fef3c7;
+    color: #92400e;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-weight: 600;
+}
+
+.emergency-list-page .staff-section {
+    margin-bottom: 12px;
+    padding: 12px;
+    background: #f0fdf4;
+    border-radius: 8px;
+}
+
+.emergency-list-page .staff-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 4px;
+}
+
+.emergency-list-page .staff-item:last-child {
+    margin-bottom: 0;
+}
+
+.emergency-list-page .staff-label {
+    font-size: 12px;
+    color: #666;
+}
+
+.emergency-list-page .staff-name {
+    font-size: 13px;
+    color: #1a1a1a;
+    font-weight: 500;
+}
+
+.emergency-list-page .alerts-section {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.emergency-list-page .alert-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.emergency-list-page .alert-badge.critical {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.emergency-list-page .alert-badge.urgent {
+    background: #ffedd5;
+    color: #9a3412;
+}
+
+.emergency-list-page .alert-badge.ambulance {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+/* Card Footer */
+.emergency-list-page .card-footer {
+    padding: 12px 16px;
+    background: #f9fafb;
+    border-top: 1px solid #e5e7eb;
+}
+
+.emergency-list-page .btn-view-detail {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px;
+    background: #3b82f6;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.emergency-list-page .btn-view-detail:hover {
+    background: #2563eb;
+}
+
+/* Loading */
+.emergency-list-page .loading-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 400px;
+    color: #666;
+}
+
+.emergency-list-page .spinner {
+    font-size: 48px;
+    animation: spin 1s linear infinite;
+    margin-bottom: 16px;
+    color: #3b82f6;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .emergency-list-page {
+        padding: 16px;
+    }
+
+    .emergency-list-page .emergency-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .emergency-list-page .stats-section {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .emergency-list-page .page-header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 16px;
+    }
+
+    .emergency-list-page .header-left {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}

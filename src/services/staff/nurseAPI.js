@@ -690,6 +690,141 @@ export const nurseDischargePlanningAPI = {
   },
 };
 
+// API Quản lý Emergency
+export const nurseEmergencyAPI = {
+  // Lấy danh sách cấp cứu đang hoạt động
+  getActiveEmergencies: async () => {
+    return apiCall('api/v1/emergency/encounters/active', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Lấy chi tiết cấp cứu
+  getEmergencyDetail: async (emergencyEncounterId) => {
+    return apiCall(`api/v1/emergency/encounters/${emergencyEncounterId}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Tạo yêu cầu cấp cứu mới (direct - không cần encounter trước)
+  createEmergency: async (emergencyData) => {
+    return apiCall('api/v1/emergency/encounters/direct', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+      body: JSON.stringify(emergencyData),
+    });
+  },
+
+  // Hoàn thành triage
+  completeTriage: async (emergencyEncounterId, triageData) => {
+    const params = new URLSearchParams();
+    if (triageData.category) params.append('category', triageData.category);
+    if (triageData.assessment) params.append('assessment', triageData.assessment);
+    if (triageData.vitalSigns) params.append('vitalSigns', triageData.vitalSigns);
+    if (triageData.painScore !== undefined) params.append('painScore', triageData.painScore);
+
+    return apiCall(`api/v1/emergency/encounters/${emergencyEncounterId}/complete-triage?${params.toString()}`, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+};
+
+// API Quản lý Encounters
+export const nurseEncounterListAPI = {
+  // Lấy danh sách encounters với pagination
+  getEncounters: async (page = 0, size = 20, sort = []) => {
+    const params = new URLSearchParams({
+      page: page.toString(),
+      size: size.toString(),
+    });
+    
+    sort.forEach(s => params.append('sort', s));
+    
+    return apiCall(`api/v1/encounters?${params.toString()}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Lấy chi tiết encounter
+  getEncounterDetail: async (encounterId) => {
+    return apiCall(`api/v1/encounters/${encounterId}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+};
+
+// API Patient Search
+export const nursePatientSearchAPI = {
+  // Tìm kiếm bệnh nhân theo tên
+  searchPatientsByName: async (name, page = 0, size = 10) => {
+    const params = new URLSearchParams({
+      name: name,
+      page: page.toString(),
+      size: size.toString(),
+    });
+    return apiCall(`api/v1/patient/admin/search?${params.toString()}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+};
+
+// API Employee
+export const nurseEmployeeAPI = {
+  // Lấy danh sách nhân viên theo role
+  getEmployeesByRole: async (role, page = 0, size = 100) => {
+    const params = new URLSearchParams({
+      page: page.toString(),
+      size: size.toString(),
+    });
+    return apiCall(`api/v1/employees/role/${role}?${params.toString()}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Lấy danh sách điều dưỡng
+  getNurses: async (page = 0, size = 100) => {
+    return nurseEmployeeAPI.getEmployeesByRole('NURSE', page, size);
+  },
+
+  // Lấy danh sách bác sĩ
+  getDoctors: async (page = 0, size = 100) => {
+    return nurseEmployeeAPI.getEmployeesByRole('DOCTOR', page, size);
+  },
+
+  // Lấy danh sách bác sĩ theo khoa
+  getDoctorsByDepartment: async (departmentId) => {
+    return apiCall(`api/v1/employees/department/${departmentId}/role/DOCTOR`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+};
+
 export default {
   nurseAuthAPI,
   nurseDashboardAPI,
@@ -702,6 +837,10 @@ export default {
   nurseDepartmentAPI,
   nurseInpatientStayAPI,
   nurseSafetyAssessmentAPI,
-  nurseDischargePlanningAPI
+  nurseDischargePlanningAPI,
+  nurseEmergencyAPI,
+  nurseEncounterListAPI,
+  nursePatientSearchAPI,
+  nurseEmployeeAPI,
 };
 

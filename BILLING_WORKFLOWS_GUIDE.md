@@ -407,7 +407,7 @@ POST /api/v1/emergency-diagnostic-orders
 
 ---
 
-## 5️⃣ LUỒNG TRẢ GÓP (INSTALLMENT PAYMENT)
+## 5️⃣ (BỎ) LUỒNG TRẢ GÓP (INSTALLMENT PAYMENT)
 
 ### 5.1. Sơ đồ luồng
 
@@ -622,7 +622,7 @@ GET /api/v1/transactions/invoice/{invoiceId}/refunds
 
 ---
 
-## 8️⃣ LUỒNG CA THU NGÂN (CASHIER SHIFT) 🆕
+## 8️⃣ (BỎ) LUỒNG CA THU NGÂN (CASHIER SHIFT) 🆕
 
 ### 8.1. Sơ đồ luồng
 

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { financeInpatientAPI, financeTransactionAPI } from '../../../../services/staff/financeAPI';
+import { financeInpatientAPI, financeTransactionAPI, financeInvoiceAPI } from '../../../../services/staff/financeAPI';
 import {
     FiArrowLeft,
     FiUser,
@@ -21,7 +21,10 @@ const InpatientPaymentDetailPage = () => {
     const [stay, setStay] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    
+    const [advanceBalance, setAdvanceBalance] = useState(null);
+    const [loadingBalance, setLoadingBalance] = useState(false);
+    const [loadingInvoice, setLoadingInvoice] = useState(false);
+
     // Advance Payment Modal State
     const [showAdvanceModal, setShowAdvanceModal] = useState(false);
     const [processingAdvance, setProcessingAdvance] = useState(false);
@@ -30,23 +33,89 @@ const InpatientPaymentDetailPage = () => {
         paymentMethod: 'CASH',
     });
     const [advanceResult, setAdvanceResult] = useState(null);
+
+    // Invoice Modal State
+    const [showInvoiceModal, setShowInvoiceModal] = useState(false);
+    const [generatingInvoice, setGeneratingInvoice] = useState(false);
+    const [invoiceFormData, setInvoiceFormData] = useState({
+        healthInsuranceId: '',
+        notes: '',
+        includePendingItems: true,
+    });
+    const [generatedInvoice, setGeneratedInvoice] = useState(null);
+
+    // Payment Modal State
+    const [showPaymentModal, setShowPaymentModal] = useState(false);
+    const [processingPayment, setProcessingPayment] = useState(false);
+    const [paymentFormData, setPaymentFormData] = useState({
+        invoiceId: '',
+        amount: '',
+        paymentMethod: 'ADVANCE',
+        transactionReferenceId: '',
+        notes: '',
+        waiverType: '',
+        waiverReason: '',
+        waiverPercentage: '',
+        originalAmount: '',
+        waiverAmount: '',
+        justification: '',
+        supportingDocuments: '',
+        requestedByEmployeeId: '',
+        approvedByEmployeeId: '',
+    });
+    const [paymentResult, setPaymentResult] = useState(null);
+    const [useAdvanceResult, setUseAdvanceResult] = useState(null);
+    const [processingUseAdvance, setProcessingUseAdvance] = useState(false);
+
+    // Refund Modal State
+    const [showRefundModal, setShowRefundModal] = useState(false);
+    const [processingRefund, setProcessingRefund] = useState(false);
+    const [refundFormData, setRefundFormData] = useState({
+        originalPaymentId: '',
+        amount: '',
+        reason: '',
+        refundMethod: 'ORIGINAL_METHOD',
+        notes: '',
+    });
+    const [refundResult, setRefundResult] = useState(null);
+    const [availableTransactions, setAvailableTransactions] = useState([]);
+    const [loadingTransactions, setLoadingTransactions] = useState(false);
     
     useEffect(() => {
         fetchStayDetail();
     }, [inpatientStayId]);
-    
+
     const fetchStayDetail = async () => {
         try {
             setLoading(true);
             const response = await financeInpatientAPI.getInpatientStayDetail(inpatientStayId);
             if (response && response.data) {
                 setStay(response.data);
+                // Fetch advance balance after getting stay details
+                if (response.data.patientId) {
+                    fetchAdvanceBalance(response.data.patientId);
+                }
             }
         } catch (err) {
             console.error('Error loading stay detail:', err);
             setError(err.message || 'Không thể tải thông tin điều trị nội trú');
         } finally {
             setLoading(false);
+        }
+    };
+
+    const fetchAdvanceBalance = async (patientId) => {
+        try {
+            setLoadingBalance(true);
+            const response = await financeInpatientAPI.getAdvanceBalance(patientId);
+            if (response && response.data !== undefined) {
+                setAdvanceBalance(response.data);
+            }
+        } catch (err) {
+            console.error('Error loading advance balance:', err);
+            setAdvanceBalance(null);
+        } finally {
+            setLoadingBalance(false);
         }
     };
     
@@ -109,25 +178,357 @@ const InpatientPaymentDetailPage = () => {
             alert('Vui lòng nhập số tiền hợp lệ');
             return;
         }
-        
+
         try {
             setProcessingAdvance(true);
-            
+
             const response = await financeTransactionAPI.advancePayment(
                 stay.patientId,
                 parseFloat(advanceFormData.amount),
                 advanceFormData.paymentMethod
             );
-            
+
             if (response && response.data) {
                 setAdvanceResult(response.data);
                 alert('Đặt cọc thành công!');
+                // Refresh advance balance
+                fetchAdvanceBalance(stay.patientId);
             }
         } catch (err) {
             console.error('Error processing advance payment:', err);
             alert(err.message || 'Không thể xử lý đặt cọc');
         } finally {
             setProcessingAdvance(false);
+        }
+    };
+
+    // Handle view invoice
+    const handleViewInvoice = async () => {
+        if (!stay || !stay.encounterId) {
+            alert('Không tìm thấy thông tin encounter');
+            return;
+        }
+
+        try {
+            setLoadingInvoice(true);
+            // Get invoice by encounter ID (same as outpatient payment)
+            const response = await financeInvoiceAPI.getInvoiceByEncounterId(stay.encounterId);
+
+            if (response && response.data) {
+                // Navigate to invoice detail page
+                navigate(`/staff/tai-chinh/quan-ly-hoa-don/${response.data.invoiceId}`);
+            }
+        } catch (err) {
+            console.error('Error fetching invoice:', err);
+            alert(err.message || 'Không thể tải hóa đơn cho lượt điều trị này. Có thể chưa có hóa đơn được tạo.');
+        } finally {
+            setLoadingInvoice(false);
+        }
+    };
+
+    // Invoice Modal Handlers
+    const handleShowInvoiceModal = () => {
+        setShowInvoiceModal(true);
+        setGeneratedInvoice(null);
+    };
+
+    const handleCloseInvoiceModal = () => {
+        setShowInvoiceModal(false);
+        setInvoiceFormData({
+            healthInsuranceId: '',
+            notes: '',
+            includePendingItems: true,
+        });
+        setGeneratedInvoice(null);
+    };
+
+    const handleInvoiceFormChange = (e) => {
+        const { name, value, type, checked } = e.target;
+        setInvoiceFormData(prev => ({
+            ...prev,
+            [name]: type === 'checkbox' ? checked : value,
+        }));
+    };
+
+    const handleGenerateInvoice = async () => {
+        if (!stay || !stay.encounterId) {
+            alert('Không tìm thấy thông tin encounter');
+            return;
+        }
+
+        try {
+            setGeneratingInvoice(true);
+
+            const requestData = {
+                encounterId: parseInt(stay.encounterId),
+                healthInsuranceId: invoiceFormData.healthInsuranceId ? parseInt(invoiceFormData.healthInsuranceId) : null,
+                notes: invoiceFormData.notes || null,
+                includePendingItems: invoiceFormData.includePendingItems,
+            };
+
+            const response = await financeInpatientAPI.generateInpatientInvoice(requestData);
+
+            if (response && response.data) {
+                setGeneratedInvoice(response.data);
+                alert('Tạo hóa đơn thành công!');
+            }
+        } catch (err) {
+            console.error('Error generating invoice:', err);
+            alert(err.message || 'Không thể tạo hóa đơn');
+        } finally {
+            setGeneratingInvoice(false);
+        }
+    };
+
+    // Payment Modal Handlers
+    const handleShowPaymentModal = async () => {
+        if (!stay || !stay.encounterId) {
+            alert('Không tìm thấy thông tin encounter');
+            return;
+        }
+
+        // Try to fetch invoice for this encounter
+        try {
+            setLoadingInvoice(true);
+            const response = await financeInvoiceAPI.getInvoiceByEncounterId(stay.encounterId);
+
+            if (response && response.data) {
+                // Auto-fill invoiceId
+                setPaymentFormData(prev => ({
+                    ...prev,
+                    invoiceId: response.data.invoiceId.toString(),
+                }));
+            }
+        } catch (err) {
+            console.error('Error fetching invoice:', err);
+            // Don't show error, just let user enter manually
+        } finally {
+            setLoadingInvoice(false);
+        }
+
+        setShowPaymentModal(true);
+        setPaymentResult(null);
+    };
+
+    const handleClosePaymentModal = () => {
+        setShowPaymentModal(false);
+        setPaymentFormData({
+            invoiceId: '',
+            amount: '',
+            paymentMethod: 'ADVANCE',
+            transactionReferenceId: '',
+            notes: '',
+            waiverType: '',
+            waiverReason: '',
+            waiverPercentage: '',
+            originalAmount: '',
+            waiverAmount: '',
+            justification: '',
+            supportingDocuments: '',
+            requestedByEmployeeId: '',
+            approvedByEmployeeId: '',
+        });
+        setPaymentResult(null);
+    };
+
+    const handlePaymentFormChange = (e) => {
+        const { name, value } = e.target;
+        setPaymentFormData(prev => ({
+            ...prev,
+            [name]: value,
+        }));
+    };
+
+    const handleProcessPayment = async () => {
+        // Validation
+        if (!paymentFormData.invoiceId || !paymentFormData.amount) {
+            alert('Vui lòng nhập đầy đủ thông tin');
+            return;
+        }
+
+        if (parseFloat(paymentFormData.amount) <= 0) {
+            alert('Số tiền phải lớn hơn 0');
+            return;
+        }
+
+        try {
+            setProcessingPayment(true);
+
+            const requestData = {
+                patientId: stay.patientId,
+                invoiceId: parseInt(paymentFormData.invoiceId),
+                transactionType: paymentFormData.paymentMethod === 'ADVANCE' ? 'ADVANCE_USED' : 'INVOICE_PAYMENT',
+                amount: parseFloat(paymentFormData.amount),
+                paymentMethod: paymentFormData.paymentMethod,
+            };
+
+            // Add optional fields if they have values
+            if (paymentFormData.transactionReferenceId) {
+                requestData.transactionReferenceId = paymentFormData.transactionReferenceId;
+            }
+            if (paymentFormData.notes) {
+                requestData.notes = paymentFormData.notes;
+            }
+            if (paymentFormData.waiverType) {
+                requestData.waiverType = paymentFormData.waiverType;
+            }
+            if (paymentFormData.waiverReason) {
+                requestData.waiverReason = paymentFormData.waiverReason;
+            }
+            if (paymentFormData.waiverPercentage) {
+                requestData.waiverPercentage = parseFloat(paymentFormData.waiverPercentage);
+            }
+            if (paymentFormData.originalAmount) {
+                requestData.originalAmount = parseFloat(paymentFormData.originalAmount);
+            }
+            if (paymentFormData.waiverAmount) {
+                requestData.waiverAmount = parseFloat(paymentFormData.waiverAmount);
+            }
+            if (paymentFormData.justification) {
+                requestData.justification = paymentFormData.justification;
+            }
+            if (paymentFormData.supportingDocuments) {
+                requestData.supportingDocuments = paymentFormData.supportingDocuments;
+            }
+            if (paymentFormData.requestedByEmployeeId) {
+                requestData.requestedByEmployeeId = parseInt(paymentFormData.requestedByEmployeeId);
+            }
+            if (paymentFormData.approvedByEmployeeId) {
+                requestData.approvedByEmployeeId = parseInt(paymentFormData.approvedByEmployeeId);
+            }
+
+            const response = await financeInpatientAPI.processInpatientPayment(requestData);
+
+            if (response && response.data) {
+                setPaymentResult(response.data);
+                alert('Thanh toán thành công!');
+                // Refresh advance balance if using advance payment
+                if (paymentFormData.paymentMethod === 'ADVANCE') {
+                    fetchAdvanceBalance(stay.patientId);
+                }
+            }
+        } catch (err) {
+            console.error('Error processing payment:', err);
+            alert(err.message || 'Không thể xử lý thanh toán');
+        } finally {
+            setProcessingPayment(false);
+        }
+    };
+
+    // Handle use advance deposit
+    const handleUseAdvanceDeposit = async () => {
+        // Validation
+        if (!paymentFormData.invoiceId) {
+            alert('Vui lòng nhập Invoice ID');
+            return;
+        }
+        if (!paymentFormData.amount || parseFloat(paymentFormData.amount) <= 0) {
+            alert('Vui lòng nhập số tiền hợp lệ');
+            return;
+        }
+
+        try {
+            setProcessingUseAdvance(true);
+
+            const response = await financeTransactionAPI.useAdvanceDeposit(
+                stay.patientId,
+                parseInt(paymentFormData.invoiceId),
+                parseFloat(paymentFormData.amount)
+            );
+
+            if (response && response.data) {
+                setUseAdvanceResult(response.data);
+                alert('Sử dụng tiền tạm ứng thành công!');
+                // Refresh advance balance
+                fetchAdvanceBalance(stay.patientId);
+            }
+        } catch (err) {
+            console.error('Error using advance deposit:', err);
+            alert(err.message || 'Không thể sử dụng tiền tạm ứng');
+        } finally {
+            setProcessingUseAdvance(false);
+        }
+    };
+
+    // Refund Modal Handlers
+    const handleShowRefundModal = async () => {
+        setShowRefundModal(true);
+        setRefundResult(null);
+        
+        // Fetch available transactions for refund
+        try {
+            setLoadingTransactions(true);
+            const response = await financeInpatientAPI.getTransactionsByStayId(inpatientStayId);
+            if (response && response.data) {
+                // Filter only completed payment transactions
+                const paymentTransactions = response.data.filter(t => 
+                    (t.transactionType === 'INVOICE_PAYMENT' || t.transactionType === 'ADVANCE_PAYMENT') && 
+                    t.status === 'COMPLETED'
+                );
+                setAvailableTransactions(paymentTransactions);
+            }
+        } catch (err) {
+            console.error('Error loading transactions:', err);
+            setAvailableTransactions([]);
+        } finally {
+            setLoadingTransactions(false);
+        }
+    };
+
+    const handleCloseRefundModal = () => {
+        setShowRefundModal(false);
+        setRefundFormData({
+            originalPaymentId: '',
+            amount: '',
+            reason: '',
+            refundMethod: 'ORIGINAL_METHOD',
+            notes: '',
+        });
+        setRefundResult(null);
+    };
+
+    const handleRefundFormChange = (e) => {
+        const { name, value } = e.target;
+        setRefundFormData(prev => ({
+            ...prev,
+            [name]: value,
+        }));
+    };
+
+    const handleProcessRefund = async () => {
+        // Validation
+        if (!refundFormData.originalPaymentId || !refundFormData.amount || !refundFormData.reason) {
+            alert('Vui lòng nhập đầy đủ thông tin');
+            return;
+        }
+
+        if (parseFloat(refundFormData.amount) <= 0) {
+            alert('Số tiền phải lớn hơn 0');
+            return;
+        }
+
+        try {
+            setProcessingRefund(true);
+
+            const requestData = {
+                originalPaymentId: parseInt(refundFormData.originalPaymentId),
+                amount: parseFloat(refundFormData.amount),
+                reason: refundFormData.reason,
+                refundMethod: refundFormData.refundMethod,
+                notes: refundFormData.notes || null,
+            };
+
+            const response = await financeInpatientAPI.processRefund(requestData);
+
+            if (response && response.data) {
+                setRefundResult(response.data);
+                alert('Hoàn tiền thành công!');
+            }
+        } catch (err) {
+            console.error('Error processing refund:', err);
+            alert(err.message || 'Không thể xử lý hoàn tiền');
+        } finally {
+            setProcessingRefund(false);
         }
     };
     
@@ -188,17 +589,39 @@ const InpatientPaymentDetailPage = () => {
                     <button className="btn-refresh" onClick={fetchStayDetail}>
                         <FiRefreshCw /> Làm mới
                     </button>
+                    <button className="btn-view-invoice" onClick={handleViewInvoice} disabled={loadingInvoice}>
+                        <FiFileText /> {loadingInvoice ? 'Đang tải...' : 'Xem hóa đơn'}
+                    </button>
                     <button className="btn-advance-payment" onClick={handleShowAdvanceModal}>
                         <FiDollarSign /> Đặt cọc
                     </button>
+                    <button className="btn-create-invoice" onClick={handleShowInvoiceModal}>
+                        <FiFileText /> Tạo hóa đơn
+                    </button>
+                    <button className="btn-payment" onClick={handleShowPaymentModal}>
+                        <FiDollarSign /> Thanh toán
+                    </button>
+                    <button className="btn-refund" onClick={handleShowRefundModal}>
+                        <FiDollarSign /> Hoàn tiền
+                    </button>
                 </div>
             </div>
-            
-            {/* Status Badge */}
-            <div className="status-section">
+
+            {/* Status and Balance Section */}
+            <div className="status-balance-section">
                 <span className={`status-badge ${getStatusBadgeClass(stay.currentStatus)}`}>
                     {stay.statusDisplay || stay.currentStatus}
                 </span>
+                <div className="balance-info">
+                    <label>Số dư tạm ứng:</label>
+                    {loadingBalance ? (
+                        <span className="balance-loading">Đang tải...</span>
+                    ) : (
+                        <span className="balance-amount">
+                            {advanceBalance !== null ? `${advanceBalance.toLocaleString('vi-VN')} VNĐDDDDDDDDDDĐ` : 'Chưa có dữ liệu'}
+                        </span>
+                    )}
+                </div>
             </div>
             
             {/* Patient Information */}
@@ -315,6 +738,501 @@ const InpatientPaymentDetailPage = () => {
                     formatDateTime={formatDateTime}
                 />
             )}
+
+            {/* Invoice Modal */}
+            {showInvoiceModal && (
+                <InvoiceModal
+                    invoiceFormData={invoiceFormData}
+                    onFormChange={handleInvoiceFormChange}
+                    onGenerate={handleGenerateInvoice}
+                    onClose={handleCloseInvoiceModal}
+                    generating={generatingInvoice}
+                    generatedInvoice={generatedInvoice}
+                    formatCurrency={formatCurrency}
+                />
+            )}
+
+            {/* Payment Modal */}
+            {showPaymentModal && (
+                <PaymentModal
+                    paymentFormData={paymentFormData}
+                    onFormChange={handlePaymentFormChange}
+                    onProcess={handleProcessPayment}
+                    onClose={handleClosePaymentModal}
+                    processing={processingPayment}
+                    paymentResult={paymentResult}
+                    formatCurrency={formatCurrency}
+                    formatDateTime={formatDateTime}
+                    onUseAdvance={handleUseAdvanceDeposit}
+                    processingUseAdvance={processingUseAdvance}
+                    useAdvanceResult={useAdvanceResult}
+                />
+            )}
+
+            {/* Refund Modal */}
+            {showRefundModal && (
+                <RefundModal
+                    refundFormData={refundFormData}
+                    onFormChange={handleRefundFormChange}
+                    onProcess={handleProcessRefund}
+                    onClose={handleCloseRefundModal}
+                    processing={processingRefund}
+                    refundResult={refundResult}
+                    formatCurrency={formatCurrency}
+                    formatDateTime={formatDateTime}
+                    availableTransactions={availableTransactions}
+                    loadingTransactions={loadingTransactions}
+                />
+            )}
+        </div>
+    );
+};
+
+const formatCurrency = (amount) => {
+    if (!amount && amount !== 0) return '-';
+    return amount.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
+};
+
+// Invoice Modal Component
+const InvoiceModal = ({ invoiceFormData, onFormChange, onGenerate, onClose, generating, generatedInvoice, formatCurrency }) => {
+    return (
+        <div className="modal-overlay">
+            <div className="modal-content">
+                <div className="modal-header">
+                    <h3>Tạo hóa đơn nội trú</h3>
+                    <button className="btn-close" onClick={onClose} disabled={generating}>
+                        <FiX />
+                    </button>
+                </div>
+                <div className="modal-body">
+                    {!generatedInvoice ? (
+                        <div className="invoice-form">
+                            <div className="form-group">
+                                <label>ID Bảo hiểm y tế</label>
+                                <input
+                                    type="number"
+                                    name="healthInsuranceId"
+                                    value={invoiceFormData.healthInsuranceId}
+                                    onChange={onFormChange}
+                                    placeholder="Nhập ID bảo hiểm (nếu có)..."
+                                />
+                            </div>
+                            <div className="form-group">
+                                <label>Ghi chú</label>
+                                <textarea
+                                    name="notes"
+                                    value={invoiceFormData.notes}
+                                    onChange={onFormChange}
+                                    placeholder="Nhập ghi chú..."
+                                    rows="3"
+                                />
+                            </div>
+                            <div className="form-group checkbox-group">
+                                <label>
+                                    <input
+                                        type="checkbox"
+                                        name="includePendingItems"
+                                        checked={invoiceFormData.includePendingItems}
+                                        onChange={onFormChange}
+                                    />
+                                    <span>Bao gồm các mục đang chờ xử lý</span>
+                                </label>
+                            </div>
+                        </div>
+                    ) : (
+                        <div className="invoice-result">
+                            <div className="success-message">
+                                <FiCheck className="success-icon" />
+                                <h4>Tạo hóa đơn thành công!</h4>
+                            </div>
+                            <div className="invoice-details">
+                                <div className="detail-row">
+                                    <span className="label">Số hóa đơn:</span>
+                                    <span className="value">{generatedInvoice.invoiceNumber}</span>
+                                </div>
+                                <div className="detail-row">
+                                    <span className="label">Tên bệnh nhân:</span>
+                                    <span className="value">{generatedInvoice.patientName}</span>
+                                </div>
+                                <div className="detail-row">
+                                    <span className="label">Tổng số mục:</span>
+                                    <span className="value">{generatedInvoice.totalItemsCount}</span>
+                                </div>
+                                <div className="detail-row">
+                                    <span className="label">Tổng tiền:</span>
+                                    <span className="value highlight">{formatCurrency(generatedInvoice.totalAmount)}</span>
+                                </div>
+                                <div className="detail-row">
+                                    <span className="label">Bảo hiểm chi trả:</span>
+                                    <span className="value">{formatCurrency(generatedInvoice.insuranceCoveredAmount)}</span>
+                                </div>
+                                <div className="detail-row">
+                                    <span className="label">Bệnh nhân thanh toán:</span>
+                                    <span className="value highlight">{formatCurrency(generatedInvoice.patientResponsibleAmount)}</span>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                </div>
+                <div className="modal-footer">
+                    <button className="btn-cancel" onClick={onClose} disabled={generating}>
+                        {generatedInvoice ? 'Đóng' : 'Hủy'}
+                    </button>
+                    {!generatedInvoice && (
+                        <button className="btn-confirm" onClick={onGenerate} disabled={generating}>
+                            {generating ? 'Đang tạo...' : <><FiCheck /> Tạo hóa đơn</>}
+                        </button>
+                    )}
+                </div>
+            </div>
+        </div>
+    );
+};
+
+// Payment Modal Component
+const PaymentModal = ({ 
+    paymentFormData, 
+    onFormChange, 
+    onProcess, 
+    onClose, 
+    processing, 
+    paymentResult, 
+    formatCurrency, 
+    formatDateTime,
+    onUseAdvance,
+    processingUseAdvance,
+    useAdvanceResult
+}) => {
+    return (
+        <div className="modal-overlay">
+            <div className="modal-content">
+                <div className="modal-header">
+                    <h3>Thanh toán hóa đơn</h3>
+                    <button className="btn-close" onClick={onClose} disabled={processing || processingUseAdvance}>
+                        <FiX />
+                    </button>
+                </div>
+                <div className="modal-body">
+                    {!paymentResult && !useAdvanceResult ? (
+                        <div className="payment-form">
+                            <div className="form-group">
+                                <label>Invoice ID <span className="required">*</span></label>
+                                <input
+                                    type="number"
+                                    name="invoiceId"
+                                    value={paymentFormData.invoiceId}
+                                    onChange={onFormChange}
+                                    placeholder="Nhập Invoice ID..."
+                                    required
+                                />
+                            </div>
+                            <div className="form-group">
+                                <label>Số tiền <span className="required">*</span></label>
+                                <input
+                                    type="number"
+                                    name="amount"
+                                    value={paymentFormData.amount}
+                                    onChange={onFormChange}
+                                    placeholder="Nhập số tiền..."
+                                    min="0"
+                                    step="1000"
+                                    required
+                                />
+                            </div>
+                            <div className="form-group">
+                                <label>Phương thức thanh toán <span className="required">*</span></label>
+                                <select
+                                    name="paymentMethod"
+                                    value={paymentFormData.paymentMethod}
+                                    onChange={onFormChange}
+                                    required
+                                >
+                                    <option value="ADVANCE">Tạm ứng</option>
+                                    <option value="CASH">Tiền mặt</option>
+                                    <option value="BANK_TRANSFER">Chuyển khoản</option>
+                                    <option value="CREDIT_CARD">Thẻ tín dụng</option>
+                                    <option value="DEBIT_CARD">Thẻ ghi nợ</option>
+                                    <option value="E_WALLET">Ví điện tử</option>
+                                </select>
+                            </div>
+                        </div>
+                    ) : useAdvanceResult ? (
+                        <div className="payment-result">
+                            <div className="success-message">
+                                <FiCheck className="success-icon" />
+                                <h4>Sử dụng tiền tạm ứng thành công!</h4>
+                            </div>
+                            <div className="payment-details">
+                                <div className="detail-row">
+                                    <span className="label">Mã giao dịch:</span>
+                                    <span className="value">{useAdvanceResult.transactionId}</span>
+                                </div>
+                                <div className="detail-row">
+                                    <span className="label">Số biên lai:</span>
+                                    <span className="value">{useAdvanceResult.receiptNumber || '-'}</span>
+                                </div>
+                                <div className="detail-row">
+                                    <span className="label">Bệnh nhân:</span>
+                                    <span className="value">{useAdvanceResult.patientName}</span>
+                                </div>
+                                <div className="detail-row">
+                                    <span className="label">Loại giao dịch:</span>
+                                    <span className="value">{useAdvanceResult.transactionType}</span>
+                                </div>
+                                <div className="detail-row">
+                                    <span className="label">Số tiền:</span>
+                                    <span className="value highlight">{formatCurrency(useAdvanceResult.amount)}</span>
+                                </div>
+                                <div className="detail-row">
+                                    <span className="label">Trạng thái:</span>
+                                    <span className="value">{useAdvanceResult.status}</span>
+                                </div>
+                                <div className="detail-row">
+                                    <span className="label">Ngày giao dịch:</span>
+                                    <span className="value">{formatDateTime(useAdvanceResult.transactionDate)}</span>
+                                </div>
+                            </div>
+                        </div>
+                    ) : (
+                        <div className="payment-result">
+                            <div className="success-message">
+                                <FiCheck className="success-icon" />
+                                <h4>Thanh toán thành công!</h4>
+                            </div>
+                            <div className="payment-details">
+                                <div className="detail-row">
+                                    <span className="label">Mã giao dịch:</span>
+                                    <span className="value">{paymentResult.transactionId}</span>
+                                </div>
+                                <div className="detail-row">
+                                    <span className="label">Số biên lai:</span>
+                                    <span className="value">{paymentResult.receiptNumber}</span>
+                                </div>
+                                <div className="detail-row">
+                                    <span className="label">Tên bệnh nhân:</span>
+                                    <span className="value">{paymentResult.patientName}</span>
+                                </div>
+                                <div className="detail-row">
+                                    <span className="label">Số hóa đơn:</span>
+                                    <span className="value">{paymentResult.invoiceNumber}</span>
+                                </div>
+                                <div className="detail-row">
+                                    <span className="label">Loại giao dịch:</span>
+                                    <span className="value">{paymentResult.transactionType}</span>
+                                </div>
+                                <div className="detail-row">
+                                    <span className="label">Số tiền:</span>
+                                    <span className="value highlight">{formatCurrency(paymentResult.amount)}</span>
+                                </div>
+                                <div className="detail-row">
+                                    <span className="label">Phương thức:</span>
+                                    <span className="value">{paymentResult.paymentMethod}</span>
+                                </div>
+                                <div className="detail-row">
+                                    <span className="label">Trạng thái:</span>
+                                    <span className="value">{paymentResult.status}</span>
+                                </div>
+                                <div className="detail-row">
+                                    <span className="label">Ngày giao dịch:</span>
+                                    <span className="value">{formatDateTime(paymentResult.transactionDate)}</span>
+                                </div>
+                                {paymentResult.processedByEmployeeName && (
+                                    <div className="detail-row">
+                                        <span className="label">Người xử lý:</span>
+                                        <span className="value">{paymentResult.processedByEmployeeName}</span>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    )}
+                </div>
+                <div className="modal-footer">
+                    <button className="btn-cancel" onClick={onClose} disabled={processing || processingUseAdvance}>
+                        {(paymentResult || useAdvanceResult) ? 'Đóng' : 'Hủy'}
+                    </button>
+                    {!paymentResult && !useAdvanceResult && (
+                        <>
+                            <button 
+                                className="btn-use-advance" 
+                                onClick={onUseAdvance} 
+                                disabled={processing || processingUseAdvance}
+                            >
+                                {processingUseAdvance ? 'Đang xử lý...' : <><FiDollarSign /> Dùng tiền tạm ứng</>}
+                            </button>
+                            <button 
+                                className="btn-confirm" 
+                                onClick={onProcess} 
+                                disabled={processing || processingUseAdvance}
+                            >
+                                {processing ? 'Đang xử lý...' : <><FiCheck /> Thanh toán</>}
+                            </button>
+                        </>
+                    )}
+                </div>
+            </div>
+        </div>
+    );
+};
+
+// Refund Modal Component
+const RefundModal = ({ 
+    refundFormData, 
+    onFormChange, 
+    onProcess, 
+    onClose, 
+    processing, 
+    refundResult, 
+    formatCurrency, 
+    formatDateTime,
+    availableTransactions,
+    loadingTransactions
+}) => {
+    return (
+        <div className="modal-overlay">
+            <div className="modal-content">
+                <div className="modal-header">
+                    <h3>Hoàn tiền</h3>
+                    <button className="btn-close" onClick={onClose} disabled={processing}>
+                        <FiX />
+                    </button>
+                </div>
+                <div className="modal-body">
+                    {!refundResult ? (
+                        <div className="refund-form">
+                            <div className="form-group">
+                                <label>Giao dịch gốc <span className="required">*</span></label>
+                                {loadingTransactions ? (
+                                    <div className="loading-select">Đang tải danh sách giao dịch...</div>
+                                ) : (
+                                    <select
+                                        name="originalPaymentId"
+                                        value={refundFormData.originalPaymentId}
+                                        onChange={onFormChange}
+                                        required
+                                    >
+                                        <option value="">-- Chọn giao dịch --</option>
+                                        {availableTransactions.map(t => (
+                                            <option key={t.transactionId} value={t.transactionId}>
+                                                ID: {t.transactionId} - {t.transactionType} - {formatCurrency(t.amount)} - {formatDateTime(t.transactionDate)}
+                                            </option>
+                                        ))}
+                                    </select>
+                                )}
+                            </div>
+                            <div className="form-group">
+                                <label>Số tiền hoàn <span className="required">*</span></label>
+                                <input
+                                    type="number"
+                                    name="amount"
+                                    value={refundFormData.amount}
+                                    onChange={onFormChange}
+                                    placeholder="Nhập số tiền hoàn..."
+                                    min="0"
+                                    step="1000"
+                                    required
+                                />
+                            </div>
+                            <div className="form-group">
+                                <label>Lý do hoàn tiền <span className="required">*</span></label>
+                                <input
+                                    type="text"
+                                    name="reason"
+                                    value={refundFormData.reason}
+                                    onChange={onFormChange}
+                                    placeholder="Nhập lý do hoàn tiền..."
+                                    required
+                                />
+                            </div>
+                            <div className="form-group">
+                                <label>Phương thức hoàn tiền <span className="required">*</span></label>
+                                <select
+                                    name="refundMethod"
+                                    value={refundFormData.refundMethod}
+                                    onChange={onFormChange}
+                                    required
+                                >
+                                    <option value="ORIGINAL_METHOD">Phương thức gốc</option>
+                                    <option value="CASH">Tiền mặt</option>
+                                    <option value="BANK_TRANSFER">Chuyển khoản</option>
+                                </select>
+                            </div>
+                            <div className="form-group">
+                                <label>Ghi chú</label>
+                                <textarea
+                                    name="notes"
+                                    value={refundFormData.notes}
+                                    onChange={onFormChange}
+                                    placeholder="Nhập ghi chú..."
+                                    rows="3"
+                                />
+                            </div>
+                        </div>
+                    ) : (
+                        <div className="refund-result">
+                            <div className="success-message">
+                                <FiCheck className="success-icon" />
+                                <h4>Hoàn tiền thành công!</h4>
+                            </div>
+                            <div className="refund-details">
+                                <div className="detail-row">
+                                    <span className="label">Mã giao dịch:</span>
+                                    <span className="value">{refundResult.transactionId}</span>
+                                </div>
+                                <div className="detail-row">
+                                    <span className="label">Số biên lai:</span>
+                                    <span className="value">{refundResult.receiptNumber}</span>
+                                </div>
+                                <div className="detail-row">
+                                    <span className="label">Tên bệnh nhân:</span>
+                                    <span className="value">{refundResult.patientName}</span>
+                                </div>
+                                <div className="detail-row">
+                                    <span className="label">Loại giao dịch:</span>
+                                    <span className="value">{refundResult.transactionType}</span>
+                                </div>
+                                <div className="detail-row">
+                                    <span className="label">Số tiền hoàn:</span>
+                                    <span className="value highlight">{formatCurrency(refundResult.amount)}</span>
+                                </div>
+                                <div className="detail-row">
+                                    <span className="label">Phương thức:</span>
+                                    <span className="value">{refundResult.paymentMethod}</span>
+                                </div>
+                                <div className="detail-row">
+                                    <span className="label">Trạng thái:</span>
+                                    <span className="value">{refundResult.status}</span>
+                                </div>
+                                <div className="detail-row">
+                                    <span className="label">Ngày giao dịch:</span>
+                                    <span className="value">{formatDateTime(refundResult.transactionDate)}</span>
+                                </div>
+                                {refundResult.processedByEmployeeName && (
+                                    <div className="detail-row">
+                                        <span className="label">Người xử lý:</span>
+                                        <span className="value">{refundResult.processedByEmployeeName}</span>
+                                    </div>
+                                )}
+                                {refundResult.notes && (
+                                    <div className="detail-row">
+                                        <span className="label">Ghi chú:</span>
+                                        <span className="value">{refundResult.notes}</span>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    )}
+                </div>
+                <div className="modal-footer">
+                    <button className="btn-cancel" onClick={onClose} disabled={processing}>
+                        {refundResult ? 'Đóng' : 'Hủy'}
+                    </button>
+                    {!refundResult && (
+                        <button className="btn-confirm" onClick={onProcess} disabled={processing}>
+                            {processing ? 'Đang xử lý...' : <><FiCheck /> Hoàn tiền</>}
+                        </button>
+                    )}
+                </div>
+            </div>
         </div>
     );
 };

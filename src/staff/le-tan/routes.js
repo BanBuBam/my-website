@@ -10,6 +10,10 @@ import TraCuuBenhNhan from './pages/tracuu/TraCuuBenhNhan';
 import BookingListPage from './pages/booking/BookingListPage';
 import BookingDetailPage from './pages/booking/BookingDetailPage';
 import PaymentPage from './pages/payment/PaymentPage';
+import EmergencyListPage from './pages/emergency/EmergencyListPage';
+import EmergencyDetailPage from './pages/emergency/EmergencyDetailPage';
+import EncounterDetailPage from './pages/emergency/EncounterDetailPage';
+import CreateEmergencyPage from './pages/emergency/CreateEmergencyPage';
 
 const LeTanRoutes = () => {
   return (
@@ -24,6 +28,10 @@ const LeTanRoutes = () => {
         <Route path="booking/:bookingId" element={<BookingDetailPage />} />
         <Route path="booking" element={<BookingListPage />} />
         <Route path="payment" element={<PaymentPage />} />
+        <Route path="cap-cuu" element={<EmergencyListPage />} />
+        <Route path="cap-cuu/tao-moi" element={<CreateEmergencyPage />} />
+        <Route path="cap-cuu/emergency/:emergencyEncounterId" element={<EmergencyDetailPage />} />
+        <Route path="cap-cuu/encounter/:encounterId" element={<EncounterDetailPage />} />
       </Route>
     </Routes>
   );

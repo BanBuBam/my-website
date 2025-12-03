@@ -4,7 +4,8 @@ import './LabTechnicianLayout.css';
 import {
     FiHome,
     FiClipboard,
-    FiFileText
+    FiFileText,
+    FiActivity
 } from 'react-icons/fi';
 import StaffAvatarDropdown from '../../components/StaffAvatarDropdown';
 
@@ -43,6 +44,19 @@ const LabTechnicianLayout = () => {
                                 <NavLink to="/staff/ky-thuat-vien/lab-test-result">
                                     <FiFileText />
                                     <span>Lab Test Result</span>
+                                </NavLink>
+                            </li>
+                        </ul>
+                    </div>
+
+                    {/* Chẩn đoán cấp cứu */}
+                    <div className="nav-category">
+                        <div className="category-header">Chẩn đoán cấp cứu</div>
+                        <ul>
+                            <li>
+                                <NavLink to="/staff/ky-thuat-vien/diagnostic-orders">
+                                    <FiActivity />
+                                    <span>Quản lý Diagnostic Orders</span>
                                 </NavLink>
                             </li>
                         </ul>

@@ -24,7 +24,7 @@ const StaffLoginPage = () => {
       'LAB_TECH': '/staff/ky-thuat-vien/dashboard',
       'PHARMACIST': '/staff/duoc-si/dashboard',
       'RECEPTIONIST': '/staff/le-tan/dashboard',
-      'CASHIER': '/staff/ke-toan/dashboard',
+      'CASHIER': '/staff/tai-chinh/dashboard',
       'MANAGER': '/staff/quan-ly/dashboard',
       // 'ADMIN': '/staff/hr/dashboard',
       'ADMIN': '/staff/admin/dashboard',
@@ -74,6 +74,7 @@ const StaffLoginPage = () => {
         // Store user info and employeeAccountId
         localStorage.setItem('staffUserInfo', JSON.stringify(claims));
         localStorage.setItem('employeeAccountId', employeeAccountId);
+        localStorage.setItem('employeeId', claims.employeeId);
 
         // Navigate to appropriate dashboard based on role
         const route = getRoleRoute(claims.roles);
