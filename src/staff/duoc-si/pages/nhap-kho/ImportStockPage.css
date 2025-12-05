@@ -81,3 +81,42 @@
 .btn-import:hover {
     background: #218838;
 }
+
+/* Responsive */
+@media (max-width: 768px) {
+    .import-stock-page {
+        padding: 1rem;
+    }
+
+    .page-title {
+        font-size: 1.4rem;
+        margin-bottom: 1rem;
+    }
+
+    .search-box {
+        flex-direction: column;
+    }
+
+    .search-box input {
+        width: 100%;
+    }
+
+    .search-box button {
+        width: 100%;
+    }
+
+    .medicine-item {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .medicine-info {
+        max-width: 100%;
+    }
+
+    .btn-import {
+        width: 100%;
+        text-align: center;
+        justify-content: center;
+    }
+}
