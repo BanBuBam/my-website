@@ -105,6 +105,12 @@ const FinanceLayout = () => {
                                 </NavLink>
                             </li>
                             <li>
+                                <NavLink to="/staff/tai-chinh/thu-tam-ung-cap-cuu">
+                                    <FiAlertCircle />
+                                    <span>Thu tạm ứng cấp cứu</span>
+                                </NavLink>
+                            </li>
+                            <li>
                                 <NavLink to="/staff/tai-chinh/thu-chi">
                                     <FiTrendingUp />
                                     <span>Quản lý thu chi</span>

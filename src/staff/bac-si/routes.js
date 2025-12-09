@@ -29,6 +29,15 @@ import PatientListPage from './pages/patient-list/PatientListPage';
 import MedicationOrderGroupsPage from "./pages/medication-order-group/MedicationOrderGroupsPage";
 import DoctorDischargePlanningPage from "./pages/discharge/DoctorDischargePlanningPage";
 import BedTransferPage from "./pages/inpatient-treatment/BedTransferPage";
+import ConsultationManagementPage from "./pages/consultation/ConsultationManagementPage";
+import CreateConsultationPage from "./pages/consultation/CreateConsultationPage";
+import DiagnosticOrderManagementPage from "./pages/diagnostic-orders/DiagnosticOrderManagementPage";
+import DiagnosticOrderDetailPage from "./pages/diagnostic-orders/DiagnosticOrderDetailPage";
+import ProtocolListPage from "./pages/emergency/ProtocolListPage";
+import ProtocolDetailPage from "./pages/emergency/ProtocolDetailPage";
+import ProtocolManagementPage from "./pages/protocols/ProtocolManagementPage";
+import FollowUpListPage from "./pages/follow-up/FollowUpListPage";
+import FollowUpDetailPage from "./pages/follow-up/FollowUpDetailPage";
 
 const DoctorRoutes = () => {
     return (
@@ -61,7 +70,16 @@ const DoctorRoutes = () => {
                 <Route path="cap-cuu/tao-moi" element={<CreateEmergencyPage />} />
                 <Route path="cap-cuu/emergency/:emergencyEncounterId" element={<EmergencyDetailPage />} />
                 <Route path="cap-cuu/encounter/:encounterId" element={<EmergencyEncounterDetailPage />} />
+                <Route path="hoi-chan" element={<ConsultationManagementPage />} />
+                <Route path="hoi-chan/tao-moi" element={<CreateConsultationPage />} />
                 <Route path="danh-sach-benh-nhan" element={<PatientListPage />} />
+                <Route path="diagnostic-orders" element={<DiagnosticOrderManagementPage />} />
+                <Route path="diagnostic-orders/:orderId" element={<DiagnosticOrderDetailPage />} />
+                <Route path="protocols" element={<ProtocolManagementPage />} />
+                <Route path="protocols/patient/:patientId" element={<ProtocolListPage />} />
+                <Route path="protocols/:protocolId" element={<ProtocolDetailPage />} />
+                <Route path="tai-kham" element={<FollowUpListPage />} />
+                <Route path="tai-kham/:appointmentId" element={<FollowUpDetailPage />} />
             </Route>
         </Routes>
     );

@@ -5,6 +5,7 @@ import {
     FiArrowLeft, FiRefreshCw, FiUser, FiCalendar, FiActivity,
     FiMapPin, FiAlertCircle, FiFileText, FiPlus
 } from 'react-icons/fi';
+import CreateEmergencyModal from './CreateEmergencyModal';
 import './EncounterDetailPage.css';
 
 const EncounterDetailPage = () => {
@@ -13,6 +14,7 @@ const EncounterDetailPage = () => {
     const [encounter, setEncounter] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [showEmergencyModal, setShowEmergencyModal] = useState(false);
 
     useEffect(() => {
         fetchEncounterDetail();
@@ -40,8 +42,7 @@ const EncounterDetailPage = () => {
     };
 
     const handleCreateEmergency = () => {
-        // TODO: Navigate to create emergency page or open modal
-        alert('Chức năng tạo Emergency đang được phát triển');
+        setShowEmergencyModal(true);
     };
 
     const formatDateTime = (dateString) => {
@@ -290,6 +291,18 @@ const EncounterDetailPage = () => {
                     </div>
                 </div>
             </div>
+
+            {/* Create Emergency Modal */}
+            {showEmergencyModal && (
+                <CreateEmergencyModal
+                    encounterId={encounterId}
+                    onClose={() => setShowEmergencyModal(false)}
+                    onSuccess={(emergencyData) => {
+                        console.log('Emergency created:', emergencyData);
+                        navigate(`/staff/le-tan/cap-cuu/emergency/${emergencyData.emergencyEncounterId}`);
+                    }}
+                />
+            )}
         </div>
     );
 };

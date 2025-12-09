@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { labTechnicianDiagnosticAPI } from '../../../../services/staff/labTechnicianAPI';
 import {
     FiArrowLeft, FiActivity, FiRefreshCw, FiAlertCircle,
-    FiClock, FiCheckCircle, FiUser, FiFileText, FiCalendar
+    FiClock, FiCheckCircle, FiUser, FiFileText, FiCalendar, FiX
 } from 'react-icons/fi';
 import './DiagnosticOrderDetailPage.css';
 
@@ -13,6 +13,15 @@ const DiagnosticOrderDetailPage = () => {
     const [order, setOrder] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [actionLoading, setActionLoading] = useState(false);
+    const [successMessage, setSuccessMessage] = useState(null);
+    
+    // Report modal state
+    const [showReportModal, setShowReportModal] = useState(false);
+    const [reportData, setReportData] = useState({
+        results: '',
+        interpretation: '',
+    });
 
     useEffect(() => {
         fetchOrderDetail();
@@ -22,12 +31,17 @@ const DiagnosticOrderDetailPage = () => {
         try {
             setLoading(true);
             setError(null);
+            console.log('🔍 Fetching diagnostic order detail, ID:', orderId);
             const response = await labTechnicianDiagnosticAPI.getDiagnosticOrderDetail(parseInt(orderId));
+            console.log('📦 Response received:', response);
             if (response && response.data) {
+                console.log('✅ Order data:', response.data);
                 setOrder(response.data);
+            } else {
+                console.log('⚠️ No data in response');
             }
         } catch (err) {
-            console.error('Error fetching order detail:', err);
+            console.error('❌ Error fetching order detail:', err);
             setError(err.message || 'Không thể tải chi tiết chỉ định');
         } finally {
             setLoading(false);
@@ -36,6 +50,148 @@ const DiagnosticOrderDetailPage = () => {
 
     const handleBack = () => {
         navigate('/staff/ky-thuat-vien/diagnostic-orders');
+    };
+
+    // Tiếp nhận chỉ định
+    const handleAccept = async () => {
+        if (!window.confirm('Bạn có chắc muốn tiếp nhận chỉ định này?')) return;
+
+        try {
+            setActionLoading(true);
+            setError(null);
+            
+            const orderData = {
+                emergencyEncounterId: order.emergencyEncounterId,
+                diagnosticType: order.diagnosticType,
+                urgencyLevel: order.urgencyLevel,
+                orderDetails: order.orderDetails,
+                clinicalIndication: order.clinicalIndication,
+            };
+
+            const response = await labTechnicianDiagnosticAPI.acceptDiagnosticOrder(orderId, orderData);
+            
+            if (response && response.data) {
+                setSuccessMessage('Tiếp nhận chỉ định xét nghiệm thành công!');
+                setOrder(response.data);
+                setTimeout(() => setSuccessMessage(null), 3000);
+            }
+        } catch (err) {
+            console.error('Error accepting order:', err);
+            setError(err.message || 'Không thể tiếp nhận chỉ định');
+        } finally {
+            setActionLoading(false);
+        }
+    };
+
+    // Bắt đầu thực hiện
+    const handleStart = async () => {
+        if (!window.confirm('Bạn có chắc muốn bắt đầu thực hiện xét nghiệm?')) return;
+
+        try {
+            setActionLoading(true);
+            setError(null);
+            
+            const orderData = {
+                emergencyEncounterId: order.emergencyEncounterId,
+                diagnosticType: order.diagnosticType,
+                urgencyLevel: order.urgencyLevel,
+                orderDetails: order.orderDetails,
+                clinicalIndication: order.clinicalIndication,
+            };
+
+            const response = await labTechnicianDiagnosticAPI.startDiagnosticOrder(orderId, orderData);
+            
+            if (response && response.data) {
+                setSuccessMessage('Bắt đầu thực hiện xét nghiệm thành công!');
+                setOrder(response.data);
+                setTimeout(() => setSuccessMessage(null), 3000);
+            }
+        } catch (err) {
+            console.error('Error starting order:', err);
+            setError(err.message || 'Không thể bắt đầu thực hiện');
+        } finally {
+            setActionLoading(false);
+        }
+    };
+
+    // Hoàn thành xét nghiệm
+    const handleComplete = async () => {
+        if (!window.confirm('Bạn có chắc muốn hoàn thành xét nghiệm?')) return;
+
+        try {
+            setActionLoading(true);
+            setError(null);
+            
+            const orderData = {
+                emergencyEncounterId: order.emergencyEncounterId,
+                diagnosticType: order.diagnosticType,
+                urgencyLevel: order.urgencyLevel,
+                orderDetails: order.orderDetails,
+                clinicalIndication: order.clinicalIndication,
+            };
+
+            const response = await labTechnicianDiagnosticAPI.completeDiagnosticOrder(orderId, orderData);
+            
+            if (response && response.data) {
+                setSuccessMessage('Hoàn thành xét nghiệm thành công!');
+                setOrder(response.data);
+                setTimeout(() => setSuccessMessage(null), 3000);
+            }
+        } catch (err) {
+            console.error('Error completing order:', err);
+            setError(err.message || 'Không thể hoàn thành xét nghiệm');
+        } finally {
+            setActionLoading(false);
+        }
+    };
+
+    // Mở modal báo cáo
+    const handleOpenReportModal = () => {
+        setShowReportModal(true);
+        setReportData({
+            results: order.results || '',
+            interpretation: order.interpretation || '',
+        });
+    };
+
+    // Báo cáo kết quả
+    const handleReport = async () => {
+        if (!reportData.results || !reportData.interpretation) {
+            setError('Vui lòng nhập đầy đủ kết quả và diễn giải');
+            return;
+        }
+
+        try {
+            setActionLoading(true);
+            setError(null);
+            
+            const orderData = {
+                emergencyEncounterId: order.emergencyEncounterId,
+                diagnosticType: order.diagnosticType,
+                urgencyLevel: order.urgencyLevel,
+                orderDetails: order.orderDetails,
+                clinicalIndication: order.clinicalIndication,
+            };
+
+            const response = await labTechnicianDiagnosticAPI.reportDiagnosticOrder(
+                orderId,
+                reportData.results,
+                reportData.interpretation,
+                orderData
+            );
+            
+            if (response && response.data) {
+                setSuccessMessage('Báo cáo kết quả xét nghiệm thành công!');
+                setOrder(response.data);
+                setShowReportModal(false);
+                setTimeout(() => setSuccessMessage(null), 3000);
+            }
+        } catch (err) {
+            console.error('Error reporting order:', err);
+            setError(err.message || 'Không thể báo cáo kết quả');
+        } finally {
+            setActionLoading(false);
+        }
     };
 
     const formatDateTime = (dateString) => {
@@ -52,9 +208,12 @@ const DiagnosticOrderDetailPage = () => {
 
     const getStatusBadge = (status) => {
         const statusMap = {
-            'PENDING': { label: 'Chờ xử lý', className: 'status-pending', icon: <FiClock /> },
+            'ORDERED': { label: 'Đã đặt', className: 'status-ordered', icon: <FiClock /> },
+            'ACCEPTED': { label: 'Đã tiếp nhận', className: 'status-accepted', icon: <FiCheckCircle /> },
             'IN_PROGRESS': { label: 'Đang thực hiện', className: 'status-in-progress', icon: <FiActivity /> },
             'COMPLETED': { label: 'Hoàn thành', className: 'status-completed', icon: <FiCheckCircle /> },
+            'REPORTED': { label: 'Đã báo cáo', className: 'status-reported', icon: <FiFileText /> },
+            'CONFIRMED': { label: 'Đã xác nhận', className: 'status-confirmed', icon: <FiCheckCircle /> },
             'CANCELLED': { label: 'Đã hủy', className: 'status-cancelled', icon: <FiAlertCircle /> },
         };
 
@@ -121,11 +280,47 @@ const DiagnosticOrderDetailPage = () => {
                     <p>Order ID: {order.id}</p>
                 </div>
                 <div className="header-actions">
+                    {order.status === 'ORDERED' && (
+                        <button className="btn-action btn-accept" onClick={handleAccept} disabled={actionLoading}>
+                            <FiCheckCircle /> {actionLoading ? 'Đang xử lý...' : 'Tiếp nhận'}
+                        </button>
+                    )}
+                    {order.status === 'ACCEPTED' && (
+                        <button className="btn-action btn-start" onClick={handleStart} disabled={actionLoading}>
+                            <FiActivity /> {actionLoading ? 'Đang xử lý...' : 'Thực hiện'}
+                        </button>
+                    )}
+                    {order.status === 'IN_PROGRESS' && (
+                        <button className="btn-action btn-complete" onClick={handleComplete} disabled={actionLoading}>
+                            <FiCheckCircle /> {actionLoading ? 'Đang xử lý...' : 'Hoàn thành'}
+                        </button>
+                    )}
+                    {order.status === 'COMPLETED' && (
+                        <button className="btn-action btn-report" onClick={handleOpenReportModal} disabled={actionLoading}>
+                            <FiFileText /> Báo cáo
+                        </button>
+                    )}
                     <button className="btn-refresh" onClick={fetchOrderDetail}>
                         <FiRefreshCw /> Làm mới
                     </button>
                 </div>
             </div>
+
+            {/* Success Message */}
+            {successMessage && (
+                <div className="success-message">
+                    <FiCheckCircle />
+                    <span>{successMessage}</span>
+                </div>
+            )}
+
+            {/* Error Message */}
+            {error && (
+                <div className="error-message-banner">
+                    <FiAlertCircle />
+                    <span>{error}</span>
+                </div>
+            )}
 
             {/* Status Banner */}
             <div className="status-banner">
@@ -266,6 +461,48 @@ const DiagnosticOrderDetailPage = () => {
                     </div>
                 </div>
             </div>
+
+            {/* Report Modal */}
+            {showReportModal && (
+                <div className="modal-overlay" onClick={() => setShowReportModal(false)}>
+                    <div className="modal-content report-modal" onClick={(e) => e.stopPropagation()}>
+                        <div className="modal-header">
+                            <h3>Báo cáo kết quả xét nghiệm</h3>
+                            <button className="btn-close-modal" onClick={() => setShowReportModal(false)}>
+                                <FiX />
+                            </button>
+                        </div>
+                        <div className="modal-body">
+                            <div className="form-group">
+                                <label>Kết quả <span className="required">*</span></label>
+                                <textarea
+                                    value={reportData.results}
+                                    onChange={(e) => setReportData({ ...reportData, results: e.target.value })}
+                                    placeholder="Nhập kết quả xét nghiệm..."
+                                    rows="4"
+                                />
+                            </div>
+                            <div className="form-group">
+                                <label>Diễn giải <span className="required">*</span></label>
+                                <textarea
+                                    value={reportData.interpretation}
+                                    onChange={(e) => setReportData({ ...reportData, interpretation: e.target.value })}
+                                    placeholder="Nhập diễn giải kết quả..."
+                                    rows="4"
+                                />
+                            </div>
+                        </div>
+                        <div className="modal-footer">
+                            <button className="btn-cancel" onClick={() => setShowReportModal(false)}>
+                                Hủy
+                            </button>
+                            <button className="btn-submit" onClick={handleReport} disabled={actionLoading}>
+                                <FiFileText /> {actionLoading ? 'Đang lưu...' : 'Lưu báo cáo'}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

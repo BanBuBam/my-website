@@ -58,6 +58,37 @@ const DoctorLayout = () => {
                             </li>
                         </ul>
                     </div>
+                    
+                    {/* Cấp cứu */}
+                    <div className="nav-category">
+                        <div className="category-header">Cấp cứu</div>
+                        <ul>
+                            <li>
+                                <NavLink to="/staff/bac-si/cap-cuu">
+                                    <FiAlertCircle />
+                                    <span>Lượt khám cấp cứu (Emerging Encounter)</span>
+                                </NavLink>
+                            </li>
+                            <li>
+                                <NavLink to="/staff/bac-si/diagnostic-orders">
+                                    <FiActivity />
+                                    <span>Quản lý Chỉ định Xét nghiệm</span>
+                                </NavLink>
+                            </li>
+                            <li>
+                                <NavLink to="/staff/bac-si/hoi-chan">
+                                    <FiUsers />
+                                    <span>Quản lý Hội chẩn</span>
+                                </NavLink>
+                            </li>
+                            <li>
+                                <NavLink to="/staff/bac-si/protocols">
+                                    <FiActivity />
+                                    <span>Quản lý Protocol</span>
+                                </NavLink>
+                            </li>
+                        </ul>
+                    </div>
 
                     {/* Khám bệnh ngoại trú */}
                     <div className="nav-category">
@@ -85,6 +116,12 @@ const DoctorLayout = () => {
                                 <NavLink to="/staff/bac-si/encounters">
                                     <FiUsers />
                                     <span>Quản lý Lượt khám</span>
+                                </NavLink>
+                            </li>
+                            <li>
+                                <NavLink to="/staff/bac-si/tai-kham">
+                                    <FiCalendar />
+                                    <span>Quản lý Tái khám</span>
                                 </NavLink>
                             </li>
                             <li>
@@ -132,6 +169,8 @@ const DoctorLayout = () => {
                             {/*</li>*/}
                         </ul>
                     </div>
+                    
+                    
 
                     {/* Bệnh nhân nội trú */}
                     <div className="nav-category">
@@ -227,18 +266,7 @@ const DoctorLayout = () => {
                         </ul>
                     </div>
 
-                    {/* Cấp cứu */}
-                    <div className="nav-category">
-                        <div className="category-header">Cấp cứu</div>
-                        <ul>
-                            <li>
-                                <NavLink to="/staff/bac-si/cap-cuu">
-                                    <FiAlertCircle />
-                                    <span>Lượt khám cấp cứu (Emerging Encounter)</span>
-                                </NavLink>
-                            </li>
-                        </ul>
-                    </div>
+                    
 
                     {/* Báo cáo */}
                     <div className="nav-category">

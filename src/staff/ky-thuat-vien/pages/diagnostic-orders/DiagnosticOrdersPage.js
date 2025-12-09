@@ -22,12 +22,18 @@ const DiagnosticOrdersPage = () => {
 
     // Tab 3: Danh sách
     const [allOrders, setAllOrders] = useState([]);
+    const [pagination, setPagination] = useState({
+        page: 0,
+        size: 20,
+        totalPages: 0,
+        totalElements: 0,
+    });
 
     useEffect(() => {
         if (activeTab === 'pending') {
             fetchPendingOrders();
         } else if (activeTab === 'list') {
-            fetchAllOrders();
+            fetchAllOrders(0);
         }
     }, [activeTab]);
 
@@ -36,32 +42,74 @@ const DiagnosticOrdersPage = () => {
         try {
             setLoading(true);
             setError(null);
+            console.log('🔍 Fetching pending diagnostic orders...');
             const response = await labTechnicianDiagnosticAPI.getPendingDiagnosticOrders();
+            console.log('📦 Response received:', response);
             if (response && response.data) {
-                setPendingOrders(response.data);
+                // Ensure data is an array
+                const ordersData = Array.isArray(response.data) ? response.data : [];
+                console.log('✅ Orders data:', ordersData);
+                console.log('📊 Number of orders:', ordersData.length);
+                setPendingOrders(ordersData);
+            } else {
+                console.log('⚠️ No data in response');
+                setPendingOrders([]);
             }
         } catch (err) {
-            console.error('Error fetching pending orders:', err);
+            console.error('❌ Error fetching pending orders:', err);
             setError(err.message || 'Không thể tải danh sách chỉ định chờ xác nhận');
+            setPendingOrders([]);
         } finally {
             setLoading(false);
         }
     };
 
-    // Fetch all orders
-    const fetchAllOrders = async () => {
+    // Fetch all orders with pagination
+    const fetchAllOrders = async (page = 0) => {
         try {
             setLoading(true);
             setError(null);
-            const response = await labTechnicianDiagnosticAPI.getAllDiagnosticOrders();
+            console.log('🔍 Fetching all diagnostic orders, page:', page);
+            const response = await labTechnicianDiagnosticAPI.getAllDiagnosticOrders(page, pagination.size);
+            console.log('📦 Response received:', response);
+            
             if (response && response.data) {
-                setAllOrders(response.data);
+                // Handle paginated response
+                if (response.data.content) {
+                    // Paginated response
+                    const ordersData = Array.isArray(response.data.content) ? response.data.content : [];
+                    console.log('✅ Orders data (paginated):', ordersData);
+                    console.log('📊 Number of orders:', ordersData.length);
+                    setAllOrders(ordersData);
+                    setPagination({
+                        page: response.data.number || 0,
+                        size: response.data.size || 20,
+                        totalPages: response.data.totalPages || 0,
+                        totalElements: response.data.totalElements || 0,
+                    });
+                } else {
+                    // Non-paginated response (array)
+                    const ordersData = Array.isArray(response.data) ? response.data : [];
+                    console.log('✅ Orders data (non-paginated):', ordersData);
+                    setAllOrders(ordersData);
+                }
+            } else {
+                console.log('⚠️ No data in response');
+                setAllOrders([]);
             }
         } catch (err) {
-            console.error('Error fetching all orders:', err);
+            console.error('❌ Error fetching all orders:', err);
             setError(err.message || 'Không thể tải danh sách chỉ định');
+            setAllOrders([]);
         } finally {
             setLoading(false);
+        }
+    };
+
+    // Handle page change
+    const handlePageChange = (newPage) => {
+        if (newPage >= 0 && newPage < pagination.totalPages) {
+            fetchAllOrders(newPage);
         }
     };
 
@@ -78,7 +126,11 @@ const DiagnosticOrdersPage = () => {
             setError(null);
             const response = await labTechnicianDiagnosticAPI.getDiagnosticOrdersByEncounter(parseInt(encounterId));
             if (response && response.data) {
-                setEncounterOrders(response.data);
+                // Ensure data is an array
+                const ordersData = Array.isArray(response.data) ? response.data : [];
+                setEncounterOrders(ordersData);
+            } else {
+                setEncounterOrders([]);
             }
         } catch (err) {
             console.error('Error searching orders:', err);
@@ -302,9 +354,36 @@ const DiagnosticOrdersPage = () => {
                     <div className="tab-panel">
                         <div className="panel-header">
                             <h3>Tất cả chỉ định chẩn đoán</h3>
-                            <span className="count-badge">{allOrders.length} chỉ định</span>
+                            <span className="count-badge">
+                                {pagination.totalElements > 0 
+                                    ? `${pagination.totalElements} chỉ định` 
+                                    : `${allOrders.length} chỉ định`}
+                            </span>
                         </div>
                         {renderOrdersTable(allOrders)}
+                        
+                        {/* Pagination */}
+                        {pagination.totalPages > 1 && (
+                            <div className="pagination">
+                                <button
+                                    className="btn-page"
+                                    onClick={() => handlePageChange(pagination.page - 1)}
+                                    disabled={pagination.page === 0}
+                                >
+                                    ← Trước
+                                </button>
+                                <span className="page-info">
+                                    Trang {pagination.page + 1} / {pagination.totalPages}
+                                </span>
+                                <button
+                                    className="btn-page"
+                                    onClick={() => handlePageChange(pagination.page + 1)}
+                                    disabled={pagination.page >= pagination.totalPages - 1}
+                                >
+                                    Sau →
+                                </button>
+                            </div>
+                        )}
                     </div>
                 )}
             </div>

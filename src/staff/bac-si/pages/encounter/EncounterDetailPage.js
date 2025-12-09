@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { doctorEncounterAPI } from '../../../../services/staff/doctorAPI';
+import CreateFollowUpModal from './CreateFollowUpModal';
+import ViewFollowUpsModal from './ViewFollowUpsModal';
 import {
     FiArrowLeft, FiRefreshCw, FiAlertCircle, FiUser, FiCalendar,
     FiClock, FiMapPin, FiFileText, FiClipboard, FiHeart, FiEdit,
-    FiCamera, FiPlusCircle
+    FiCamera, FiPlusCircle, FiList
 } from 'react-icons/fi';
 import './EncounterDetailPage.css';
 
@@ -14,6 +16,8 @@ const EncounterDetailPage = () => {
     const [encounter, setEncounter] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+    const [showCreateFollowUpModal, setShowCreateFollowUpModal] = useState(false);
+    const [showViewFollowUpsModal, setShowViewFollowUpsModal] = useState(false);
 
     useEffect(() => {
         fetchEncounterDetail();
@@ -139,9 +143,40 @@ const EncounterDetailPage = () => {
                         <p>Thông tin chi tiết về encounter</p>
                     </div>
                 </div>
-                <button onClick={handleCreateAdmissionRequest} className="btn-admission">
-                    <FiClipboard /> Tạo yêu cầu nhập viện
-                </button>
+            </div>
+
+            {/* Action Buttons Container */}
+            <div className="action-buttons-container">
+                {/* Row 1 */}
+                <div className="action-buttons-row">
+                    <button className="btn-action btn-vital" onClick={handleAddVitalSign}>
+                        Thêm Vital Sign
+                    </button>
+                    <button className="btn-action btn-note" onClick={handleAddClinicalNote}>
+                        Thêm Clinical Note
+                    </button>
+                    <button className="btn-action btn-lab" onClick={handleAddLabTestOrder}>
+                        Thêm Lab Test Order
+                    </button>
+                    <button className="btn-action btn-imaging" onClick={handleAddImagingOrder}>
+                        Thêm Imaging Order
+                    </button>
+                </div>
+                {/* Row 2 */}
+                <div className="action-buttons-row">
+                    <button className="btn-action btn-prescription" onClick={handleAddPrescription}>
+                        Thêm Prescription
+                    </button>
+                    <button className="btn-action btn-admission" onClick={handleCreateAdmissionRequest}>
+                        Tạo yêu cầu nhập viện
+                    </button>
+                    <button className="btn-action btn-follow-up" onClick={() => setShowCreateFollowUpModal(true)}>
+                        Hẹn tái khám
+                    </button>
+                    <button className="btn-action btn-view-follow-ups" onClick={() => setShowViewFollowUpsModal(true)}>
+                        Xem lịch tái khám
+                    </button>
+                </div>
             </div>
 
             {/* Content */}
@@ -257,33 +292,20 @@ const EncounterDetailPage = () => {
                     </div>
                 )}
 
-                {/* Action Buttons */}
-                <div className="detail-section">
-                    <h3><FiClipboard /> Thao tác</h3>
-                    <div className="action-buttons">
-                        <button className="btn-action btn-vital" onClick={handleAddVitalSign}>
-                            <FiHeart />
-                            <span>Thêm Vital Sign</span>
-                        </button>
-                        <button className="btn-action btn-note" onClick={handleAddClinicalNote}>
-                            <FiEdit />
-                            <span>Thêm Clinical Note</span>
-                        </button>
-                        <button className="btn-action btn-lab" onClick={handleAddLabTestOrder}>
-                            <FiFileText />
-                            <span>Thêm Lab Test Order</span>
-                        </button>
-                        <button className="btn-action btn-imaging" onClick={handleAddImagingOrder}>
-                            <FiCamera />
-                            <span>Thêm Imaging Order</span>
-                        </button>
-                        <button className="btn-action btn-prescription" onClick={handleAddPrescription}>
-                            <FiPlusCircle />
-                            <span>Thêm Prescription</span>
-                        </button>
-                    </div>
-                </div>
             </div>
+
+            {/* Modals */}
+            <CreateFollowUpModal
+                isOpen={showCreateFollowUpModal}
+                onClose={() => setShowCreateFollowUpModal(false)}
+                encounterId={encounterId}
+                onSuccess={() => {}}
+            />
+            <ViewFollowUpsModal
+                isOpen={showViewFollowUpsModal}
+                onClose={() => setShowViewFollowUpsModal(false)}
+                encounterId={encounterId}
+            />
         </div>
     );
 };

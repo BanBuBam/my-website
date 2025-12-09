@@ -344,3 +344,67 @@
     }
 }
 
+
+/* Action Buttons Row */
+.action-buttons-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 15px 20px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+}
+
+.action-buttons-row .btn-action {
+    padding: 10px 16px;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    color: white;
+}
+
+.action-buttons-row .btn-vital {
+    background: #E91E63;
+}
+
+.action-buttons-row .btn-note {
+    background: #9C27B0;
+}
+
+.action-buttons-row .btn-lab {
+    background: #2196F3;
+}
+
+.action-buttons-row .btn-imaging {
+    background: #00BCD4;
+}
+
+.action-buttons-row .btn-prescription {
+    background: #4CAF50;
+}
+
+.action-buttons-row .btn-admission {
+    background: #FF9800;
+}
+
+.action-buttons-row .btn-follow-up {
+    background: #673AB7;
+}
+
+.action-buttons-row .btn-view-follow-ups {
+    background: #607D8B;
+}
+
+@media (max-width: 768px) {
+    .action-buttons-row {
+        flex-direction: column;
+    }
+
+    .action-buttons-row .btn-action {
+        width: 100%;
+    }
+}
