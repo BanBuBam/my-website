@@ -84,12 +84,7 @@ const PharmacistLayout = () => {
                     <div className="nav-category">
                         <div className="category-header">Quản lý kho</div>
                         <ul>
-                            <li>
-                                <NavLink to="/staff/duoc-si/inventory">
-                                    <FiArchive />
-                                    <span>Danh mục thuốc</span>
-                                </NavLink>
-                            </li>
+                            
                             <li>
                                 <NavLink to="/staff/duoc-si/tuong-tac-thuoc">
                                     <FiArchive />
@@ -130,12 +125,6 @@ const PharmacistLayout = () => {
                                 <NavLink to="/staff/duoc-si/kiem-ke-kho">
                                     <FiClipboard />
                                     <span>Kiểm kê hàng tồn kho</span>
-                                </NavLink>
-                            </li>
-                            <li>
-                                <NavLink to="/staff/duoc-si/han-su-dung">
-                                    <FiAlertCircle />
-                                    <span>Hạn sử dụng</span>
                                 </NavLink>
                             </li>
                             <li>

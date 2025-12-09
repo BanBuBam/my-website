@@ -57,18 +57,17 @@ const StockTakingPage = () => {
 
   // Form State
   const [formData, setFormData] = useState({
-    type: 'FULL_INVENTORY',
+    takingType: 'FULL_COUNT',
     cabinetId: '',
-    scheduledDate: '',
+    takingDate: '',
     notes: ''
   });
 
-  // Stock Taking Types
+  // Stock Taking Types (khớp với backend)
   const stockTakingTypes = [
-    { value: 'FULL_INVENTORY', label: 'Kiểm kê toàn bộ' },
-    { value: 'PARTIAL_INVENTORY', label: 'Kiểm kê một phần' },
-    { value: 'CYCLE_COUNT', label: 'Kiểm kê định kỳ' },
-    { value: 'SPOT_CHECK', label: 'Kiểm tra đột xuất' }
+    { value: 'FULL_COUNT', label: 'Kiểm kê toàn bộ kho', requiresCabinet: false },
+    { value: 'CYCLE_COUNT', label: 'Kiểm kê định kỳ theo tủ', requiresCabinet: true },
+    { value: 'SPOT_CHECK', label: 'Kiểm tra đột xuất', requiresCabinet: true }
   ];
 
   // Status Types
@@ -310,9 +309,9 @@ const StockTakingPage = () => {
   const handleOpenCreate = () => {
     setIsEditing(false);
     setFormData({
-      type: 'FULL_INVENTORY',
+      takingType: 'FULL_COUNT',
       cabinetId: '',
-      scheduledDate: new Date().toISOString().split('T')[0],
+      takingDate: new Date().toISOString().split('T')[0],
       notes: ''
     });
     setShowModal(true);
@@ -326,9 +325,9 @@ const StockTakingPage = () => {
         const data = res.data;
         setFormData({
           id: data.stockTakingId || data.id,
-          type: data.type,
+          takingType: data.takingType || data.type,
           cabinetId: data.cabinetId || '',
-          scheduledDate: data.scheduledDate || '',
+          takingDate: data.takingDate || data.scheduledDate || '',
           notes: data.notes || ''
         });
         setIsEditing(true);
@@ -338,17 +337,29 @@ const StockTakingPage = () => {
     finally { setLoading(false); }
   };
 
+  // Kiểm tra xem loại kiểm kê có yêu cầu cabinetId không
+  const requiresCabinetId = (takingType) => {
+    return takingType === 'CYCLE_COUNT' || takingType === 'SPOT_CHECK';
+  };
+
   const handleSubmit = async () => {
-    if (!formData.scheduledDate) {
+    // Validate ngày kiểm kê
+    if (!formData.takingDate) {
       alert("Vui lòng chọn ngày kiểm kê"); return;
+    }
+
+    // Validate cabinetId nếu loại kiểm kê yêu cầu
+    if (requiresCabinetId(formData.takingType) && !formData.cabinetId) {
+      alert(`Loại "${stockTakingTypes.find(t => t.value === formData.takingType)?.label}" yêu cầu phải chọn tủ thuốc`);
+      return;
     }
 
     setLoading(true);
     try {
       const payload = {
-        type: formData.type,
+        takingType: formData.takingType,
+        takingDate: formData.takingDate,
         cabinetId: formData.cabinetId ? parseInt(formData.cabinetId) : null,
-        scheduledDate: formData.scheduledDate,
         notes: formData.notes
       };
 
@@ -405,8 +416,7 @@ const StockTakingPage = () => {
   const getTypeBadge = (type) => {
     const typeInfo = stockTakingTypes.find(t => t.value === type) || { label: type };
     const colors = {
-      'FULL_INVENTORY': { bg: '#e6f7ff', color: '#1890ff' },
-      'PARTIAL_INVENTORY': { bg: '#f9f0ff', color: '#722ed1' },
+      'FULL_COUNT': { bg: '#e6f7ff', color: '#1890ff' },
       'CYCLE_COUNT': { bg: '#fff7e6', color: '#fa8c16' },
       'SPOT_CHECK': { bg: '#fff1f0', color: '#ff4d4f' }
     };
@@ -434,8 +444,8 @@ const StockTakingPage = () => {
       );
       if (!matchesSearch) return false;
     }
-    // Type filter
-    if (filters.type && item.type !== filters.type) return false;
+    // Type filter (hỗ trợ cả takingType từ backend mới và type cũ)
+    if (filters.type && (item.takingType || item.type) !== filters.type) return false;
     // Cabinet filter
     if (filters.cabinetId && String(item.cabinetId) !== String(filters.cabinetId)) return false;
     // Quick filter by status
@@ -778,11 +788,11 @@ const StockTakingPage = () => {
                 <td>
                   <strong>{item.stockTakingNumber || `#${item.stockTakingId || item.id}`}</strong>
                 </td>
-                <td>{getTypeBadge(item.type)}</td>
+                <td>{getTypeBadge(item.takingType || item.type)}</td>
                 <td>{item.cabinetName || 'Tất cả tủ'}</td>
                 <td>
-                  {item.scheduledDate
-                    ? new Date(item.scheduledDate).toLocaleDateString('vi-VN')
+                  {(item.takingDate || item.scheduledDate)
+                    ? new Date(item.takingDate || item.scheduledDate).toLocaleDateString('vi-VN')
                     : '-'}
                 </td>
                 <td>{getStatusBadge(item.status)}</td>
@@ -828,8 +838,16 @@ const StockTakingPage = () => {
               <div className="form-group">
                 <label>Loại kiểm kê *</label>
                 <select
-                  value={formData.type}
-                  onChange={(e) => setFormData({...formData, type: e.target.value})}
+                  value={formData.takingType}
+                  onChange={(e) => {
+                    const newType = e.target.value;
+                    setFormData({
+                      ...formData,
+                      takingType: newType,
+                      // Reset cabinetId nếu chuyển sang FULL_COUNT
+                      cabinetId: newType === 'FULL_COUNT' ? '' : formData.cabinetId
+                    });
+                  }}
                 >
                   {stockTakingTypes.map(t => (
                     <option key={t.value} value={t.value}>{t.label}</option>
@@ -837,23 +855,32 @@ const StockTakingPage = () => {
                 </select>
               </div>
               <div className="form-group">
-                <label>Tủ thuốc (để trống = tất cả)</label>
+                <label>
+                  Tủ thuốc {requiresCabinetId(formData.takingType) ? '*' : '(không áp dụng cho kiểm kê toàn bộ)'}
+                </label>
                 <select
                   value={formData.cabinetId}
                   onChange={(e) => setFormData({...formData, cabinetId: e.target.value})}
+                  disabled={formData.takingType === 'FULL_COUNT'}
+                  style={formData.takingType === 'FULL_COUNT' ? {backgroundColor: '#f5f5f5', cursor: 'not-allowed'} : {}}
                 >
-                  <option value="">-- Tất cả tủ thuốc --</option>
+                  <option value="">-- Chọn tủ thuốc --</option>
                   {cabinets.map(c => (
                     <option key={c.cabinetId} value={c.cabinetId}>{c.cabinetName}</option>
                   ))}
                 </select>
+                {requiresCabinetId(formData.takingType) && !formData.cabinetId && (
+                  <small style={{color: '#ff4d4f', marginTop: '4px', display: 'block'}}>
+                    ⚠️ Bắt buộc chọn tủ thuốc cho loại kiểm kê này
+                  </small>
+                )}
               </div>
               <div className="form-group">
                 <label>Ngày kiểm kê *</label>
                 <input
                   type="date"
-                  value={formData.scheduledDate}
-                  onChange={(e) => setFormData({...formData, scheduledDate: e.target.value})}
+                  value={formData.takingDate}
+                  onChange={(e) => setFormData({...formData, takingDate: e.target.value})}
                 />
               </div>
               <div className="form-group">
@@ -898,7 +925,7 @@ const StockTakingPage = () => {
                 </div>
                 <div className="detail-item">
                   <label>Loại kiểm kê:</label>
-                  <span>{getTypeBadge(selectedItem.type)}</span>
+                  <span>{getTypeBadge(selectedItem.takingType || selectedItem.type)}</span>
                 </div>
                 <div className="detail-item">
                   <label>Tủ thuốc:</label>
@@ -906,7 +933,7 @@ const StockTakingPage = () => {
                 </div>
                 <div className="detail-item">
                   <label>Ngày kiểm kê:</label>
-                  <span>{selectedItem.scheduledDate ? new Date(selectedItem.scheduledDate).toLocaleDateString('vi-VN') : '-'}</span>
+                  <span>{(selectedItem.takingDate || selectedItem.scheduledDate) ? new Date(selectedItem.takingDate || selectedItem.scheduledDate).toLocaleDateString('vi-VN') : '-'}</span>
                 </div>
                 <div className="detail-item">
                   <label>Người tạo:</label>
