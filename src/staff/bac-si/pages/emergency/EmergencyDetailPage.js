@@ -1,11 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { doctorEmergencyAPI, employeeAPI } from '../../../../services/staff/doctorAPI';
+import { doctorEmergencyAPI, doctorDiagnosticOrderAPI, employeeAPI } from '../../../../services/staff/doctorAPI';
 import {
     FiArrowLeft, FiRefreshCw, FiUser, FiClock, FiActivity,
     FiHeart, FiAlertCircle, FiTruck, FiPhone, FiFileText,
-    FiCalendar, FiAlertTriangle, FiUserPlus, FiX, FiCheck
+    FiCalendar, FiAlertTriangle, FiUserPlus, FiX, FiCheck, FiPlus
 } from 'react-icons/fi';
+import CreateDiagnosticOrderModal from './CreateDiagnosticOrderModal';
+import DischargeWithPrescriptionModal from './DischargeWithPrescriptionModal';
+import AdmitInpatientModal from './AdmitInpatientModal';
+import TransferWithDocumentModal from './TransferWithDocumentModal';
+import ActivateProtocolModal from './ActivateProtocolModal';
 import './EmergencyDetailPage.css';
 
 const EmergencyDetailPage = () => {
@@ -28,6 +33,31 @@ const EmergencyDetailPage = () => {
     const [selectedDoctorId, setSelectedDoctorId] = useState('');
     const [assigningDoctor, setAssigningDoctor] = useState(false);
     const [assignDoctorError, setAssignDoctorError] = useState(null);
+
+    // Diagnostic order modal state
+    const [showDiagnosticOrderModal, setShowDiagnosticOrderModal] = useState(false);
+
+    // Update status state
+    const [updatingStatus, setUpdatingStatus] = useState(false);
+    const [successMessage, setSuccessMessage] = useState(null);
+
+    // Discharge modals state
+    const [showDischargePrescriptionModal, setShowDischargePrescriptionModal] = useState(false);
+    const [dischargingSimple, setDischargingSimple] = useState(false);
+
+    // Admit inpatient modal state
+    const [showAdmitInpatientModal, setShowAdmitInpatientModal] = useState(false);
+
+    // Transfer modals state
+    const [showTransferDocumentModal, setShowTransferDocumentModal] = useState(false);
+    const [transferringSimple, setTransferringSimple] = useState(false);
+
+    // Left without seen & Deceased state
+    const [leftWithoutSeenLoading, setLeftWithoutSeenLoading] = useState(false);
+    const [deceasedLoading, setDeceasedLoading] = useState(false);
+
+    // Protocol modal state
+    const [showProtocolModal, setShowProtocolModal] = useState(false);
 
     useEffect(() => {
         fetchEmergencyDetail();
@@ -146,6 +176,219 @@ const EmergencyDetailPage = () => {
         }
     };
 
+    // Cập nhật trạng thái điều trị
+    const handleUpdateStatus = async () => {
+        if (!window.confirm('Bạn có chắc muốn cập nhật trạng thái điều trị thành "Đang điều trị"?'))
+            return;
+
+        try {
+            setUpdatingStatus(true);
+            setError(null);
+
+            const response = await doctorDiagnosticOrderAPI.updateEmergencyStatus(
+                emergencyEncounterId,
+                'IN_TREATMENT'
+            );
+
+            if (response && response.data) {
+                setEmergency(response.data);
+                setSuccessMessage('Cập nhật trạng thái điều trị thành công!');
+                setTimeout(() => setSuccessMessage(null), 3000);
+            }
+        } catch (err) {
+            console.error('Error updating status:', err);
+            setError(err.message || 'Không thể cập nhật trạng thái');
+        } finally {
+            setUpdatingStatus(false);
+        }
+    };
+
+    // Xuất viện đơn giản
+    const handleDischargeSimple = async () => {
+        if (!window.confirm('Bạn có chắc muốn xuất viện cho bệnh nhân này?')) return;
+
+        try {
+            setDischargingSimple(true);
+            setError(null);
+
+            const response = await doctorDiagnosticOrderAPI.dischargeSimple(emergencyEncounterId);
+
+            if (response && response.data) {
+                setEmergency(response.data);
+                setSuccessMessage('Xuất viện thành công!');
+                setTimeout(() => setSuccessMessage(null), 3000);
+            }
+        } catch (err) {
+            console.error('Error discharging patient:', err);
+            setError(err.message || 'Không thể xuất viện');
+        } finally {
+            setDischargingSimple(false);
+        }
+    };
+
+    // Xuất viện có đơn thuốc
+    const handleDischargeWithPrescription = async (dischargeData) => {
+        try {
+            const response = await doctorDiagnosticOrderAPI.dischargeWithPrescription(
+                emergencyEncounterId,
+                dischargeData
+            );
+
+            if (response && response.data) {
+                setEmergency(response.data);
+                setShowDischargePrescriptionModal(false);
+                setSuccessMessage('Xuất viện có đơn thuốc thành công!');
+                setTimeout(() => setSuccessMessage(null), 3000);
+            }
+        } catch (err) {
+            console.error('Error discharging with prescription:', err);
+            throw err;
+        }
+    };
+
+    // Nhập viện nội trú
+    const handleAdmitInpatient = async (admissionData) => {
+        try {
+            const response = await doctorDiagnosticOrderAPI.admitInpatient(
+                emergencyEncounterId,
+                admissionData
+            );
+
+            if (response && response.data) {
+                setEmergency(response.data);
+                setShowAdmitInpatientModal(false);
+                setSuccessMessage('Nhập viện nội trú thành công!');
+                setTimeout(() => setSuccessMessage(null), 3000);
+            }
+        } catch (err) {
+            console.error('Error admitting patient:', err);
+            throw err;
+        }
+    };
+
+    // Chuyển viện đơn giản
+    const handleTransferSimple = async () => {
+        if (!window.confirm('Bạn có chắc muốn chuyển viện cho bệnh nhân này?')) return;
+
+        try {
+            setTransferringSimple(true);
+            setError(null);
+
+            const response = await doctorDiagnosticOrderAPI.transferSimple(emergencyEncounterId);
+
+            if (response && response.data) {
+                setEmergency(response.data);
+                setSuccessMessage('Chuyển viện thành công!');
+                setTimeout(() => setSuccessMessage(null), 3000);
+            }
+        } catch (err) {
+            console.error('Error transferring patient:', err);
+            setError(err.message || 'Không thể chuyển viện');
+        } finally {
+            setTransferringSimple(false);
+        }
+    };
+
+    // Chuyển viện có giấy
+    const handleTransferWithDocument = async (transferData) => {
+        try {
+            const response = await doctorDiagnosticOrderAPI.transferWithDocument(
+                emergencyEncounterId,
+                transferData
+            );
+
+            if (response && response.data) {
+                setEmergency(response.data);
+                setShowTransferDocumentModal(false);
+                setSuccessMessage('Chuyển viện có giấy thành công!');
+                setTimeout(() => setSuccessMessage(null), 3000);
+            }
+        } catch (err) {
+            console.error('Error transferring with document:', err);
+            throw err;
+        }
+    };
+
+    // Bệnh nhân bỏ về
+    const handleLeftWithoutSeen = async () => {
+        if (
+            !window.confirm(
+                'Bạn có chắc muốn đánh dấu bệnh nhân này là "Bỏ về"?\nHành động này không thể hoàn tác.'
+            )
+        )
+            return;
+
+        try {
+            setLeftWithoutSeenLoading(true);
+            setError(null);
+
+            const response = await doctorDiagnosticOrderAPI.updateEmergencyStatus(
+                emergencyEncounterId,
+                'LEFT_WITHOUT_SEEN'
+            );
+
+            if (response && response.data) {
+                setEmergency(response.data);
+                setSuccessMessage('Đã cập nhật trạng thái: Bệnh nhân bỏ về');
+                setTimeout(() => setSuccessMessage(null), 3000);
+            }
+        } catch (err) {
+            console.error('Error updating status to LEFT_WITHOUT_SEEN:', err);
+            setError(err.message || 'Không thể cập nhật trạng thái');
+        } finally {
+            setLeftWithoutSeenLoading(false);
+        }
+    };
+
+    // Bệnh nhân tử vong
+    const handleDeceased = async () => {
+        if (
+            !window.confirm(
+                'Bạn có chắc muốn đánh dấu bệnh nhân này là "Tử vong"?\nHành động này không thể hoàn tác.'
+            )
+        )
+            return;
+
+        try {
+            setDeceasedLoading(true);
+            setError(null);
+
+            const response = await doctorDiagnosticOrderAPI.updateEmergencyStatus(
+                emergencyEncounterId,
+                'DECEASED'
+            );
+
+            if (response && response.data) {
+                setEmergency(response.data);
+                setSuccessMessage('Đã cập nhật trạng thái: Bệnh nhân tử vong');
+                setTimeout(() => setSuccessMessage(null), 3000);
+            }
+        } catch (err) {
+            console.error('Error updating status to DECEASED:', err);
+            setError(err.message || 'Không thể cập nhật trạng thái');
+        } finally {
+            setDeceasedLoading(false);
+        }
+    };
+
+    // Kích hoạt protocol
+    const handleActivateProtocol = async (protocolData) => {
+        try {
+            const response = await doctorDiagnosticOrderAPI.activateProtocol(protocolData);
+
+            if (response && response.data) {
+                setShowProtocolModal(false);
+                setSuccessMessage(
+                    `Protocol ${response.data.protocolType} đã được kích hoạt thành công!`
+                );
+                setTimeout(() => setSuccessMessage(null), 5000);
+            }
+        } catch (err) {
+            console.error('Error activating protocol:', err);
+            throw err;
+        }
+    };
+
     const formatDateTime = (dateString) => {
         if (!dateString) return '-';
         const date = new Date(dateString);
@@ -210,25 +453,120 @@ const EmergencyDetailPage = () => {
         <div className="emergency-detail-page">
             {/* Header */}
             <div className="page-header">
-                <button className="btn-back" onClick={handleBack}>
-                    <FiArrowLeft /> Quay lại
-                </button>
-                <div className="header-title">
-                    <h1>Chi tiết Cấp cứu</h1>
-                    <p>Emergency Encounter ID: {emergency.emergencyEncounterId}</p>
+                <div className="header-left">
+                    <button className="btn-back" onClick={handleBack}>
+                        <FiArrowLeft /> Quay lại
+                    </button>
+                    <div className="header-title">
+                        <h1>Chi tiết Cấp cứu</h1>
+                        <p>Emergency Encounter ID: {emergency.emergencyEncounterId}</p>
+                    </div>
                 </div>
-                <div className="header-actions">
-                    <button className="btn-assign-doctor" onClick={handleOpenAssignDoctorModal}>
-                        <FiUserPlus /> Phân công Bác sĩ
-                    </button>
-                    <button className="btn-assign-nurse" onClick={handleOpenAssignNurseModal}>
-                        <FiUserPlus /> Phân công Điều dưỡng
-                    </button>
-                    <button className="btn-refresh" onClick={fetchEmergencyDetail}>
-                        <FiRefreshCw /> Làm mới
-                    </button>
+                <button className="btn-refresh" onClick={fetchEmergencyDetail}>
+                    <FiRefreshCw /> Làm mới
+                </button>
+            </div>
+
+            {/* Action Buttons Section */}
+            <div className="actions-section">
+                {/* Quản lý lượt cấp cứu */}
+                <div className="actions-group">
+                    <h3 className="actions-group-title">Quản lý lượt cấp cứu</h3>
+                    <div className="actions-buttons">
+                        <button className="btn-action btn-create-diagnostic" onClick={() => setShowDiagnosticOrderModal(true)}>
+                            <FiPlus /> Tạo chỉ định XN
+                        </button>
+                        <button 
+                            className="btn-action btn-create-consultation" 
+                            onClick={() => navigate(`/staff/bac-si/hoi-chan/tao-moi?emergencyEncounterId=${emergencyEncounterId}`)}
+                        >
+                            <FiUserPlus /> Tạo yêu cầu hội chẩn
+                        </button>
+                        <button 
+                            className="btn-action btn-activate-protocol" 
+                            onClick={() => setShowProtocolModal(true)}
+                        >
+                            <FiAlertTriangle /> Kích hoạt Protocol
+                        </button>
+                        <button 
+                            className="btn-action btn-view-protocols" 
+                            onClick={() => navigate(`/staff/bac-si/protocols/patient/${emergency.encounterId}`)}
+                        >
+                            <FiFileText /> Xem danh sách Protocol
+                        </button>
+                        <button className="btn-action btn-update-status" onClick={handleUpdateStatus} disabled={updatingStatus}>
+                            <FiActivity /> {updatingStatus ? 'Đang xử lý...' : 'Cập nhật trạng thái điều trị'}
+                        </button>
+                        <button className="btn-action btn-assign-doctor" onClick={handleOpenAssignDoctorModal}>
+                            <FiUserPlus /> Phân công Bác sĩ
+                        </button>
+                        <button className="btn-action btn-assign-nurse" onClick={handleOpenAssignNurseModal}>
+                            <FiUserPlus /> Phân công Điều dưỡng
+                        </button>
+                    </div>
+                </div>
+
+                {/* Kết thúc lượt cấp cứu */}
+                <div className="actions-group">
+                    <h3 className="actions-group-title">Kết thúc lượt cấp cứu</h3>
+                    <div className="actions-buttons">
+                        <button 
+                            className="btn-action btn-discharge-simple" 
+                            onClick={handleDischargeSimple}
+                            disabled={dischargingSimple}
+                        >
+                            <FiCheck /> {dischargingSimple ? 'Đang xử lý...' : 'Xuất viện đơn giản'}
+                        </button>
+                        <button 
+                            className="btn-action btn-discharge-prescription" 
+                            onClick={() => setShowDischargePrescriptionModal(true)}
+                        >
+                            <FiFileText /> Xuất viện có đơn thuốc
+                        </button>
+                        <button 
+                            className="btn-action btn-admit-inpatient" 
+                            onClick={() => setShowAdmitInpatientModal(true)}
+                        >
+                            <FiActivity /> Nhập viện nội trú
+                        </button>
+                        <button 
+                            className="btn-action btn-transfer-simple" 
+                            onClick={handleTransferSimple}
+                            disabled={transferringSimple}
+                        >
+                            <FiTruck /> {transferringSimple ? 'Đang xử lý...' : 'Chuyển viện đơn giản'}
+                        </button>
+                        <button 
+                            className="btn-action btn-transfer-document" 
+                            onClick={() => setShowTransferDocumentModal(true)}
+                        >
+                            <FiFileText /> Chuyển viện có giấy
+                        </button>
+                        <button 
+                            className="btn-action btn-left-ama" 
+                            onClick={handleLeftWithoutSeen}
+                            disabled={leftWithoutSeenLoading}
+                        >
+                            <FiAlertCircle /> {leftWithoutSeenLoading ? 'Đang xử lý...' : 'Bệnh nhân bỏ về'}
+                        </button>
+                        <button 
+                            className="btn-action btn-deceased" 
+                            onClick={handleDeceased}
+                            disabled={deceasedLoading}
+                        >
+                            <FiAlertTriangle /> {deceasedLoading ? 'Đang xử lý...' : 'Bệnh nhân tử vong'}
+                        </button>
+                    </div>
                 </div>
             </div>
+
+            {/* Success Message */}
+            {successMessage && (
+                <div className="success-message">
+                    <FiCheck />
+                    <span>{successMessage}</span>
+                </div>
+            )}
 
             {/* Status Banner */}
             <div className="status-banner">
@@ -668,6 +1006,55 @@ const EmergencyDetailPage = () => {
                         </div>
                     </div>
                 </div>
+            )}
+
+            {/* Create Diagnostic Order Modal */}
+            {showDiagnosticOrderModal && (
+                <CreateDiagnosticOrderModal
+                    emergencyEncounterId={emergencyEncounterId}
+                    onClose={() => setShowDiagnosticOrderModal(false)}
+                    onSuccess={(diagnosticOrder) => {
+                        console.log('Diagnostic order created:', diagnosticOrder);
+                        alert('Tạo chỉ định xét nghiệm thành công!');
+                        fetchEmergencyDetail();
+                    }}
+                />
+            )}
+
+            {/* Discharge With Prescription Modal */}
+            {showDischargePrescriptionModal && (
+                <DischargeWithPrescriptionModal
+                    emergencyEncounterId={emergencyEncounterId}
+                    onClose={() => setShowDischargePrescriptionModal(false)}
+                    onSuccess={handleDischargeWithPrescription}
+                />
+            )}
+
+            {/* Admit Inpatient Modal */}
+            {showAdmitInpatientModal && (
+                <AdmitInpatientModal
+                    emergencyEncounterId={emergencyEncounterId}
+                    onClose={() => setShowAdmitInpatientModal(false)}
+                    onSuccess={handleAdmitInpatient}
+                />
+            )}
+
+            {/* Transfer With Document Modal */}
+            {showTransferDocumentModal && (
+                <TransferWithDocumentModal
+                    emergencyEncounterId={emergencyEncounterId}
+                    onClose={() => setShowTransferDocumentModal(false)}
+                    onSuccess={handleTransferWithDocument}
+                />
+            )}
+
+            {/* Activate Protocol Modal */}
+            {showProtocolModal && (
+                <ActivateProtocolModal
+                    patientId={emergency.encounterId}
+                    onClose={() => setShowProtocolModal(false)}
+                    onSuccess={handleActivateProtocol}
+                />
             )}
         </div>
     );

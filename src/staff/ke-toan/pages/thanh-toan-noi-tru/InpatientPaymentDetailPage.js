@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { financeInpatientAPI, financeTransactionAPI, financeInvoiceAPI } from '../../../../services/staff/financeAPI';
+import SettlementModal from './SettlementModal';
+import TransactionHistoryModal from './TransactionHistoryModal';
+import RefundHistoryModal from './RefundHistoryModal';
 import {
     FiArrowLeft,
     FiUser,
@@ -11,7 +14,9 @@ import {
     FiDollarSign,
     FiRefreshCw,
     FiX,
-    FiCheck
+    FiCheck,
+    FiList,
+    FiRotateCcw
 } from 'react-icons/fi';
 import './InpatientPaymentDetailPage.css';
 
@@ -80,6 +85,22 @@ const InpatientPaymentDetailPage = () => {
     const [refundResult, setRefundResult] = useState(null);
     const [availableTransactions, setAvailableTransactions] = useState([]);
     const [loadingTransactions, setLoadingTransactions] = useState(false);
+
+    // Settlement Modal State
+    const [showSettlementModal, setShowSettlementModal] = useState(false);
+    const [processingSettlement, setProcessingSettlement] = useState(false);
+    const [settlementResult, setSettlementResult] = useState(null);
+    const [refundMethod, setRefundMethod] = useState('CASH');
+
+    // Transaction History Modal State
+    const [showTransactionHistoryModal, setShowTransactionHistoryModal] = useState(false);
+    const [transactionHistory, setTransactionHistory] = useState([]);
+    const [loadingHistory, setLoadingHistory] = useState(false);
+
+    // Refund History Modal State
+    const [showRefundHistoryModal, setShowRefundHistoryModal] = useState(false);
+    const [refundHistory, setRefundHistory] = useState([]);
+    const [loadingRefundHistory, setLoadingRefundHistory] = useState(false);
     
     useEffect(() => {
         fetchStayDetail();
@@ -531,6 +552,129 @@ const InpatientPaymentDetailPage = () => {
             setProcessingRefund(false);
         }
     };
+
+    // Settlement Handlers
+    const handleShowSettlementModal = async () => {
+        if (!stay || !stay.encounterId) {
+            alert('Không tìm thấy thông tin encounter');
+            return;
+        }
+
+        // Try to fetch invoice for this encounter
+        try {
+            const response = await financeInvoiceAPI.getInvoiceByEncounterId(stay.encounterId);
+            if (response && response.data) {
+                setShowSettlementModal(true);
+                setSettlementResult(null);
+            } else {
+                alert('Chưa có hóa đơn cho lượt điều trị này. Vui lòng tạo hóa đơn trước khi quyết toán.');
+            }
+        } catch (err) {
+            console.error('Error fetching invoice:', err);
+            alert('Chưa có hóa đơn cho lượt điều trị này. Vui lòng tạo hóa đơn trước khi quyết toán.');
+        }
+    };
+
+    const handleCloseSettlementModal = () => {
+        setShowSettlementModal(false);
+        setSettlementResult(null);
+        setRefundMethod('CASH');
+    };
+
+    const handleProcessSettlement = async () => {
+        if (!stay || !stay.patientId) {
+            alert('Không tìm thấy thông tin bệnh nhân');
+            return;
+        }
+
+        try {
+            setProcessingSettlement(true);
+
+            // Get invoice ID
+            const invoiceResponse = await financeInvoiceAPI.getInvoiceByEncounterId(stay.encounterId);
+            if (!invoiceResponse || !invoiceResponse.data) {
+                alert('Không tìm thấy hóa đơn');
+                return;
+            }
+
+            const invoiceId = invoiceResponse.data.invoiceId;
+
+            const response = await financeInpatientAPI.settleDeposit(
+                stay.patientId,
+                invoiceId,
+                refundMethod
+            );
+
+            if (response && response.data) {
+                setSettlementResult(response.data);
+                alert('Quyết toán thành công!');
+                // Refresh advance balance
+                fetchAdvanceBalance(stay.patientId);
+            }
+        } catch (err) {
+            console.error('Error processing settlement:', err);
+            alert(err.message || 'Không thể xử lý quyết toán');
+        } finally {
+            setProcessingSettlement(false);
+        }
+    };
+
+    // Transaction History Handlers
+    const handleShowTransactionHistory = async () => {
+        setShowTransactionHistoryModal(true);
+        setLoadingHistory(true);
+        
+        try {
+            const response = await financeInpatientAPI.getTransactionsByStayId(inpatientStayId);
+            if (response && response.data) {
+                setTransactionHistory(response.data);
+            }
+        } catch (err) {
+            console.error('Error loading transaction history:', err);
+            setTransactionHistory([]);
+        } finally {
+            setLoadingHistory(false);
+        }
+    };
+
+    const handleCloseTransactionHistory = () => {
+        setShowTransactionHistoryModal(false);
+    };
+
+    // Refund History Handlers
+    const handleShowRefundHistory = async () => {
+        if (!stay || !stay.encounterId) {
+            alert('Không tìm thấy thông tin encounter');
+            return;
+        }
+
+        setShowRefundHistoryModal(true);
+        setLoadingRefundHistory(true);
+        
+        try {
+            // Get invoice ID first
+            const invoiceResponse = await financeInvoiceAPI.getInvoiceByEncounterId(stay.encounterId);
+            if (!invoiceResponse || !invoiceResponse.data) {
+                setRefundHistory([]);
+                return;
+            }
+
+            const invoiceId = invoiceResponse.data.invoiceId;
+            const response = await financeInvoiceAPI.getRefundsByInvoiceId(invoiceId);
+            if (response && response.data) {
+                setRefundHistory(response.data);
+            }
+        } catch (err) {
+            console.error('Error loading refund history:', err);
+            setRefundHistory([]);
+        } finally {
+            setLoadingRefundHistory(false);
+        }
+    };
+
+    const handleCloseRefundHistory = () => {
+        setShowRefundHistoryModal(false);
+    };
     
     if (loading) {
         return (
@@ -589,22 +733,35 @@ const InpatientPaymentDetailPage = () => {
                     <button className="btn-refresh" onClick={fetchStayDetail}>
                         <FiRefreshCw /> Làm mới
                     </button>
-                    <button className="btn-view-invoice" onClick={handleViewInvoice} disabled={loadingInvoice}>
-                        <FiFileText /> {loadingInvoice ? 'Đang tải...' : 'Xem hóa đơn'}
-                    </button>
-                    <button className="btn-advance-payment" onClick={handleShowAdvanceModal}>
-                        <FiDollarSign /> Đặt cọc
-                    </button>
-                    <button className="btn-create-invoice" onClick={handleShowInvoiceModal}>
-                        <FiFileText /> Tạo hóa đơn
-                    </button>
-                    <button className="btn-payment" onClick={handleShowPaymentModal}>
-                        <FiDollarSign /> Thanh toán
-                    </button>
-                    <button className="btn-refund" onClick={handleShowRefundModal}>
-                        <FiDollarSign /> Hoàn tiền
-                    </button>
                 </div>
+            </div>
+
+            {/* Action Buttons Row */}
+            <div className="action-buttons-row">
+                <button className="btn-view-invoice" onClick={handleViewInvoice} disabled={loadingInvoice}>
+                    <FiFileText /> {loadingInvoice ? 'Đang tải...' : 'Xem hóa đơn'}
+                </button>
+                <button className="btn-advance-payment" onClick={handleShowAdvanceModal}>
+                    <FiDollarSign /> Đặt cọc
+                </button>
+                <button className="btn-create-invoice" onClick={handleShowInvoiceModal}>
+                    <FiFileText /> Tạo hóa đơn
+                </button>
+                <button className="btn-payment" onClick={handleShowPaymentModal}>
+                    <FiDollarSign /> Thanh toán
+                </button>
+                <button className="btn-refund" onClick={handleShowRefundModal}>
+                    <FiRotateCcw /> Hoàn tiền
+                </button>
+                <button className="btn-settlement" onClick={handleShowSettlementModal}>
+                    <FiCheck /> Quyết toán
+                </button>
+                <button className="btn-transaction-history" onClick={handleShowTransactionHistory}>
+                    <FiList /> Lịch sử giao dịch
+                </button>
+                <button className="btn-refund-history" onClick={handleShowRefundHistory}>
+                    <FiRotateCcw /> Lịch sử hoàn tiền
+                </button>
             </div>
 
             {/* Status and Balance Section */}
@@ -618,7 +775,7 @@ const InpatientPaymentDetailPage = () => {
                         <span className="balance-loading">Đang tải...</span>
                     ) : (
                         <span className="balance-amount">
-                            {advanceBalance !== null ? `${advanceBalance.toLocaleString('vi-VN')} VNĐDDDDDDDDDDĐ` : 'Chưa có dữ liệu'}
+                            {advanceBalance !== null ? `${advanceBalance.toLocaleString('vi-VN')} VNĐ` : 'Chưa có dữ liệu'}
                         </span>
                     )}
                 </div>
@@ -784,6 +941,42 @@ const InpatientPaymentDetailPage = () => {
                     loadingTransactions={loadingTransactions}
                 />
             )}
+
+            {/* Settlement Modal */}
+            <SettlementModal
+                isOpen={showSettlementModal}
+                onClose={handleCloseSettlementModal}
+                onSettle={handleProcessSettlement}
+                processing={processingSettlement}
+                settlementData={{
+                    patientName: stay.patientName,
+                    patientCode: stay.patientCode,
+                    invoiceId: null, // Will be fetched in handler
+                }}
+                settlementResult={settlementResult}
+                formatCurrency={formatCurrency}
+                formatDateTime={formatDateTime}
+            />
+
+            {/* Transaction History Modal */}
+            <TransactionHistoryModal
+                isOpen={showTransactionHistoryModal}
+                onClose={handleCloseTransactionHistory}
+                transactions={transactionHistory}
+                loading={loadingHistory}
+                formatCurrency={formatCurrency}
+                formatDateTime={formatDateTime}
+            />
+
+            {/* Refund History Modal */}
+            <RefundHistoryModal
+                isOpen={showRefundHistoryModal}
+                onClose={handleCloseRefundHistory}
+                refunds={refundHistory}
+                loading={loadingRefundHistory}
+                formatCurrency={formatCurrency}
+                formatDateTime={formatDateTime}
+            />
         </div>
     );
 };

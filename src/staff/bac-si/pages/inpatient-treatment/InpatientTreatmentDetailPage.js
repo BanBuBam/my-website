@@ -216,6 +216,51 @@ const InpatientTreatmentDetailPage = () => {
                     {stay.statusDisplay || stay.currentStatus}
                 </span>
             </div>
+
+            {/* Action Buttons Row */}
+            <div className="action-buttons-row">
+                <button
+                    className="btn-action btn-medication-group"
+                    onClick={() => navigate(`/staff/bac-si/dieu-tri-noi-tru/${inpatientStayId}/tao-nhom-y-lenh`)}
+                >
+                    Tạo nhóm y lệnh
+                </button>
+                <button
+                    className="btn-action btn-medication-single"
+                    onClick={() => navigate(`/staff/bac-si/dieu-tri-noi-tru/${inpatientStayId}/tao-y-lenh-le`)}
+                >
+                    Thêm y lệnh lẻ
+                </button>
+                <button
+                    className="btn-action btn-medication-view"
+                    onClick={() => navigate(`/staff/bac-si/dieu-tri-noi-tru/${inpatientStayId}/medication-groups`)}
+                >
+                    Xem Medication
+                </button>
+                <button
+                    className="btn-action btn-discharge-planning"
+                    onClick={() => navigate(`/staff/bac-si/dieu-tri-noi-tru/${inpatientStayId}/discharge-planning`)}
+                >
+                    Kế hoạch xuất viện
+                </button>
+                <button className="btn-action btn-transfer-hospital">
+                    Tạo yêu cầu chuyển viện
+                </button>
+                <button
+                    className="btn-action btn-transfer-bed"
+                    onClick={() => navigate(`/staff/bac-si/dieu-tri-noi-tru/${inpatientStayId}/chuyen-giuong`)}
+                >
+                    Tạo yêu cầu chuyển giường
+                </button>
+                {isDischarged && (
+                    <button
+                        className="btn-action btn-discharge-modal"
+                        onClick={() => setShowDischargePlanModal(true)}
+                    >
+                        Xử lý xuất viện (Modal)
+                    </button>
+                )}
+            </div>
             
             {/* Patient Information */}
             <div className="info-section">
@@ -308,70 +353,7 @@ const InpatientTreatmentDetailPage = () => {
                 </div>
             </div>
             
-            {/* Action Buttons */}
-            <div className="action-section">
-                <h2>Thao tác</h2>
-                <div className="action-buttons">
-                    <button
-                        className="btn-action btn-medication-group"
-                        onClick={() => navigate(`/staff/bac-si/dieu-tri-noi-tru/${inpatientStayId}/tao-nhom-y-lenh`)}
-                    >
-                        <FiPlusCircle />
-                        <span>Tạo nhóm y lệnh</span>
-                    </button>
-                    <button
-                        className="btn-action btn-medication-single"
-                        onClick={() => navigate(`/staff/bac-si/dieu-tri-noi-tru/${inpatientStayId}/tao-y-lenh-le`)}
-                    >
-                        <FiPackage />
-                        <span>Thêm y lệnh lẻ</span>
-                    </button>
-                    
-                    {/* --- CÁC NÚT MỚI ĐƯỢC THÊM TỪ TRANG NURSE --- */}
-                    <button
-                        className="btn-action btn-medication-view"
-                        onClick={() => navigate(`/staff/bac-si/dieu-tri-noi-tru/${inpatientStayId}/medication-groups`)}
-                    >
-                        <FiPackage />
-                        <span>Xem Medication</span>
-                    </button>
-                    
-                    <button
-                        className="btn-action btn-discharge-planning"
-                        onClick={() => navigate(`/staff/bac-si/dieu-tri-noi-tru/${inpatientStayId}/discharge-planning`)}
-                    >
-                        <FiLogOut />
-                        <span>Kế hoạch xuất viện</span>
-                    </button>
-                    {/* --------------------------------------------- */}
-                    
-                    {/* === CÁC NÚT === */}
 
-                    <button className="btn-action btn-transfer-hospital">
-                        <FiTruck />
-                        <span>Tạo yêu cầu chuyển viện</span>
-                    </button>
-                    <button
-                        className="btn-action btn-transfer-bed"
-                        onClick={() => navigate(`/staff/bac-si/dieu-tri-noi-tru/${inpatientStayId}/chuyen-giuong`)}
-                    >
-                        <FiMove />
-                        <span>Tạo yêu cầu chuyển giường</span>
-                    </button>
-                    
-                    {/* Giữ lại nút logic cũ nếu bạn muốn giữ tính năng modal */}
-                    { isDischarged && (
-                        <button
-                            className="btn-action btn-discharge-modal"
-                            onClick={() => setShowDischargePlanModal(true)}
-                        >
-                            <FiLogOut/>
-                            <span>Xử lý xuất viện (Modal)</span>
-                        </button>
-                    )
-                    }
-                </div>
-            </div>
             
             {/* Medication Order Groups Section */}
             <div className="medication-groups-section">

@@ -1,0 +1,266 @@
+.follow-up-list-page {
+    padding: 20px;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.page-header {
+    margin-bottom: 25px;
+}
+
+.page-header h1 {
+    font-size: 24px;
+    color: #333;
+    margin: 0 0 5px 0;
+}
+
+.page-header p {
+    color: #666;
+    font-size: 14px;
+    margin: 0;
+}
+
+.follow-ups-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(450px, 1fr));
+    gap: 20px;
+}
+
+.follow-up-card {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    transition: all 0.3s;
+    overflow: hidden;
+}
+
+.follow-up-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transform: translateY(-2px);
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 20px;
+    background: #f8f9fa;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.patient-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.patient-info svg {
+    font-size: 24px;
+    color: #2196F3;
+}
+
+.patient-info h3 {
+    margin: 0 0 4px 0;
+    font-size: 18px;
+    color: #333;
+}
+
+.patient-phone {
+    font-size: 13px;
+    color: #666;
+}
+
+.badges {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    align-items: flex-end;
+}
+
+.status-badge,
+.priority-badge {
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.status-badge.status-scheduled {
+    background: #E3F2FD;
+    color: #1976D2;
+}
+
+.status-badge.status-completed {
+    background: #E8F5E9;
+    color: #388E3C;
+}
+
+.status-badge.status-cancelled {
+    background: #FFEBEE;
+    color: #D32F2F;
+}
+
+.status-badge.status-no-show {
+    background: #FFF3E0;
+    color: #F57C00;
+}
+
+.priority-badge.priority-routine {
+    background: #F5F5F5;
+    color: #616161;
+}
+
+.priority-badge.priority-urgent {
+    background: #FFF3E0;
+    color: #F57C00;
+}
+
+.priority-badge.priority-asap {
+    background: #FFEBEE;
+    color: #D32F2F;
+}
+
+.card-body {
+    padding: 20px;
+}
+
+.info-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.info-row:last-child {
+    border-bottom: none;
+}
+
+.info-row svg {
+    color: #666;
+    flex-shrink: 0;
+}
+
+.info-row .label {
+    color: #666;
+    font-size: 14px;
+    min-width: 120px;
+}
+
+.info-row .value {
+    color: #333;
+    font-size: 14px;
+    font-weight: 500;
+    flex: 1;
+}
+
+.diagnosis-box {
+    margin-top: 12px;
+    padding: 12px;
+    background: #f8f9fa;
+    border-radius: 6px;
+    border-left: 4px solid #2196F3;
+}
+
+.diagnosis-box .label {
+    display: block;
+    font-size: 12px;
+    color: #666;
+    font-weight: 600;
+    margin-bottom: 6px;
+}
+
+.diagnosis-box p {
+    margin: 0;
+    font-size: 14px;
+    color: #333;
+    line-height: 1.5;
+}
+
+.card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 20px;
+    background: #f8f9fa;
+    border-top: 1px solid #e0e0e0;
+    font-size: 12px;
+    color: #666;
+}
+
+.loading-state,
+.error-state,
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 80px 20px;
+    text-align: center;
+}
+
+.loading-state .spinner {
+    width: 50px;
+    height: 50px;
+    border: 5px solid #f3f3f3;
+    border-top: 5px solid #2196F3;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.loading-state p,
+.error-state p,
+.empty-state p {
+    margin-top: 20px;
+    color: #666;
+    font-size: 16px;
+}
+
+.error-state svg,
+.empty-state svg {
+    font-size: 60px;
+    color: #999;
+}
+
+.error-state svg {
+    color: #f44336;
+}
+
+.btn-retry {
+    margin-top: 20px;
+    padding: 12px 24px;
+    background-color: #2196F3;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.btn-retry:hover {
+    background-color: #1976D2;
+}
+
+@media (max-width: 768px) {
+    .follow-ups-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .card-header {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .badges {
+        flex-direction: row;
+        align-items: flex-start;
+    }
+}

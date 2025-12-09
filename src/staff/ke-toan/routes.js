@@ -21,6 +21,8 @@ import InpatientPaymentDetailPage from "./pages/thanh-toan-noi-tru/InpatientPaym
 import InvoiceManagementListPage from "./pages/quan-ly-hoa-don/InvoiceListPage";
 import InvoiceManagementDetailPage from "./pages/quan-ly-hoa-don/InvoiceDetailPage";
 import OutpatientRefundListPage from "./pages/thanh-toan-ngoai-tru/OutpatientRefundListPage";
+import EmergencyAdvancePaymentListPage from "./pages/thu-tam-ung-cap-cuu/EmergencyAdvancePaymentListPage";
+import EmergencyEncounterDetailPage from "./pages/thu-tam-ung-cap-cuu/EmergencyEncounterDetailPage";
 
 const FinanceRoutes= () => {
     return (
@@ -52,6 +54,9 @@ const FinanceRoutes= () => {
                 {/* Invoice Management Routes */}
                 <Route path="quan-ly-hoa-don" element={<InvoiceManagementListPage/>} />
                 <Route path="quan-ly-hoa-don/:invoiceId" element={<InvoiceManagementDetailPage/>} />
+                {/* Emergency Advance Payment Routes */}
+                <Route path="thu-tam-ung-cap-cuu" element={<EmergencyAdvancePaymentListPage/>} />
+                <Route path="thu-tam-ung-cap-cuu/:emergencyEncounterId" element={<EmergencyEncounterDetailPage/>} />
             </Route>
         </Routes>
     );

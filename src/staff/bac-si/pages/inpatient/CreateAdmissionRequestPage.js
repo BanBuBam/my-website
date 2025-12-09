@@ -54,8 +54,8 @@ const CreateAdmissionRequestPage = () => {
         try {
             setLoadingDepartments(true);
             const response = await departmentAPI.getDepartments();
-            if (response && response.data) {
-                setDepartments(response.data);
+            if (response && response.data.content) {
+                setDepartments(response.data.content);
             }
         } catch (err) {
             console.error('Error loading departments:', err);

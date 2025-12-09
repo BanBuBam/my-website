@@ -360,6 +360,18 @@ export const receptionistEmergencyAPI = {
       body: JSON.stringify(emergencyData),
     });
   },
+
+  // Tạo emergency từ encounter có sẵn
+  createEmergencyFromEncounter: async (emergencyData) => {
+    return apiCall('api/v1/emergency/encounters', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(emergencyData),
+    });
+  },
 };
 
 // API Quản lý Encounters

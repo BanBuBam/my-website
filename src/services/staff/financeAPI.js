@@ -464,6 +464,66 @@ export const financeInpatientAPI = {
       },
     });
   },
+
+  // Quyết toán tạm ứng
+  settleDeposit: async (patientId, invoiceId, refundMethod) => {
+    const params = new URLSearchParams({
+      patientId: patientId,
+      invoiceId: invoiceId,
+      refundMethod: refundMethod,
+    });
+
+    return apiCall(`api/v1/deposits/settle?${params.toString()}`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+};
+
+// API Quản lý cấp cứu (cho cashier)
+export const financeEmergencyAPI = {
+  // Lấy danh sách cấp cứu đang hoạt động
+  getActiveEmergencyEncounters: async () => {
+    return apiCall('api/v1/emergency/encounters/active', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Lấy danh sách cấp cứu mới xuất viện
+  getRecentDischarges: async (hours = 24) => {
+    return apiCall(`api/v1/emergency/encounters/recent-discharges?hours=${hours}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Lấy chi tiết encounter cấp cứu
+  getEmergencyEncounterDetail: async (emergencyEncounterId) => {
+    return apiCall(`api/v1/emergency/encounters/${emergencyEncounterId}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Thu tạm ứng cấp cứu
+  collectAdvancePayment: async (depositData) => {
+    return apiCall('api/v1/emergency/billing/deposits', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+      body: JSON.stringify(depositData),
+    });
+  },
 };
 
 export default {
@@ -476,5 +536,6 @@ export default {
   financeInvoiceGenerationAPI,
   financeTransactionAPI,
   financeInpatientAPI,
+  financeEmergencyAPI,
 };
 

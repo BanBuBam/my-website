@@ -36,7 +36,7 @@ const EncounterDetailPage = () => {
     };
 
     const handleBack = () => {
-        navigate('/staff/le-tan/cap-cuu');
+        navigate('/staff/bac-si/cap-cuu');
     };
 
     const handleCreateEmergency = () => {

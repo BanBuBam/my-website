@@ -370,6 +370,30 @@ export const doctorEmergencyAPI = {
     });
   },
 
+  // Tạo emergency từ encounter có sẵn
+  createEmergencyFromEncounter: async (emergencyData) => {
+    return apiCall('api/v1/emergency/encounters', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(emergencyData),
+    });
+  },
+
+  // Tạo chỉ định xét nghiệm cấp cứu
+  createDiagnosticOrder: async (diagnosticOrderData) => {
+    return apiCall('api/v1/emergency/diagnostic-orders', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(diagnosticOrderData),
+    });
+  },
+
   // Thêm vital signs cho encounter
   addVitalSigns: async (encounterId, vitalSignsData) => {
     return apiCall(`api/v1/encounters/${encounterId}/vitals`, {
@@ -405,6 +429,219 @@ export const doctorEmergencyAPI = {
   assignDoctor: async (emergencyEncounterId, doctorId) => {
     return apiCall(`api/v1/emergency/encounters/${emergencyEncounterId}/assign-doctor?doctorId=${doctorId}`, {
       method: 'PUT',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+};
+
+// API Diagnostic Orders (cho Bác sĩ)
+export const doctorDiagnosticOrderAPI = {
+  // Lấy danh sách chỉ định xét nghiệm chờ xử lý
+  getPendingDiagnosticOrders: async () => {
+    return apiCall('api/v1/emergency/diagnostic-orders/pending', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Lấy danh sách chỉ định xét nghiệm theo encounter
+  getDiagnosticOrdersByEncounter: async (encounterId) => {
+    return apiCall(`api/v1/emergency/diagnostic-orders/encounter/${encounterId}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Lấy danh sách chỉ định xét nghiệm theo bác sĩ
+  getDiagnosticOrdersByDoctor: async (doctorId) => {
+    return apiCall(`api/v1/emergency/diagnostic-orders/doctor/${doctorId}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Lấy chi tiết chỉ định xét nghiệm
+  getDiagnosticOrderDetail: async (orderId) => {
+    return apiCall(`api/v1/emergency/diagnostic-orders/${orderId}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Xác nhận kết quả xét nghiệm
+  confirmDiagnosticOrder: async (orderId, orderData) => {
+    return apiCall(`api/v1/emergency/diagnostic-orders/${orderId}/confirm`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(orderData),
+    });
+  },
+
+  // Cập nhật trạng thái điều trị của emergency encounter
+  updateEmergencyStatus: async (emergencyEncounterId, status) => {
+    return apiCall(`api/v1/emergency/encounters/${emergencyEncounterId}/status?status=${status}`, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Xuất viện đơn giản
+  dischargeSimple: async (emergencyEncounterId) => {
+    return apiCall(`api/v1/emergency/encounters/${emergencyEncounterId}/discharge`, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Xuất viện có đơn thuốc
+  dischargeWithPrescription: async (emergencyEncounterId, dischargeData) => {
+    return apiCall(`api/v1/emergency/encounters/${emergencyEncounterId}/discharge`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(dischargeData),
+    });
+  },
+
+  // Nhập viện nội trú
+  admitInpatient: async (emergencyEncounterId, admissionData) => {
+    return apiCall(`api/v1/emergency/encounters/${emergencyEncounterId}/admit`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(admissionData),
+    });
+  },
+
+  // Chuyển viện đơn giản
+  transferSimple: async (emergencyEncounterId) => {
+    return apiCall(`api/v1/emergency/encounters/${emergencyEncounterId}/transfer`, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Chuyển viện có giấy
+  transferWithDocument: async (emergencyEncounterId, transferData) => {
+    return apiCall(`api/v1/emergency/encounters/${emergencyEncounterId}/transfer`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(transferData),
+    });
+  },
+
+  // Kích hoạt protocol
+  activateProtocol: async (protocolData) => {
+    return apiCall('api/v1/emergency/protocols/activate', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(protocolData),
+    });
+  },
+
+  // Lấy danh sách protocol theo patient
+  getProtocolsByPatient: async (patientId) => {
+    return apiCall(`api/v1/emergency/protocols/patient/${patientId}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Lấy chi tiết protocol
+  getProtocolDetail: async (protocolId) => {
+    return apiCall(`api/v1/emergency/protocols/${protocolId}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Lấy protocols theo department
+  getProtocolsByDepartment: async (departmentId) => {
+    return apiCall(`api/v1/emergency/protocols/department/${departmentId}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Lấy tất cả protocols đang active
+  getActiveProtocols: async () => {
+    return apiCall('api/v1/emergency/protocols/active', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Gửi cảnh báo protocol
+  sendProtocolAlert: async (protocolId, alertMessage) => {
+    return apiCall(`api/v1/emergency/protocols/${protocolId}/alert?alertMessage=${encodeURIComponent(alertMessage)}`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Lấy quy trình protocol
+  getProtocolProcedures: async (protocolType) => {
+    return apiCall(`api/v1/emergency/protocols/procedures/${protocolType}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Lấy đội phản ứng
+  getResponseTeam: async (protocolType, departmentId) => {
+    return apiCall(`api/v1/emergency/protocols/response-team/${protocolType}?departmentId=${departmentId}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Giải quyết protocol
+  resolveProtocol: async (protocolId, resolutionNotes) => {
+    return apiCall(`api/v1/emergency/protocols/${protocolId}/resolve?resolutionNotes=${encodeURIComponent(resolutionNotes)}`, {
+      method: 'POST',
       headers: {
         'Authorization': `Bearer ${getAccessToken()}`,
       },
@@ -780,6 +1017,16 @@ export const medicineAPI = {
       },
     });
   },
+
+  // Lấy tất cả medicines (không phân trang)
+  getAllMedicines: async () => {
+    return apiCall('api/v1/medicines/all', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
 };
 
 // API Departments
@@ -797,6 +1044,19 @@ export const departmentAPI = {
     }
 
     return apiCall(`api/v1/departments?${params.toString()}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+};
+
+// API Hospitals
+export const hospitalAPI = {
+  // Lấy danh sách bệnh viện
+  getHospitals: async () => {
+    return apiCall('api/v1/hospitals', {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${getAccessToken()}`,
@@ -1013,6 +1273,20 @@ export const patientListAPI = {
     });
   },
 
+  // Lấy danh sách bệnh nhân active
+  getActivePatients: async (page = 0, size = 100) => {
+    const params = new URLSearchParams({
+      page: page.toString(),
+      size: size.toString(),
+    });
+    return apiCall(`api/v1/patient/admin/active?${params.toString()}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
   // Tìm kiếm bệnh nhân theo tên (cho emergency)
   searchPatientsByName: async (name, page = 0, size = 10) => {
     const params = new URLSearchParams({
@@ -1127,6 +1401,51 @@ export const medicationOrderAPI = {
   },
 };
 
+// API Emergency Consultations (Hội chẩn)
+export const doctorConsultationAPI = {
+  // Lấy danh sách hội chẩn của bác sĩ
+  getConsultationsByDoctor: async (doctorId) => {
+    return apiCall(`api/v1/emergency-consultations/doctor/${doctorId}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Lấy danh sách hội chẩn chưa tạo booking
+  getConsultationsWithoutBooking: async () => {
+    return apiCall('api/v1/emergency-consultations/without-booking', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Tạo hội chẩn mới
+  createConsultation: async (consultationData) => {
+    return apiCall('api/v1/emergency-consultations', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(consultationData),
+    });
+  },
+
+  // Lấy chi tiết hội chẩn
+  getConsultationDetail: async (consultationId) => {
+    return apiCall(`api/v1/emergency-consultations/${consultationId}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+};
+
 export const doctorDischargePlanningAPI = {
   // Lấy thông tin discharge planning theo inpatient stay ID
   getDischargePlanningByStay: async (inpatientStayId) => {
@@ -1219,6 +1538,50 @@ export const doctorDischargePlanningAPI = {
   },
 };
 
+// API Follow-up (Tái khám)
+export const doctorFollowUpAPI = {
+  // Lấy danh sách tái khám của bác sĩ
+  getFollowUpsByDoctor: async (doctorId) => {
+    return apiCall(`api/v1/doctors/${doctorId}/follow-up`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Lấy chi tiết tái khám
+  getFollowUpDetail: async (appointmentId) => {
+    return apiCall(`api/v1/follow-up/${appointmentId}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Tạo lịch tái khám cho encounter
+  createFollowUpForEncounter: async (encounterId, followUpData) => {
+    return apiCall(`api/v1/encounters/${encounterId}/follow-up`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+      body: JSON.stringify(followUpData),
+    });
+  },
+
+  // Lấy danh sách lịch tái khám của encounter
+  getFollowUpsByEncounter: async (encounterId) => {
+    return apiCall(`api/v1/encounters/${encounterId}/follow-up`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+};
+
 export default {
   doctorAuthAPI,
   doctorDashboardAPI,
@@ -1233,12 +1596,16 @@ export default {
   serviceAPI,
   medicineAPI,
   departmentAPI,
+  hospitalAPI,
   employeeAPI,
   doctorInpatientTreatmentAPI,
   admissionRequestAPI,
   patientListAPI,
   medicationOrderAPI,
+  doctorConsultationAPI,
   doctorDischargePlanningAPI,
   doctorBedAPI,
+  doctorDiagnosticOrderAPI,
+  doctorFollowUpAPI,
 };
 
