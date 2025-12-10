@@ -1,0 +1,765 @@
+.emergency-detail-page {
+    padding: 24px;
+    background-color: #f5f7fa;
+    min-height: 100vh;
+}
+
+/* Header */
+.emergency-detail-page .page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.emergency-detail-page .header-left {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.emergency-detail-page .btn-back {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background: white;
+    color: #6b7280;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.emergency-detail-page .btn-back:hover {
+    background: #f9fafb;
+    border-color: #3b82f6;
+    color: #3b82f6;
+}
+
+.emergency-detail-page .header-title h1 {
+    margin: 0 0 4px 0;
+    font-size: 24px;
+    color: #1a1a1a;
+}
+
+.emergency-detail-page .header-title p {
+    margin: 0;
+    font-size: 14px;
+    color: #666;
+}
+
+.emergency-detail-page .btn-refresh {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background: #3b82f6;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.emergency-detail-page .btn-refresh:hover {
+    background: #2563eb;
+}
+
+/* Status Banner */
+.emergency-detail-page .status-banner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    margin-bottom: 20px;
+}
+
+.emergency-detail-page .banner-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.emergency-detail-page .category-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.emergency-detail-page .category-red {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.emergency-detail-page .category-orange {
+    background: #ffedd5;
+    color: #9a3412;
+}
+
+.emergency-detail-page .category-yellow {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.emergency-detail-page .category-green {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.emergency-detail-page .category-blue {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+.emergency-detail-page .status-badge {
+    padding: 6px 16px;
+    border-radius: 16px;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.emergency-detail-page .status-red {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.emergency-detail-page .status-orange {
+    background: #ffedd5;
+    color: #9a3412;
+}
+
+.emergency-detail-page .status-yellow {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.emergency-detail-page .status-green {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.emergency-detail-page .status-blue {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+.emergency-detail-page .status-gray {
+    background: #f3f4f6;
+    color: #4b5563;
+}
+
+.emergency-detail-page .priority-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.emergency-detail-page .priority-label {
+    font-size: 14px;
+    color: #666;
+}
+
+.emergency-detail-page .priority-value {
+    font-size: 24px;
+    font-weight: 700;
+    color: #1a1a1a;
+}
+
+/* Alerts Banner */
+.emergency-detail-page .alerts-banner {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.emergency-detail-page .alert-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px;
+    border-radius: 12px;
+    font-weight: 600;
+}
+
+.emergency-detail-page .alert-item.critical {
+    background: #fee2e2;
+    color: #991b1b;
+    border-left: 4px solid #dc2626;
+}
+
+.emergency-detail-page .alert-item.urgent {
+    background: #ffedd5;
+    color: #9a3412;
+    border-left: 4px solid #f97316;
+}
+
+.emergency-detail-page .alert-item.exceeded {
+    background: #fef3c7;
+    color: #92400e;
+    border-left: 4px solid #f59e0b;
+}
+
+/* Content Grid */
+.emergency-detail-page .content-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 20px;
+}
+
+.emergency-detail-page .info-card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+}
+
+.emergency-detail-page .info-card.full-width {
+    grid-column: 1 / -1;
+}
+
+.emergency-detail-page .card-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 20px;
+    background: #f9fafb;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.emergency-detail-page .card-header svg {
+    font-size: 20px;
+    color: #3b82f6;
+}
+
+.emergency-detail-page .card-header h3 {
+    margin: 0;
+    font-size: 16px;
+    color: #1a1a1a;
+}
+
+.emergency-detail-page .card-body {
+    padding: 20px;
+}
+
+.emergency-detail-page .info-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 12px 0;
+    border-bottom: 1px solid #f3f4f6;
+}
+
+.emergency-detail-page .info-row:last-child {
+    border-bottom: none;
+}
+
+.emergency-detail-page .label {
+    font-weight: 500;
+    color: #6b7280;
+    font-size: 14px;
+}
+
+.emergency-detail-page .value {
+    color: #1a1a1a;
+    font-size: 14px;
+    text-align: right;
+}
+
+.emergency-detail-page .value.exceeded {
+    color: #dc2626;
+    font-weight: 600;
+}
+
+.emergency-detail-page .value.completed {
+    color: #059669;
+    font-weight: 600;
+}
+
+.emergency-detail-page .value.pending {
+    color: #f59e0b;
+    font-weight: 600;
+}
+
+.emergency-detail-page .value.yes {
+    color: #059669;
+    font-weight: 600;
+}
+
+.emergency-detail-page .value.no {
+    color: #dc2626;
+    font-weight: 600;
+}
+
+.emergency-detail-page .pain-score {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: #dc2626;
+    font-weight: 600;
+}
+
+.emergency-detail-page .badge-ambulance {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    background: #dbeafe;
+    color: #1e40af;
+    border-radius: 12px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.emergency-detail-page .summary-text {
+    margin: 0;
+    line-height: 1.6;
+    color: #1a1a1a;
+}
+
+/* Loading & Error */
+.emergency-detail-page .loading-container,
+.emergency-detail-page .error-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 400px;
+    color: #666;
+}
+
+.emergency-detail-page .spinner {
+    font-size: 48px;
+    animation: spin 1s linear infinite;
+    margin-bottom: 16px;
+    color: #3b82f6;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.emergency-detail-page .error-icon {
+    font-size: 48px;
+    color: #dc2626;
+    margin-bottom: 16px;
+}
+
+.emergency-detail-page .error-container p {
+    margin-bottom: 20px;
+    font-size: 16px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .emergency-detail-page {
+        padding: 16px;
+    }
+
+    .emergency-detail-page .content-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .emergency-detail-page .page-header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+    }
+
+    .emergency-detail-page .status-banner {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+    }
+
+    .emergency-detail-page .banner-left {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}
+
+/* Actions Section */
+.actions-section {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.actions-group {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.actions-group-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #1a1a1a;
+    margin: 0 0 16px 0;
+    padding-bottom: 12px;
+    border-bottom: 2px solid #e5e7eb;
+}
+
+.actions-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.btn-action {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    font-weight: 500;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: white;
+}
+
+.btn-action:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Button Styles - Quản lý lượt cấp cứu */
+.btn-create-diagnostic {
+    background: #3b82f6 !important;
+}
+
+.btn-create-consultation {
+    background: #8b5cf6 !important;
+}
+
+.btn-activate-protocol {
+    background: #dc2626 !important;
+    animation: pulse-button 2s infinite;
+}
+
+.btn-view-protocols {
+    background: #7c3aed !important;
+}
+
+@keyframes pulse-button {
+    0%,
+    100% {
+        box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.4);
+    }
+    50% {
+        box-shadow: 0 0 0 6px rgba(220, 38, 38, 0);
+    }
+}
+
+.btn-update-status {
+    background: #3b82f6 !important;
+}
+
+.btn-assign-doctor {
+    background: #3b82f6 !important;
+}
+
+.btn-assign-nurse {
+    background: #10b981 !important;
+}
+
+/* Button Styles - Kết thúc lượt cấp cứu */
+.btn-discharge-simple {
+    background: #10b981 !important;
+}
+
+.btn-discharge-prescription {
+    background: #10b981 !important;
+}
+
+.btn-admit-inpatient {
+    background: #f59e0b !important;
+}
+
+.btn-transfer-simple {
+    background: #6366f1 !important;
+}
+
+.btn-transfer-document {
+    background: #6366f1 !important;
+}
+
+.btn-left-ama {
+    background: #ef4444 !important;
+}
+
+.btn-deceased {
+    background: #991b1b !important;
+}
+
+/* Success Message */
+.success-message {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px;
+    background: #d1fae5;
+    border: 1px solid #a7f3d0;
+    border-radius: 8px;
+    color: #065f46;
+    margin-bottom: 20px;
+    animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Modal Styles */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background: white;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 500px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.modal-header h3 {
+    margin: 0;
+    font-size: 18px;
+    color: #111827;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-close {
+    background: none;
+    border: none;
+    font-size: 24px;
+    color: #6b7280;
+    cursor: pointer;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.btn-close:hover {
+    color: #111827;
+}
+
+.modal-body {
+    padding: 20px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #374151;
+}
+
+.required {
+    color: #dc2626;
+}
+
+.form-group select {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 14px;
+    transition: all 0.2s;
+}
+
+.form-group select:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.form-group select:disabled {
+    background-color: #f3f4f6;
+    cursor: not-allowed;
+}
+
+.text-muted {
+    color: #6b7280;
+    font-size: 12px;
+    margin-top: 4px;
+    display: block;
+}
+
+.current-nurse-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px;
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    border-radius: 6px;
+    color: #166534;
+    font-size: 14px;
+    margin-top: 16px;
+}
+
+.current-nurse-info svg {
+    font-size: 18px;
+}
+
+.modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    padding: 20px;
+    border-top: 1px solid #e5e7eb;
+    background-color: #f9fafb;
+    border-radius: 0 0 12px 12px;
+}
+
+.btn-cancel,
+.btn-submit {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-cancel {
+    background-color: white;
+    color: #6b7280;
+    border: 1px solid #d1d5db;
+}
+
+.btn-cancel:hover:not(:disabled) {
+    background-color: #f9fafb;
+    border-color: #9ca3af;
+}
+
+.btn-submit {
+    background-color: #10b981;
+    color: white;
+}
+
+.btn-submit:hover:not(:disabled) {
+    background-color: #059669;
+}
+
+.btn-cancel:disabled,
+.btn-submit:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.error-message {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    background-color: #fef2f2;
+    border: 1px solid #fecaca;
+    border-radius: 6px;
+    color: #dc2626;
+    margin-bottom: 16px;
+    font-size: 14px;
+}
+
+.error-message svg {
+    font-size: 18px;
+    flex-shrink: 0;
+}
+
+/* Assign Doctor Button */
+.btn-assign-doctor {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background: #3b82f6;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-assign-doctor:hover {
+    background: #2563eb;
+}
+
+/* Create Diagnostic Order Button */
+.btn-create-diagnostic {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    background: #10b981;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: background 0.2s;
+}
+
+.btn-create-diagnostic:hover {
+    background: #059669;
+}

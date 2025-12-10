@@ -56,6 +56,12 @@ const FinanceLayout = () => {
                                 </NavLink>
                             </li>
                             <li>
+                                <NavLink to="/staff/tai-chinh/quan-ly-hoa-don">
+                                    <FiFileText />
+                                    <span>Quản lý hóa đơn</span>
+                                </NavLink>
+                            </li>
+                            <li>
                                 <NavLink to="/staff/tai-chinh/ds-hoa-don">
                                     <FiList />
                                     <span>Danh sách hóa đơn</span>
@@ -96,6 +102,12 @@ const FinanceLayout = () => {
                                 <NavLink to="/staff/tai-chinh/tam-ung-hoan-vien-phi">
                                     <FiDollarSign />
                                     <span>Tạm ứng / Hoàn viện phí</span>
+                                </NavLink>
+                            </li>
+                            <li>
+                                <NavLink to="/staff/tai-chinh/thu-tam-ung-cap-cuu">
+                                    <FiAlertCircle />
+                                    <span>Thu tạm ứng cấp cứu</span>
                                 </NavLink>
                             </li>
                             <li>

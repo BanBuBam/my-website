@@ -328,11 +328,87 @@ export const receptionistBookingAPI = {
   },
 };
 
+// API Quản lý Emergency
+export const receptionistEmergencyAPI = {
+  // Lấy danh sách cấp cứu đang hoạt động
+  getActiveEmergencies: async () => {
+    return apiCall('api/v1/emergency/encounters/active', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Lấy chi tiết cấp cứu
+  getEmergencyDetail: async (emergencyEncounterId) => {
+    return apiCall(`api/v1/emergency/encounters/${emergencyEncounterId}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Tạo yêu cầu cấp cứu mới (direct - không cần encounter trước)
+  createEmergency: async (emergencyData) => {
+    return apiCall('api/v1/emergency/encounters/direct', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+      body: JSON.stringify(emergencyData),
+    });
+  },
+
+  // Tạo emergency từ encounter có sẵn
+  createEmergencyFromEncounter: async (emergencyData) => {
+    return apiCall('api/v1/emergency/encounters', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(emergencyData),
+    });
+  },
+};
+
+// API Quản lý Encounters
+export const receptionistEncounterAPI = {
+  // Lấy danh sách encounters với pagination
+  getEncounters: async (page = 0, size = 20, sort = []) => {
+    const params = new URLSearchParams({
+      page: page.toString(),
+      size: size.toString(),
+    });
+    
+    sort.forEach(s => params.append('sort', s));
+    
+    return apiCall(`api/v1/encounters?${params.toString()}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Lấy chi tiết encounter
+  getEncounterDetail: async (encounterId) => {
+    return apiCall(`api/v1/encounters/${encounterId}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+};
+
 // API Quản lý Payment
 export const receptionistPaymentAPI = {
   // Tạo invoice cho encounter
   generateInvoice: async (invoiceData) => {
-    return apiCall('api/payments/generate-invoice', {
+    return apiCall('api/v1/payments/generate-invoice', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${getAccessToken()}`,
@@ -343,7 +419,7 @@ export const receptionistPaymentAPI = {
 
   // Lấy invoice theo encounter ID
   getInvoiceByEncounter: async (encounterId) => {
-    return apiCall(`api/invoices/encounter/${encounterId}`, {
+    return apiCall(`api/v1/invoices/encounter/${encounterId}`, {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${getAccessToken()}`,
@@ -353,7 +429,7 @@ export const receptionistPaymentAPI = {
 
   // Lấy chi tiết invoice
   getInvoiceDetail: async (invoiceId) => {
-    return apiCall(`api/invoices/${invoiceId}`, {
+    return apiCall(`api/v1/invoices/${invoiceId}`, {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${getAccessToken()}`,
@@ -363,7 +439,75 @@ export const receptionistPaymentAPI = {
 
   // Lấy danh sách items của invoice
   getInvoiceItems: async (invoiceId) => {
-    return apiCall(`api/invoice-items/invoice/${invoiceId}`, {
+    return apiCall(`api/v1/invoice-items/invoice/${invoiceId}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+};
+
+// API Patient Search
+export const receptionistPatientSearchAPI = {
+  // Tìm kiếm bệnh nhân theo tên
+  searchPatientsByName: async (name, page = 0, size = 10) => {
+    const params = new URLSearchParams({
+      name: name,
+      page: page.toString(),
+      size: size.toString(),
+    });
+    return apiCall(`api/v1/patient/admin/search?${params.toString()}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+};
+
+// API Department
+export const receptionistDepartmentAPI = {
+  // Lấy danh sách departments
+  getDepartments: async () => {
+    return apiCall('api/v1/departments', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+};
+
+// API Employee
+export const receptionistEmployeeAPI = {
+  // Lấy danh sách nhân viên theo role
+  getEmployeesByRole: async (role, page = 0, size = 100) => {
+    const params = new URLSearchParams({
+      page: page.toString(),
+      size: size.toString(),
+    });
+    return apiCall(`api/v1/employees/role/${role}?${params.toString()}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Lấy danh sách điều dưỡng
+  getNurses: async (page = 0, size = 100) => {
+    return receptionistEmployeeAPI.getEmployeesByRole('NURSE', page, size);
+  },
+
+  // Lấy danh sách bác sĩ
+  getDoctors: async (page = 0, size = 100) => {
+    return receptionistEmployeeAPI.getEmployeesByRole('DOCTOR', page, size);
+  },
+
+  // Lấy danh sách bác sĩ theo khoa
+  getDoctorsByDepartment: async (departmentId) => {
+    return apiCall(`api/v1/employees/department/${departmentId}/role/DOCTOR`, {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${getAccessToken()}`,
@@ -379,6 +523,11 @@ export default {
   receptionistAppointmentAPI,
   receptionistLookupAPI,
   receptionistBookingAPI,
+  receptionistEmergencyAPI,
+  receptionistEncounterAPI,
   receptionistPaymentAPI,
+  receptionistPatientSearchAPI,
+  receptionistDepartmentAPI,
+  receptionistEmployeeAPI,
 };
 

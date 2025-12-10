@@ -15,8 +15,14 @@ import FinancialReportPage from "./pages/bao-cao-tai-chinh/FinancialReportPage";
 import RevenueExpensePage from "./pages/quan-ly-thu-chi/RevenueExpensePage";
 import OutpatientPaymentListPage from "./pages/thanh-toan-ngoai-tru/OutpatientPaymentListPage";
 import EncounterDetailPage from "./pages/thanh-toan-ngoai-tru/EncounterDetailPage";
+import TransactionListPage from "./pages/thanh-toan-ngoai-tru/TransactionListPage";
 import InpatientPaymentListPage from "./pages/thanh-toan-noi-tru/InpatientPaymentListPage";
 import InpatientPaymentDetailPage from "./pages/thanh-toan-noi-tru/InpatientPaymentDetailPage";
+import InvoiceManagementListPage from "./pages/quan-ly-hoa-don/InvoiceListPage";
+import InvoiceManagementDetailPage from "./pages/quan-ly-hoa-don/InvoiceDetailPage";
+import OutpatientRefundListPage from "./pages/thanh-toan-ngoai-tru/OutpatientRefundListPage";
+import EmergencyAdvancePaymentListPage from "./pages/thu-tam-ung-cap-cuu/EmergencyAdvancePaymentListPage";
+import EmergencyEncounterDetailPage from "./pages/thu-tam-ung-cap-cuu/EmergencyEncounterDetailPage";
 
 const FinanceRoutes= () => {
     return (
@@ -40,9 +46,17 @@ const FinanceRoutes= () => {
                 {/* Outpatient Payment Routes */}
                 <Route path="thanh-toan-ngoai-tru" element={<OutpatientPaymentListPage/>} />
                 <Route path="thanh-toan-ngoai-tru/:encounterId" element={<EncounterDetailPage/>} />
+                <Route path="thanh-toan-ngoai-tru/:encounterId/giao-dich" element={<TransactionListPage/>} />
+                <Route path="thanh-toan-ngoai-tru/:encounterId/hoan-tien" element={<OutpatientRefundListPage/>} />
                 {/* Inpatient Payment Routes */}
                 <Route path="thanh-toan-noi-tru" element={<InpatientPaymentListPage/>} />
                 <Route path="thanh-toan-noi-tru/:inpatientStayId" element={<InpatientPaymentDetailPage/>} />
+                {/* Invoice Management Routes */}
+                <Route path="quan-ly-hoa-don" element={<InvoiceManagementListPage/>} />
+                <Route path="quan-ly-hoa-don/:invoiceId" element={<InvoiceManagementDetailPage/>} />
+                {/* Emergency Advance Payment Routes */}
+                <Route path="thu-tam-ung-cap-cuu" element={<EmergencyAdvancePaymentListPage/>} />
+                <Route path="thu-tam-ung-cap-cuu/:emergencyEncounterId" element={<EmergencyEncounterDetailPage/>} />
             </Route>
         </Routes>
     );

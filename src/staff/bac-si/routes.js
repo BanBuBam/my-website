@@ -14,6 +14,10 @@ import CreateSingleMedicationOrderPage from './pages/inpatient-treatment/CreateS
 import ConfirmMedicationOrderGroupPage from './pages/medication-order-group/ConfirmMedicationOrderGroupPage';
 import BookingListPage from './pages/booking/BookingListPage';
 import EmergencyEncounterPage from './pages/emergency/EmergencyEncounterPage';
+import EmergencyListPage from './pages/emergency/EmergencyListPage';
+import EmergencyDetailPage from './pages/emergency/EmergencyDetailPage';
+import EmergencyEncounterDetailPage from './pages/emergency/EncounterDetailPage';
+import CreateEmergencyPage from './pages/emergency/CreateEmergencyPage';
 import EncounterVitalPage from './pages/examination/EncounterVitalPage';
 import EncounterManagementPage from './pages/encounter/EncounterManagementPage';
 import EncounterDetailPage from './pages/encounter/EncounterDetailPage';
@@ -25,6 +29,15 @@ import PatientListPage from './pages/patient-list/PatientListPage';
 import MedicationOrderGroupsPage from "./pages/medication-order-group/MedicationOrderGroupsPage";
 import DoctorDischargePlanningPage from "./pages/discharge/DoctorDischargePlanningPage";
 import BedTransferPage from "./pages/inpatient-treatment/BedTransferPage";
+import ConsultationManagementPage from "./pages/consultation/ConsultationManagementPage";
+import CreateConsultationPage from "./pages/consultation/CreateConsultationPage";
+import DiagnosticOrderManagementPage from "./pages/diagnostic-orders/DiagnosticOrderManagementPage";
+import DiagnosticOrderDetailPage from "./pages/diagnostic-orders/DiagnosticOrderDetailPage";
+import ProtocolListPage from "./pages/emergency/ProtocolListPage";
+import ProtocolDetailPage from "./pages/emergency/ProtocolDetailPage";
+import ProtocolManagementPage from "./pages/protocols/ProtocolManagementPage";
+import FollowUpListPage from "./pages/follow-up/FollowUpListPage";
+import FollowUpDetailPage from "./pages/follow-up/FollowUpDetailPage";
 
 const DoctorRoutes = () => {
     return (
@@ -53,8 +66,20 @@ const DoctorRoutes = () => {
                 <Route path="dieu-tri-noi-tru/:inpatientStayId/tao-nhom-y-lenh" element={<CreateMedicationOrderGroupPage />} />
                 <Route path="dieu-tri-noi-tru/:inpatientStayId/tao-y-lenh-le" element={<CreateSingleMedicationOrderPage />} />
                 <Route path="xac-nhan-nhom-y-lenh" element={<ConfirmMedicationOrderGroupPage />} />
-                <Route path="cap-cuu" element={<EmergencyEncounterPage />} />
+                <Route path="cap-cuu" element={<EmergencyListPage />} />
+                <Route path="cap-cuu/tao-moi" element={<CreateEmergencyPage />} />
+                <Route path="cap-cuu/emergency/:emergencyEncounterId" element={<EmergencyDetailPage />} />
+                <Route path="cap-cuu/encounter/:encounterId" element={<EmergencyEncounterDetailPage />} />
+                <Route path="hoi-chan" element={<ConsultationManagementPage />} />
+                <Route path="hoi-chan/tao-moi" element={<CreateConsultationPage />} />
                 <Route path="danh-sach-benh-nhan" element={<PatientListPage />} />
+                <Route path="diagnostic-orders" element={<DiagnosticOrderManagementPage />} />
+                <Route path="diagnostic-orders/:orderId" element={<DiagnosticOrderDetailPage />} />
+                <Route path="protocols" element={<ProtocolManagementPage />} />
+                <Route path="protocols/patient/:patientId" element={<ProtocolListPage />} />
+                <Route path="protocols/:protocolId" element={<ProtocolDetailPage />} />
+                <Route path="tai-kham" element={<FollowUpListPage />} />
+                <Route path="tai-kham/:appointmentId" element={<FollowUpDetailPage />} />
             </Route>
         </Routes>
     );

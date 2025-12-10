@@ -128,8 +128,115 @@ export const labTechnicianResultAPI = {
   },
 };
 
+// API Diagnostic Orders (Emergency)
+export const labTechnicianDiagnosticAPI = {
+  // Lấy danh sách diagnostic orders đang chờ xác nhận
+  getPendingDiagnosticOrders: async () => {
+    return apiCall('api/v1/emergency/diagnostic-orders/pending', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Lấy chi tiết diagnostic order
+  getDiagnosticOrderDetail: async (orderId) => {
+    return apiCall(`api/v1/emergency/diagnostic-orders/${orderId}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Tìm diagnostic orders theo encounter ID
+  getDiagnosticOrdersByEncounter: async (emergencyEncounterId) => {
+    return apiCall(`api/v1/emergency/diagnostic-orders/encounter/${emergencyEncounterId}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Lấy tất cả diagnostic orders với pagination
+  getAllDiagnosticOrders: async (page = 0, size = 20, sort = ['orderedAt,desc']) => {
+    const params = new URLSearchParams({
+      page: page.toString(),
+      size: size.toString(),
+    });
+
+    // Add sort parameters
+    if (sort && sort.length > 0) {
+      sort.forEach(s => params.append('sort', s));
+    }
+
+    return apiCall(`api/v1/emergency/diagnostic-orders?${params.toString()}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Tiếp nhận chỉ định xét nghiệm
+  acceptDiagnosticOrder: async (orderId, orderData) => {
+    return apiCall(`api/v1/emergency/diagnostic-orders/${orderId}/accept`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(orderData),
+    });
+  },
+
+  // Bắt đầu thực hiện xét nghiệm
+  startDiagnosticOrder: async (orderId, orderData) => {
+    return apiCall(`api/v1/emergency/diagnostic-orders/${orderId}/start`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(orderData),
+    });
+  },
+
+  // Hoàn thành xét nghiệm
+  completeDiagnosticOrder: async (orderId, orderData) => {
+    return apiCall(`api/v1/emergency/diagnostic-orders/${orderId}/complete`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(orderData),
+    });
+  },
+
+  // Báo cáo kết quả xét nghiệm
+  reportDiagnosticOrder: async (orderId, results, interpretation, orderData) => {
+    const params = new URLSearchParams({
+      results: results,
+      interpretation: interpretation,
+    });
+
+    return apiCall(`api/v1/emergency/diagnostic-orders/${orderId}/report?${params.toString()}`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(orderData),
+    });
+  },
+};
+
 export default {
   labTechnicianOrderAPI,
   labTechnicianResultAPI,
+  labTechnicianDiagnosticAPI,
 };
 

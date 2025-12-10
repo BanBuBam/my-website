@@ -60,8 +60,8 @@ const PrescriptionPage = () => {
         const fetchMedicines = async () => {
             try {
                 const response = await medicineAPI.getMedicines();
-                if (response && response.content) {
-                    setMedicines(response.content);
+                if (response && response.data.content) {
+                    setMedicines(response.data.content);
                 }
             } catch (err) {
                 console.error('Error loading medicines:', err);

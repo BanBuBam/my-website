@@ -46,8 +46,8 @@ const CreateSingleMedicationOrderPage = () => {
             
             // Fetch medicines
             const medicineResponse = await medicineAPI.getMedicines();
-            if (medicineResponse && medicineResponse.content) {
-                setMedicines(medicineResponse.content);
+            if (medicineResponse && medicineResponse.data.content) {
+                setMedicines(medicineResponse.data.content);
             }
         } catch (err) {
             console.error('Error loading data:', err);
