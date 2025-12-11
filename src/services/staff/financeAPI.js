@@ -480,6 +480,22 @@ export const financeInpatientAPI = {
       },
     });
   },
+
+  // Hoàn tiền tạm ứng
+  refundDeposit: async (patientId, refundMethod, reason) => {
+    const params = new URLSearchParams({
+      patientId: patientId,
+      refundMethod: refundMethod,
+      reason: reason,
+    });
+
+    return apiCall(`api/v1/deposits/refund?${params.toString()}`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
 };
 
 // API Quản lý cấp cứu (cho cashier)

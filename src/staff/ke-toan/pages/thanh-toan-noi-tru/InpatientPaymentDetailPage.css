@@ -1030,3 +1030,152 @@
     color: #666;
     font-size: 15px;
 }
+
+/* Deposit Refund Button */
+.action-buttons-row .btn-deposit-refund {
+    background: #9C27B0;
+}
+
+.action-buttons-row .btn-deposit-refund:hover:not(:disabled) {
+    opacity: 0.9;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(156, 39, 176, 0.3);
+}
+
+/* Deposit Refund Modal Styles */
+.deposit-refund-form .info-box {
+    background: #e3f2fd;
+    border: 1px solid #2196F3;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 20px;
+}
+
+.deposit-refund-form .info-box .info-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+}
+
+.deposit-refund-form .info-box .info-row .label {
+    color: #1976d2;
+    font-weight: 500;
+}
+
+.deposit-refund-form .info-box .info-row .value {
+    color: #0d47a1;
+    font-weight: 600;
+}
+
+.deposit-refund-form .info-box .info-row .value.highlight {
+    color: #10b981;
+    font-size: 1.1rem;
+}
+
+.deposit-refund-form .warning-box {
+    background: #fff3cd;
+    border: 1px solid #ffc107;
+    border-radius: 8px;
+    padding: 15px;
+    margin-top: 20px;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+}
+
+.deposit-refund-form .warning-box svg {
+    color: #ff9800;
+    font-size: 24px;
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+.deposit-refund-form .warning-box p {
+    margin: 0;
+    color: #856404;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.deposit-refund-form .form-group {
+    margin-bottom: 20px;
+}
+
+.deposit-refund-form .form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: #374151;
+    font-size: 0.95rem;
+}
+
+.deposit-refund-form .form-group label .required {
+    color: #ef4444;
+}
+
+.deposit-refund-form .form-group select,
+.deposit-refund-form .form-group textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    transition: all 0.2s;
+}
+
+.deposit-refund-form .form-group select:focus,
+.deposit-refund-form .form-group textarea:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.deposit-refund-result .success-message {
+    text-align: center;
+    margin-bottom: 24px;
+}
+
+.deposit-refund-result .success-icon {
+    font-size: 48px;
+    color: #10b981;
+    margin-bottom: 12px;
+}
+
+.deposit-refund-result .success-message h4 {
+    margin: 0;
+    color: #1f2937;
+    font-size: 1.25rem;
+}
+
+.deposit-refund-result .refund-details {
+    background-color: #f9fafb;
+    padding: 20px;
+    border-radius: 8px;
+}
+
+.deposit-refund-result .detail-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 12px 0;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.deposit-refund-result .detail-row:last-child {
+    border-bottom: none;
+}
+
+.deposit-refund-result .detail-row .label {
+    font-weight: 500;
+    color: #6b7280;
+}
+
+.deposit-refund-result .detail-row .value {
+    color: #1f2937;
+    font-weight: 500;
+}
+
+.deposit-refund-result .detail-row .value.highlight {
+    color: #10b981;
+    font-size: 1.1rem;
+    font-weight: 600;
+}

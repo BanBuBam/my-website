@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { doctorConsultationAPI } from '../../../../services/staff/doctorAPI';
+import { doctorConsultationAPI, doctorDiagnosticOrderAPI } from '../../../../services/staff/doctorAPI';
 import {
     FiUsers, FiPlus, FiRefreshCw, FiAlertCircle,
-    FiCalendar, FiCheckCircle, FiClock, FiFileText
+    FiCalendar, FiCheckCircle, FiClock, FiFileText, FiEye, FiX
 } from 'react-icons/fi';
 import './ConsultationManagementPage.css';
 
@@ -18,6 +18,13 @@ const ConsultationManagementPage = () => {
 
     // Tab 2: Danh sách chưa tạo booking
     const [withoutBooking, setWithoutBooking] = useState([]);
+
+    // Detail modal state
+    const [showDetailModal, setShowDetailModal] = useState(false);
+    const [selectedConsultation, setSelectedConsultation] = useState(null);
+    const [consultationDetail, setConsultationDetail] = useState(null);
+    const [loadingDetail, setLoadingDetail] = useState(false);
+    const [detailError, setDetailError] = useState(null);
 
     // Get doctor ID from localStorage
     const getDoctorId = () => {
@@ -88,6 +95,36 @@ const ConsultationManagementPage = () => {
         navigate('/staff/bac-si/hoi-chan/tao-moi');
     };
 
+    // Handle view consultation detail
+    const handleViewDetail = async (consultation) => {
+        setSelectedConsultation(consultation);
+        setShowDetailModal(true);
+        setLoadingDetail(true);
+        setDetailError(null);
+        setConsultationDetail(null);
+
+        try {
+            // Sử dụng consultationId làm diagnostic order ID
+            const response = await doctorDiagnosticOrderAPI.getDiagnosticOrderDetail(consultation.consultationId);
+            if (response && response.data) {
+                setConsultationDetail(response.data);
+            }
+        } catch (err) {
+            console.error('Error fetching consultation detail:', err);
+            setDetailError(err.message || 'Không thể tải chi tiết hội chẩn');
+        } finally {
+            setLoadingDetail(false);
+        }
+    };
+
+    // Handle close detail modal
+    const handleCloseDetailModal = () => {
+        setShowDetailModal(false);
+        setSelectedConsultation(null);
+        setConsultationDetail(null);
+        setDetailError(null);
+    };
+
     // Format date
     const formatDateTime = (dateString) => {
         if (!dateString) return '-';
@@ -152,6 +189,7 @@ const ConsultationManagementPage = () => {
                             <th>Thời gian hẹn</th>
                             <th>Booking</th>
                             <th>Trạng thái</th>
+                            <th>Thao tác</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -186,6 +224,15 @@ const ConsultationManagementPage = () => {
                                     {consultation.isUrgentFollowUp && (
                                         <span className="badge-urgent">Khẩn cấp</span>
                                     )}
+                                </td>
+                                <td>
+                                    <button 
+                                        className="btn-view-detail"
+                                        onClick={() => handleViewDetail(consultation)}
+                                        title="Xem chi tiết"
+                                    >
+                                        <FiEye /> Chi tiết
+                                    </button>
                                 </td>
                             </tr>
                         ))}
@@ -267,6 +314,131 @@ const ConsultationManagementPage = () => {
                     </div>
                 )}
             </div>
+
+            {/* Detail Modal */}
+            {showDetailModal && (
+                <div className="modal-overlay" onClick={handleCloseDetailModal}>
+                    <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                        <div className="modal-header">
+                            <h3>
+                                <FiFileText /> Chi tiết Hội chẩn #{selectedConsultation?.consultationId}
+                            </h3>
+                            <button className="btn-close" onClick={handleCloseDetailModal}>
+                                <FiX />
+                            </button>
+                        </div>
+                        <div className="modal-body">
+                            {loadingDetail ? (
+                                <div className="loading-state">
+                                    <FiRefreshCw className="spinner" />
+                                    <p>Đang tải chi tiết...</p>
+                                </div>
+                            ) : detailError ? (
+                                <div className="error-state">
+                                    <FiAlertCircle />
+                                    <p>{detailError}</p>
+                                </div>
+                            ) : consultationDetail ? (
+                                <div className="consultation-detail">
+                                    <div className="detail-section">
+                                        <h4>Thông tin cơ bản</h4>
+                                        <div className="detail-grid">
+                                            <div className="detail-item">
+                                                <label>ID:</label>
+                                                <span>{consultationDetail.id}</span>
+                                            </div>
+                                            <div className="detail-item">
+                                                <label>Emergency Encounter ID:</label>
+                                                <span>{consultationDetail.emergencyEncounterId}</span>
+                                            </div>
+                                            <div className="detail-item">
+                                                <label>Loại chẩn đoán:</label>
+                                                <span>{consultationDetail.diagnosticType || '-'}</span>
+                                            </div>
+                                            <div className="detail-item">
+                                                <label>Mức độ khẩn cấp:</label>
+                                                <span>{consultationDetail.urgencyLevel || '-'}</span>
+                                            </div>
+                                            <div className="detail-item">
+                                                <label>Trạng thái:</label>
+                                                <span>{consultationDetail.status || '-'}</span>
+                                            </div>
+                                            <div className="detail-item">
+                                                <label>Bác sĩ chỉ định:</label>
+                                                <span>{consultationDetail.orderedByDoctorId || '-'}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div className="detail-section">
+                                        <h4>Chi tiết chỉ định</h4>
+                                        <div className="detail-text">
+                                            <label>Chi tiết chỉ định:</label>
+                                            <p>{consultationDetail.orderDetails || 'Không có thông tin'}</p>
+                                        </div>
+                                        <div className="detail-text">
+                                            <label>Chỉ định lâm sàng:</label>
+                                            <p>{consultationDetail.clinicalIndication || 'Không có thông tin'}</p>
+                                        </div>
+                                    </div>
+
+                                    <div className="detail-section">
+                                        <h4>Kết quả</h4>
+                                        <div className="detail-text">
+                                            <label>Kết quả:</label>
+                                            <p>{consultationDetail.results || 'Chưa có kết quả'}</p>
+                                        </div>
+                                        <div className="detail-text">
+                                            <label>Diễn giải:</label>
+                                            <p>{consultationDetail.interpretation || 'Chưa có diễn giải'}</p>
+                                        </div>
+                                    </div>
+
+                                    <div className="detail-section">
+                                        <h4>Thời gian</h4>
+                                        <div className="detail-grid">
+                                            <div className="detail-item">
+                                                <label>Thời gian chỉ định:</label>
+                                                <span>{formatDateTime(consultationDetail.orderedAt)}</span>
+                                            </div>
+                                            <div className="detail-item">
+                                                <label>Thời gian hoàn thành dự kiến:</label>
+                                                <span>{formatDateTime(consultationDetail.targetCompletionTime)}</span>
+                                            </div>
+                                            <div className="detail-item">
+                                                <label>Thời gian hoàn thành:</label>
+                                                <span>{formatDateTime(consultationDetail.completedAt)}</span>
+                                            </div>
+                                            <div className="detail-item">
+                                                <label>Người báo cáo:</label>
+                                                <span>{consultationDetail.reportedByEmployeeId || '-'}</span>
+                                            </div>
+                                            <div className="detail-item">
+                                                <label>Ngày tạo:</label>
+                                                <span>{formatDateTime(consultationDetail.createdAt)}</span>
+                                            </div>
+                                            <div className="detail-item">
+                                                <label>Cập nhật lần cuối:</label>
+                                                <span>{formatDateTime(consultationDetail.updatedAt)}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            ) : (
+                                <div className="empty-state">
+                                    <FiFileText />
+                                    <p>Không có dữ liệu chi tiết</p>
+                                </div>
+                            )}
+                        </div>
+                        <div className="modal-footer">
+                            <button className="btn-close-modal" onClick={handleCloseDetailModal}>
+                                Đóng
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
