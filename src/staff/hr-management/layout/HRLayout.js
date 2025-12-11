@@ -1,6 +1,7 @@
 import React from 'react';
 import { NavLink, Outlet } from 'react-router-dom';
 import './HRLayout.css';
+import '../../shared/FilterGradientOverride.css';
 import {
   FiHome,
   FiUsers,

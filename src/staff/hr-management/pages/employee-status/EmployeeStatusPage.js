@@ -494,7 +494,7 @@ const EmployeeStatusPage = () => {
       {/* FILTER SECTION - New design matching InventoryTransactionsPage */}
       {(viewMode === 'employee' || viewMode === 'date') && (
         <div style={{
-          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+          background: 'linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%)',
           padding: '2rem',
           borderRadius: '16px',
           marginBottom: '1.5rem',
@@ -601,7 +601,7 @@ const EmployeeStatusPage = () => {
                     paddingBottom: '0.75rem',
                     borderBottom: '2px solid #f0f0f0'
                   }}>
-                    <FiUser size={18} style={{ color: '#667eea' }} />
+                    <FiUser size={18} style={{ color: '#0ea5e9' }} />
                     <h4 style={{ margin: 0, fontSize: '1rem', fontWeight: '600', color: '#2d3748' }}>
                       Chọn nhân viên và lọc
                     </h4>
@@ -610,7 +610,7 @@ const EmployeeStatusPage = () => {
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem' }}>
                     <div>
                       <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem', fontSize: '0.9rem', fontWeight: '600', color: '#4a5568' }}>
-                        <FiUser size={14} style={{ color: '#667eea' }} />
+                        <FiUser size={14} style={{ color: '#0ea5e9' }} />
                         Chọn nhân viên
                       </label>
                       <select
@@ -639,7 +639,7 @@ const EmployeeStatusPage = () => {
 
                     <div>
                       <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem', fontSize: '0.9rem', fontWeight: '600', color: '#4a5568' }}>
-                        <FiLayers size={14} style={{ color: '#667eea' }} />
+                        <FiLayers size={14} style={{ color: '#0ea5e9' }} />
                         Lọc theo loại
                       </label>
                       <select
@@ -672,7 +672,7 @@ const EmployeeStatusPage = () => {
                           onChange={handleDateRangeToggle}
                           style={{ marginRight: '0.25rem' }}
                         />
-                        <FiCalendar size={14} style={{ color: '#667eea' }} />
+                        <FiCalendar size={14} style={{ color: '#0ea5e9' }} />
                         Lọc theo khoảng thời gian
                       </label>
                       {useDateRange ? (
@@ -751,7 +751,7 @@ const EmployeeStatusPage = () => {
                   paddingBottom: '0.75rem',
                   borderBottom: '2px solid #f0f0f0'
                 }}>
-                  <FiCalendar size={18} style={{ color: '#667eea' }} />
+                  <FiCalendar size={18} style={{ color: '#0ea5e9' }} />
                   <h4 style={{ margin: 0, fontSize: '1rem', fontWeight: '600', color: '#2d3748' }}>
                     Xem theo ngày
                   </h4>
@@ -760,7 +760,7 @@ const EmployeeStatusPage = () => {
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '1rem' }}>
                   <div>
                     <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem', fontSize: '0.9rem', fontWeight: '600', color: '#4a5568' }}>
-                      <FiCalendar size={14} style={{ color: '#667eea' }} />
+                      <FiCalendar size={14} style={{ color: '#0ea5e9' }} />
                       Chọn ngày xem
                     </label>
                     <input
@@ -781,7 +781,7 @@ const EmployeeStatusPage = () => {
 
                   <div>
                     <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem', fontSize: '0.9rem', fontWeight: '600', color: '#4a5568' }}>
-                      <FiLayers size={14} style={{ color: '#667eea' }} />
+                      <FiLayers size={14} style={{ color: '#0ea5e9' }} />
                       Loại tình trạng
                     </label>
                     <select
@@ -1163,4 +1163,5 @@ const EmployeeStatusPage = () => {
 };
 
 export default EmployeeStatusPage;
+
 

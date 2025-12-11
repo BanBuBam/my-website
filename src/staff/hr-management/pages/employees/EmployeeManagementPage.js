@@ -426,7 +426,7 @@ const EmployeeManagementPage = () => {
 
       {/* FILTER SECTION - New design matching InventoryTransactionsPage */}
       <div style={{
-        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        background: 'linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%)',
         padding: '2rem',
         borderRadius: '16px',
         marginBottom: '1.5rem',
@@ -512,7 +512,7 @@ const EmployeeManagementPage = () => {
             <div style={{
               background: 'rgba(255, 255, 255, 0.95)',
               backdropFilter: 'blur(10px)',
-              color: '#667eea',
+              color: '#0ea5e9',
               padding: '0.5rem 1rem',
               borderRadius: '25px',
               fontSize: '0.9rem',
@@ -548,7 +548,7 @@ const EmployeeManagementPage = () => {
               paddingBottom: '0.75rem',
               borderBottom: '2px solid #f0f0f0'
             }}>
-              <FiSearch size={18} style={{ color: '#667eea' }} />
+              <FiSearch size={18} style={{ color: '#0ea5e9' }} />
               <h4 style={{ margin: 0, fontSize: '1rem', fontWeight: '600', color: '#2d3748' }}>
                 Tìm kiếm
               </h4>
@@ -557,7 +557,7 @@ const EmployeeManagementPage = () => {
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '1rem' }}>
               <div>
                 <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem', fontSize: '0.9rem', fontWeight: '600', color: '#4a5568' }}>
-                  <FiSearch size={14} style={{ color: '#667eea' }} />
+                  <FiSearch size={14} style={{ color: '#0ea5e9' }} />
                   Tìm theo tên, email, SĐT
                 </label>
                 <input
@@ -581,7 +581,7 @@ const EmployeeManagementPage = () => {
 
               <div>
                 <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem', fontSize: '0.9rem', fontWeight: '600', color: '#4a5568' }}>
-                  <FiSearch size={14} style={{ color: '#667eea' }} />
+                  <FiSearch size={14} style={{ color: '#0ea5e9' }} />
                   Tìm theo mã nhân viên
                 </label>
                 <input
@@ -615,7 +615,7 @@ const EmployeeManagementPage = () => {
               paddingBottom: '0.75rem',
               borderBottom: '2px solid #f0f0f0'
             }}>
-              <FiFilter size={18} style={{ color: '#667eea' }} />
+              <FiFilter size={18} style={{ color: '#0ea5e9' }} />
               <h4 style={{ margin: 0, fontSize: '1rem', fontWeight: '600', color: '#2d3748' }}>
                 Phân loại
               </h4>
@@ -624,7 +624,7 @@ const EmployeeManagementPage = () => {
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '1rem' }}>
               <div>
                 <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem', fontSize: '0.9rem', fontWeight: '600', color: '#4a5568' }}>
-                  <FiUsers size={14} style={{ color: '#667eea' }} />
+                  <FiUsers size={14} style={{ color: '#0ea5e9' }} />
                   Phòng ban
                 </label>
                 <select
@@ -659,7 +659,7 @@ const EmployeeManagementPage = () => {
 
               <div>
                 <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem', fontSize: '0.9rem', fontWeight: '600', color: '#4a5568' }}>
-                  <FiUserCheck size={14} style={{ color: '#667eea' }} />
+                  <FiUserCheck size={14} style={{ color: '#0ea5e9' }} />
                   Vai trò
                 </label>
                 <select
@@ -725,7 +725,7 @@ const EmployeeManagementPage = () => {
                 alignItems: 'center',
                 gap: '0.5rem',
                 padding: '0.75rem 2rem',
-                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                background: 'linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%)',
                 border: 'none',
                 borderRadius: '10px',
                 color: '#fff',
@@ -898,4 +898,5 @@ const EmployeeManagementPage = () => {
 };
 
 export default EmployeeManagementPage;
+
 

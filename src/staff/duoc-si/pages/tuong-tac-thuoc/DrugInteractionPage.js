@@ -323,22 +323,47 @@ const DrugInteractionPage = () => {
 
       {activeTab === 'MANAGE' && (
         <div className="manage-layout">
-          <div className="filter-toolbar">
-            <div className="search-group"><input placeholder="Tìm kiếm..." value={manageSearchTerm} onChange={e=>setManageSearchTerm(e.target.value)} onKeyDown={e=>e.key==='Enter'&&fetchInteractions()}/><button className="btn-search" onClick={fetchInteractions}><FaSearch/></button></div>
-            <div className="right-actions"><div className="filter-group"><FaFilter/><select value={filterSeverity} onChange={e=>setFilterSeverity(e.target.value)}><option value="ALL">Tất cả</option><option value="CONTRAINDICATED">Chống chỉ định</option><option value="MAJOR">Nghiêm trọng</option><option value="MODERATE">Trung bình</option><option value="MINOR">Nhẹ</option></select></div><button className="btn-create" onClick={handleOpenImport}><FaFileImport/> Import JSON</button><button className="btn-secondary" onClick={handleOpenDataModal}><FaDatabase/> Dữ liệu & Trash</button><button className="btn-create" onClick={handleOpenCreate}><FaPlus/> Thêm mới</button></div>
+          <div className="manage-controls">
+            <div className="search-box">
+              <input placeholder="Tìm kiếm thuốc..." value={manageSearchTerm} onChange={e=>setManageSearchTerm(e.target.value)} onKeyDown={e=>e.key==='Enter'&&fetchInteractions()}/>
+              <button onClick={fetchInteractions}><FaSearch/></button>
+            </div>
+            <select value={filterSeverity} onChange={e=>setFilterSeverity(e.target.value)}>
+              <option value="ALL">Tất cả mức độ</option>
+              <option value="CONTRAINDICATED">Chống chỉ định</option>
+              <option value="MAJOR">Nghiêm trọng</option>
+              <option value="MODERATE">Trung bình</option>
+              <option value="MINOR">Nhẹ</option>
+            </select>
+            <button className="btn-primary" onClick={handleOpenCreate}><FaPlus/> Thêm mới</button>
+            <button className="btn-secondary" onClick={handleOpenImport}><FaFileImport/> Import</button>
+            <button className="btn-secondary" onClick={handleOpenDataModal}><FaDatabase/> Dữ liệu</button>
           </div>
           <div className="table-container">
-            <table className="data-table">
-              <thead><tr><th>ID</th><th style={{width:'30%'}}>Cặp thuốc</th><th>Loại</th><th>Mức độ</th><th>Hậu quả</th><th className="text-center">Thao tác</th></tr></thead>
+            <table className="interaction-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th style={{width:'30%'}}>Cặp thuốc</th>
+                  <th>Loại</th>
+                  <th>Mức độ</th>
+                  <th>Hậu quả</th>
+                  <th className="text-center">Thao tác</th>
+                </tr>
+              </thead>
               <tbody>
                 {interactionList.length > 0 ? interactionList.map(item => (
                   <tr key={item.interactionId}>
                     <td>{item.interactionId}</td>
                     <td>
-                      <div className="drug-pair">
-                        <strong>{getMedicineName(item, 1)}</strong>
+                      <div className="drug-pair-cell">
+                        <div className="drug-name">
+                          <strong>{getMedicineName(item, 1)}</strong>
+                        </div>
                         <FaExchangeAlt className="exchange-icon"/>
-                        <strong>{getMedicineName(item, 2)}</strong>
+                        <div className="drug-name">
+                          <strong>{getMedicineName(item, 2)}</strong>
+                        </div>
                       </div>
                       {item.medicine1?.manufacturer && (
                         <small style={{color:'#888', display:'block', marginTop:'4px'}}>

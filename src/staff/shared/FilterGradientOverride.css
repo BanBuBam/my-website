@@ -1,0 +1,122 @@
+/* ============================================
+   FILTER GRADIENT COLOR OVERRIDE
+   Thay đổi màu gradient từ tím sang xanh da trời
+   cho hệ thống bệnh viện
+   ============================================ */
+
+/* 
+   Màu cũ (Tím): #667eea → #764ba2
+   Màu mới (Xanh da trời): #0ea5e9 → #0284c7
+   (Sky Blue - phù hợp với hệ thống bệnh viện)
+*/
+
+/* Override inline styles với !important */
+[style*="linear-gradient(135deg, #667eea 0%, #764ba2 100%)"] {
+  background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%) !important;
+}
+
+[style*="linear-gradient(135deg, #667eea, #764ba2)"] {
+  background: linear-gradient(135deg, #0ea5e9, #0284c7) !important;
+}
+
+/* Box shadow cho filter section */
+[style*="rgba(102, 126, 234, 0.3)"] {
+  box-shadow: 0 10px 30px rgba(14, 165, 233, 0.3) !important;
+}
+
+/* Các class có thể dùng cho filter section */
+.filter-gradient-blue {
+  background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+}
+
+.filter-gradient-blue-shadow {
+  box-shadow: 0 10px 30px rgba(14, 165, 233, 0.3);
+}
+
+/* Hover effects */
+.filter-gradient-blue:hover {
+  background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+}
+
+/* Button với gradient xanh */
+.btn-filter-blue {
+  background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+  color: #ffffff;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3);
+}
+
+.btn-filter-blue:hover {
+  background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+  box-shadow: 0 6px 16px rgba(14, 165, 233, 0.4);
+  transform: translateY(-2px);
+}
+
+.btn-filter-blue:active {
+  transform: translateY(0);
+}
+
+/* Card với gradient xanh */
+.card-gradient-blue {
+  background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+  padding: 1.25rem;
+  border-radius: 12px;
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(14, 165, 233, 0.2);
+}
+
+/* Quick filter active state */
+.quick-filter-active-blue {
+  background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+  color: #ffffff;
+  border: none;
+}
+
+/* Modal header với gradient xanh */
+.modal-header-blue {
+  background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+  color: #ffffff;
+  padding: 1.5rem;
+  border-radius: 12px 12px 0 0;
+}
+
+/* Các biến CSS cho dễ customize */
+:root {
+  --filter-gradient-start: #0ea5e9;
+  --filter-gradient-end: #0284c7;
+  --filter-gradient-hover-start: #0284c7;
+  --filter-gradient-hover-end: #0369a1;
+  --filter-shadow-color: rgba(14, 165, 233, 0.3);
+}
+
+/* Utility classes */
+.bg-hospital-blue {
+  background: linear-gradient(135deg, var(--filter-gradient-start) 0%, var(--filter-gradient-end) 100%);
+}
+
+.shadow-hospital-blue {
+  box-shadow: 0 10px 30px var(--filter-shadow-color);
+}
+
+.text-hospital-blue {
+  color: var(--filter-gradient-start);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .filter-gradient-blue,
+  .card-gradient-blue {
+    padding: 1rem;
+  }
+  
+  .btn-filter-blue {
+    padding: 0.65rem 1.25rem;
+    font-size: 0.9rem;
+  }
+}
+

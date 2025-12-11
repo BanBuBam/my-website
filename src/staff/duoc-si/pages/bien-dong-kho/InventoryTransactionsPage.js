@@ -673,7 +673,7 @@ const InventoryTransactionsPage = () => {
                         className="btn-primary"
                         onClick={handleToggleStatistics}
                         style={{
-                            background: showStatistics ? '#8b5cf6' : '#667eea',
+                            background: showStatistics ? '#0284c7' : '#0ea5e9',
                             color: '#fff',
                             marginRight: '0.5rem',
                             transition: 'all 0.3s ease'
@@ -716,11 +716,11 @@ const InventoryTransactionsPage = () => {
 
             {/* Filter Section */}
             <div className="filter-section" style={{
-                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                background: 'linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%)',
                 padding: '2rem',
                 borderRadius: '16px',
                 marginBottom: '1.5rem',
-                boxShadow: '0 10px 30px rgba(102, 126, 234, 0.3)',
+                boxShadow: '0 10px 30px rgba(14, 165, 233, 0.3)',
                 position: 'relative',
                 overflow: 'hidden'
             }}>
@@ -823,7 +823,7 @@ const InventoryTransactionsPage = () => {
                         <div style={{
                             background: 'rgba(255, 255, 255, 0.95)',
                             backdropFilter: 'blur(10px)',
-                            color: '#8b5cf6',
+                            color: '#0284c7',
                             padding: '0.5rem 1rem',
                             borderRadius: '25px',
                             fontSize: '0.9rem',
@@ -905,7 +905,7 @@ const InventoryTransactionsPage = () => {
                             paddingBottom: '0.75rem',
                             borderBottom: '2px solid #f0f0f0'
                         }}>
-                            <FiCalendar size={18} style={{ color: '#667eea' }} />
+                            <FiCalendar size={18} style={{ color: '#0ea5e9' }} />
                             <h4 style={{
                                 margin: 0,
                                 fontSize: '1rem',
@@ -929,7 +929,7 @@ const InventoryTransactionsPage = () => {
                                     fontWeight: '600',
                                     color: '#4a5568'
                                 }}>
-                                    <FiCalendar size={14} style={{ color: '#667eea' }} />
+                                    <FiCalendar size={14} style={{ color: '#0ea5e9' }} />
                                     Từ ngày
                                 </label>
                                 <input
@@ -939,12 +939,12 @@ const InventoryTransactionsPage = () => {
                                     style={{
                                         width: '100%',
                                         padding: '0.75rem',
-                                        border: `2px solid ${filters.startDate ? '#667eea' : '#e2e8f0'}`,
+                                        border: `2px solid ${filters.startDate ? '#0ea5e9' : '#e2e8f0'}`,
                                         borderRadius: '10px',
                                         fontSize: '0.95rem',
                                         transition: 'all 0.3s ease',
                                         background: filters.startDate ? '#f7fafc' : '#fff',
-                                        boxShadow: filters.startDate ? '0 0 0 3px rgba(102, 126, 234, 0.1)' : 'none'
+                                        boxShadow: filters.startDate ? '0 0 0 3px rgba(14, 165, 233, 0.1)' : 'none'
                                     }}
                                 />
                                 {filters.startDate && !filters.endDate && (
@@ -973,7 +973,7 @@ const InventoryTransactionsPage = () => {
                                     fontWeight: '600',
                                     color: '#4a5568'
                                 }}>
-                                    <FiCalendar size={14} style={{ color: '#667eea' }} />
+                                    <FiCalendar size={14} style={{ color: '#0ea5e9' }} />
                                     Đến ngày
                                 </label>
                                 <input
@@ -983,12 +983,12 @@ const InventoryTransactionsPage = () => {
                                     style={{
                                         width: '100%',
                                         padding: '0.75rem',
-                                        border: `2px solid ${filters.endDate ? '#667eea' : '#e2e8f0'}`,
+                                        border: `2px solid ${filters.endDate ? '#0ea5e9' : '#e2e8f0'}`,
                                         borderRadius: '10px',
                                         fontSize: '0.95rem',
                                         transition: 'all 0.3s ease',
                                         background: filters.endDate ? '#f7fafc' : '#fff',
-                                        boxShadow: filters.endDate ? '0 0 0 3px rgba(102, 126, 234, 0.1)' : 'none'
+                                        boxShadow: filters.endDate ? '0 0 0 3px rgba(14, 165, 233, 0.1)' : 'none'
                                     }}
                                 />
                                 {!filters.startDate && filters.endDate && (
@@ -1081,7 +1081,7 @@ const InventoryTransactionsPage = () => {
                             paddingBottom: '0.75rem',
                             borderBottom: '2px solid #f0f0f0'
                         }}>
-                            <FiLayers size={18} style={{ color: '#8b5cf6' }} />
+                            <FiLayers size={18} style={{ color: '#0284c7' }} />
                             <h4 style={{
                                 margin: 0,
                                 fontSize: '1rem',
@@ -1105,7 +1105,7 @@ const InventoryTransactionsPage = () => {
                                     fontWeight: '600',
                                     color: '#4a5568'
                                 }}>
-                                    <FiArchive size={14} style={{ color: '#8b5cf6' }} />
+                                    <FiArchive size={14} style={{ color: '#0284c7' }} />
                                     Tủ thuốc
                                 </label>
                                 <select
@@ -1114,7 +1114,7 @@ const InventoryTransactionsPage = () => {
                                     style={{
                                         width: '100%',
                                         padding: '0.75rem',
-                                        border: `2px solid ${filters.cabinetId ? '#8b5cf6' : '#e2e8f0'}`,
+                                        border: `2px solid ${filters.cabinetId ? '#0284c7' : '#e2e8f0'}`,
                                         borderRadius: '10px',
                                         fontSize: '0.95rem',
                                         transition: 'all 0.3s ease',
@@ -1191,7 +1191,7 @@ const InventoryTransactionsPage = () => {
                                     fontWeight: '600',
                                     color: '#4a5568'
                                 }}>
-                                    <FiPackage size={14} style={{ color: '#8b5cf6' }} />
+                                    <FiPackage size={14} style={{ color: '#0284c7' }} />
                                     ID Nhân viên
                                 </label>
                                 <input
@@ -1202,7 +1202,7 @@ const InventoryTransactionsPage = () => {
                                     style={{
                                         width: '100%',
                                         padding: '0.75rem',
-                                        border: `2px solid ${filters.employeeId ? '#8b5cf6' : '#e2e8f0'}`,
+                                        border: `2px solid ${filters.employeeId ? '#0284c7' : '#e2e8f0'}`,
                                         borderRadius: '10px',
                                         fontSize: '0.95rem',
                                         transition: 'all 0.3s ease',
@@ -1214,7 +1214,7 @@ const InventoryTransactionsPage = () => {
                                     <div style={{
                                         marginTop: '0.5rem',
                                         fontSize: '0.8rem',
-                                        color: '#8b5cf6',
+                                        color: '#0284c7',
                                         fontWeight: '500'
                                     }}>
                                         ✓ Đang lọc theo nhân viên #{filters.employeeId}
@@ -1480,7 +1480,7 @@ const InventoryTransactionsPage = () => {
                                 alignItems: 'center',
                                 gap: '0.5rem',
                                 padding: '0.875rem 2rem',
-                                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                                background: 'linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%)',
                                 border: 'none',
                                 borderRadius: '12px',
                                 fontSize: '0.95rem',
@@ -1488,15 +1488,15 @@ const InventoryTransactionsPage = () => {
                                 color: '#fff',
                                 cursor: 'pointer',
                                 transition: 'all 0.3s ease',
-                                boxShadow: '0 4px 12px rgba(102, 126, 234, 0.4)'
+                                boxShadow: '0 4px 12px rgba(14, 165, 233, 0.4)'
                             }}
                             onMouseEnter={(e) => {
                                 e.target.style.transform = 'translateY(-2px)';
-                                e.target.style.boxShadow = '0 6px 20px rgba(102, 126, 234, 0.5)';
+                                e.target.style.boxShadow = '0 6px 20px rgba(14, 165, 233, 0.5)';
                             }}
                             onMouseLeave={(e) => {
                                 e.target.style.transform = 'translateY(0)';
-                                e.target.style.boxShadow = '0 4px 12px rgba(102, 126, 234, 0.4)';
+                                e.target.style.boxShadow = '0 4px 12px rgba(14, 165, 233, 0.4)';
                             }}
                         >
                             <FiCheckCircle size={18} />
@@ -1509,11 +1509,11 @@ const InventoryTransactionsPage = () => {
             {/* Statistics Dashboard */}
             {showStatistics && (
                 <div style={{
-                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                    background: 'linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%)',
                     borderRadius: '16px',
                     padding: '2rem',
                     marginBottom: '1.5rem',
-                    boxShadow: '0 10px 30px rgba(102, 126, 234, 0.3)',
+                    boxShadow: '0 10px 30px rgba(14, 165, 233, 0.3)',
                     position: 'relative',
                     overflow: 'hidden',
                     animation: 'slideIn 0.3s ease-out'
@@ -1605,7 +1605,7 @@ const InventoryTransactionsPage = () => {
                             position: 'relative',
                             zIndex: 1
                         }}>
-                            <FiActivity size={48} style={{ color: '#667eea', marginBottom: '1rem', animation: 'pulse 1.5s ease-in-out infinite' }} />
+                            <FiActivity size={48} style={{ color: '#0ea5e9', marginBottom: '1rem', animation: 'pulse 1.5s ease-in-out infinite' }} />
                             <p style={{ color: '#64748b', fontSize: '1rem', fontWeight: '500' }}>Đang tải thống kê...</p>
                         </div>
                     ) : statistics ? (
@@ -1625,11 +1625,11 @@ const InventoryTransactionsPage = () => {
                             }}>
                                 {/* Total Movements */}
                                 <div style={{
-                                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                                    background: 'linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%)',
                                     borderRadius: '12px',
                                     padding: '1.5rem',
                                     color: '#fff',
-                                    boxShadow: '0 4px 12px rgba(102, 126, 234, 0.3)'
+                                    boxShadow: '0 4px 12px rgba(14, 165, 233, 0.3)'
                                 }}>
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
                                         <FiActivity size={20} />
@@ -1930,7 +1930,7 @@ const InventoryTransactionsPage = () => {
                                                     fontWeight: '700',
                                                     fontSize: '0.9rem',
                                                     background: item.movement_type === 'IN' ? '#d1fae5' : item.movement_type === 'OUT' ? '#fee2e2' : '#e0e7ff',
-                                                    color: item.movement_type === 'IN' ? '#059669' : item.movement_type === 'OUT' ? '#dc2626' : '#667eea'
+                                                    color: item.movement_type === 'IN' ? '#059669' : item.movement_type === 'OUT' ? '#dc2626' : '#0ea5e9'
                                                 }}>
                                                     {item.movement_type}
                                                 </span>
@@ -1939,7 +1939,7 @@ const InventoryTransactionsPage = () => {
                                                 padding: '1rem',
                                                 textAlign: 'center',
                                                 fontWeight: '700',
-                                                color: item.movement_type === 'IN' ? '#10b981' : item.movement_type === 'OUT' ? '#ef4444' : '#667eea',
+                                                color: item.movement_type === 'IN' ? '#10b981' : item.movement_type === 'OUT' ? '#ef4444' : '#0ea5e9',
                                                 fontSize: '1.1rem'
                                             }}>
                                                 {(item.quantity || 0).toLocaleString()}
@@ -1948,7 +1948,7 @@ const InventoryTransactionsPage = () => {
                                                 padding: '1rem',
                                                 textAlign: 'center',
                                                 fontWeight: '700',
-                                                color: '#667eea',
+                                                color: '#0ea5e9',
                                                 fontSize: '1.1rem'
                                             }}>
                                                 {(item.count || 0).toLocaleString()}
@@ -2065,7 +2065,7 @@ const InventoryTransactionsPage = () => {
                                             opacity: movement.isReversed ? 0.7 : 1
                                         }}>
                                             {/* Movement ID */}
-                                            <td style={{ textAlign: 'center', fontWeight: '600', color: '#667eea' }}>
+                                            <td style={{ textAlign: 'center', fontWeight: '600', color: '#0ea5e9' }}>
                                                 #{movement.movementId}
                                             </td>
 
@@ -2152,7 +2152,7 @@ const InventoryTransactionsPage = () => {
                                             <td>
                                                 {movement.referenceType && movement.referenceId ? (
                                                     <div style={{ fontSize: '0.85rem' }}>
-                                                        <div style={{ fontWeight: '600', color: '#667eea' }}>
+                                                        <div style={{ fontWeight: '600', color: '#0ea5e9' }}>
                                                             {movement.referenceType}
                                                         </div>
                                                         <div style={{ color: '#718096', marginTop: '0.15rem' }}>
@@ -2237,20 +2237,20 @@ const InventoryTransactionsPage = () => {
                                                         width: '36px',
                                                         height: '36px',
                                                         borderRadius: '8px',
-                                                        border: '2px solid #667eea',
+                                                        border: '2px solid #0ea5e9',
                                                         background: '#f0f4ff',
-                                                        color: '#667eea',
+                                                        color: '#0ea5e9',
                                                         cursor: 'pointer',
                                                         transition: 'all 0.2s ease'
                                                     }}
                                                     onMouseEnter={(e) => {
-                                                        e.target.style.background = '#667eea';
+                                                        e.target.style.background = '#0ea5e9';
                                                         e.target.style.color = '#fff';
                                                         e.target.style.transform = 'scale(1.1)';
                                                     }}
                                                     onMouseLeave={(e) => {
                                                         e.target.style.background = '#f0f4ff';
-                                                        e.target.style.color = '#667eea';
+                                                        e.target.style.color = '#0ea5e9';
                                                         e.target.style.transform = 'scale(1)';
                                                     }}
                                                 >
@@ -2309,7 +2309,7 @@ const InventoryTransactionsPage = () => {
                     }}>
                         {/* Modal Header */}
                         <div className="modal-header" style={{
-                            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                            background: 'linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%)',
                             color: '#fff',
                             padding: '1.5rem 2rem',
                             borderRadius: '12px 12px 0 0',
@@ -2366,7 +2366,7 @@ const InventoryTransactionsPage = () => {
                         <div className="modal-body" style={{ padding: '2rem' }}>
                             {loadingDetails ? (
                                 <div style={{ textAlign: 'center', padding: '3rem' }}>
-                                    <FiRefreshCw className="spinning" size={40} style={{ color: '#667eea' }} />
+                                    <FiRefreshCw className="spinning" size={40} style={{ color: '#0ea5e9' }} />
                                     <p style={{ marginTop: '1rem', color: '#718096', fontSize: '1rem' }}>Đang tải chi tiết...</p>
                                 </div>
                             ) : (
@@ -2478,8 +2478,8 @@ const InventoryTransactionsPage = () => {
                                         <div style={{
                                             padding: '1.5rem',
                                             borderRadius: '12px',
-                                            background: 'linear-gradient(135deg, #667eea15 0%, #764ba215 100%)',
-                                            border: '2px solid #667eea',
+                                            background: 'linear-gradient(135deg, #0ea5e915 0%, #0284c715 100%)',
+                                            border: '2px solid #0ea5e9',
                                             textAlign: 'center'
                                         }}>
                                             <div style={{ fontSize: '0.85rem', color: '#718096', marginBottom: '0.75rem' }}>
@@ -2537,7 +2537,7 @@ const InventoryTransactionsPage = () => {
                                                 alignItems: 'center',
                                                 gap: '0.5rem'
                                             }}>
-                                                <FiCalendar size={18} style={{ color: '#667eea' }} />
+                                                <FiCalendar size={18} style={{ color: '#0ea5e9' }} />
                                                 Thông tin cơ bản
                                             </h4>
 
@@ -2546,7 +2546,7 @@ const InventoryTransactionsPage = () => {
                                                     <div style={{ fontSize: '0.8rem', color: '#718096', marginBottom: '0.25rem', fontWeight: '600' }}>
                                                         Movement ID
                                                     </div>
-                                                    <div style={{ fontSize: '1rem', fontWeight: '700', color: '#667eea' }}>
+                                                    <div style={{ fontSize: '1rem', fontWeight: '700', color: '#0ea5e9' }}>
                                                         #{selectedTransaction.movementId}
                                                     </div>
                                                 </div>
@@ -2607,7 +2607,7 @@ const InventoryTransactionsPage = () => {
                                                 alignItems: 'center',
                                                 gap: '0.5rem'
                                             }}>
-                                                <FiPackage size={18} style={{ color: '#8b5cf6' }} />
+                                                <FiPackage size={18} style={{ color: '#0284c7' }} />
                                                 Thông tin tham chiếu & Item
                                             </h4>
 
@@ -2623,7 +2623,7 @@ const InventoryTransactionsPage = () => {
                                                             padding: '0.5rem 1rem',
                                                             borderRadius: '8px',
                                                             background: '#e0e7ff',
-                                                            border: '1px solid #667eea',
+                                                            border: '1px solid #0ea5e9',
                                                             fontSize: '0.9rem',
                                                             fontWeight: '600',
                                                             color: '#4338ca'
@@ -2812,7 +2812,7 @@ const InventoryTransactionsPage = () => {
                                                 padding: '1.5rem',
                                                 background: '#e0e7ff',
                                                 borderRadius: '12px',
-                                                border: '2px solid #667eea'
+                                                border: '2px solid #0ea5e9'
                                             }}>
                                                 <h4 style={{
                                                     margin: '0 0 1rem 0',
@@ -3376,4 +3376,5 @@ const InventoryTransactionsPage = () => {
 };
 
 export default InventoryTransactionsPage;
+
 

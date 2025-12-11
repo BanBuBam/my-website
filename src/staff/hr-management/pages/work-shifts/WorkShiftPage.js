@@ -422,7 +422,7 @@ const WorkShiftPage = () => {
 
       {/* FILTER SECTION - New design matching InventoryTransactionsPage */}
       <div style={{
-        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        background: 'linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%)',
         padding: '2rem',
         borderRadius: '16px',
         marginBottom: '1.5rem',
@@ -547,7 +547,7 @@ const WorkShiftPage = () => {
                 paddingBottom: '0.75rem',
                 borderBottom: '2px solid #f0f0f0'
               }}>
-                <FiLayers size={18} style={{ color: '#667eea' }} />
+                <FiLayers size={18} style={{ color: '#0ea5e9' }} />
                 <h4 style={{ margin: 0, fontSize: '1rem', fontWeight: '600', color: '#2d3748' }}>
                   Tùy chọn lọc
                 </h4>
@@ -556,7 +556,7 @@ const WorkShiftPage = () => {
               <div style={{ display: 'grid', gridTemplateColumns: filterType === 'type' || filterType === 'department' ? 'repeat(2, 1fr)' : '1fr', gap: '1rem' }}>
                 <div>
                   <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem', fontSize: '0.9rem', fontWeight: '600', color: '#4a5568' }}>
-                    <FiSearch size={14} style={{ color: '#667eea' }} />
+                    <FiSearch size={14} style={{ color: '#0ea5e9' }} />
                     Loại tìm kiếm <span style={{ color: '#e53e3e' }}>*</span>
                   </label>
                   <select
@@ -587,7 +587,7 @@ const WorkShiftPage = () => {
                 {filterType === 'type' && (
                   <div>
                     <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem', fontSize: '0.9rem', fontWeight: '600', color: '#4a5568' }}>
-                      <FiClock size={14} style={{ color: '#667eea' }} />
+                      <FiClock size={14} style={{ color: '#0ea5e9' }} />
                       Loại ca làm việc <span style={{ color: '#e53e3e' }}>*</span>
                     </label>
                     <select
@@ -620,7 +620,7 @@ const WorkShiftPage = () => {
                 {filterType === 'department' && (
                   <div>
                     <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem', fontSize: '0.9rem', fontWeight: '600', color: '#4a5568' }}>
-                      <FiHome size={14} style={{ color: '#667eea' }} />
+                      <FiHome size={14} style={{ color: '#0ea5e9' }} />
                       ID Phòng ban <span style={{ color: '#e53e3e' }}>*</span>
                     </label>
                     <input
@@ -659,7 +659,7 @@ const WorkShiftPage = () => {
                   alignItems: 'center',
                   gap: '0.5rem',
                   padding: '0.75rem 1.5rem',
-                  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                  background: 'linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%)',
                   border: 'none',
                   borderRadius: '10px',
                   color: '#fff',
@@ -1152,4 +1152,5 @@ const WorkShiftPage = () => {
 };
 
 export default WorkShiftPage;
+
 

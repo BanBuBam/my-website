@@ -841,9 +841,101 @@ const CabinetInventoryPage = () => {
                                 />
                             </div>
 
+                            {/* Danh sách thuốc/vật tư từ tồn kho */}
+                            <div className="form-group">
+                                <label>Danh sách thuốc/vật tư từ cấp phát <span style={{ color: '#dc3545' }}>*</span></label>
+                                <div style={{
+                                    border: '1px solid #dee2e6',
+                                    borderRadius: '8px',
+                                    maxHeight: '300px',
+                                    overflowY: 'auto',
+                                    marginBottom: '1rem'
+                                }}>
+                                    {loadingInventory ? (
+                                        <div style={{ padding: '2rem', textAlign: 'center' }}>
+                                            <p>⏳ Đang tải danh sách...</p>
+                                        </div>
+                                    ) : inventoryItems.length > 0 ? (
+                                        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                                            <thead style={{ background: '#f8f9fa', position: 'sticky', top: 0, zIndex: 1 }}>
+                                                <tr>
+                                                    <th style={{ padding: '0.75rem', textAlign: 'left', borderBottom: '2px solid #dee2e6' }}>Tên</th>
+                                                    <th style={{ padding: '0.75rem', textAlign: 'left', borderBottom: '2px solid #dee2e6' }}>Loại</th>
+                                                    <th style={{ padding: '0.75rem', textAlign: 'left', borderBottom: '2px solid #dee2e6' }}>Số lô</th>
+                                                    <th style={{ padding: '0.75rem', textAlign: 'center', borderBottom: '2px solid #dee2e6' }}>Tồn kho</th>
+                                                    <th style={{ padding: '0.75rem', textAlign: 'center', borderBottom: '2px solid #dee2e6' }}>Thêm</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {inventoryItems.map((item, index) => (
+                                                    <tr key={index} style={{ borderBottom: '1px solid #f1f3f5' }}>
+                                                        <td style={{ padding: '0.75rem' }}>
+                                                            <strong>{item.item_name}</strong>
+                                                        </td>
+                                                        <td style={{ padding: '0.75rem' }}>
+                                                            <span style={{
+                                                                padding: '0.25rem 0.5rem',
+                                                                borderRadius: '4px',
+                                                                fontSize: '0.75rem',
+                                                                fontWeight: '600',
+                                                                background: item.item_type === 'MEDICINE' ? '#e6f7ff' : '#fff7e6',
+                                                                color: item.item_type === 'MEDICINE' ? '#1890ff' : '#fa8c16'
+                                                            }}>
+                                                                {item.item_type || 'MEDICINE'}
+                                                            </span>
+                                                        </td>
+                                                        <td style={{ padding: '0.75rem', fontSize: '0.85rem' }}>
+                                                            {item.batch_number || 'N/A'}
+                                                        </td>
+                                                        <td style={{ padding: '0.75rem', textAlign: 'center' }}>
+                                                            <span style={{
+                                                                fontWeight: 'bold',
+                                                                color: item.quantity < 10 ? '#dc3545' : '#28a745'
+                                                            }}>
+                                                                {item.quantity || 0}
+                                                            </span>
+                                                        </td>
+                                                        <td style={{ padding: '0.75rem', textAlign: 'center' }}>
+                                                            <button
+                                                                onClick={() => handleAddItem(item)}
+                                                                disabled={item.quantity === 0 || selectedItems.some(si => si.inventoryId === item.inventory_id)}
+                                                                style={{
+                                                                    background: selectedItems.some(si => si.inventoryId === item.inventory_id) ? '#d9d9d9' : '#1890ff',
+                                                                    color: '#fff',
+                                                                    border: 'none',
+                                                                    borderRadius: '4px',
+                                                                    padding: '0.4rem 0.8rem',
+                                                                    cursor: item.quantity === 0 || selectedItems.some(si => si.inventoryId === item.inventory_id) ? 'not-allowed' : 'pointer',
+                                                                    fontSize: '0.85rem',
+                                                                    fontWeight: '600'
+                                                                }}
+                                                            >
+                                                                {selectedItems.some(si => si.inventoryId === item.inventory_id) ? '✓ Đã thêm' : '+ Thêm'}
+                                                            </button>
+                                                        </td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
+                                    ) : (
+                                        <div style={{
+                                            padding: '2rem',
+                                            textAlign: 'center',
+                                            background: '#f8f9fa',
+                                            color: '#6c757d'
+                                        }}>
+                                            <FiAlertCircle size={32} color="#dee2e6" />
+                                            <p style={{ marginTop: '0.5rem' }}>
+                                                Chưa có item nào. Vui lòng chọn từ danh sách tồn kho.
+                                            </p>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+
                             {/* Selected Items */}
                             <div className="form-group">
-                                <label>Danh sách thuốc/vật tư cấp phát <span style={{ color: '#dc3545' }}>*</span></label>
+                                <label>Danh sách thuốc/vật tư đã chọn <span style={{ color: '#dc3545' }}>*</span></label>
                                 {selectedItems.length > 0 ? (
                                     <div style={{
                                         border: '1px solid #dee2e6',
@@ -921,15 +1013,15 @@ const CabinetInventoryPage = () => {
                                     </div>
                                 ) : (
                                     <div style={{
-                                        padding: '2rem',
+                                        padding: '1.5rem',
                                         textAlign: 'center',
-                                        background: '#f8f9fa',
+                                        background: '#fff7e6',
                                         borderRadius: '8px',
-                                        border: '1px dashed #dee2e6'
+                                        border: '1px dashed #ffa940'
                                     }}>
-                                        <FiAlertCircle size={32} color="#6c757d" />
-                                        <p style={{ marginTop: '0.5rem', color: '#6c757d' }}>
-                                            Chưa có item nào. Vui lòng chọn từ danh sách tồn kho.
+                                        <FiAlertCircle size={28} color="#fa8c16" />
+                                        <p style={{ marginTop: '0.5rem', color: '#fa8c16', fontWeight: '500' }}>
+                                            Chưa chọn item nào. Vui lòng chọn từ danh sách tồn kho bên trên.
                                         </p>
                                     </div>
                                 )}
