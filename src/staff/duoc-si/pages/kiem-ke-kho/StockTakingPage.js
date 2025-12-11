@@ -478,7 +478,7 @@ const StockTakingPage = () => {
           className="btn-stats"
           onClick={handleViewStatistics}
           style={{
-            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            background: 'linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%)',
             color: '#fff', border: 'none', padding: '0.75rem 1.5rem', borderRadius: '8px',
             fontWeight: '600', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem'
           }}
@@ -489,7 +489,7 @@ const StockTakingPage = () => {
 
       {/* SUMMARY CARDS */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '1rem', marginBottom: '1.5rem' }}>
-        <div style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', padding: '1.25rem', borderRadius: '12px', color: '#fff' }}>
+        <div style={{ background: 'linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%)', padding: '1.25rem', borderRadius: '12px', color: '#fff' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
             <FiClipboard size={28} />
             <div>
@@ -542,7 +542,7 @@ const StockTakingPage = () => {
           </div>
           {/* Date Range Filter */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <FiCalendar style={{ color: '#667eea' }}/>
+            <FiCalendar style={{ color: '#0ea5e9' }}/>
             <input
               type="date"
               value={dateRange.startDate}
@@ -560,7 +560,7 @@ const StockTakingPage = () => {
               onClick={handleFilterByDateRange}
               disabled={loading}
               style={{
-                background: '#667eea', color: '#fff', border: 'none',
+                background: '#0ea5e9', color: '#fff', border: 'none',
                 padding: '0.5rem 1rem', borderRadius: '6px', cursor: 'pointer'
               }}
             >
@@ -585,7 +585,7 @@ const StockTakingPage = () => {
             padding: '0.5rem 1rem',
             borderRadius: '20px',
             border: activeQuickFilter === 'all' ? 'none' : '1px solid #e2e8f0',
-            background: activeQuickFilter === 'all' ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' : '#fff',
+            background: activeQuickFilter === 'all' ? 'linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%)' : '#fff',
             color: activeQuickFilter === 'all' ? '#fff' : '#4a5568',
             fontWeight: '600',
             cursor: 'pointer',
@@ -616,11 +616,11 @@ const StockTakingPage = () => {
 
       {/* FILTER SECTION */}
       <div style={{
-        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        background: 'linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%)',
         padding: '2rem',
         borderRadius: '16px',
         marginBottom: '1.5rem',
-        boxShadow: '0 10px 30px rgba(102, 126, 234, 0.3)',
+        boxShadow: '0 10px 30px rgba(14, 165, 233, 0.3)',
         position: 'relative',
         overflow: 'hidden'
       }}>
@@ -696,7 +696,7 @@ const StockTakingPage = () => {
             {/* Type Filter */}
             <div>
               <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem', fontSize: '0.9rem', fontWeight: '600', color: '#4a5568' }}>
-                <FiLayers size={14} style={{ color: '#667eea' }} />
+                <FiLayers size={14} style={{ color: '#0ea5e9' }} />
                 Loại kiểm kê
               </label>
               <select
@@ -704,7 +704,7 @@ const StockTakingPage = () => {
                 onChange={(e) => setFilters({...filters, type: e.target.value})}
                 style={{
                   width: '100%', padding: '0.75rem',
-                  border: `2px solid ${filters.type ? '#667eea' : '#e2e8f0'}`,
+                  border: `2px solid ${filters.type ? '#0ea5e9' : '#e2e8f0'}`,
                   borderRadius: '10px', fontSize: '0.95rem', cursor: 'pointer'
                 }}
               >
@@ -754,7 +754,7 @@ const StockTakingPage = () => {
                 disabled={loading}
                 style={{
                   flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem',
-                  padding: '0.75rem', background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                  padding: '0.75rem', background: 'linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%)',
                   border: 'none', borderRadius: '10px', fontWeight: '600', color: '#fff', cursor: 'pointer'
                 }}
               >
@@ -1138,7 +1138,7 @@ const StockTakingPage = () => {
       {showStatsModal && statistics && (
         <div className="modal-overlay" onClick={() => setShowStatsModal(false)}>
           <div className="modal-content modal-lg" onClick={e => e.stopPropagation()} style={{ maxWidth: '700px' }}>
-            <div className="modal-header" style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', color: '#fff' }}>
+            <div className="modal-header" style={{ background: 'linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%)', color: '#fff' }}>
               <h2><FaChartBar /> Thống kê kiểm kê tháng này</h2>
               <button className="btn-close" onClick={() => setShowStatsModal(false)} style={{ color: '#fff' }}><FaTimes/></button>
             </div>

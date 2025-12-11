@@ -538,11 +538,11 @@ const ExportStockPage = () => {
 
       {/* FILTER SECTION - Always visible like InventoryTransactionsPage */}
       <div style={{
-        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        background: 'linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%)',
         padding: '2rem',
         borderRadius: '16px',
         marginBottom: '1.5rem',
-        boxShadow: '0 10px 30px rgba(102, 126, 234, 0.3)',
+        boxShadow: '0 10px 30px rgba(14, 165, 233, 0.3)',
         position: 'relative',
         overflow: 'hidden'
       }}>
@@ -660,7 +660,7 @@ const ExportStockPage = () => {
               paddingBottom: '0.75rem',
               borderBottom: '2px solid #f0f0f0'
             }}>
-              <FiCalendar size={18} style={{ color: '#667eea' }} />
+              <FiCalendar size={18} style={{ color: '#0ea5e9' }} />
               <h4 style={{ margin: 0, fontSize: '1rem', fontWeight: '600', color: '#2d3748' }}>
                 Khoảng thời gian
               </h4>
@@ -670,7 +670,7 @@ const ExportStockPage = () => {
               {/* Start Date */}
               <div>
                 <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem', fontSize: '0.9rem', fontWeight: '600', color: '#4a5568' }}>
-                  <FiCalendar size={14} style={{ color: '#667eea' }} />
+                  <FiCalendar size={14} style={{ color: '#0ea5e9' }} />
                   Từ ngày
                 </label>
                 <input
@@ -680,11 +680,11 @@ const ExportStockPage = () => {
                   style={{
                     width: '100%',
                     padding: '0.75rem',
-                    border: `2px solid ${filters.startDate ? '#667eea' : '#e2e8f0'}`,
+                    border: `2px solid ${filters.startDate ? '#0ea5e9' : '#e2e8f0'}`,
                     borderRadius: '10px',
                     fontSize: '0.95rem',
                     background: filters.startDate ? '#f7fafc' : '#fff',
-                    boxShadow: filters.startDate ? '0 0 0 3px rgba(102, 126, 234, 0.1)' : 'none'
+                    boxShadow: filters.startDate ? '0 0 0 3px rgba(14, 165, 233, 0.1)' : 'none'
                   }}
                 />
               </div>
@@ -692,7 +692,7 @@ const ExportStockPage = () => {
               {/* End Date */}
               <div>
                 <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem', fontSize: '0.9rem', fontWeight: '600', color: '#4a5568' }}>
-                  <FiCalendar size={14} style={{ color: '#667eea' }} />
+                  <FiCalendar size={14} style={{ color: '#0ea5e9' }} />
                   Đến ngày
                 </label>
                 <input
@@ -702,11 +702,11 @@ const ExportStockPage = () => {
                   style={{
                     width: '100%',
                     padding: '0.75rem',
-                    border: `2px solid ${filters.endDate ? '#667eea' : '#e2e8f0'}`,
+                    border: `2px solid ${filters.endDate ? '#0ea5e9' : '#e2e8f0'}`,
                     borderRadius: '10px',
                     fontSize: '0.95rem',
                     background: filters.endDate ? '#f7fafc' : '#fff',
-                    boxShadow: filters.endDate ? '0 0 0 3px rgba(102, 126, 234, 0.1)' : 'none'
+                    boxShadow: filters.endDate ? '0 0 0 3px rgba(14, 165, 233, 0.1)' : 'none'
                   }}
                 />
               </div>
@@ -929,7 +929,7 @@ const ExportStockPage = () => {
                 alignItems: 'center',
                 gap: '0.5rem',
                 padding: '0.875rem 2rem',
-                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                background: 'linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%)',
                 border: 'none',
                 borderRadius: '12px',
                 fontSize: '0.95rem',
@@ -957,11 +957,11 @@ const ExportStockPage = () => {
       }}>
         {/* Total Issues Card */}
         <div style={{
-          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+          background: 'linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%)',
           borderRadius: '16px',
           padding: '1.5rem',
           color: '#fff',
-          boxShadow: '0 8px 20px rgba(102, 126, 234, 0.3)',
+          boxShadow: '0 8px 20px rgba(14, 165, 233, 0.3)',
           position: 'relative',
           overflow: 'hidden'
         }}>

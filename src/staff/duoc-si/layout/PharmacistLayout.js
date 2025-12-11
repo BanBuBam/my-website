@@ -1,6 +1,7 @@
 import React from 'react';
 import { NavLink, Outlet } from 'react-router-dom';
 import './PharmacistLayout.css';
+import '../../shared/FilterGradientOverride.css';
 import {
     FiHome,
     FiPackage,
@@ -100,7 +101,7 @@ const PharmacistLayout = () => {
                             <li>
                                 <NavLink to="/staff/duoc-si/vat-tu-y-te">
                                     <FiBriefcase />
-                                    <span>Quản lý Vật tư & Tiện ích</span>
+                                    <span>Quản lý Cấp phát Vật tư Y tế</span>
                                 </NavLink>
                             </li>
                             <li>
