@@ -436,36 +436,42 @@
     color: white;
 }
 
+.btn-action:hover:not(:disabled) {
+    background: #2563eb !important;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
 .btn-action:disabled {
     opacity: 0.6;
     cursor: not-allowed;
 }
 
-/* Button Styles - Quản lý lượt cấp cứu */
+/* Button Styles - Tất cả button màu xanh dương */
 .btn-create-diagnostic {
     background: #3b82f6 !important;
 }
 
 .btn-create-consultation {
-    background: #8b5cf6 !important;
+    background: #3b82f6 !important;
 }
 
 .btn-activate-protocol {
-    background: #dc2626 !important;
+    background: #3b82f6 !important;
     animation: pulse-button 2s infinite;
 }
 
 .btn-view-protocols {
-    background: #7c3aed !important;
+    background: #3b82f6 !important;
 }
 
 @keyframes pulse-button {
     0%,
     100% {
-        box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.4);
+        box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4);
     }
     50% {
-        box-shadow: 0 0 0 6px rgba(220, 38, 38, 0);
+        box-shadow: 0 0 0 6px rgba(59, 130, 246, 0);
     }
 }
 
@@ -478,36 +484,36 @@
 }
 
 .btn-assign-nurse {
-    background: #10b981 !important;
+    background: #3b82f6 !important;
 }
 
 /* Button Styles - Kết thúc lượt cấp cứu */
 .btn-discharge-simple {
-    background: #10b981 !important;
+    background: #3b82f6 !important;
 }
 
 .btn-discharge-prescription {
-    background: #10b981 !important;
+    background: #3b82f6 !important;
 }
 
 .btn-admit-inpatient {
-    background: #f59e0b !important;
+    background: #3b82f6 !important;
 }
 
 .btn-transfer-simple {
-    background: #6366f1 !important;
+    background: #3b82f6 !important;
 }
 
 .btn-transfer-document {
-    background: #6366f1 !important;
+    background: #3b82f6 !important;
 }
 
 .btn-left-ama {
-    background: #ef4444 !important;
+    background: #3b82f6 !important;
 }
 
 .btn-deceased {
-    background: #991b1b !important;
+    background: #3b82f6 !important;
 }
 
 /* Success Message */
@@ -750,7 +756,7 @@
     align-items: center;
     gap: 8px;
     padding: 10px 16px;
-    background: #10b981;
+    background: #3b82f6;
     color: white;
     border: none;
     border-radius: 6px;
@@ -761,5 +767,5 @@
 }
 
 .btn-create-diagnostic:hover {
-    background: #059669;
+    background: #2563eb;
 }

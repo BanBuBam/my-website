@@ -480,7 +480,7 @@ const EmergencyDetailPage = () => {
                             className="btn-action btn-create-consultation" 
                             onClick={() => navigate(`/staff/bac-si/hoi-chan/tao-moi?emergencyEncounterId=${emergencyEncounterId}`)}
                         >
-                            <FiUserPlus /> Tạo yêu cầu hội chẩn
+                            <FiUserPlus /> Tạo YC hội chẩn
                         </button>
                         <button 
                             className="btn-action btn-activate-protocol" 
@@ -492,10 +492,10 @@ const EmergencyDetailPage = () => {
                             className="btn-action btn-view-protocols" 
                             onClick={() => navigate(`/staff/bac-si/protocols/patient/${emergency.encounterId}`)}
                         >
-                            <FiFileText /> Xem danh sách Protocol
+                            <FiFileText /> Xem DS Protocol
                         </button>
                         <button className="btn-action btn-update-status" onClick={handleUpdateStatus} disabled={updatingStatus}>
-                            <FiActivity /> {updatingStatus ? 'Đang xử lý...' : 'Cập nhật trạng thái điều trị'}
+                            <FiActivity /> {updatingStatus ? 'Đang xử lý...' : 'Cập nhật TT đtrị'}
                         </button>
                         <button className="btn-action btn-assign-doctor" onClick={handleOpenAssignDoctorModal}>
                             <FiUserPlus /> Phân công Bác sĩ
@@ -508,7 +508,7 @@ const EmergencyDetailPage = () => {
 
                 {/* Kết thúc lượt cấp cứu */}
                 <div className="actions-group">
-                    <h3 className="actions-group-title">Kết thúc lượt cấp cứu</h3>
+                    <h3 className="actions-group-title">KThúc lượt cấp cứu</h3>
                     <div className="actions-buttons">
                         <button 
                             className="btn-action btn-discharge-simple" 
@@ -534,7 +534,7 @@ const EmergencyDetailPage = () => {
                             onClick={handleTransferSimple}
                             disabled={transferringSimple}
                         >
-                            <FiTruck /> {transferringSimple ? 'Đang xử lý...' : 'Chuyển viện đơn giản'}
+                            <FiTruck /> {transferringSimple ? 'Đang xử lý...' : 'Chuyển viện ĐGian'}
                         </button>
                         <button 
                             className="btn-action btn-transfer-document" 

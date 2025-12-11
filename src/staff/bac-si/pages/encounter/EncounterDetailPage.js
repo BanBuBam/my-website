@@ -145,38 +145,32 @@ const EncounterDetailPage = () => {
                 </div>
             </div>
 
-            {/* Action Buttons Container */}
-            <div className="action-buttons-container">
-                {/* Row 1 */}
-                <div className="action-buttons-row">
-                    <button className="btn-action btn-vital" onClick={handleAddVitalSign}>
-                        Thêm Vital Sign
-                    </button>
-                    <button className="btn-action btn-note" onClick={handleAddClinicalNote}>
-                        Thêm Clinical Note
-                    </button>
-                    <button className="btn-action btn-lab" onClick={handleAddLabTestOrder}>
-                        Thêm Lab Test Order
-                    </button>
-                    <button className="btn-action btn-imaging" onClick={handleAddImagingOrder}>
-                        Thêm Imaging Order
-                    </button>
-                </div>
-                {/* Row 2 */}
-                <div className="action-buttons-row">
-                    <button className="btn-action btn-prescription" onClick={handleAddPrescription}>
-                        Thêm Prescription
-                    </button>
-                    <button className="btn-action btn-admission" onClick={handleCreateAdmissionRequest}>
-                        Tạo yêu cầu nhập viện
-                    </button>
-                    <button className="btn-action btn-follow-up" onClick={() => setShowCreateFollowUpModal(true)}>
-                        Hẹn tái khám
-                    </button>
-                    <button className="btn-action btn-view-follow-ups" onClick={() => setShowViewFollowUpsModal(true)}>
-                        Xem lịch tái khám
-                    </button>
-                </div>
+            {/* Action Buttons - Single Container with 2 Rows */}
+            <div className="action-buttons-row">
+                <button className="btn-action btn-vital" onClick={handleAddVitalSign}>
+                    Thêm Vital Sign
+                </button>
+                <button className="btn-action btn-note" onClick={handleAddClinicalNote}>
+                    Thêm Clinical Note
+                </button>
+                <button className="btn-action btn-lab" onClick={handleAddLabTestOrder}>
+                    Thêm Lab Test Order
+                </button>
+                <button className="btn-action btn-imaging" onClick={handleAddImagingOrder}>
+                    Thêm Imaging Order
+                </button>
+                <button className="btn-action btn-prescription" onClick={handleAddPrescription}>
+                    Thêm Prescription
+                </button>
+                <button className="btn-action btn-admission" onClick={handleCreateAdmissionRequest}>
+                    Tạo yêu cầu nhập viện
+                </button>
+                <button className="btn-action btn-follow-up" onClick={() => setShowCreateFollowUpModal(true)}>
+                    Hẹn tái khám
+                </button>
+                <button className="btn-action btn-view-follow-ups" onClick={() => setShowViewFollowUpsModal(true)}>
+                    Xem lịch tái khám
+                </button>
             </div>
 
             {/* Content */}

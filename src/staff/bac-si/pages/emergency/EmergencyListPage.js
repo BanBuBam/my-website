@@ -13,6 +13,7 @@ const EmergencyListPage = () => {
     const [emergencies, setEmergencies] = useState([]);
     const [createEmergencies, setCreateEmergencies] = useState([]);
     const [encounters, setEncounters] = useState([]);
+    const [doctorEmergencies, setDoctorEmergencies] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     
@@ -31,6 +32,10 @@ const EmergencyListPage = () => {
         } else if (activeTab === 'create') {
             fetchCreateEmergencies();
             const interval = setInterval(fetchCreateEmergencies, 30000);
+            return () => clearInterval(interval);
+        } else if (activeTab === 'doctor') {
+            fetchDoctorEmergencies();
+            const interval = setInterval(fetchDoctorEmergencies, 30000);
             return () => clearInterval(interval);
         }
     }, [activeTab, currentPage]);
@@ -85,6 +90,28 @@ const EmergencyListPage = () => {
         }
     };
 
+    const fetchDoctorEmergencies = async () => {
+        const doctorId = localStorage.getItem('employeeId');
+        if (!doctorId) {
+            setError('Không tìm thấy thông tin bác sĩ');
+            return;
+        }
+
+        try {
+            setLoading(true);
+            setError(null);
+            const response = await doctorEmergencyAPI.getEmergencyEncountersByDoctor(doctorId);
+            if (response && response.data) {
+                setDoctorEmergencies(response.data);
+            }
+        } catch (err) {
+            console.error('Error fetching doctor emergencies:', err);
+            setError(err.message || 'Không thể tải danh sách cấp cứu theo bác sĩ');
+        } finally {
+            setLoading(false);
+        }
+    };
+
     const handleViewEmergencyDetail = (emergencyEncounterId) => {
         navigate(`/staff/bac-si/cap-cuu/emergency/${emergencyEncounterId}`);
     };
@@ -97,6 +124,7 @@ const EmergencyListPage = () => {
         if (activeTab === 'emergencies') fetchEmergencies();
         else if (activeTab === 'encounters') fetchEncounters();
         else if (activeTab === 'create') fetchCreateEmergencies();
+        else if (activeTab === 'doctor') fetchDoctorEmergencies();
     };
 
     const handleCreateNew = () => {
@@ -187,6 +215,13 @@ const EmergencyListPage = () => {
                     <FiPlus />
                     Tạo Cấp cứu Khẩn
                 </button>
+                <button
+                    className={`tab-button ${activeTab === 'doctor' ? 'active' : ''}`}
+                    onClick={() => setActiveTab('doctor')}
+                >
+                    <FiUser />
+                    Theo bác sĩ
+                </button>
             </div>
 
             {error && (
@@ -223,6 +258,16 @@ const EmergencyListPage = () => {
             {activeTab === 'create' && (
                 <EmergenciesTab
                     emergencies={createEmergencies}
+                    loading={loading}
+                    onViewDetail={handleViewEmergencyDetail}
+                    formatDateTime={formatDateTime}
+                    getCategoryBadgeClass={getCategoryBadgeClass}
+                />
+            )}
+
+            {activeTab === 'doctor' && (
+                <EmergenciesTab
+                    emergencies={doctorEmergencies}
                     loading={loading}
                     onViewDetail={handleViewEmergencyDetail}
                     formatDateTime={formatDateTime}

@@ -445,7 +445,7 @@ const EncounterDetailPage = () => {
     // Format currency
     const formatCurrency = (amount) => {
         if (!amount && amount !== 0) return '-';
-        return amount.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
+        return `${amount.toLocaleString('vi-VN')} VNĐ`;
     };
     
     // Get status badge
@@ -501,25 +501,29 @@ const EncounterDetailPage = () => {
                     <button className="btn-refresh" onClick={fetchEncounterDetail}>
                         <FiRefreshCw /> Làm mới
                     </button>
-                    <button className="btn-view-invoice" onClick={handleViewInvoice} disabled={loadingInvoice}>
-                        <FiFileText /> {loadingInvoice ? 'Đang tải...' : 'Xem hóa đơn'}
-                    </button>
-                    <button className="btn-view-transactions" onClick={handleViewTransactions}>
-                        <FiList /> Xem giao dịch
-                    </button>
-                    <button className="btn-view-refunds" onClick={handleViewRefunds}>
-                        <FiDollarSign /> Hoàn tiền
-                    </button>
-                    <button className="btn-advance-payment" onClick={handleShowAdvanceModal}>
-                        <FiDollarSign /> Đặt cọc
-                    </button>
-                    <button className="btn-payment" onClick={handleShowPaymentModal}>
-                        <FiDollarSign /> Thanh toán
-                    </button>
-                    <button className="btn-create-invoice" onClick={handleShowInvoiceModal}>
-                        <FiDollarSign /> Tạo hóa đơn
-                    </button>
                 </div>
+            </div>
+
+            {/* Action Buttons Row */}
+            <div className="action-buttons-row">
+                <button className="btn-view-invoice" onClick={handleViewInvoice} disabled={loadingInvoice}>
+                    <FiFileText /> {loadingInvoice ? 'Đang tải...' : 'Xem hóa đơn'}
+                </button>
+                <button className="btn-view-transactions" onClick={handleViewTransactions}>
+                    <FiList /> Xem giao dịch
+                </button>
+                <button className="btn-view-refunds" onClick={handleViewRefunds}>
+                    <FiDollarSign /> Hoàn tiền
+                </button>
+                <button className="btn-advance-payment" onClick={handleShowAdvanceModal}>
+                    <FiDollarSign /> Đặt cọc
+                </button>
+                <button className="btn-payment" onClick={handleShowPaymentModal}>
+                    <FiDollarSign /> Thanh toán
+                </button>
+                <button className="btn-create-invoice" onClick={handleShowInvoiceModal}>
+                    <FiDollarSign /> Tạo hóa đơn
+                </button>
             </div>
             
             {/* Advance Balance Section */}

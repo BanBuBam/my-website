@@ -3,7 +3,7 @@ import {Link, useNavigate} from 'react-router-dom';
 import UserInfo from '../../UserInfo/UserInfo';
 import StaffLoginModal from '../../StaffLoginModal/StaffLoginModal';
 import './Header.css';
-import logo from '../../../assets/images/logo.png';
+import logo from '../../../assets/images/logoTrinityCare.jpg';
 import phoneIcon from '../../../assets/icons/phone-icon.png';
 import earthIcon from '../../../assets/icons/earth-icon.png';
 import arrowDown from '../../../assets/icons/arrow-down.png';
@@ -55,7 +55,7 @@ const Header = () => {
               </div>
               <div className="text-wrapper">
                 <span>Cấp cứu</span>
-                <strong>024 1138 884</strong>
+                <strong>0358183237</strong>
               </div>
             </div>
             <div className="contact-item">
@@ -66,7 +66,7 @@ const Header = () => {
               </div>
               <div className="text-wrapper">
                 <span>Hotline</span>
-                <strong>024 8345 555</strong>
+                <strong>0358183238</strong>
               </div>
             </div>
           </div>

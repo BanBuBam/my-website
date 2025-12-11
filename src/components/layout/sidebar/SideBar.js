@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import './SideBar.css';
 
-import logo from '../../../assets/images/logo.png';
+import logo from '../../../assets/images/logoTrinityCare.jpg';
 import phoneIcon from '../../../assets/icons/phone-icon.png';
 import earthIcon from '../../../assets/icons/earth-icon.png';
 import facebookIcon from '../../../assets/icons/facebook.png';
