@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import '../shared/SchedulePage.css';
 import { hrEmployeeScheduleAPI, hrWorkShiftAPI, hrEmployeeAPI } from '../../../../services/staff/hrAPI';
-import { FiPlus, FiEdit2, FiTrash2, FiCalendar, FiX, FiCheck, FiClock, FiCoffee, FiLogOut, FiSearch, FiFilter } from 'react-icons/fi';
+import { FiPlus, FiEdit2, FiTrash2, FiCalendar, FiX, FiCheck, FiClock, FiCoffee, FiLogOut, FiSearch, FiFilter, FiChevronDown, FiChevronUp, FiLayers, FiCheckCircle, FiUsers } from 'react-icons/fi';
 
 const EmployeeSchedulePage = () => {
   const [schedules, setSchedules] = useState([]);
@@ -567,207 +567,519 @@ const EmployeeSchedulePage = () => {
           <p className="page-subtitle">Quản lý lịch ca làm việc của nhân viên</p>
         </div>
         <div style={{ display: 'flex', gap: '1rem' }}>
-          <button
-            className="btn-secondary"
-            onClick={() => setShowSearchFilter(!showSearchFilter)}
-          >
-            <FiFilter /> {showSearchFilter ? 'Ẩn bộ lọc' : 'Hiển thị bộ lọc'}
-          </button>
           <button className="btn-primary" onClick={handleOpenModal}>
             <FiPlus /> Thêm Lịch ca làm việc
           </button>
         </div>
       </div>
 
-      {/* Search Filter Section */}
-      {showSearchFilter && (
-        <div className="filter-section">
-          <div className="filter-header">
-            <FiFilter />
-            <h3>Bộ lọc tìm kiếm</h3>
-            <button className="btn-reset" onClick={handleResetSearch}>
-              Đặt lại
-            </button>
+      {/* Modern Search Filter Section */}
+      <div style={{
+        background: 'linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%)',
+        borderRadius: '16px',
+        padding: '1.5rem',
+        marginBottom: '2rem',
+        boxShadow: '0 10px 40px rgba(14, 165, 233, 0.3)',
+        position: 'relative',
+        overflow: 'hidden'
+      }}>
+        {/* Decorative Background Pattern */}
+        <div style={{
+          position: 'absolute',
+          top: 0,
+          right: 0,
+          width: '300px',
+          height: '300px',
+          background: 'radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%)',
+          borderRadius: '50%',
+          transform: 'translate(30%, -30%)',
+          pointerEvents: 'none'
+        }}></div>
+
+        {/* Header */}
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            marginBottom: showSearchFilter ? '1.5rem' : 0,
+            position: 'relative',
+            zIndex: 1,
+            cursor: 'pointer'
+          }}
+          onClick={() => setShowSearchFilter(!showSearchFilter)}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            <div style={{
+              background: 'rgba(255, 255, 255, 0.2)',
+              backdropFilter: 'blur(10px)',
+              padding: '0.75rem',
+              borderRadius: '12px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+            }}>
+              <FiFilter size={20} style={{ color: '#fff' }} />
+            </div>
+            <div>
+              <h3 style={{
+                margin: 0,
+                fontSize: '1.25rem',
+                fontWeight: '700',
+                color: '#fff',
+                textShadow: '0 2px 4px rgba(0,0,0,0.1)'
+              }}>
+                Bộ lọc tìm kiếm
+              </h3>
+              <p style={{
+                margin: 0,
+                fontSize: '0.85rem',
+                color: 'rgba(255, 255, 255, 0.9)',
+                marginTop: '0.25rem'
+              }}>
+                Click để {showSearchFilter ? 'thu gọn' : 'mở rộng'} bộ lọc
+              </p>
+            </div>
           </div>
 
-          <div className="filter-controls">
-            {/* Loại tìm kiếm */}
-            <div className="filter-group">
-              <label>Loại tìm kiếm</label>
-              <select value={searchType} onChange={(e) => setSearchType(e.target.value)}>
-                <option value="all">Tất cả lịch làm việc</option>
-                <option value="employee-date">Theo nhân viên và ngày</option>
-                <option value="employee-range">Theo nhân viên và khoảng thời gian</option>
-                <option value="employee-today">Lịch hôm nay của nhân viên</option>
-                <option value="employee-active">Lịch đang hoạt động của nhân viên</option>
-                <option value="employee-overtime">Lịch tăng ca của nhân viên</option>
-                <option value="shift-date">Theo ca làm việc và ngày</option>
-                <option value="employee-work-hours">Tổng giờ làm việc theo tháng</option>
-                <option value="employee-overtime-hours">Tổng giờ tăng ca theo tháng</option>
-              </select>
-            </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+            {/* Filter Status Badge */}
+            {schedules.length > 0 && (searchType !== 'all' || searchParams.employeeId || searchParams.date || searchParams.shiftId) && (
+              <div style={{
+                background: 'rgba(255, 255, 255, 0.95)',
+                backdropFilter: 'blur(10px)',
+                color: '#28a745',
+                padding: '0.5rem 1rem',
+                borderRadius: '25px',
+                fontSize: '0.9rem',
+                fontWeight: '600',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.5rem',
+                boxShadow: '0 4px 12px rgba(0,0,0,0.15)'
+              }}>
+                <FiCheckCircle size={16} />
+                <span>Đang lọc ({schedules.length} kết quả)</span>
+              </div>
+            )}
 
-            {/* Filters cho employee-based searches */}
-            {(searchType === 'employee-date' || searchType === 'employee-range' || searchType === 'employee-today' ||
-              searchType === 'employee-active' || searchType === 'employee-overtime' ||
-              searchType === 'employee-work-hours' || searchType === 'employee-overtime-hours') && (
-              <>
-                <div className="filter-group">
-                  <label>Vai trò nhân viên</label>
-                  <select value={searchRole} onChange={(e) => handleSearchRoleChange(e.target.value)}>
-                    <option value="">-- Chọn vai trò --</option>
-                    {roles.map((role) => (
-                      <option key={role.value} value={role.value}>
-                        {role.label}
-                      </option>
-                    ))}
+            {/* Toggle Button */}
+            <div style={{
+              background: 'rgba(255, 255, 255, 0.2)',
+              backdropFilter: 'blur(10px)',
+              padding: '0.5rem',
+              borderRadius: '8px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}>
+              {showSearchFilter ? <FiChevronUp size={20} style={{ color: '#fff' }} /> : <FiChevronDown size={20} style={{ color: '#fff' }} />}
+            </div>
+          </div>
+        </div>
+
+        {/* Filter Content Card */}
+        {showSearchFilter && (
+          <div style={{
+            background: 'rgba(255, 255, 255, 0.98)',
+            backdropFilter: 'blur(20px)',
+            borderRadius: '16px',
+            padding: '2rem',
+            boxShadow: '0 8px 32px rgba(0,0,0,0.1)',
+            position: 'relative',
+            zIndex: 1
+          }}>
+            {/* Filter Options Section */}
+            <div style={{ marginBottom: '1.5rem' }}>
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.5rem',
+                marginBottom: '1rem',
+                paddingBottom: '0.75rem',
+                borderBottom: '2px solid #f0f0f0'
+              }}>
+                <FiLayers size={18} style={{ color: '#0ea5e9' }} />
+                <h4 style={{ margin: 0, fontSize: '1rem', fontWeight: '600', color: '#2d3748' }}>
+                  Tùy chọn lọc
+                </h4>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1rem' }}>
+                {/* Loại tìm kiếm */}
+                <div>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem', fontSize: '0.9rem', fontWeight: '600', color: '#4a5568' }}>
+                    <FiSearch size={14} style={{ color: '#0ea5e9' }} />
+                    Loại tìm kiếm <span style={{ color: '#e53e3e' }}>*</span>
+                  </label>
+                  <select
+                    value={searchType}
+                    onChange={(e) => setSearchType(e.target.value)}
+                    style={{
+                      width: '100%',
+                      padding: '0.75rem 1rem',
+                      border: '2px solid #e2e8f0',
+                      borderRadius: '10px',
+                      fontSize: '0.95rem',
+                      backgroundColor: '#fff',
+                      cursor: 'pointer',
+                      outline: 'none',
+                      boxSizing: 'border-box'
+                    }}
+                  >
+                    <option value="all">Tất cả lịch làm việc</option>
+                    <option value="employee-date">Theo nhân viên và ngày</option>
+                    <option value="employee-range">Theo nhân viên và khoảng thời gian</option>
+                    <option value="employee-today">Lịch hôm nay của nhân viên</option>
+                    <option value="employee-active">Lịch đang hoạt động của nhân viên</option>
+                    <option value="employee-overtime">Lịch tăng ca của nhân viên</option>
+                    <option value="shift-date">Theo ca làm việc và ngày</option>
+                    <option value="employee-work-hours">Tổng giờ làm việc theo tháng</option>
+                    <option value="employee-overtime-hours">Tổng giờ tăng ca theo tháng</option>
                   </select>
                 </div>
 
-                {searchRole && (
-                  <div className="filter-group">
-                    <label>Tìm kiếm nhân viên</label>
+                {/* Filters cho employee-based searches */}
+                {(searchType === 'employee-date' || searchType === 'employee-range' || searchType === 'employee-today' ||
+                  searchType === 'employee-active' || searchType === 'employee-overtime' ||
+                  searchType === 'employee-work-hours' || searchType === 'employee-overtime-hours') && (
+                  <>
+                    <div>
+                      <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem', fontSize: '0.9rem', fontWeight: '600', color: '#4a5568' }}>
+                        <FiUsers size={14} style={{ color: '#0ea5e9' }} />
+                        Vai trò nhân viên <span style={{ color: '#e53e3e' }}>*</span>
+                      </label>
+                      <select
+                        value={searchRole}
+                        onChange={(e) => handleSearchRoleChange(e.target.value)}
+                        style={{
+                          width: '100%',
+                          padding: '0.75rem 1rem',
+                          border: '2px solid #e2e8f0',
+                          borderRadius: '10px',
+                          fontSize: '0.95rem',
+                          backgroundColor: '#fff',
+                          cursor: 'pointer',
+                          outline: 'none',
+                          boxSizing: 'border-box'
+                        }}
+                      >
+                        <option value="">-- Chọn vai trò --</option>
+                        {roles.map((role) => (
+                          <option key={role.value} value={role.value}>
+                            {role.label}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    {searchRole && (
+                      <div>
+                        <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem', fontSize: '0.9rem', fontWeight: '600', color: '#4a5568' }}>
+                          <FiSearch size={14} style={{ color: '#0ea5e9' }} />
+                          Tìm kiếm nhân viên
+                        </label>
+                        <input
+                          type="text"
+                          value={searchEmployeeCode}
+                          onChange={(e) => handleSearchEmployeeCodeChange(e.target.value)}
+                          placeholder="Nhập mã hoặc tên..."
+                          style={{
+                            width: '100%',
+                            padding: '0.75rem 1rem',
+                            border: '2px solid #e2e8f0',
+                            borderRadius: '10px',
+                            fontSize: '0.95rem',
+                            outline: 'none',
+                            boxSizing: 'border-box'
+                          }}
+                        />
+                      </div>
+                    )}
+
+                    {searchRole && (
+                      <div>
+                        <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem', fontSize: '0.9rem', fontWeight: '600', color: '#4a5568' }}>
+                          <FiUsers size={14} style={{ color: '#0ea5e9' }} />
+                          Nhân viên <span style={{ color: '#e53e3e' }}>*</span>
+                        </label>
+                        <select
+                          value={searchParams.employeeId}
+                          onChange={(e) => setSearchParams({ ...searchParams, employeeId: e.target.value })}
+                          disabled={loadingSearch || filteredSearchEmployees.length === 0}
+                          style={{
+                            width: '100%',
+                            padding: '0.75rem 1rem',
+                            border: '2px solid #e2e8f0',
+                            borderRadius: '10px',
+                            fontSize: '0.95rem',
+                            backgroundColor: '#fff',
+                            cursor: (loadingSearch || filteredSearchEmployees.length === 0) ? 'not-allowed' : 'pointer',
+                            opacity: (loadingSearch || filteredSearchEmployees.length === 0) ? 0.6 : 1,
+                            outline: 'none',
+                            boxSizing: 'border-box'
+                          }}
+                        >
+                          <option value="">
+                            {loadingSearch
+                              ? '-- Đang tải...'
+                              : filteredSearchEmployees.length === 0
+                                ? '-- Không có nhân viên --'
+                                : '-- Chọn nhân viên --'}
+                          </option>
+                          {filteredSearchEmployees.map((emp) => (
+                            <option key={emp.id} value={emp.id}>
+                              {emp.fullName} - {emp.employeeCode}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    )}
+                  </>
+                )}
+
+                {/* Date filters */}
+                {searchType === 'employee-date' && (
+                  <div>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem', fontSize: '0.9rem', fontWeight: '600', color: '#4a5568' }}>
+                      <FiCalendar size={14} style={{ color: '#0ea5e9' }} />
+                      Ngày <span style={{ color: '#e53e3e' }}>*</span>
+                    </label>
                     <input
-                      type="text"
-                      value={searchEmployeeCode}
-                      onChange={(e) => handleSearchEmployeeCodeChange(e.target.value)}
-                      placeholder="Nhập mã hoặc tên..."
+                      type="date"
+                      value={searchParams.date}
+                      onChange={(e) => setSearchParams({ ...searchParams, date: e.target.value })}
+                      style={{
+                        width: '100%',
+                        padding: '0.75rem 1rem',
+                        border: '2px solid #e2e8f0',
+                        borderRadius: '10px',
+                        fontSize: '0.95rem',
+                        outline: 'none',
+                        boxSizing: 'border-box'
+                      }}
                     />
                   </div>
                 )}
 
-                {searchRole && (
-                  <div className="filter-group">
-                    <label>Nhân viên</label>
-                    <select
-                      value={searchParams.employeeId}
-                      onChange={(e) => setSearchParams({ ...searchParams, employeeId: e.target.value })}
-                      disabled={loadingSearch || filteredSearchEmployees.length === 0}
-                    >
-                      <option value="">
-                        {loadingSearch
-                          ? '-- Đang tải...'
-                          : filteredSearchEmployees.length === 0
-                            ? '-- Không có nhân viên --'
-                            : '-- Chọn nhân viên --'}
-                      </option>
-                      {filteredSearchEmployees.map((emp) => (
-                        <option key={emp.id} value={emp.id}>
-                          {emp.fullName} - {emp.employeeCode}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
+                {searchType === 'employee-range' && (
+                  <>
+                    <div>
+                      <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem', fontSize: '0.9rem', fontWeight: '600', color: '#4a5568' }}>
+                        <FiCalendar size={14} style={{ color: '#0ea5e9' }} />
+                        Từ ngày <span style={{ color: '#e53e3e' }}>*</span>
+                      </label>
+                      <input
+                        type="date"
+                        value={searchParams.startDate}
+                        onChange={(e) => setSearchParams({ ...searchParams, startDate: e.target.value })}
+                        style={{
+                          width: '100%',
+                          padding: '0.75rem 1rem',
+                          border: '2px solid #e2e8f0',
+                          borderRadius: '10px',
+                          fontSize: '0.95rem',
+                          outline: 'none',
+                          boxSizing: 'border-box'
+                        }}
+                      />
+                    </div>
+                    <div>
+                      <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem', fontSize: '0.9rem', fontWeight: '600', color: '#4a5568' }}>
+                        <FiCalendar size={14} style={{ color: '#0ea5e9' }} />
+                        Đến ngày <span style={{ color: '#e53e3e' }}>*</span>
+                      </label>
+                      <input
+                        type="date"
+                        value={searchParams.endDate}
+                        onChange={(e) => setSearchParams({ ...searchParams, endDate: e.target.value })}
+                        style={{
+                          width: '100%',
+                          padding: '0.75rem 1rem',
+                          border: '2px solid #e2e8f0',
+                          borderRadius: '10px',
+                          fontSize: '0.95rem',
+                          outline: 'none',
+                          boxSizing: 'border-box'
+                        }}
+                      />
+                    </div>
+                  </>
                 )}
-              </>
-            )}
 
-            {/* Date filters */}
-            {searchType === 'employee-date' && (
-              <div className="filter-group">
-                <label>Ngày</label>
-                <input
-                  type="date"
-                  value={searchParams.date}
-                  onChange={(e) => setSearchParams({ ...searchParams, date: e.target.value })}
-                />
+                {/* Year/Month filters for work hours */}
+                {(searchType === 'employee-work-hours' || searchType === 'employee-overtime-hours') && (
+                  <>
+                    <div>
+                      <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem', fontSize: '0.9rem', fontWeight: '600', color: '#4a5568' }}>
+                        <FiCalendar size={14} style={{ color: '#0ea5e9' }} />
+                        Năm <span style={{ color: '#e53e3e' }}>*</span>
+                      </label>
+                      <input
+                        type="number"
+                        value={searchParams.year}
+                        onChange={(e) => setSearchParams({ ...searchParams, year: parseInt(e.target.value) })}
+                        min="2020"
+                        max="2100"
+                        style={{
+                          width: '100%',
+                          padding: '0.75rem 1rem',
+                          border: '2px solid #e2e8f0',
+                          borderRadius: '10px',
+                          fontSize: '0.95rem',
+                          outline: 'none',
+                          boxSizing: 'border-box'
+                        }}
+                      />
+                    </div>
+                    <div>
+                      <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem', fontSize: '0.9rem', fontWeight: '600', color: '#4a5568' }}>
+                        <FiCalendar size={14} style={{ color: '#0ea5e9' }} />
+                        Tháng <span style={{ color: '#e53e3e' }}>*</span>
+                      </label>
+                      <select
+                        value={searchParams.month}
+                        onChange={(e) => setSearchParams({ ...searchParams, month: parseInt(e.target.value) })}
+                        style={{
+                          width: '100%',
+                          padding: '0.75rem 1rem',
+                          border: '2px solid #e2e8f0',
+                          borderRadius: '10px',
+                          fontSize: '0.95rem',
+                          backgroundColor: '#fff',
+                          cursor: 'pointer',
+                          outline: 'none',
+                          boxSizing: 'border-box'
+                        }}
+                      >
+                        <option value="1">Tháng 1</option>
+                        <option value="2">Tháng 2</option>
+                        <option value="3">Tháng 3</option>
+                        <option value="4">Tháng 4</option>
+                        <option value="5">Tháng 5</option>
+                        <option value="6">Tháng 6</option>
+                        <option value="7">Tháng 7</option>
+                        <option value="8">Tháng 8</option>
+                        <option value="9">Tháng 9</option>
+                        <option value="10">Tháng 10</option>
+                        <option value="11">Tháng 11</option>
+                        <option value="12">Tháng 12</option>
+                      </select>
+                    </div>
+                  </>
+                )}
+
+                {/* Shift-based search */}
+                {searchType === 'shift-date' && (
+                  <>
+                    <div>
+                      <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem', fontSize: '0.9rem', fontWeight: '600', color: '#4a5568' }}>
+                        <FiClock size={14} style={{ color: '#0ea5e9' }} />
+                        Ca làm việc <span style={{ color: '#e53e3e' }}>*</span>
+                      </label>
+                      <select
+                        value={searchParams.shiftId}
+                        onChange={(e) => setSearchParams({ ...searchParams, shiftId: e.target.value })}
+                        style={{
+                          width: '100%',
+                          padding: '0.75rem 1rem',
+                          border: '2px solid #e2e8f0',
+                          borderRadius: '10px',
+                          fontSize: '0.95rem',
+                          backgroundColor: '#fff',
+                          cursor: 'pointer',
+                          outline: 'none',
+                          boxSizing: 'border-box'
+                        }}
+                      >
+                        <option value="">-- Chọn ca làm việc --</option>
+                        {workShifts.map((shift) => (
+                          <option key={shift.shiftId} value={shift.shiftId}>
+                            {shift.shiftName} ({shift.startTime} - {shift.endTime})
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
+                      <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem', fontSize: '0.9rem', fontWeight: '600', color: '#4a5568' }}>
+                        <FiCalendar size={14} style={{ color: '#0ea5e9' }} />
+                        Ngày <span style={{ color: '#e53e3e' }}>*</span>
+                      </label>
+                      <input
+                        type="date"
+                        value={searchParams.date}
+                        onChange={(e) => setSearchParams({ ...searchParams, date: e.target.value })}
+                        style={{
+                          width: '100%',
+                          padding: '0.75rem 1rem',
+                          border: '2px solid #e2e8f0',
+                          borderRadius: '10px',
+                          fontSize: '0.95rem',
+                          outline: 'none',
+                          boxSizing: 'border-box'
+                        }}
+                      />
+                    </div>
+                  </>
+                )}
               </div>
-            )}
+            </div>
 
-            {searchType === 'employee-range' && (
-              <>
-                <div className="filter-group">
-                  <label>Từ ngày</label>
-                  <input
-                    type="date"
-                    value={searchParams.startDate}
-                    onChange={(e) => setSearchParams({ ...searchParams, startDate: e.target.value })}
-                  />
-                </div>
-                <div className="filter-group">
-                  <label>Đến ngày</label>
-                  <input
-                    type="date"
-                    value={searchParams.endDate}
-                    onChange={(e) => setSearchParams({ ...searchParams, endDate: e.target.value })}
-                  />
-                </div>
-              </>
-            )}
-
-            {/* Year/Month filters for work hours */}
-            {(searchType === 'employee-work-hours' || searchType === 'employee-overtime-hours') && (
-              <>
-                <div className="filter-group">
-                  <label>Năm</label>
-                  <input
-                    type="number"
-                    value={searchParams.year}
-                    onChange={(e) => setSearchParams({ ...searchParams, year: parseInt(e.target.value) })}
-                    min="2020"
-                    max="2100"
-                  />
-                </div>
-                <div className="filter-group">
-                  <label>Tháng</label>
-                  <select
-                    value={searchParams.month}
-                    onChange={(e) => setSearchParams({ ...searchParams, month: parseInt(e.target.value) })}
-                  >
-                    <option value="1">Tháng 1</option>
-                    <option value="2">Tháng 2</option>
-                    <option value="3">Tháng 3</option>
-                    <option value="4">Tháng 4</option>
-                    <option value="5">Tháng 5</option>
-                    <option value="6">Tháng 6</option>
-                    <option value="7">Tháng 7</option>
-                    <option value="8">Tháng 8</option>
-                    <option value="9">Tháng 9</option>
-                    <option value="10">Tháng 10</option>
-                    <option value="11">Tháng 11</option>
-                    <option value="12">Tháng 12</option>
-                  </select>
-                </div>
-              </>
-            )}
-
-            {/* Shift-based search */}
-            {searchType === 'shift-date' && (
-              <>
-                <div className="filter-group">
-                  <label>Ca làm việc</label>
-                  <select
-                    value={searchParams.shiftId}
-                    onChange={(e) => setSearchParams({ ...searchParams, shiftId: e.target.value })}
-                  >
-                    <option value="">-- Chọn ca làm việc --</option>
-                    {workShifts.map((shift) => (
-                      <option key={shift.shiftId} value={shift.shiftId}>
-                        {shift.shiftName} ({shift.startTime} - {shift.endTime})
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div className="filter-group">
-                  <label>Ngày</label>
-                  <input
-                    type="date"
-                    value={searchParams.date}
-                    onChange={(e) => setSearchParams({ ...searchParams, date: e.target.value })}
-                  />
-                </div>
-              </>
-            )}
-
-            {/* Search button */}
-            <div className="filter-group" style={{ display: 'flex', alignItems: 'flex-end' }}>
-              <button className="btn-primary" onClick={handleSearch} disabled={loading}>
-                <FiSearch /> {loading ? 'Đang tìm...' : 'Tìm kiếm'}
+            {/* Action Buttons */}
+            <div style={{
+              display: 'flex',
+              justifyContent: 'center',
+              gap: '1rem',
+              paddingTop: '1rem',
+              borderTop: '2px solid #f0f0f0'
+            }}>
+              <button
+                onClick={handleSearch}
+                disabled={loading}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.5rem',
+                  padding: '0.75rem 1.5rem',
+                  background: loading ? '#6c757d' : 'linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%)',
+                  border: 'none',
+                  borderRadius: '10px',
+                  color: '#fff',
+                  fontSize: '0.95rem',
+                  fontWeight: '600',
+                  cursor: loading ? 'not-allowed' : 'pointer',
+                  opacity: loading ? 0.7 : 1,
+                  transition: 'all 0.2s ease'
+                }}
+              >
+                <FiSearch size={16} />
+                {loading ? 'Đang tìm...' : 'Áp dụng bộ lọc'}
+              </button>
+              <button
+                onClick={handleResetSearch}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.5rem',
+                  padding: '0.75rem 1.5rem',
+                  background: '#fff',
+                  border: '2px solid #e2e8f0',
+                  borderRadius: '10px',
+                  color: '#4a5568',
+                  fontSize: '0.95rem',
+                  fontWeight: '600',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease'
+                }}
+              >
+                <FiX size={16} />
+                Xóa bộ lọc
               </button>
             </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
 
       {/* Work Hours Summary Card */}
       {workHoursData && (

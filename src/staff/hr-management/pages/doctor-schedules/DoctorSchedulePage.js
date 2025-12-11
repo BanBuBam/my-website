@@ -399,11 +399,11 @@ const DoctorSchedulePage = () => {
 
       {/* FILTER SECTION - New design matching InventoryTransactionsPage */}
       <div style={{
-        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        background: 'linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%)',
         padding: '2rem',
         borderRadius: '16px',
         marginBottom: '1.5rem',
-        boxShadow: '0 10px 30px rgba(102, 126, 234, 0.3)',
+        boxShadow: '0 10px 30px rgba(14, 165, 233, 0.3)',
         position: 'relative',
         overflow: 'hidden'
       }}>
@@ -467,7 +467,7 @@ const DoctorSchedulePage = () => {
           <div style={{
             background: 'rgba(255, 255, 255, 0.95)',
             backdropFilter: 'blur(10px)',
-            color: viewMode !== 'today' ? '#28a745' : '#667eea',
+            color: viewMode !== 'today' ? '#28a745' : '#0ea5e9',
             padding: '0.5rem 1rem',
             borderRadius: '25px',
             fontSize: '0.9rem',
@@ -502,7 +502,7 @@ const DoctorSchedulePage = () => {
               paddingBottom: '0.75rem',
               borderBottom: '2px solid #f0f0f0'
             }}>
-              <FiCalendar size={18} style={{ color: '#667eea' }} />
+              <FiCalendar size={18} style={{ color: '#0ea5e9' }} />
               <h4 style={{ margin: 0, fontSize: '1rem', fontWeight: '600', color: '#2d3748' }}>
                 Chế độ xem
               </h4>
@@ -511,7 +511,7 @@ const DoctorSchedulePage = () => {
             <div style={{ display: 'grid', gridTemplateColumns: viewMode === 'dateRange' ? 'repeat(4, 1fr)' : 'repeat(3, 1fr)', gap: '1rem' }}>
               <div>
                 <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem', fontSize: '0.9rem', fontWeight: '600', color: '#4a5568' }}>
-                  <FiClock size={14} style={{ color: '#667eea' }} />
+                  <FiClock size={14} style={{ color: '#0ea5e9' }} />
                   Chế độ xem
                 </label>
                 <select
@@ -541,7 +541,7 @@ const DoctorSchedulePage = () => {
               {(viewMode === 'clinic' || viewMode === 'doctor' || viewMode === 'date' || viewMode === 'dateRange') && (
                 <div>
                   <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem', fontSize: '0.9rem', fontWeight: '600', color: '#4a5568' }}>
-                    <FiHome size={14} style={{ color: '#667eea' }} />
+                    <FiHome size={14} style={{ color: '#0ea5e9' }} />
                     Phòng khám
                   </label>
                   <select
@@ -572,7 +572,7 @@ const DoctorSchedulePage = () => {
               {(viewMode === 'doctor' || viewMode === 'date' || viewMode === 'dateRange') && selectedClinic && (
                 <div>
                   <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem', fontSize: '0.9rem', fontWeight: '600', color: '#4a5568' }}>
-                    <FiUser size={14} style={{ color: '#667eea' }} />
+                    <FiUser size={14} style={{ color: '#0ea5e9' }} />
                     Bác sĩ
                   </label>
                   <select
@@ -606,7 +606,7 @@ const DoctorSchedulePage = () => {
               {(viewMode === 'clinic' || viewMode === 'date') && (
                 <div>
                   <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem', fontSize: '0.9rem', fontWeight: '600', color: '#4a5568' }}>
-                    <FiCalendar size={14} style={{ color: '#667eea' }} />
+                    <FiCalendar size={14} style={{ color: '#0ea5e9' }} />
                     Ngày
                   </label>
                   <input
@@ -630,7 +630,7 @@ const DoctorSchedulePage = () => {
                 <>
                   <div>
                     <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem', fontSize: '0.9rem', fontWeight: '600', color: '#4a5568' }}>
-                      <FiCalendar size={14} style={{ color: '#667eea' }} />
+                      <FiCalendar size={14} style={{ color: '#0ea5e9' }} />
                       Từ ngày
                     </label>
                     <input
@@ -650,7 +650,7 @@ const DoctorSchedulePage = () => {
                   </div>
                   <div>
                     <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem', fontSize: '0.9rem', fontWeight: '600', color: '#4a5568' }}>
-                      <FiCalendar size={14} style={{ color: '#667eea' }} />
+                      <FiCalendar size={14} style={{ color: '#0ea5e9' }} />
                       Đến ngày
                     </label>
                     <input
@@ -905,4 +905,5 @@ const DoctorSchedulePage = () => {
 };
 
 export default DoctorSchedulePage;
+
 

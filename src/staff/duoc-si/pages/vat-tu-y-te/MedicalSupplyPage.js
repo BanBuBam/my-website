@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import pharmacistAPI from '../../../../services/staff/pharmacistAPI';
+import Pagination from '../../../../components/Pagination/Pagination';
 import './MedicalSupplyPage.css';
 import {
   FaSearch, FaEye, FaCheck, FaTimes, FaBoxOpen, FaInfoCircle, FaBan, FaChartBar, FaDatabase, FaTrashAlt, FaUndo, FaRedo
@@ -54,6 +55,14 @@ const MedicalSupplyPage = () => {
   const [dataFilter, setDataFilter] = useState('ACTIVE'); // ACTIVE, DELETED
   const [softDeleteStats, setSoftDeleteStats] = useState(null);
   const [dataList, setDataList] = useState([]);
+
+  // Pagination cho modal Data & Trash
+  const [dataPagination, setDataPagination] = useState({
+    page: 0,
+    size: 10,
+    totalElements: 0,
+    totalPages: 0
+  });
 
   // --- 1. FETCH ALL PRESCRIPTIONS (Khởi tạo khi load trang) ---
   const fetchAllPrescriptions = useCallback(async (page = 0) => {
@@ -485,23 +494,34 @@ const MedicalSupplyPage = () => {
     } catch (error) { console.error("Lỗi lấy thống kê xóa:", error); } finally { setLoading(false); }
   };
 
-  const fetchDataList = async () => {
+  const fetchDataList = async (page = 0) => {
     setLoading(true);
     setDataList([]);
     try {
       let response;
       if (dataTab === 'MATERIALS') {
-        response = dataFilter === 'ACTIVE' 
-          ? await pharmacistAPI.pharmacistMedicalSupplyAPI.getActiveMaterials()
-          : await pharmacistAPI.pharmacistMedicalSupplyAPI.getDeletedMaterials();
+        response = dataFilter === 'ACTIVE'
+          ? await pharmacistAPI.pharmacistMedicalSupplyAPI.getActiveMaterials(page, dataPagination.size)
+          : await pharmacistAPI.pharmacistMedicalSupplyAPI.getDeletedMaterials(page, dataPagination.size);
       } else if (dataTab === 'MEDICINES') {
         response = dataFilter === 'ACTIVE'
-          ? await pharmacistAPI.pharmacistMedicalSupplyAPI.getActiveMedicines()
-          : await pharmacistAPI.pharmacistMedicalSupplyAPI.getDeletedMedicines();
+          ? await pharmacistAPI.pharmacistMedicalSupplyAPI.getActiveMedicines(page, dataPagination.size)
+          : await pharmacistAPI.pharmacistMedicalSupplyAPI.getDeletedMedicines(page, dataPagination.size);
       }
 
       if (response && response.status === 'OK') {
-        setDataList(Array.isArray(response.data) ? response.data : (response.data?.content || []));
+        const content = response.data?.content || response.data || [];
+        setDataList(Array.isArray(content) ? content : []);
+
+        // Cập nhật pagination nếu có thông tin phân trang
+        if (response.data?.totalElements !== undefined) {
+          setDataPagination(prev => ({
+            ...prev,
+            page: response.data.number || 0,
+            totalElements: response.data.totalElements || 0,
+            totalPages: response.data.totalPages || 0
+          }));
+        }
       }
     } catch (error) { console.error("Lỗi lấy danh sách dữ liệu:", error); } finally { setLoading(false); }
   };
@@ -538,10 +558,22 @@ const MedicalSupplyPage = () => {
     }
   };
 
+  // Handle page change for data modal
+  const handleDataPageChange = (newPage) => {
+    if (newPage >= 0 && newPage < dataPagination.totalPages) {
+      fetchDataList(newPage);
+    }
+  };
+
   useEffect(() => {
     if (showDataModal) {
-      if (dataTab === 'STATS') fetchSoftDeleteStats();
-      else fetchDataList();
+      if (dataTab === 'STATS') {
+        fetchSoftDeleteStats();
+      } else {
+        // Reset về trang đầu khi đổi tab hoặc filter
+        setDataPagination(prev => ({ ...prev, page: 0 }));
+        fetchDataList(0);
+      }
     }
   }, [dataTab, dataFilter, showDataModal]);
 
@@ -560,26 +592,49 @@ const MedicalSupplyPage = () => {
   };
 
   return (
-    <div className="medical-supply-page-container"> 
+    <div className="medical-supply-page-container">
+      {/* --- PAGE HEADER --- */}
       <div className="page-header">
-        <h1 className="page-title">Quản lý Cấp phát Vật tư Y tế</h1>
+        <div className="header-content">
+          <h1 className="page-title">📦 Quản lý Cấp phát Vật tư Y tế</h1>
+          <p className="page-subtitle">Quản lý đơn vật tư, cấp phát và theo dõi tồn kho</p>
+        </div>
+        <div className="header-actions">
+          <button className="btn-stats" onClick={handleOpenStats}>
+            <FaChartBar /> Thống kê & Lịch sử
+          </button>
+          <button className="btn-data" onClick={handleOpenDataModal}>
+            <FaDatabase /> Dữ liệu & Thùng rác
+          </button>
+        </div>
       </div>
 
       <div className="medical-supply-page">
 
-        {/* --- TOOLBAR --- */}
+        {/* --- SEARCH TOOLBAR --- */}
         <div className="search-toolbar">
           <div className="search-group">
-            <select value={searchType} onChange={(e) => { setSearchType(e.target.value); if (e.target.value === 'ALL') fetchAllPrescriptions(0); }} className="search-select">
-              <option value="ALL">Tất cả đơn</option>
-              <option value="PATIENT">Theo ID Bệnh nhân</option>
-              <option value="ENCOUNTER">Theo Mã Lượt khám</option>
-              <option value="CATEGORY">Theo Danh mục Vật tư</option>
-              <option value="CODE">Theo Mã Đơn</option>
+            <select
+              value={searchType}
+              onChange={(e) => {
+                setSearchType(e.target.value);
+                if (e.target.value === 'ALL') fetchAllPrescriptions(0);
+              }}
+              className="search-select"
+            >
+              <option value="ALL">🔍 Tất cả đơn</option>
+              <option value="PATIENT">👤 Theo ID Bệnh nhân</option>
+              <option value="ENCOUNTER">📋 Theo Mã Lượt khám</option>
+              <option value="CATEGORY">📂 Theo Danh mục Vật tư</option>
+              <option value="CODE">🔢 Theo Mã Đơn</option>
             </select>
 
             {searchType === 'CATEGORY' ? (
-              <select className="search-select input-field" value={selectedCategory} onChange={(e) => setSelectedCategory(e.target.value)}>
+              <select
+                className="search-select input-field"
+                value={selectedCategory}
+                onChange={(e) => setSelectedCategory(e.target.value)}
+              >
                 <option value="">-- Chọn danh mục --</option>
                 {categories.map((cat) => (
                   <option key={cat.category_id} value={cat.category_name}>
@@ -588,51 +643,65 @@ const MedicalSupplyPage = () => {
                 ))}
               </select>
             ) : searchType !== 'ALL' ? (
-              <input type="text" placeholder={searchType === 'PATIENT' ? "Nhập ID..." : searchType === 'ENCOUNTER' ? "Nhập mã lượt khám..." : "Nhập mã đơn..."} value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && handleSearch()} />
+              <input
+                type="text"
+                className="search-input"
+                placeholder={
+                  searchType === 'PATIENT' ? "Nhập ID bệnh nhân..." :
+                  searchType === 'ENCOUNTER' ? "Nhập mã lượt khám..." :
+                  "Nhập mã đơn..."
+                }
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+              />
             ) : null}
 
             {searchType !== 'ALL' && (
-              <button className="btn-search" onClick={handleSearch} disabled={loading}><FaSearch /> Tìm kiếm</button>
+              <button className="btn-search" onClick={handleSearch} disabled={loading}>
+                <FaSearch /> Tìm kiếm
+              </button>
             )}
-            <button className="btn-secondary" onClick={handleRefresh} disabled={loading} title="Làm mới"><FaRedo /> Làm mới</button>
-          </div>
-
-          <div className="action-group">
-             <button className="btn-secondary" onClick={handleOpenStats}><FaChartBar/> Thống kê & Lịch sử</button>
-             <button className="btn-secondary" onClick={handleOpenDataModal}><FaDatabase/> Dữ liệu & Thùng rác</button>
-             <button className="btn-secondary"><FaBoxOpen/> Kho Vật tư</button>
+            <button className="btn-refresh" onClick={handleRefresh} disabled={loading} title="Làm mới">
+              <FaRedo /> Làm mới
+            </button>
           </div>
         </div>
 
         {/* --- FILTER BAR (cho chế độ ALL) --- */}
         {searchType === 'ALL' && (
-          <div className="filter-bar" style={{ marginBottom: '15px', display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap' }}>
-            <label>Trạng thái:</label>
-            <select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)} className="search-select" style={{ minWidth: '140px' }}>
+          <div className="filter-bar">
+            <label>📊 Trạng thái:</label>
+            <select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)} className="search-select">
               <option value="">Tất cả</option>
-              <option value="ORDERED">Đã đặt</option>
-              <option value="APPROVED">Đã duyệt</option>
-              <option value="DISPENSED">Đã cấp</option>
-              <option value="PARTIALLY_DISPENSED">Cấp một phần</option>
-              <option value="REJECTED">Từ chối</option>
-              <option value="CANCELLED">Đã hủy</option>
+              <option value="ORDERED">📝 Đã đặt</option>
+              <option value="APPROVED">✅ Đã duyệt</option>
+              <option value="DISPENSED">📦 Đã cấp</option>
+              <option value="PARTIALLY_DISPENSED">📦 Cấp một phần</option>
+              <option value="REJECTED">❌ Từ chối</option>
+              <option value="CANCELLED">🚫 Đã hủy</option>
             </select>
-            <label>Loại đơn:</label>
-            <select value={filterType} onChange={(e) => setFilterType(e.target.value)} className="search-select" style={{ minWidth: '140px' }}>
+
+            <label>📋 Loại đơn:</label>
+            <select value={filterType} onChange={(e) => setFilterType(e.target.value)} className="search-select">
               <option value="">Tất cả</option>
-              <option value="SURGERY">Phẫu thuật</option>
-              <option value="PROCEDURE">Thủ thuật</option>
-              <option value="TREATMENT">Điều trị</option>
-              <option value="EMERGENCY">Cấp cứu</option>
+              <option value="SURGERY">🔪 Phẫu thuật</option>
+              <option value="PROCEDURE">🩺 Thủ thuật</option>
+              <option value="TREATMENT">💊 Điều trị</option>
+              <option value="EMERGENCY">🚨 Cấp cứu</option>
             </select>
-            <label>Ưu tiên:</label>
-            <select value={filterPriority} onChange={(e) => setFilterPriority(e.target.value)} className="search-select" style={{ minWidth: '120px' }}>
+
+            <label>⚡ Ưu tiên:</label>
+            <select value={filterPriority} onChange={(e) => setFilterPriority(e.target.value)} className="search-select">
               <option value="">Tất cả</option>
-              <option value="NORMAL">Bình thường</option>
-              <option value="URGENT">Khẩn</option>
-              <option value="STAT">Cấp cứu</option>
+              <option value="NORMAL">🟢 Bình thường</option>
+              <option value="URGENT">🟡 Khẩn</option>
+              <option value="STAT">🔴 Cấp cứu</option>
             </select>
-            <button className="btn-search" onClick={() => fetchAllPrescriptions(0)} disabled={loading}><FaSearch /> Lọc</button>
+
+            <button className="btn-search" onClick={() => fetchAllPrescriptions(0)} disabled={loading}>
+              <FaSearch /> Áp dụng lọc
+            </button>
           </div>
         )}
 
@@ -728,40 +797,16 @@ const MedicalSupplyPage = () => {
         </div>
 
         {/* --- PAGINATION (cho chế độ ALL) --- */}
-        {searchType === 'ALL' && pagination.totalPages > 1 && (
-          <div className="pagination-bar" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '10px', marginTop: '15px', marginBottom: '15px' }}>
-            <button
-              className="btn-secondary"
-              onClick={() => handlePageChange(0)}
-              disabled={pagination.page === 0 || loading}
-            >
-              {'<<'}
-            </button>
-            <button
-              className="btn-secondary"
-              onClick={() => handlePageChange(pagination.page - 1)}
-              disabled={pagination.page === 0 || loading}
-            >
-              {'<'}
-            </button>
-            <span style={{ padding: '0 15px' }}>
-              Trang {pagination.page + 1} / {pagination.totalPages} (Tổng: {pagination.totalElements} đơn)
-            </span>
-            <button
-              className="btn-secondary"
-              onClick={() => handlePageChange(pagination.page + 1)}
-              disabled={pagination.page >= pagination.totalPages - 1 || loading}
-            >
-              {'>'}
-            </button>
-            <button
-              className="btn-secondary"
-              onClick={() => handlePageChange(pagination.totalPages - 1)}
-              disabled={pagination.page >= pagination.totalPages - 1 || loading}
-            >
-              {'>>'}
-            </button>
-          </div>
+        {searchType === 'ALL' && (
+          <Pagination
+            currentPage={pagination.page}
+            totalPages={pagination.totalPages}
+            totalElements={pagination.totalElements}
+            pageSize={pagination.size}
+            onPageChange={handlePageChange}
+            isFirst={pagination.page === 0}
+            isLast={pagination.page >= pagination.totalPages - 1}
+          />
         )}
 
         {/* --- MODAL 1: PRESCRIPTION DETAIL --- */}
@@ -1032,6 +1077,19 @@ const MedicalSupplyPage = () => {
                           )) : <tr><td colSpan={dataFilter === 'DELETED' ? "5" : "4"} className="text-center">Không có dữ liệu</td></tr>}
                         </tbody>
                       </table>
+
+                      {/* Pagination cho danh sách thuốc/vật tư */}
+                      {dataPagination.totalPages > 0 && (
+                        <Pagination
+                          currentPage={dataPagination.page}
+                          totalPages={dataPagination.totalPages}
+                          totalElements={dataPagination.totalElements}
+                          pageSize={dataPagination.size}
+                          onPageChange={handleDataPageChange}
+                          isFirst={dataPagination.page === 0}
+                          isLast={dataPagination.page >= dataPagination.totalPages - 1}
+                        />
+                      )}
                     </div>
                   )}
                 </div>

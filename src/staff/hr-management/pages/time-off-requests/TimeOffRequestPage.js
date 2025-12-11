@@ -538,7 +538,7 @@ const TimeOffRequestPage = () => {
 
           {/* FILTER SECTION - New design matching InventoryTransactionsPage */}
           <div style={{
-            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            background: 'linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%)',
             padding: '1.5rem',
             borderRadius: '16px',
             marginBottom: '1.5rem',
@@ -623,7 +623,7 @@ const TimeOffRequestPage = () => {
                 {/* Leave Type Filter */}
                 <div>
                   <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem', fontSize: '0.9rem', fontWeight: '600', color: '#4a5568' }}>
-                    <FiLayers size={14} style={{ color: '#667eea' }} />
+                    <FiLayers size={14} style={{ color: '#0ea5e9' }} />
                     Loại nghỉ phép
                   </label>
                   <select
@@ -661,7 +661,7 @@ const TimeOffRequestPage = () => {
                       onChange={(e) => setUseServerDateFilter(e.target.checked)}
                       style={{ marginRight: '0.25rem' }}
                     />
-                    <FiCalendar size={14} style={{ color: '#667eea' }} />
+                    <FiCalendar size={14} style={{ color: '#0ea5e9' }} />
                     Lọc theo thời gian
                   </label>
                   {useServerDateFilter ? (
@@ -923,4 +923,5 @@ const TimeOffRequestPage = () => {
 };
 
 export default TimeOffRequestPage;
+
 
