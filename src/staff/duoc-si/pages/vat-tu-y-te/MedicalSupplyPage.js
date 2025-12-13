@@ -596,10 +596,16 @@ const MedicalSupplyPage = () => {
       {/* --- PAGE HEADER --- */}
       <div className="page-header">
         <div className="header-content">
-          <h1 className="page-title">📦 Quản lý Cấp phát Vật tư Y tế</h1>
+          <h1 className="page-title">
+            <FaBoxOpen />
+            Quản lý Cấp phát Vật tư Y tế
+          </h1>
           <p className="page-subtitle">Quản lý đơn vật tư, cấp phát và theo dõi tồn kho</p>
         </div>
         <div className="header-actions">
+          <button className="btn-refresh" onClick={handleRefresh} disabled={loading} title="Làm mới">
+            <FaRedo /> Làm mới
+          </button>
           <button className="btn-stats" onClick={handleOpenStats}>
             <FaChartBar /> Thống kê & Lịch sử
           </button>
@@ -611,16 +617,16 @@ const MedicalSupplyPage = () => {
 
       <div className="medical-supply-page">
 
-        {/* --- SEARCH TOOLBAR --- */}
-        <div className="search-toolbar">
-          <div className="search-group">
+        {/* --- FILTER TOOLBAR --- */}
+        <div className="filter-toolbar">
+          <div className="filter-group" style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', gap: '0.75rem', alignItems: 'center' }}>
             <select
               value={searchType}
               onChange={(e) => {
                 setSearchType(e.target.value);
                 if (e.target.value === 'ALL') fetchAllPrescriptions(0);
               }}
-              className="search-select"
+              className="filter-select"
             >
               <option value="ALL">🔍 Tất cả đơn</option>
               <option value="PATIENT">👤 Theo ID Bệnh nhân</option>
@@ -631,7 +637,7 @@ const MedicalSupplyPage = () => {
 
             {searchType === 'CATEGORY' ? (
               <select
-                className="search-select input-field"
+                className="filter-select"
                 value={selectedCategory}
                 onChange={(e) => setSelectedCategory(e.target.value)}
               >
@@ -645,7 +651,7 @@ const MedicalSupplyPage = () => {
             ) : searchType !== 'ALL' ? (
               <input
                 type="text"
-                className="search-input"
+                className="filter-input"
                 placeholder={
                   searchType === 'PATIENT' ? "Nhập ID bệnh nhân..." :
                   searchType === 'ENCOUNTER' ? "Nhập mã lượt khám..." :
@@ -657,53 +663,47 @@ const MedicalSupplyPage = () => {
               />
             ) : null}
 
+            {searchType === 'ALL' && (
+              <>
+                <select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)} className="filter-select">
+                  <option value="">📊 Trạng thái: Tất cả</option>
+                  <option value="ORDERED">📝 Đã đặt</option>
+                  <option value="APPROVED">✅ Đã duyệt</option>
+                  <option value="DISPENSED">📦 Đã cấp</option>
+                  <option value="PARTIALLY_DISPENSED">📦 Cấp một phần</option>
+                  <option value="REJECTED">❌ Từ chối</option>
+                  <option value="CANCELLED">🚫 Đã hủy</option>
+                </select>
+
+                <select value={filterType} onChange={(e) => setFilterType(e.target.value)} className="filter-select">
+                  <option value="">📋 Loại đơn: Tất cả</option>
+                  <option value="SURGERY">🔪 Phẫu thuật</option>
+                  <option value="PROCEDURE">🩺 Thủ thuật</option>
+                  <option value="TREATMENT">💊 Điều trị</option>
+                  <option value="EMERGENCY">🚨 Cấp cứu</option>
+                </select>
+
+                <select value={filterPriority} onChange={(e) => setFilterPriority(e.target.value)} className="filter-select">
+                  <option value="">⚡ Ưu tiên: Tất cả</option>
+                  <option value="NORMAL">🟢 Bình thường</option>
+                  <option value="URGENT">🟡 Khẩn</option>
+                  <option value="STAT">🔴 Cấp cứu</option>
+                </select>
+              </>
+            )}
+
             {searchType !== 'ALL' && (
               <button className="btn-search" onClick={handleSearch} disabled={loading}>
                 <FaSearch /> Tìm kiếm
               </button>
             )}
-            <button className="btn-refresh" onClick={handleRefresh} disabled={loading} title="Làm mới">
-              <FaRedo /> Làm mới
-            </button>
+            {searchType === 'ALL' && (
+              <button className="btn-search" onClick={() => fetchAllPrescriptions(0)} disabled={loading}>
+                <FaSearch /> Áp dụng lọc
+              </button>
+            )}
           </div>
         </div>
-
-        {/* --- FILTER BAR (cho chế độ ALL) --- */}
-        {searchType === 'ALL' && (
-          <div className="filter-bar">
-            <label>📊 Trạng thái:</label>
-            <select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)} className="search-select">
-              <option value="">Tất cả</option>
-              <option value="ORDERED">📝 Đã đặt</option>
-              <option value="APPROVED">✅ Đã duyệt</option>
-              <option value="DISPENSED">📦 Đã cấp</option>
-              <option value="PARTIALLY_DISPENSED">📦 Cấp một phần</option>
-              <option value="REJECTED">❌ Từ chối</option>
-              <option value="CANCELLED">🚫 Đã hủy</option>
-            </select>
-
-            <label>📋 Loại đơn:</label>
-            <select value={filterType} onChange={(e) => setFilterType(e.target.value)} className="search-select">
-              <option value="">Tất cả</option>
-              <option value="SURGERY">🔪 Phẫu thuật</option>
-              <option value="PROCEDURE">🩺 Thủ thuật</option>
-              <option value="TREATMENT">💊 Điều trị</option>
-              <option value="EMERGENCY">🚨 Cấp cứu</option>
-            </select>
-
-            <label>⚡ Ưu tiên:</label>
-            <select value={filterPriority} onChange={(e) => setFilterPriority(e.target.value)} className="search-select">
-              <option value="">Tất cả</option>
-              <option value="NORMAL">🟢 Bình thường</option>
-              <option value="URGENT">🟡 Khẩn</option>
-              <option value="STAT">🔴 Cấp cứu</option>
-            </select>
-
-            <button className="btn-search" onClick={() => fetchAllPrescriptions(0)} disabled={loading}>
-              <FaSearch /> Áp dụng lọc
-            </button>
-          </div>
-        )}
 
         {/* --- DATA TABLE --- */}
         <div className="table-container">

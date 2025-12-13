@@ -7,203 +7,200 @@
 }
 
 /* Phần tiêu đề trang (Header) */
-.page-header {
-  margin-bottom: 24px;
+.medical-supply-page-container .page-header {
+  margin-bottom: 1.5rem;
   background: white;
-  padding: 24px;
+  padding: 1.25rem 1.5rem;
   border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 20px;
-  border-left: 4px solid #1890ff;
+  gap: 1rem;
+  border-left: 4px solid #ef4444;
 }
 
-.header-content {
+.medical-supply-page-container .header-content {
   flex: 1;
 }
 
-.page-title {
-  font-size: 28px;
+.medical-supply-page-container .page-title {
+  font-size: 1.25rem;
   font-weight: 700;
-  color: #1a1a1a;
-  margin: 0 0 8px 0;
+  color: #1f2937;
+  margin: 0 0 0.5rem 0;
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 0.625rem;
 }
 
-.page-subtitle {
-  font-size: 14px;
-  color: #8c8c8c;
+/* Override ::before từ DrugInteractionPage */
+.medical-supply-page-container .page-title::before {
+  content: none !important;
+}
+
+.medical-supply-page-container .page-title svg {
+  width: 1.25rem;
+  height: 1.25rem;
+  color: #ef4444;
+  flex-shrink: 0;
+}
+
+.medical-supply-page-container .page-subtitle {
+  font-size: 0.875rem;
+  color: #6b7280;
   margin: 0;
   font-weight: 400;
+  line-height: 1.5;
 }
 
-.header-actions {
+.medical-supply-page-container .header-actions {
   display: flex;
-  gap: 12px;
+  gap: 0.625rem;
+  align-items: center;
 }
 
-.btn-stats,
-.btn-data {
-  padding: 12px 24px;
-  border-radius: 8px;
+.medical-supply-page-container .btn-refresh,
+.medical-supply-page-container .btn-stats,
+.medical-supply-page-container .btn-data {
+  padding: 0.625rem 1rem;
+  border-radius: 6px;
   border: none;
   cursor: pointer;
-  font-weight: 700;
-  font-size: 14px;
+  font-weight: 600;
+  font-size: 0.875rem;
   display: flex;
   align-items: center;
-  gap: 8px;
-  transition: all 0.3s ease;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  gap: 0.375rem;
+  transition: all 0.2s ease;
 }
 
-.btn-stats {
+.medical-supply-page-container .btn-refresh {
+  background: #3b82f6;
+  color: #ffffff;
+}
+
+.medical-supply-page-container .btn-refresh:hover {
+  background: #2563eb;
+}
+
+.medical-supply-page-container .btn-stats {
   background: #7c3aed;
   color: #ffffff;
 }
 
-.btn-stats:hover {
+.medical-supply-page-container .btn-stats:hover {
   background: #6d28d9;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 16px rgba(124, 58, 237, 0.4);
 }
 
-.btn-data {
+.medical-supply-page-container .btn-data {
   background: #ec4899;
   color: #ffffff;
 }
 
-.btn-data:hover {
+.medical-supply-page-container .btn-data:hover {
   background: #db2777;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 16px rgba(236, 72, 153, 0.4);
 }
 
-/* --- Toolbar Tìm kiếm --- */
-.search-toolbar {
+.medical-supply-page-container .btn-refresh svg,
+.medical-supply-page-container .btn-stats svg,
+.medical-supply-page-container .btn-data svg {
+  width: 0.875rem;
+  height: 0.875rem;
+}
+
+/* --- Filter Toolbar --- */
+.medical-supply-page-container .filter-toolbar {
   background: white;
-  padding: 20px;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-  margin-bottom: 24px;
+  padding: 1rem 1.25rem;
+  border-radius: 10px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  margin-bottom: 1.5rem;
 }
 
-.search-group {
-  display: flex;
-  gap: 12px;
+.medical-supply-page-container .filter-group {
+  display: flex !important;
+  flex-direction: row !important;
+  gap: 0.75rem;
   flex-wrap: wrap;
   align-items: center;
+  justify-content: flex-start;
 }
 
-.search-select {
-  padding: 10px 16px;
-  border: 2px solid #e8e8e8;
-  border-radius: 8px;
-  min-width: 200px;
-  font-size: 14px;
+.medical-supply-page-container .filter-select {
+  padding: 0.625rem 0.875rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  font-size: 0.875rem;
   font-weight: 500;
-  color: #262626;
+  color: #374151;
   background: white;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
+  min-width: 180px;
+  flex: 0 0 auto;
 }
 
-.search-select:hover {
-  border-color: #1890ff;
+.medical-supply-page-container .filter-select:hover {
+  border-color: #3b82f6;
 }
 
-.search-select:focus {
+.medical-supply-page-container .filter-select:focus {
   outline: none;
-  border-color: #1890ff;
-  box-shadow: 0 0 0 3px rgba(24, 144, 255, 0.1);
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
-.search-input {
-  flex: 1;
+.medical-supply-page-container .filter-input {
+  flex: 1 1 auto;
+  min-width: 250px;
   max-width: 400px;
-  padding: 10px 16px;
-  border: 2px solid #e8e8e8;
-  border-radius: 8px;
-  font-size: 14px;
-  transition: all 0.3s ease;
+  padding: 0.625rem 0.875rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  transition: all 0.2s ease;
 }
 
-.search-input:hover {
-  border-color: #1890ff;
+.medical-supply-page-container .filter-input:hover {
+  border-color: #3b82f6;
 }
 
-.search-input:focus {
+.medical-supply-page-container .filter-input:focus {
   outline: none;
-  border-color: #1890ff;
-  box-shadow: 0 0 0 3px rgba(24, 144, 255, 0.1);
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
-.btn-search {
-  background: #1890ff;
+.medical-supply-page-container .btn-search {
+  background: #10b981;
   color: #ffffff;
   border: none;
-  padding: 10px 24px;
-  border-radius: 8px;
+  padding: 0.625rem 1rem;
+  border-radius: 6px;
   cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-weight: 700;
-  font-size: 14px;
-  transition: all 0.3s ease;
-  box-shadow: 0 2px 8px rgba(24, 144, 255, 0.3);
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+  gap: 0.375rem;
+  font-weight: 600;
+  font-size: 0.875rem;
+  transition: all 0.2s ease;
+  flex: 0 0 auto;
 }
 
-.btn-search:hover {
-  background: #096dd9;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 16px rgba(24, 144, 255, 0.5);
+.medical-supply-page-container .btn-search:hover {
+  background: #059669;
 }
 
-.btn-search:active {
-  transform: translateY(0);
-  box-shadow: 0 2px 8px rgba(24, 144, 255, 0.3);
-}
-
-.btn-search:disabled {
-  background: #d9d9d9;
-  color: #8c8c8c;
+.medical-supply-page-container .btn-search:disabled {
+  background: #d1d5db;
+  color: #9ca3af;
   cursor: not-allowed;
-  transform: none;
-  box-shadow: none;
-  text-shadow: none;
 }
 
-.btn-refresh {
-  background: white;
-  border: 2px solid #e8e8e8;
-  color: #595959;
-  padding: 10px 20px;
-  border-radius: 8px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-weight: 500;
-  font-size: 14px;
-  transition: all 0.3s ease;
-}
-
-.btn-refresh:hover {
-  border-color: #52c41a;
-  color: #52c41a;
-  background: #f6ffed;
-}
-
-.btn-refresh:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
+.medical-supply-page-container .btn-search svg {
+  width: 0.875rem;
+  height: 0.875rem;
 }
 
 .btn-secondary {
@@ -551,52 +548,6 @@
 }
 
 /* --- New Styles for Stats & Data Modals --- */
-.filter-bar {
-  margin-bottom: 24px;
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  background: white;
-  padding: 20px;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-  flex-wrap: wrap;
-  border-left: 4px solid #52c41a;
-}
-
-.filter-bar label {
-  font-weight: 600;
-  color: #262626;
-  font-size: 14px;
-  white-space: nowrap;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-
-.filter-bar .search-select {
-  min-width: 160px;
-  flex: 1;
-}
-
-.filter-bar input {
-  padding: 10px 16px;
-  border: 2px solid #e8e8e8;
-  border-radius: 8px;
-  font-size: 14px;
-  transition: all 0.3s ease;
-  flex: 1;
-}
-
-.filter-bar input:focus {
-  outline: none;
-  border-color: #1890ff;
-  box-shadow: 0 0 0 3px rgba(24, 144, 255, 0.1);
-}
-
-.filter-bar .btn-search {
-  margin-left: auto;
-}
 
 .tabs {
   display: flex;
@@ -808,51 +759,53 @@
     padding: 16px;
   }
 
-  .page-header {
-    padding: 20px;
-    gap: 16px;
-  }
-
-  .page-title {
-    font-size: 22px;
-  }
-
-  .page-subtitle {
-    font-size: 13px;
-  }
-
-  .header-actions {
+  .medical-supply-page-container .page-header {
     flex-direction: column;
-    gap: 8px;
+    align-items: flex-start;
+    padding: 1rem 1.25rem;
+    gap: 1rem;
   }
 
-  .btn-stats,
-  .btn-data {
+  .medical-supply-page-container .page-title {
+    font-size: 1.125rem;
+  }
+
+  .medical-supply-page-container .page-subtitle {
+    font-size: 0.8125rem;
+  }
+
+  .medical-supply-page-container .header-actions {
+    width: 100%;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .medical-supply-page-container .btn-refresh,
+  .medical-supply-page-container .btn-stats,
+  .medical-supply-page-container .btn-data {
     width: 100%;
     justify-content: center;
   }
 
-  .search-toolbar {
-    padding: 16px;
+  .medical-supply-page-container .filter-toolbar {
+    padding: 1rem;
   }
 
-  .search-group {
-    flex-direction: column;
-    gap: 10px;
+  .medical-supply-page-container .filter-group {
+    gap: 0.625rem;
   }
 
-  .search-input {
+  .medical-supply-page-container .filter-select {
+    min-width: 140px;
+    flex: 1 1 auto;
+  }
+
+  .medical-supply-page-container .filter-input {
+    width: 100%;
     max-width: 100%;
   }
 
-  .search-select {
-    width: 100%;
-    min-width: 100%;
-  }
-
-  .btn-search,
-  .btn-refresh,
-  .btn-secondary {
+  .medical-supply-page-container .btn-search {
     width: 100%;
     justify-content: center;
   }
@@ -915,15 +868,7 @@
     min-width: 120px;
   }
 
-  .filter-bar {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 10px;
-  }
 
-  .filter-bar input {
-    width: 100%;
-  }
 
   .filter-chip {
     justify-content: center;

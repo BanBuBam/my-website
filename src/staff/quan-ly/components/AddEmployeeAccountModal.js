@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { FiX } from 'react-icons/fi';
+import { FiX, FiUserPlus, FiUsers } from 'react-icons/fi';
 import './AddEmployeeAccountModal.css';
-import { hrEmployeeAPI } from '../../../services/staff/hrAPI';
+import { adminEmployeeAPI } from '../../../services/staff/adminAPI';
 
 const AddEmployeeAccountModal = ({ isOpen, onClose, onSubmit }) => {
   const [employees, setEmployees] = useState([]);
@@ -28,7 +28,7 @@ const AddEmployeeAccountModal = ({ isOpen, onClose, onSubmit }) => {
   const fetchEmployees = async () => {
     try {
       setLoadingEmployees(true);
-      const response = await hrEmployeeAPI.getEmployees();
+      const response = await adminEmployeeAPI.getEmployees();
       console.log('📋 Employees response:', response);
       if (response && response.data) {
         const employeeList = response.data.content || response.data;
@@ -79,12 +79,11 @@ const AddEmployeeAccountModal = ({ isOpen, onClose, onSubmit }) => {
     if (!formData.employeeId) {
       newErrors.employeeId = 'Vui lòng chọn nhân viên';
     } else {
-      // Kiểm tra employee có tồn tại trong danh sách không
       const selectedEmployee = employees.find(emp => emp.id === parseInt(formData.employeeId));
       if (!selectedEmployee) {
         newErrors.employeeId = 'Nhân viên không tồn tại';
       } else if (selectedEmployee.hasAccount) {
-        newErrors.employeeId = 'Nhân viên này đã có tài khoản';
+        newErrors.employeeId = 'Tất cả nhân viên đã có tài khoản';
       }
     }
 
