@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './AccountManagementPage.css';
-import { hrAccountAPI } from '../../../../services/staff/hrAPI';
+import { adminAccountAPI } from '../../../../services/staff/adminAPI';
 import { FiPlus, FiLock, FiKey, FiSearch, FiEye, FiEdit2, FiTrash2, FiFilter, FiUserCheck, FiUserX, FiX, FiCheckCircle, FiUsers } from 'react-icons/fi';
 import AddEmployeeAccountModal from '../../components/AddEmployeeAccountModal';
 import EditEmployeeAccountModal from '../../components/EditEmployeeAccountModal';
@@ -35,7 +35,7 @@ const AccountManagementPage = () => {
 
   const fetchAllAccountsForStats = async () => {
     try {
-      const response = await hrAccountAPI.getAccounts();
+      const response = await adminAccountAPI.getAccounts();
       console.log('📊 All accounts for stats:', response);
 
       if (response && response.data) {
@@ -54,7 +54,7 @@ const AccountManagementPage = () => {
       let response;
       if (usePagination) {
         // Sử dụng API pagination
-        response = await hrAccountAPI.getAccountsPage(currentPage, pageSize);
+        response = await adminAccountAPI.getAccountsPage(currentPage, pageSize);
         console.log('📊 Paginated accounts response:', response);
 
         if (response && response.data) {
@@ -66,7 +66,7 @@ const AccountManagementPage = () => {
         }
       } else {
         // Lấy tất cả
-        response = await hrAccountAPI.getAccounts();
+        response = await adminAccountAPI.getAccounts();
         console.log('📊 All accounts response:', response);
 
         if (response && response.data) {
@@ -88,7 +88,7 @@ const AccountManagementPage = () => {
   const handleActivate = async (account) => {
     if (window.confirm(`Bạn có chắc chắn muốn kích hoạt tài khoản của ${account.fullName}?`)) {
       try {
-        await hrAccountAPI.activateAccount(account.id);
+        await adminAccountAPI.activateAccount(account.id);
         alert('Kích hoạt tài khoản thành công!');
         await fetchAccounts();
         await fetchAllAccountsForStats();
@@ -101,7 +101,7 @@ const AccountManagementPage = () => {
   const handleDeactivate = async (account) => {
     if (window.confirm(`Bạn có chắc chắn muốn vô hiệu hóa tài khoản của ${account.fullName}?`)) {
       try {
-        await hrAccountAPI.deactivateAccount(account.id);
+        await adminAccountAPI.deactivateAccount(account.id);
         alert('Vô hiệu hóa tài khoản thành công!');
         await fetchAccounts();
         await fetchAllAccountsForStats();
@@ -123,7 +123,7 @@ const AccountManagementPage = () => {
       }
 
       try {
-        await hrAccountAPI.resetPassword(account.id, newPassword);
+        await adminAccountAPI.resetPassword(account.id, newPassword);
         alert('Reset mật khẩu thành công!');
       } catch (err) {
         alert('Lỗi khi reset mật khẩu: ' + err.message);
@@ -134,7 +134,7 @@ const AccountManagementPage = () => {
   const handleDelete = async (account) => {
     if (window.confirm(`Bạn có chắc chắn muốn xóa tài khoản của ${account.fullName}? Hành động này không thể hoàn tác!`)) {
       try {
-        await hrAccountAPI.deleteAccount(account.id);
+        await adminAccountAPI.deleteAccount(account.id);
         alert('Xóa tài khoản thành công!');
         await fetchAccounts();
         await fetchAllAccountsForStats();
@@ -146,7 +146,7 @@ const AccountManagementPage = () => {
 
   const handleViewDetails = async (account) => {
     try {
-      const response = await hrAccountAPI.getAccountById(account.id);
+      const response = await adminAccountAPI.getAccountById(account.id);
       if (response && response.data) {
         setSelectedAccount(response.data);
         setShowViewModal(true);
@@ -172,7 +172,7 @@ const AccountManagementPage = () => {
 
       // Tạo tài khoản cho nhân viên
       console.log('🔄 Calling createAccountForExistingEmployee API...');
-      const response = await hrAccountAPI.createAccountForExistingEmployee(accountData);
+      const response = await adminAccountAPI.createAccountForExistingEmployee(accountData);
       console.log('✅ Create account response:', response);
 
       if (response && response.status === 'OK') {
@@ -219,7 +219,7 @@ const AccountManagementPage = () => {
       // Sử dụng employeeId từ account object
       const employeeId = account.employeeId || accountId;
 
-      const response = await hrAccountAPI.updateAccount(employeeId, accountData);
+      const response = await adminAccountAPI.updateAccount(employeeId, accountData);
       console.log('✅ Update account response:', response);
 
       alert('Cập nhật tài khoản thành công!');

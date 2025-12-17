@@ -408,25 +408,31 @@ export const hrAccountAPI = {
     }
   },
 
-  // 2.4.1 POST - Tạo tài khoản cho nhân viên đã có
+  // 2.4.1 POST - Tạo tài khoản cho nhân viên
+  // API: POST /api/v1/employee-accounts
+  // Permission: user.manage
+  // Request body: { employeeId, username, password, isActive }
   createAccountForExistingEmployee: async (accountData) => {
     console.log('🔵 Creating account for existing employee');
     console.log('📦 Request data:', JSON.stringify(accountData, null, 2));
-    console.log('📦 Data structure:', {
-      employeeId: accountData.employeeId,
-      employeeIdType: typeof accountData.employeeId,
-      username: accountData.username,
-      password: accountData.password ? '***' : undefined,
-      roles: accountData.roles,
-      rolesLength: accountData.roles?.length
-    });
+
+    // Validate required fields
+    if (!accountData.employeeId || !accountData.username || !accountData.password) {
+      throw new Error('Missing required fields: employeeId, username, password');
+    }
+
+    // Prepare request body theo đúng API specification
+    const requestBody = {
+      employeeId: parseInt(accountData.employeeId),
+      username: accountData.username.trim(),
+      password: accountData.password,
+      isActive: accountData.isActive !== undefined ? accountData.isActive : true,
+    };
 
     const endpoint = 'api/v1/employee-accounts';
-    const fullUrl = `${BASE_URL}${endpoint}`;
-
-    console.log('🌐 Full URL:', fullUrl);
+    console.log('🌐 Endpoint:', endpoint);
     console.log('🔑 Access Token:', getAccessToken() ? 'Present' : 'Missing');
-    console.log('📤 Request body:', JSON.stringify(accountData));
+    console.log('📤 Final request body:', JSON.stringify(requestBody, null, 2));
 
     try {
       const response = await apiCall(endpoint, {
@@ -435,36 +441,12 @@ export const hrAccountAPI = {
           'Authorization': `Bearer ${getAccessToken()}`,
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(accountData),
+        body: JSON.stringify(requestBody),
       });
       console.log('✅ createAccountForExistingEmployee response:', response);
       return response;
     } catch (error) {
       console.error('❌ createAccountForExistingEmployee error:', error);
-      console.error('❌ Error details:', {
-        message: error.message,
-        stack: error.stack
-      });
-      throw error;
-    }
-  },
-
-  // 2.4.2 POST - Tạo nhân viên mới VÀ tài khoản
-  createEmployeeWithAccount: async (employeeData) => {
-    console.log('Creating new employee with account:', employeeData);
-    try {
-      const response = await apiCall('api/v1/employees/with-account', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${getAccessToken()}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(employeeData),
-      });
-      console.log('createEmployeeWithAccount response:', response);
-      return response;
-    } catch (error) {
-      console.error('createEmployeeWithAccount error:', error);
       throw error;
     }
   },

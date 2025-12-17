@@ -223,6 +223,12 @@
     font-weight: 500;
 }
 
+.role-actions {
+    display: flex;
+    gap: 0.75rem;
+}
+
+.btn-view-detail,
 .btn-view-permissions {
     display: flex;
     align-items: center;
@@ -238,6 +244,17 @@
     transition: all 0.2s;
 }
 
+.btn-view-detail {
+    background: #3b82f6;
+    color: white;
+    border: 1px solid #3b82f6;
+}
+
+.btn-view-detail:hover {
+    background: #2563eb;
+    border-color: #2563eb;
+}
+
 .btn-view-permissions:hover:not(:disabled) {
     background: #f9fafb;
     border-color: #3b82f6;
@@ -249,6 +266,44 @@
     cursor: not-allowed;
 }
 
+.btn-assign-permissions {
+    background: #8b5cf6;
+    color: white;
+    border: 1px solid #8b5cf6;
+}
+
+.btn-assign-permissions:hover {
+    background: #7c3aed;
+    border-color: #7c3aed;
+}
+
+.btn-edit {
+    background: #10b981;
+    color: white;
+    border: 1px solid #10b981;
+}
+
+.btn-edit:hover {
+    background: #059669;
+    border-color: #059669;
+}
+
+.btn-delete {
+    background: #ef4444;
+    color: white;
+    border: 1px solid #ef4444;
+}
+
+.btn-delete:hover:not(:disabled) {
+    background: #dc2626;
+    border-color: #dc2626;
+}
+
+.btn-delete:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
 /* Permissions Section */
 .permissions-section {
     padding: 1.5rem;
@@ -256,11 +311,38 @@
     border-top: 1px solid #e5e7eb;
 }
 
+.permissions-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
 .permissions-section h4 {
     font-size: 1rem;
     font-weight: 600;
     color: #1f2937;
-    margin: 0 0 1rem 0;
+    margin: 0;
+}
+
+.btn-remove-all-permissions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: #fef2f2;
+    color: #dc2626;
+    border: 1px solid #fecaca;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-remove-all-permissions:hover {
+    background: #fee2e2;
+    border-color: #fca5a5;
 }
 
 .no-permissions {
@@ -319,6 +401,18 @@
     background: #f9fafb;
     border-radius: 6px;
     font-size: 0.75rem;
+    transition: all 0.2s;
+}
+
+.permission-item:hover {
+    background: #f3f4f6;
+}
+
+.permission-info {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex: 1;
 }
 
 .permission-name {
@@ -333,6 +427,41 @@
     border-radius: 4px;
     font-weight: 500;
     text-transform: uppercase;
+}
+
+.btn-remove-permission {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    padding: 0;
+    background: transparent;
+    color: #9ca3af;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+    flex-shrink: 0;
+}
+
+.btn-remove-permission:hover:not(:disabled) {
+    background: #fee2e2;
+    color: #dc2626;
+}
+
+.btn-remove-permission:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+.spinner-tiny {
+    width: 14px;
+    height: 14px;
+    border: 2px solid #e5e7eb;
+    border-top-color: #dc2626;
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
 }
 
 /* Empty State */
@@ -393,7 +522,16 @@
         align-items: flex-start;
     }
 
-    .btn-view-permissions {
+    .role-actions {
+        width: 100%;
+        flex-direction: column;
+    }
+
+    .btn-view-detail,
+    .btn-view-permissions,
+    .btn-assign-permissions,
+    .btn-edit,
+    .btn-delete {
         width: 100%;
         justify-content: center;
     }
