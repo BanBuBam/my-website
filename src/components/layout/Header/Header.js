@@ -95,11 +95,13 @@ const Header = () => {
         </div>
         <div className="container header-quick-links">
           <Link to="/dat-lich-kham">Đặt lịch khám</Link>
-          <Link to="/tim-bac-si">Tìm bác sĩ</Link>
-          <Link to="/goi-kham">Gói khám</Link>
-          <Link to="/tra-cuu-ket-qua">Tra cứu kết quả</Link>
-          <Link to="/hoi-dap">Hỏi đáp</Link>
-          <Link to="/tai-ung-dung">Tải ứng dụng</Link>
+          <Link to="/medical-info">Thông tin y tế</Link>
+          <Link to="/lich-su-kham">Lịch sử khám</Link>
+          {/*<Link to="/tim-bac-si">Tìm bác sĩ</Link>*/}
+          {/*<Link to="/goi-kham">Gói khám</Link>*/}
+          {/*<Link to="/tra-cuu-ket-qua">Tra cứu kết quả</Link>*/}
+          {/*<Link to="/hoi-dap">Hỏi đáp</Link>*/}
+          {/*<Link to="/tai-ung-dung">Tải ứng dụng</Link>*/}
           <button
             className="staff-login-link"
             // onClick={() => setShowStaffLoginModal(true)}
@@ -129,11 +131,11 @@ const Header = () => {
                 Chuyên khoa <img src={arrowDown2} alt="arrow down" />
               </Link>
             </li>
-            <li>
-              <Link to="/chuyen-gia">
-                Chuyên gia - bác sĩ <img src={arrowDown2} alt="arrow down" />
-              </Link>
-            </li>
+            {/*<li>*/}
+            {/*  <Link to="/chuyen-gia">*/}
+            {/*    Chuyên gia - bác sĩ <img src={arrowDown2} alt="arrow down" />*/}
+            {/*  </Link>*/}
+            {/*</li>*/}
             <li>
               <Link to="/dich-vu">
                 Dịch vụ y khoa <img src={arrowDown2} alt="arrow down" />
@@ -149,7 +151,7 @@ const Header = () => {
                 Tin tức và sự kiện <img src={arrowDown2} alt="arrow down" />
               </Link>
             </li>
-            <li><Link to="/tuyen-dung">Tuyển dụng</Link></li>
+            {/*<li><Link to="/tuyen-dung">Tuyển dụng</Link></li>*/}
             <li><Link to="/lien-he">Liên hệ</Link></li>
           </ul>
         </div>

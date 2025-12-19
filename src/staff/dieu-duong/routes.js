@@ -22,6 +22,10 @@ import EmergencyListPage from './pages/emergency/EmergencyListPage';
 import EmergencyDetailPage from './pages/emergency/EmergencyDetailPage';
 import EmergencyEncounterDetailPage from './pages/emergency/EncounterDetailPage';
 import CreateEmergencyPage from './pages/emergency/CreateEmergencyPage';
+import MedicationOrdersPage from './pages/medication-orders/MedicationOrdersPage';
+import MedicationOrderDetailPage from './pages/medication-orders/MedicationOrderDetailPage';
+import MedicationOrderGroupsPage from './pages/medication-order-groups/MedicationOrderGroupsPage';
+import MedicationOrderGroupDetailPage from './pages/medication-order-groups/MedicationOrderGroupDetailPage';
 
 const NurseRoutes = () => {
     return (
@@ -49,6 +53,10 @@ const NurseRoutes = () => {
                 <Route path="cap-cuu/tao-moi" element={<CreateEmergencyPage />} />
                 <Route path="cap-cuu/emergency/:emergencyEncounterId" element={<EmergencyDetailPage />} />
                 <Route path="cap-cuu/encounter/:encounterId" element={<EmergencyEncounterDetailPage />} />
+                <Route path="quan-ly-y-lenh" element={<MedicationOrdersPage />} />
+                <Route path="quan-ly-y-lenh/:orderId" element={<MedicationOrderDetailPage />} />
+                <Route path="quan-ly-y-lenh-theo-nhom" element={<MedicationOrderGroupsPage />} />
+                <Route path="quan-ly-y-lenh-theo-nhom/:groupId" element={<MedicationOrderGroupDetailPage />} />
             </Route>
         </Routes>
     );

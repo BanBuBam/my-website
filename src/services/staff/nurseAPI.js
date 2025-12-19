@@ -261,6 +261,21 @@ export const nurseMedicationAPI = {
       body: JSON.stringify({ reason }),
     });
   },
+
+  // Cấp phát medication order (administer individual order)
+  administerMedicationOrder: async (orderId, patientResponse, adverseReaction, notes) => {
+    const params = new URLSearchParams();
+    if (patientResponse) params.append('patientResponse', patientResponse);
+    if (adverseReaction) params.append('adverseReaction', adverseReaction);
+    if (notes) params.append('notes', notes);
+
+    return apiCall(`api/v1/medication-orders/${orderId}/administer?${params.toString()}`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
 };
 
 // API Quản lý yêu cầu nhập viện (Admission Requests)
@@ -488,6 +503,115 @@ export const nurseInpatientStayAPI = {
   getTodayMedications: async (inpatientStayId) => {
     return apiCall(`api/v1/inpatient/medications/stays/${inpatientStayId}/today`, {
       method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Lấy danh sách nhóm y lệnh theo lượt nhập viện nội trú
+  getMedicationOrderGroups: async (inpatientStayId) => {
+    return apiCall(`api/v1/medication-order-groups/inpatient-stays/${inpatientStayId}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Lấy danh sách y lệnh lẻ theo lượt nhập viện nội trú
+  getIndividualMedicationOrders: async (inpatientStayId) => {
+    return apiCall(`api/v1/medication-orders/inpatient-stay/${inpatientStayId}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+};
+
+// API Quản lý Y lệnh cho Nurse
+export const nurseMedicationOrderAPI = {
+  // Lấy danh sách y lệnh chờ cấp phát
+  getReadyForAdministration: async () => {
+    return apiCall('api/v1/medication-orders/ready-for-administration', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Lấy danh sách y lệnh theo status với phân trang
+  getOrdersByStatus: async (status, page = 0, size = 20) => {
+    const params = new URLSearchParams({
+      page: page.toString(),
+      size: size.toString(),
+    });
+
+    return apiCall(`api/v1/medication-orders/status/${status}?${params.toString()}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Lấy chi tiết y lệnh
+  getOrderDetail: async (orderId) => {
+    return apiCall(`api/v1/medication-orders/${orderId}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Cấp phát y lệnh (administer)
+  administerOrder: async (orderId, patientResponse, adverseReaction, notes) => {
+    const params = new URLSearchParams();
+    if (patientResponse) params.append('patientResponse', patientResponse);
+    if (adverseReaction) params.append('adverseReaction', adverseReaction);
+    if (notes) params.append('notes', notes);
+
+    return apiCall(`api/v1/medication-orders/${orderId}/administer?${params.toString()}`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+};
+
+// API Quản lý Y lệnh theo Nhóm cho Nurse
+export const nurseMedicationOrderGroupAPI = {
+  // Lấy danh sách nhóm y lệnh chờ cấp phát
+  getReadyForAdministrationGroups: async () => {
+    return apiCall('api/v1/medication-order-groups/ready-for-administration', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Lấy chi tiết nhóm y lệnh
+  getGroupDetail: async (groupId) => {
+    return apiCall(`api/v1/medication-order-groups/${groupId}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Nhận nhóm y lệnh (receive)
+  receiveGroup: async (groupId, notes = '') => {
+    const params = new URLSearchParams();
+    if (notes) params.append('notes', notes);
+
+    return apiCall(`api/v1/medication-order-groups/${groupId}/receive?${params.toString()}`, {
+      method: 'POST',
       headers: {
         'Authorization': `Bearer ${getAccessToken()}`,
       },
@@ -842,5 +966,7 @@ export default {
   nurseEncounterListAPI,
   nursePatientSearchAPI,
   nurseEmployeeAPI,
+  nurseMedicationOrderAPI,
+  nurseMedicationOrderGroupAPI,
 };
 

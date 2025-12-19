@@ -1229,10 +1229,10 @@ const PaymentModal = ({
                                     {/*<option value="ADVANCE">Tạm ứng</option>*/}
                                     <option value="CASH">Tiền mặt</option>
                                     <option value="BANK_TRANSFER">Chuyển khoản</option>
-                                    <option value="CARD">Thẻ ghi nợ</option>
-                                    <option value="MOMO">Ví điện tử MOMO</option>
-                                    <option value="VNPAY">Ví điện tử VNPAY</option>
-                                    <option value="ZALOPAY">Ví điện tử ZALOPAY</option>
+                                    {/*<option value="CARD">Thẻ ghi nợ</option>*/}
+                                    {/*<option value="MOMO">Ví điện tử MOMO</option>*/}
+                                    {/*<option value="VNPAY">Ví điện tử VNPAY</option>*/}
+                                    {/*<option value="ZALOPAY">Ví điện tử ZALOPAY</option>*/}
                                 </select>
                             </div>
                         </div>
