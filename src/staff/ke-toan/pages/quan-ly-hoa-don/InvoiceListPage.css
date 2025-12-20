@@ -554,3 +554,173 @@
     }
 }
 
+/* Tab Navigation */
+.invoice-list-page .tab-navigation {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 24px;
+    background: #f3f4f6;
+    padding: 4px;
+    border-radius: 12px;
+    width: fit-content;
+}
+
+.invoice-list-page .tab-button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 20px;
+    background: transparent;
+    color: #6b7280;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+}
+
+.invoice-list-page .tab-button:hover {
+    color: #374151;
+    background: rgba(255, 255, 255, 0.5);
+}
+
+.invoice-list-page .tab-button.active {
+    background: white;
+    color: #3b82f6;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.invoice-list-page .tab-button svg {
+    font-size: 16px;
+}
+
+/* Encounter Search Tab */
+.invoice-list-page .encounter-search-tab {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    padding: 24px;
+}
+
+.invoice-list-page .encounter-search-section h3 {
+    margin: 0 0 20px 0;
+    font-size: 18px;
+    color: #1a1a1a;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.invoice-list-page .encounter-search-section h3 svg {
+    color: #3b82f6;
+    font-size: 20px;
+}
+
+.invoice-list-page .encounter-search-form {
+    margin-bottom: 24px;
+}
+
+.invoice-list-page .search-input-group {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    max-width: 600px;
+}
+
+.invoice-list-page .search-input-group input {
+    flex: 1;
+    padding: 12px 16px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 14px;
+    transition: all 0.2s;
+}
+
+.invoice-list-page .search-input-group input:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.invoice-list-page .btn-search-encounter {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 20px;
+    background: #3b82f6;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+}
+
+.invoice-list-page .btn-search-encounter:hover:not(:disabled) {
+    background: #2563eb;
+}
+
+.invoice-list-page .btn-search-encounter:disabled {
+    background: #9ca3af;
+    cursor: not-allowed;
+}
+
+.invoice-list-page .btn-search-encounter .spinner {
+    animation: spin 1s linear infinite;
+}
+
+.invoice-list-page .btn-reset-encounter {
+    padding: 12px 20px;
+    background: white;
+    color: #6b7280;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+}
+
+.invoice-list-page .btn-reset-encounter:hover {
+    background: #f9fafb;
+    border-color: #9ca3af;
+}
+
+.invoice-list-page .encounter-result {
+    margin-top: 24px;
+}
+
+.invoice-list-page .encounter-result h4 {
+    margin: 0 0 16px 0;
+    font-size: 16px;
+    color: #1a1a1a;
+    font-weight: 600;
+}
+
+/* Responsive cho tab */
+@media (max-width: 768px) {
+    .invoice-list-page .tab-navigation {
+        width: 100%;
+    }
+    
+    .invoice-list-page .tab-button {
+        flex: 1;
+        justify-content: center;
+    }
+    
+    .invoice-list-page .search-input-group {
+        flex-direction: column;
+        max-width: 100%;
+    }
+    
+    .invoice-list-page .search-input-group input,
+    .invoice-list-page .btn-search-encounter,
+    .invoice-list-page .btn-reset-encounter {
+        width: 100%;
+    }
+}

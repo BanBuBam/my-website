@@ -156,6 +156,39 @@ const LabTestOrderPage = () => {
         }
     };
 
+    const handleRejectSpecimen = async (labTestOrderId) => {
+        const rejectionReason = prompt('Vui lòng nhập lý do từ chối mẫu:');
+        
+        if (!rejectionReason || !rejectionReason.trim()) {
+            alert('Vui lòng nhập lý do từ chối');
+            return;
+        }
+
+        if (!window.confirm('Bạn có chắc chắn muốn từ chối mẫu này?')) {
+            return;
+        }
+
+        setProcessingOrderId(labTestOrderId);
+        try {
+            const response = await labTechnicianOrderAPI.rejectSpecimen(labTestOrderId, rejectionReason.trim());
+
+            if (response) {
+                alert('Từ chối mẫu thành công!');
+                // Refresh based on current tab
+                if (activeTab === 'pending') {
+                    fetchPendingTests();
+                } else if (activeTab === 'search') {
+                    handleSearch({ preventDefault: () => {} });
+                }
+            }
+        } catch (err) {
+            console.error('Error rejecting specimen:', err);
+            alert(err.message || 'Không thể từ chối mẫu');
+        } finally {
+            setProcessingOrderId(null);
+        }
+    };
+
     const formatDateTime = (dateTimeString) => {
         if (!dateTimeString) return '-';
         const date = new Date(dateTimeString);
@@ -282,8 +315,32 @@ const LabTestOrderPage = () => {
                                                     </div>
                                                 </div>
                                                 <div className="test-footer">
-                                                    <button className="btn-action btn-enter-result">
+                                                    {/* <button className="btn-action btn-enter-result">
                                                         <FiEdit /> Nhập kết quả
+                                                    </button> */}
+                                                    <button
+                                                        className="btn-action btn-collect"
+                                                        onClick={() => handleCollectSpecimen(test.labTestOrderId)}
+                                                        disabled={processingOrderId === test.labTestOrderId}
+                                                    >
+                                                        <FiPackage />
+                                                        {processingOrderId === test.labTestOrderId ? 'Đang xử lý...' : 'Lấy mẫu'}
+                                                    </button>
+                                                    <button
+                                                        className="btn-action btn-receive"
+                                                        onClick={() => handleReceiveSpecimen(test.labTestOrderId)}
+                                                        disabled={processingOrderId === test.labTestOrderId}
+                                                    >
+                                                        <FiInbox />
+                                                        {processingOrderId === test.labTestOrderId ? 'Đang xử lý...' : 'Nhận mẫu'}
+                                                    </button>
+                                                    <button
+                                                        className="btn-action btn-reject"
+                                                        onClick={() => handleRejectSpecimen(test.labTestOrderId)}
+                                                        disabled={processingOrderId === test.labTestOrderId}
+                                                    >
+                                                        <FiAlertCircle />
+                                                        {processingOrderId === test.labTestOrderId ? 'Đang xử lý...' : 'Từ chối mẫu'}
                                                     </button>
                                                 </div>
                                             </div>
@@ -458,6 +515,14 @@ const LabTestOrderPage = () => {
                                     >
                                         <FiInbox />
                                         {processingOrderId === order.labTestOrderId ? 'Đang xử lý...' : 'Nhận mẫu'}
+                                    </button>
+                                    <button
+                                        className="btn-action btn-reject"
+                                        onClick={() => handleRejectSpecimen(order.labTestOrderId)}
+                                        disabled={processingOrderId === order.labTestOrderId}
+                                    >
+                                        <FiAlertCircle />
+                                        {processingOrderId === order.labTestOrderId ? 'Đang xử lý...' : 'Từ chối mẫu'}
                                     </button>
                                 </div>
                             </div>

@@ -61,13 +61,13 @@ const FinanceLayout = () => {
                                     <span>Quản lý hóa đơn</span>
                                 </NavLink>
                             </li>
-                            <li>
+                            {/* <li>
                                 <NavLink to="/staff/tai-chinh/ds-hoa-don">
                                     <FiList />
                                     <span>Danh sách hóa đơn</span>
                                 </NavLink>
-                            </li>
-                            <li>
+                            </li> */}
+                            {/* <li>
                                 <NavLink to="/staff/tai-chinh/ds-luot-kham">
                                     <FiFileText />
                                     <span>Lượt khám chưa tạo hóa đơn</span>
@@ -84,7 +84,7 @@ const FinanceLayout = () => {
                                     <FiFileText />
                                     <span>Hóa đơn & Biên lai</span>
                                 </NavLink>
-                            </li>
+                            </li> */}
                         </ul>
                     </div>
 

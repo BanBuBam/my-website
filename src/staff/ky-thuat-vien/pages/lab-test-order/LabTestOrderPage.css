@@ -764,3 +764,44 @@
     }
 }
 
+/* Reject Button */
+.lab-test-order-page .btn-reject {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    color: white;
+}
+
+.lab-test-order-page .btn-reject:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+/* Update test-footer to handle 4 buttons - 2 buttons per row */
+.lab-test-order-page .test-footer {
+    padding: 16px 20px;
+    background: #f9fafb;
+    border-top: 1px solid #e5e7eb;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+}
+
+/* Update order-footer to handle 3 buttons */
+.lab-test-order-page .order-footer {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    padding: 16px 20px;
+    background: #f9fafb;
+    border-top: 1px solid #e5e7eb;
+}
+
+/* Responsive updates for mobile */
+@media (max-width: 768px) {
+    .lab-test-order-page .test-footer {
+        grid-template-columns: 1fr;
+    }
+    
+    .lab-test-order-page .order-footer {
+        grid-template-columns: 1fr;
+    }
+}

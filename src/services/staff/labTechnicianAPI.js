@@ -82,6 +82,17 @@ export const labTechnicianOrderAPI = {
       },
     });
   },
+
+  // Reject specimen cho lab test order
+  rejectSpecimen: async (labTestOrderId, rejectionReason) => {
+    return apiCall(`api/v1/lab-orders/${labTestOrderId}/reject-specimen`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+      body: JSON.stringify({ rejectionReason }),
+    });
+  },
 };
 
 // API Lab Test Results

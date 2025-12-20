@@ -1,15 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { financeInvoiceAPI } from '../../../../services/staff/financeAPI';
-import { FiSearch, FiAlertCircle, FiFileText, FiCalendar, FiFilter, FiRefreshCw } from 'react-icons/fi';
+import { FiSearch, FiAlertCircle, FiFileText, FiCalendar, FiFilter, FiRefreshCw, FiList, FiHash } from 'react-icons/fi';
 import './InvoiceListPage.css';
 
 const InvoiceListPage = () => {
+    const [activeTab, setActiveTab] = useState('list'); // 'list' hoặc 'search'
     const [invoices, setInvoices] = useState([]);
     const [filteredInvoices, setFilteredInvoices] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [searchTerm, setSearchTerm] = useState('');
+    
+    // State cho tab tìm theo encounter ID
+    const [encounterId, setEncounterId] = useState('');
+    const [encounterInvoice, setEncounterInvoice] = useState(null);
+    const [encounterLoading, setEncounterLoading] = useState(false);
+    const [encounterError, setEncounterError] = useState(null);
     const [showFilters, setShowFilters] = useState(false);
     
     // Filters
@@ -118,6 +125,37 @@ const InvoiceListPage = () => {
         setCurrentPage(0);
     };
     
+    // Tìm hóa đơn theo encounter ID
+    const handleSearchByEncounterId = async () => {
+        if (!encounterId.trim()) {
+            setEncounterError('Vui lòng nhập Encounter ID');
+            return;
+        }
+        
+        setEncounterLoading(true);
+        setEncounterError(null);
+        setEncounterInvoice(null);
+        
+        try {
+            const response = await financeInvoiceAPI.getInvoiceByEncounterId(encounterId.trim());
+            if (response && response.data) {
+                setEncounterInvoice(response.data);
+            } else {
+                setEncounterError('Không tìm thấy hóa đơn cho Encounter ID này');
+            }
+        } catch (err) {
+            setEncounterError(err.message || 'Không thể tìm hóa đơn theo Encounter ID');
+        } finally {
+            setEncounterLoading(false);
+        }
+    };
+    
+    const handleResetEncounterSearch = () => {
+        setEncounterId('');
+        setEncounterInvoice(null);
+        setEncounterError(null);
+    };
+    
     const formatDate = (dateString) => {
         if (!dateString) return '-';
         const date = new Date(dateString);
@@ -161,161 +199,236 @@ const InvoiceListPage = () => {
                 </div>
             </div>
             
-            {/* Filter Section */}
-            <div className="filter-section">
-                <div className="search-box">
-                    <FiSearch />
-                    <input
-                        type="text"
-                        placeholder="Tìm theo số hóa đơn, tên bệnh nhân, ID bệnh nhân..."
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                    />
-                </div>
-                <div className="filter-actions">
-                    <button className="btn-toggle-filter" onClick={() => setShowFilters(!showFilters)}>
-                        <FiFilter /> {showFilters ? 'Ẩn bộ lọc' : 'Hiện bộ lọc'}
-                    </button>
-                    <button className="btn-refresh" onClick={fetchInvoices}>
-                        <FiRefreshCw /> Làm mới
-                    </button>
-                </div>
+            {/* Tab Navigation */}
+            <div className="tab-navigation">
+                <button 
+                    className={`tab-button ${activeTab === 'list' ? 'active' : ''}`}
+                    onClick={() => setActiveTab('list')}
+                >
+                    <FiList /> Danh sách hóa đơn
+                </button>
+                <button 
+                    className={`tab-button ${activeTab === 'search' ? 'active' : ''}`}
+                    onClick={() => setActiveTab('search')}
+                >
+                    <FiHash /> Tìm theo Encounter ID
+                </button>
             </div>
             
-            {/* Advanced Filters */}
-            {showFilters && (
-                <div className="advanced-filters">
-                    <div className="filter-grid">
-                        <div className="filter-item">
-                            <label>ID Bệnh nhân</label>
-                            <input
-                                type="number"
-                                name="patientId"
-                                value={filters.patientId}
-                                onChange={handleFilterChange}
-                                placeholder="Nhập ID bệnh nhân..."
-                            />
-                        </div>
-                        <div className="filter-item">
-                            <label>Trạng thái hóa đơn</label>
-                            <select name="status" value={filters.status} onChange={handleFilterChange}>
-                                <option value="">Tất cả</option>
-                                <option value="ISSUED">Đã phát hành</option>
-                                <option value="PARTIAL_PAID">Thanh toán một phần</option>
-                                <option value="PAID">Đã thanh toán</option>
-                                <option value="CANCELLED">Đã hủy</option>
-                            </select>
-                        </div>
-                        <div className="filter-item">
-                            <label>Trạng thái thanh toán</label>
-                            <select name="paymentStatus" value={filters.paymentStatus} onChange={handleFilterChange}>
-                                <option value="">Tất cả</option>
-                                <option value="PAID">Đã thanh toán</option>
-                                <option value="PARTIAL">Thanh toán một phần</option>
-                                <option value="UNPAID">Chưa thanh toán</option>
-                            </select>
-                        </div>
-                        <div className="filter-item">
-                            <label>Từ ngày</label>
-                            <input
-                                type="date"
-                                name="fromDate"
-                                value={filters.fromDate}
-                                onChange={handleFilterChange}
-                            />
-                        </div>
-                        <div className="filter-item">
-                            <label>Đến ngày</label>
-                            <input
-                                type="date"
-                                name="toDate"
-                                value={filters.toDate}
-                                onChange={handleFilterChange}
-                            />
-                        </div>
-                        <div className="filter-item">
-                            <label>Sắp xếp theo</label>
-                            <select name="sort" value={filters.sort} onChange={handleFilterChange}>
-                                <option value="dueDate">Ngày đến hạn</option>
-                                <option value="issueDate">Ngày phát hành</option>
-                                <option value="totalAmount">Tổng tiền</option>
-                                <option value="unpaidAmount">Còn lại</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div className="filter-buttons">
-                        <button className="btn-search" onClick={handleSearch}>
-                            <FiSearch /> Tìm kiếm
-                        </button>
-                        <button className="btn-reset" onClick={handleResetFilters}>
-                            Đặt lại
-                        </button>
-                    </div>
-                </div>
-            )}
-            
-            {/* Stats */}
-            <div className="stats-section">
-                <span className="stat-badge">
-                    Tổng số: <strong>{totalElements}</strong>
-                </span>
-                <span className="stat-badge">
-                    Trang {currentPage + 1} / {totalPages || 1}
-                </span>
-            </div>
-            
-            {/* Content */}
-            {loading ? (
-                <div className="loading-state">
-                    <FiFileText className="spinner" />
-                    <p>Đang tải danh sách hóa đơn...</p>
-                </div>
-            ) : error ? (
-                <div className="error-state">
-                    <FiAlertCircle />
-                    <p>{error}</p>
-                    <button onClick={fetchInvoices} className="btn-retry">Thử lại</button>
-                </div>
-            ) : filteredInvoices.length === 0 ? (
-                <div className="empty-state">
-                    <FiCalendar />
-                    <p>Không tìm thấy hóa đơn nào</p>
-                </div>
-            ) : (
+            {/* Tab Content */}
+            {activeTab === 'list' ? (
                 <>
-                    <div className="invoices-grid">
-                        {filteredInvoices.map(invoice => (
+                    {/* Filter Section */}
+                    <div className="filter-section">
+                        <div className="search-box">
+                            <FiSearch />
+                            <input
+                                type="text"
+                                placeholder="Tìm theo số hóa đơn, tên bệnh nhân, ID bệnh nhân..."
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                            />
+                        </div>
+                        <div className="filter-actions">
+                            <button className="btn-toggle-filter" onClick={() => setShowFilters(!showFilters)}>
+                                <FiFilter /> {showFilters ? 'Ẩn bộ lọc' : 'Hiện bộ lọc'}
+                            </button>
+                            <button className="btn-refresh" onClick={fetchInvoices}>
+                                <FiRefreshCw /> Làm mới
+                            </button>
+                        </div>
+                    </div>
+            
+                    {/* Advanced Filters */}
+                    {showFilters && (
+                        <div className="advanced-filters">
+                            <div className="filter-grid">
+                                <div className="filter-item">
+                                    <label>ID Bệnh nhân</label>
+                                    <input
+                                        type="number"
+                                        name="patientId"
+                                        value={filters.patientId}
+                                        onChange={handleFilterChange}
+                                        placeholder="Nhập ID bệnh nhân..."
+                                    />
+                                </div>
+                                <div className="filter-item">
+                                    <label>Trạng thái hóa đơn</label>
+                                    <select name="status" value={filters.status} onChange={handleFilterChange}>
+                                        <option value="">Tất cả</option>
+                                        <option value="ISSUED">Đã phát hành</option>
+                                        <option value="PARTIAL_PAID">Thanh toán một phần</option>
+                                        <option value="PAID">Đã thanh toán</option>
+                                        <option value="CANCELLED">Đã hủy</option>
+                                    </select>
+                                </div>
+                                <div className="filter-item">
+                                    <label>Trạng thái thanh toán</label>
+                                    <select name="paymentStatus" value={filters.paymentStatus} onChange={handleFilterChange}>
+                                        <option value="">Tất cả</option>
+                                        <option value="PAID">Đã thanh toán</option>
+                                        <option value="PARTIAL">Thanh toán một phần</option>
+                                        <option value="UNPAID">Chưa thanh toán</option>
+                                    </select>
+                                </div>
+                                <div className="filter-item">
+                                    <label>Từ ngày</label>
+                                    <input
+                                        type="date"
+                                        name="fromDate"
+                                        value={filters.fromDate}
+                                        onChange={handleFilterChange}
+                                    />
+                                </div>
+                                <div className="filter-item">
+                                    <label>Đến ngày</label>
+                                    <input
+                                        type="date"
+                                        name="toDate"
+                                        value={filters.toDate}
+                                        onChange={handleFilterChange}
+                                    />
+                                </div>
+                                <div className="filter-item">
+                                    <label>Sắp xếp theo</label>
+                                    <select name="sort" value={filters.sort} onChange={handleFilterChange}>
+                                        <option value="dueDate">Ngày đến hạn</option>
+                                        <option value="issueDate">Ngày phát hành</option>
+                                        <option value="totalAmount">Tổng tiền</option>
+                                        <option value="unpaidAmount">Còn lại</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div className="filter-buttons">
+                                <button className="btn-search" onClick={handleSearch}>
+                                    <FiSearch /> Tìm kiếm
+                                </button>
+                                <button className="btn-reset" onClick={handleResetFilters}>
+                                    Đặt lại
+                                </button>
+                            </div>
+                        </div>
+                    )}
+            
+                    {/* Stats */}
+                    <div className="stats-section">
+                        <span className="stat-badge">
+                            Tổng số: <strong>{totalElements}</strong>
+                        </span>
+                        <span className="stat-badge">
+                            Trang {currentPage + 1} / {totalPages || 1}
+                        </span>
+                    </div>
+            
+                    {/* Content */}
+                    {loading ? (
+                        <div className="loading-state">
+                            <FiFileText className="spinner" />
+                            <p>Đang tải danh sách hóa đơn...</p>
+                        </div>
+                    ) : error ? (
+                        <div className="error-state">
+                            <FiAlertCircle />
+                            <p>{error}</p>
+                            <button onClick={fetchInvoices} className="btn-retry">Thử lại</button>
+                        </div>
+                    ) : filteredInvoices.length === 0 ? (
+                        <div className="empty-state">
+                            <FiCalendar />
+                            <p>Không tìm thấy hóa đơn nào</p>
+                        </div>
+                    ) : (
+                        <>
+                            <div className="invoices-grid">
+                                {filteredInvoices.map(invoice => (
+                                    <InvoiceCard 
+                                        key={invoice.invoiceId} 
+                                        invoice={invoice}
+                                        onCardClick={() => handleViewDetail(invoice.invoiceId)}
+                                        formatDate={formatDate}
+                                        formatCurrency={formatCurrency}
+                                        getStatusBadgeClass={getStatusBadgeClass}
+                                        getPaymentStatusBadgeClass={getPaymentStatusBadgeClass}
+                                    />
+                                ))}
+                            </div>
+                            
+                            {/* Pagination */}
+                            {totalPages > 1 && (
+                                <div className="pagination">
+                                    <button 
+                                        onClick={() => setCurrentPage(prev => Math.max(0, prev - 1))}
+                                        disabled={currentPage === 0}
+                                    >
+                                        Trước
+                                    </button>
+                                    <span>Trang {currentPage + 1} / {totalPages}</span>
+                                    <button 
+                                        onClick={() => setCurrentPage(prev => Math.min(totalPages - 1, prev + 1))}
+                                        disabled={currentPage >= totalPages - 1}
+                                    >
+                                        Sau
+                                    </button>
+                                </div>
+                            )}
+                        </>
+                    )}
+                </>
+            ) : (
+                /* Tab tìm theo Encounter ID */
+                <div className="encounter-search-tab">
+                    <div className="encounter-search-section">
+                        <h3><FiHash /> Tìm hóa đơn theo Encounter ID</h3>
+                        <div className="encounter-search-form">
+                            <div className="search-input-group">
+                                <input
+                                    type="number"
+                                    placeholder="Nhập Encounter ID..."
+                                    value={encounterId}
+                                    onChange={(e) => setEncounterId(e.target.value)}
+                                    onKeyPress={(e) => e.key === 'Enter' && handleSearchByEncounterId()}
+                                />
+                                <button 
+                                    className="btn-search-encounter" 
+                                    onClick={handleSearchByEncounterId}
+                                    disabled={encounterLoading}
+                                >
+                                    {encounterLoading ? <FiRefreshCw className="spinner" /> : <FiSearch />}
+                                    {encounterLoading ? 'Đang tìm...' : 'Tìm kiếm'}
+                                </button>
+                                <button 
+                                    className="btn-reset-encounter" 
+                                    onClick={handleResetEncounterSearch}
+                                >
+                                    Đặt lại
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    {/* Kết quả tìm kiếm */}
+                    {encounterError && (
+                        <div className="error-state">
+                            <FiAlertCircle />
+                            <p>{encounterError}</p>
+                        </div>
+                    )}
+                    
+                    {encounterInvoice && (
+                        <div className="encounter-result">
+                            <h4>Kết quả tìm kiếm:</h4>
                             <InvoiceCard 
-                                key={invoice.invoiceId} 
-                                invoice={invoice}
-                                onCardClick={() => handleViewDetail(invoice.invoiceId)}
+                                invoice={encounterInvoice}
+                                onCardClick={() => handleViewDetail(encounterInvoice.invoiceId)}
                                 formatDate={formatDate}
                                 formatCurrency={formatCurrency}
                                 getStatusBadgeClass={getStatusBadgeClass}
                                 getPaymentStatusBadgeClass={getPaymentStatusBadgeClass}
                             />
-                        ))}
-                    </div>
-                    
-                    {/* Pagination */}
-                    {totalPages > 1 && (
-                        <div className="pagination">
-                            <button 
-                                onClick={() => setCurrentPage(prev => Math.max(0, prev - 1))}
-                                disabled={currentPage === 0}
-                            >
-                                Trước
-                            </button>
-                            <span>Trang {currentPage + 1} / {totalPages}</span>
-                            <button 
-                                onClick={() => setCurrentPage(prev => Math.min(totalPages - 1, prev + 1))}
-                                disabled={currentPage >= totalPages - 1}
-                            >
-                                Sau
-                            </button>
                         </div>
                     )}
-                </>
+                </div>
             )}
         </div>
     );

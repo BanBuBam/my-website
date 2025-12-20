@@ -700,6 +700,26 @@ export const medicationOrderGroupAPI = {
     });
   },
 
+  // Lấy danh sách nhóm y lệnh chờ chuẩn bị
+  getPendingPreparationGroups: async () => {
+    return apiCall('api/v1/medication-order-groups/pending-preparation', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Lấy danh sách nhóm y lệnh sẵn sàng dispensing
+  getReadyForDispensingGroups: async () => {
+    return apiCall('api/v1/medication-order-groups/ready-for-dispensing', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
   // Lấy chi tiết nhóm y lệnh
   getGroupDetail: async (groupId) => {
     return apiCall(`api/v1/medication-order-groups/${groupId}`, {
@@ -804,6 +824,26 @@ export const pharmacistEmployeeAPI = {
         'Authorization': `Bearer ${getAccessToken()}`,
       },
     });
+  },
+
+  // Lấy danh sách nhân viên theo role
+  getEmployeesByRole: async (role, page = 0, size = 100) => {
+    const params = new URLSearchParams({
+      page: page.toString(),
+      size: size.toString(),
+    });
+
+    return apiCall(`api/v1/employees/role/${role}?${params.toString()}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Lấy danh sách điều dưỡng
+  getNurses: async (page = 0, size = 100) => {
+    return pharmacistEmployeeAPI.getEmployeesByRole('NURSE', page, size);
   },
 };
 
@@ -2080,6 +2120,78 @@ export const stockTakingAPI = {
   },
 };
 
+// ==================== Individual Medication Orders API ====================
+export const pharmacistIndividualOrdersAPI = {
+  // Lấy danh sách y lệnh chờ xác nhận
+  getPendingVerification: async () => {
+    return apiCall('api/v1/medication-orders/pending-verification', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Lấy danh sách y lệnh chờ cấp phát
+  getReadyForAdministration: async () => {
+    return apiCall('api/v1/medication-orders/ready-for-administration', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Lấy danh sách y lệnh chờ chuẩn bị
+  getReadyForPreparation: async () => {
+    return apiCall('api/v1/medication-orders/ready-for-preparation', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Xác nhận y lệnh
+  verifyOrder: async (orderId, notes = '') => {
+    const params = new URLSearchParams();
+    if (notes) params.append('notes', notes);
+
+    return apiCall(`api/v1/medication-orders/${orderId}/verify?${params.toString()}`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Cấp phát y lệnh
+  dispenseOrder: async (orderId, notes = '') => {
+    const params = new URLSearchParams();
+    if (notes) params.append('notes', notes);
+
+    return apiCall(`api/v1/medication-orders/${orderId}/dispense?${params.toString()}`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Chuẩn bị thuốc
+  prepareOrder: async (orderId, notes = '') => {
+    const params = new URLSearchParams();
+    if (notes) params.append('notes', notes);
+
+    return apiCall(`api/v1/medication-orders/${orderId}/prepare?${params.toString()}`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+};
+
 export default {
   pharmacistAuthAPI,
   pharmacistDashboardAPI,
@@ -2101,4 +2213,5 @@ export default {
   pharmacistMedicalSupplyAPI,
   goodsIssueAPI,
   stockTakingAPI,
+  pharmacistIndividualOrdersAPI,
 };
