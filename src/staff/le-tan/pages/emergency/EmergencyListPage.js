@@ -164,12 +164,12 @@ const EmergencyListPage = () => {
                     </div>
                 </div>
                 <div className="header-actions">
-                    {activeTab === 'create' && (
+                    {/*{activeTab === 'create' && (*/}
                         <button className="btn-create" onClick={handleCreateNew}>
                             <FiPlus />
                             Tạo mới
                         </button>
-                    )}
+                    {/*)}*/}
                     <button className="btn-refresh" onClick={handleRefresh} disabled={loading}>
                         <FiRefreshCw className={loading ? 'spinning' : ''} />
                         Làm mới

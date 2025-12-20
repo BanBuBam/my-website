@@ -253,7 +253,7 @@ const ContactPage = () => {
                 <p><strong>Bệnh viện TrinityCare</strong></p>
                 <p>Số 12, Xuân Thủy, Cầu Giấy, Hà Nội</p>
                 <a 
-                  href="https://maps.google.com/?q=Số+12+Xuân+Thủy+Cầu+Giấy+Hà+Nội" 
+                  href="https://maps.app.goo.gl/z2z6JehvZz5AMSVX6" 
                   target="_blank" 
                   rel="noopener noreferrer"
                   className="btn-map"
@@ -272,7 +272,7 @@ const ContactPage = () => {
         <div className="map-container">
           <iframe
             title="Hospital Location"
-            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3723.8639810921634!2d105.78825631476282!3d21.03813938599324!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3135ab4cd0c66f05%3A0xea31563511af2e8!2zWHXDom4gVGjhu6d5LCBD4bqndSBHaeG6pXksIEjDoCBO4buZaSwgVmnhu4d0IE5hbQ!5e0!3m2!1svi!2s!4v1234567890123!5m2!1svi!2s"
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3725.2922776572923!2d105.78255094238109!3d20.98091793971979!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3135accdd8a1ad71%3A0xa2f9b16036648187!2zSOG7jWMgdmnhu4duIEPDtG5nIG5naOG7hyBCxrB1IGNow61uaCB2aeG7hW4gdGjDtG5n!5e0!3m2!1svi!2s!4v1765473328155!5m2!1svi!2s"
             width="100%"
             height="450"
             style={{ border: 0 }}
@@ -280,6 +280,7 @@ const ContactPage = () => {
             loading="lazy"
             referrerPolicy="no-referrer-when-downgrade"
           />
+          
         </div>
       </section>
     </div>

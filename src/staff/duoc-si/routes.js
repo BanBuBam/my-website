@@ -21,6 +21,7 @@ import InventoryLookupPage from './pages/tra-cuu-ton-kho/InventoryLookupPage';
 import StockAlertPage from './pages/canh-bao/StockAlertPage';
 import MedicalSupplyPage from './pages/vat-tu-y-te/MedicalSupplyPage';
 import DrugInteractionPage from './pages/tuong-tac-thuoc/DrugInteractionPage';
+import IndividualOrdersPage from './pages/individual-orders/IndividualOrdersPage';
 
 const PharmacistRoutes = () => {
     return (
@@ -48,6 +49,7 @@ const PharmacistRoutes = () => {
                 <Route path="canh-bao-ton-kho" element={<StockAlertPage />} />
                 <Route path="vat-tu-y-te" element={<MedicalSupplyPage />} />
                 <Route path="tuong-tac-thuoc" element={<DrugInteractionPage/>} />
+                <Route path="y-lenh-le" element={<IndividualOrdersPage />} />
                 <Route path="prescriptions" element={<div>Trang Quản lý Đơn thuốc</div>} />
                 <Route path="reports" element={<div>Trang Báo cáo</div>} />
             </Route>

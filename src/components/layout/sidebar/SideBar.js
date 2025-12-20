@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import './SideBar.css';
 
-import logo from '../../../assets/images/logo.png';
+import logo from '../../../assets/images/logoTrinityCare.jpg';
 import phoneIcon from '../../../assets/icons/phone-icon.png';
 import earthIcon from '../../../assets/icons/earth-icon.png';
 import facebookIcon from '../../../assets/icons/facebook.png';
@@ -78,8 +78,8 @@ const Sidebar = () => {
               <li><Link to="/dat-lich-kham">Đặt lịch khám</Link></li>
               <li><Link to="/trang-thai-dat-lich">Trạng thái đặt lịch</Link></li>
               <li><Link to="/hoa-don-benh-nhan">Hóa đơn bệnh nhân</Link></li>
-              <li><Link to="/goi-kham">Gói khám</Link></li>
-              <li><Link to="/tra-cuu-ket-qua">Tra cứu kết quả</Link></li>
+              {/*<li><Link to="/goi-kham">Gói khám</Link></li>*/}
+              {/*<li><Link to="/tra-cuu-ket-qua">Tra cứu kết quả</Link></li>*/}
             </ul>
           </div>
         )}
@@ -103,7 +103,7 @@ const Sidebar = () => {
             <li><Link to="/dich-vu">Dịch vụ y khoa</Link></li>
             <li><Link to="/ho-tro">Hỗ trợ khách hàng</Link></li>
             <li><Link to="/tin-tuc">Tin tức sự kiện</Link></li>
-            <li><Link to="/tuyen-dung">Tuyển dụng</Link></li>
+            {/*<li><Link to="/tuyen-dung">Tuyển dụng</Link></li>*/}
             <li><Link to="/lien-he">Liên hệ</Link></li>
           </ul>
         </div>

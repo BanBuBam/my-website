@@ -3,7 +3,7 @@ import './Footer.css'; // Tạo file Footer.css để style
 
 // Import các ảnh cần dùng
 import emailIcon from '../../../assets/icons/email1.png';
-import logo from '../../../assets/images/logo.png';
+import logo from '../../../assets/images/logoTrinityCare.jpg';
 import addressIcon from '../../../assets/icons/address.png';
 import phoneIcon from '../../../assets/icons/phone-icon.png';
 import faxIcon from '../../../assets/icons/fax.png';
@@ -45,7 +45,7 @@ const Footer = () => {
                   <img src={phoneIcon} alt="phone icon" className="icon-visible" />
                   <img src={phoneIcon} alt="" className="icon-hidden" />
                 </div>
-                <div><span>Hotline</span><strong>024 8345 555</strong></div>
+                <div><span>Hotline</span><strong>035 818 3238</strong></div>
               </li>
               <li>
                 {/* merged image */}
@@ -53,7 +53,7 @@ const Footer = () => {
                   <img src={phoneIcon} alt="emergency icon" className="icon-visible" />
                   <img src={phoneIcon} alt="" className="icon-hidden" />
                 </div>
-                <div><span>Cấp cứu</span><strong>024 1138 884</strong></div>
+                <div><span>Cấp cứu</span><strong>035 818 3238</strong></div>
               </li>
               <li>
                 <img src={faxIcon} alt="fax icon" />
@@ -61,7 +61,7 @@ const Footer = () => {
               </li>
               <li>
                 <img src={mailIcon} alt="mail icon" />
-                <div><span>Mail</span><strong>unreal@outlook.com</strong></div>
+                <div><span>Mail</span><strong>contact@trinitycare.com</strong></div>
               </li>
             </ul>
           </div>

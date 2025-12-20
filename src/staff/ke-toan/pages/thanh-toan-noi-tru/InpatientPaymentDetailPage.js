@@ -101,6 +101,15 @@ const InpatientPaymentDetailPage = () => {
     const [showRefundHistoryModal, setShowRefundHistoryModal] = useState(false);
     const [refundHistory, setRefundHistory] = useState([]);
     const [loadingRefundHistory, setLoadingRefundHistory] = useState(false);
+
+    // Deposit Refund Modal State
+    const [showDepositRefundModal, setShowDepositRefundModal] = useState(false);
+    const [processingDepositRefund, setProcessingDepositRefund] = useState(false);
+    const [depositRefundFormData, setDepositRefundFormData] = useState({
+        refundMethod: 'CASH',
+        reason: '',
+    });
+    const [depositRefundResult, setDepositRefundResult] = useState(null);
     
     useEffect(() => {
         fetchStayDetail();
@@ -675,6 +684,64 @@ const InpatientPaymentDetailPage = () => {
     const handleCloseRefundHistory = () => {
         setShowRefundHistoryModal(false);
     };
+
+    // Deposit Refund Handlers
+    const handleShowDepositRefundModal = () => {
+        setShowDepositRefundModal(true);
+        setDepositRefundResult(null);
+    };
+
+    const handleCloseDepositRefundModal = () => {
+        setShowDepositRefundModal(false);
+        setDepositRefundFormData({
+            refundMethod: 'CASH',
+            reason: '',
+        });
+        setDepositRefundResult(null);
+    };
+
+    const handleDepositRefundFormChange = (e) => {
+        const { name, value } = e.target;
+        setDepositRefundFormData(prev => ({
+            ...prev,
+            [name]: value,
+        }));
+    };
+
+    const handleProcessDepositRefund = async () => {
+        // Validation
+        if (!depositRefundFormData.reason) {
+            alert('Vui lòng nhập lý do hoàn tiền');
+            return;
+        }
+
+        if (!stay || !stay.patientId) {
+            alert('Không tìm thấy thông tin bệnh nhân');
+            return;
+        }
+
+        try {
+            setProcessingDepositRefund(true);
+
+            const response = await financeInpatientAPI.refundDeposit(
+                stay.patientId,
+                depositRefundFormData.refundMethod,
+                depositRefundFormData.reason
+            );
+
+            if (response && response.data) {
+                setDepositRefundResult(response.data);
+                alert('Hoàn tiền tạm ứng thành công!');
+                // Refresh advance balance
+                fetchAdvanceBalance(stay.patientId);
+            }
+        } catch (err) {
+            console.error('Error processing deposit refund:', err);
+            alert(err.message || 'Không thể xử lý hoàn tiền tạm ứng');
+        } finally {
+            setProcessingDepositRefund(false);
+        }
+    };
     
     if (loading) {
         return (
@@ -752,6 +819,9 @@ const InpatientPaymentDetailPage = () => {
                 </button>
                 <button className="btn-refund" onClick={handleShowRefundModal}>
                     <FiRotateCcw /> Hoàn tiền
+                </button>
+                <button className="btn-deposit-refund" onClick={handleShowDepositRefundModal}>
+                    <FiRotateCcw /> Hoàn tiền tạm ứng
                 </button>
                 <button className="btn-settlement" onClick={handleShowSettlementModal}>
                     <FiCheck /> Quyết toán
@@ -977,6 +1047,22 @@ const InpatientPaymentDetailPage = () => {
                 formatCurrency={formatCurrency}
                 formatDateTime={formatDateTime}
             />
+
+            {/* Deposit Refund Modal */}
+            {showDepositRefundModal && (
+                <DepositRefundModal
+                    depositRefundFormData={depositRefundFormData}
+                    onFormChange={handleDepositRefundFormChange}
+                    onProcess={handleProcessDepositRefund}
+                    onClose={handleCloseDepositRefundModal}
+                    processing={processingDepositRefund}
+                    depositRefundResult={depositRefundResult}
+                    formatCurrency={formatCurrency}
+                    formatDateTime={formatDateTime}
+                    patientName={stay.patientName}
+                    advanceBalance={advanceBalance}
+                />
+            )}
         </div>
     );
 };
@@ -1140,12 +1226,13 @@ const PaymentModal = ({
                                     onChange={onFormChange}
                                     required
                                 >
-                                    <option value="ADVANCE">Tạm ứng</option>
+                                    {/*<option value="ADVANCE">Tạm ứng</option>*/}
                                     <option value="CASH">Tiền mặt</option>
                                     <option value="BANK_TRANSFER">Chuyển khoản</option>
-                                    <option value="CREDIT_CARD">Thẻ tín dụng</option>
-                                    <option value="DEBIT_CARD">Thẻ ghi nợ</option>
-                                    <option value="E_WALLET">Ví điện tử</option>
+                                    {/*<option value="CARD">Thẻ ghi nợ</option>*/}
+                                    {/*<option value="MOMO">Ví điện tử MOMO</option>*/}
+                                    {/*<option value="VNPAY">Ví điện tử VNPAY</option>*/}
+                                    {/*<option value="ZALOPAY">Ví điện tử ZALOPAY</option>*/}
                                 </select>
                             </div>
                         </div>
@@ -1530,6 +1617,141 @@ const AdvancePaymentModal = ({ advanceFormData, onFormChange, onProcess, onClose
                     {!advanceResult && (
                         <button className="btn-confirm" onClick={onProcess} disabled={processing}>
                             {processing ? 'Đang xử lý...' : <><FiCheck /> Đặt cọc</>}
+                        </button>
+                    )}
+                </div>
+            </div>
+        </div>
+    );
+};
+
+// Deposit Refund Modal Component
+const DepositRefundModal = ({ 
+    depositRefundFormData, 
+    onFormChange, 
+    onProcess, 
+    onClose, 
+    processing, 
+    depositRefundResult, 
+    formatCurrency, 
+    formatDateTime,
+    patientName,
+    advanceBalance
+}) => {
+    return (
+        <div className="modal-overlay">
+            <div className="modal-content">
+                <div className="modal-header">
+                    <h3>Hoàn tiền tạm ứng</h3>
+                    <button className="btn-close" onClick={onClose} disabled={processing}>
+                        <FiX />
+                    </button>
+                </div>
+                <div className="modal-body">
+                    {!depositRefundResult ? (
+                        <div className="deposit-refund-form">
+                            <div className="info-box">
+                                <div className="info-row">
+                                    <span className="label">Bệnh nhân:</span>
+                                    <span className="value">{patientName}</span>
+                                </div>
+                                <div className="info-row">
+                                    <span className="label">Số dư tạm ứng hiện tại:</span>
+                                    <span className="value highlight">
+                                        {advanceBalance !== null ? formatCurrency(advanceBalance) : 'Đang tải...'}
+                                    </span>
+                                </div>
+                            </div>
+                            <div className="form-group">
+                                <label>Phương thức hoàn tiền <span className="required">*</span></label>
+                                <select
+                                    name="refundMethod"
+                                    value={depositRefundFormData.refundMethod}
+                                    onChange={onFormChange}
+                                    required
+                                >
+                                    <option value="CASH">Tiền mặt</option>
+                                    <option value="BANK_TRANSFER">Chuyển khoản</option>
+                                </select>
+                            </div>
+                            <div className="form-group">
+                                <label>Lý do hoàn tiền <span className="required">*</span></label>
+                                <textarea
+                                    name="reason"
+                                    value={depositRefundFormData.reason}
+                                    onChange={onFormChange}
+                                    placeholder="Nhập lý do hoàn tiền tạm ứng..."
+                                    rows="4"
+                                    required
+                                />
+                            </div>
+                            <div className="warning-box">
+                                <FiAlertCircle />
+                                <p>Toàn bộ số dư tạm ứng hiện tại sẽ được hoàn lại cho bệnh nhân.</p>
+                            </div>
+                        </div>
+                    ) : (
+                        <div className="deposit-refund-result">
+                            <div className="success-message">
+                                <FiCheck className="success-icon" />
+                                <h4>Hoàn tiền tạm ứng thành công!</h4>
+                            </div>
+                            <div className="refund-details">
+                                <div className="detail-row">
+                                    <span className="label">Mã giao dịch:</span>
+                                    <span className="value">{depositRefundResult.transactionId}</span>
+                                </div>
+                                <div className="detail-row">
+                                    <span className="label">Số biên lai:</span>
+                                    <span className="value">{depositRefundResult.receiptNumber || '-'}</span>
+                                </div>
+                                <div className="detail-row">
+                                    <span className="label">Tên bệnh nhân:</span>
+                                    <span className="value">{depositRefundResult.patientName}</span>
+                                </div>
+                                <div className="detail-row">
+                                    <span className="label">Loại giao dịch:</span>
+                                    <span className="value">{depositRefundResult.transactionType}</span>
+                                </div>
+                                <div className="detail-row">
+                                    <span className="label">Số tiền hoàn:</span>
+                                    <span className="value highlight">{formatCurrency(depositRefundResult.amount)}</span>
+                                </div>
+                                <div className="detail-row">
+                                    <span className="label">Phương thức:</span>
+                                    <span className="value">{depositRefundResult.paymentMethod}</span>
+                                </div>
+                                <div className="detail-row">
+                                    <span className="label">Trạng thái:</span>
+                                    <span className="value">{depositRefundResult.status}</span>
+                                </div>
+                                <div className="detail-row">
+                                    <span className="label">Ngày giao dịch:</span>
+                                    <span className="value">{formatDateTime(depositRefundResult.transactionDate)}</span>
+                                </div>
+                                {depositRefundResult.processedByEmployeeName && (
+                                    <div className="detail-row">
+                                        <span className="label">Người xử lý:</span>
+                                        <span className="value">{depositRefundResult.processedByEmployeeName}</span>
+                                    </div>
+                                )}
+                                {depositRefundResult.notes && (
+                                    <div className="detail-row">
+                                        <span className="label">Ghi chú:</span>
+                                        <span className="value">{depositRefundResult.notes}</span>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    )}
+                </div>
+                <div className="modal-footer">
+                    <button className="btn-cancel" onClick={onClose} disabled={processing}>
+                        {depositRefundResult ? 'Đóng' : 'Hủy'}
+                    </button>
+                    {!depositRefundResult && (
+                        <button className="btn-confirm" onClick={onProcess} disabled={processing}>
+                            {processing ? 'Đang xử lý...' : <><FiCheck /> Hoàn tiền</>}
                         </button>
                     )}
                 </div>

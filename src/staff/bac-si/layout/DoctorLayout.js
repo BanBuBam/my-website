@@ -50,12 +50,12 @@ const DoctorLayout = () => {
                                     <span>Lịch hẹn</span>
                                 </NavLink>
                             </li>
-                            <li>
+                            {/* <li>
                                 <NavLink to="/staff/bac-si/lich-lam-viec">
                                     <FiClock />
                                     <span>//Lịch làm việc cá nhân</span>
                                 </NavLink>
-                            </li>
+                            </li> */}
                         </ul>
                     </div>
                     
@@ -100,12 +100,12 @@ const DoctorLayout = () => {
                                     <span>Danh sách bệnh nhân</span>
                                 </NavLink>
                             </li>
-                            <li>
+                            {/* <li>
                                 <NavLink to="/staff/bac-si/danh-sach-cho-kham">
                                     <FiList />
                                     <span>//Danh sách chờ khám</span>
                                 </NavLink>
-                            </li>
+                            </li> */}
                             <li>
                                 <NavLink to="/staff/bac-si/kham-benh">
                                     <FiClipboard />
@@ -195,7 +195,7 @@ const DoctorLayout = () => {
                                     <span>Quản lý điều trị nội trú</span>
                                 </NavLink>
                             </li>
-                            <li>
+                            {/* <li>
                                 <NavLink to="/staff/bac-si/benh-an-dien-tu">
                                     <FiFolder />
                                     <span>//Bệnh án điện tử</span>
@@ -206,19 +206,19 @@ const DoctorLayout = () => {
                                     <FiEdit3 />
                                     <span>//Kê y lệnh</span>
                                 </NavLink>
-                            </li>
+                            </li> */}
                             <li>
                                 <NavLink to="/staff/bac-si/xac-nhan-nhom-y-lenh">
                                     <FiCheckCircle />
                                     <span>Xác nhận nhóm y lệnh</span>
                                 </NavLink>
                             </li>
-                            <li>
+                            {/* <li>
                                 <NavLink to="/staff/bac-si/theo-doi-dien-bien">
                                     <FiTrendingUp />
                                     <span>//Theo dõi diễn biến</span>
                                 </NavLink>
-                            </li>
+                            </li> */}
                         </ul>
                     </div>
 
@@ -232,7 +232,7 @@ const DoctorLayout = () => {
                                     <span>Kết quả cận lâm sàng</span>
                                 </NavLink>
                             </li>
-                            <li>
+                            {/* <li>
                                 <NavLink to="/staff/bac-si/ho-so-benh-an">
                                     <FiFolder />
                                     <span>//Hồ sơ bệnh án</span>
@@ -243,12 +243,12 @@ const DoctorLayout = () => {
                                     <FiClock />
                                     <span>//Lịch sử khám bệnh</span>
                                 </NavLink>
-                            </li>
+                            </li> */}
                         </ul>
                     </div>
 
                     {/* Phẫu thuật/Thủ thuật */}
-                    <div className="nav-category">
+                    {/* <div className="nav-category">
                         <div className="category-header">Phẫu thuật/Thủ thuật</div>
                         <ul>
                             <li>
@@ -264,7 +264,7 @@ const DoctorLayout = () => {
                                 </NavLink>
                             </li>
                         </ul>
-                    </div>
+                    </div> */}
 
                     
 

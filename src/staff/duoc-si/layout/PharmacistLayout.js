@@ -78,6 +78,12 @@ const PharmacistLayout = () => {
                                     <span>Danh sách y lệnh theo nhóm</span>
                                 </NavLink>
                             </li>
+                            <li>
+                                <NavLink to="/staff/duoc-si/y-lenh-le">
+                                    <FiList />
+                                    <span>Danh sách y lệnh lẻ</span>
+                                </NavLink>
+                            </li>
                         </ul>
                     </div>
 

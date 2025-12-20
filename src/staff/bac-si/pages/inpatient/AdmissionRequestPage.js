@@ -572,7 +572,7 @@ const CreateAdmissionRequestModal = ({ onClose, onSuccess, encounter }) => {
         priorityLevel: 3,
         admissionDiagnosis: '',
         specialRequirements: '',
-        bedTypeRequired: 'GENERAL',
+        bedTypeRequired: 'STANDARD',
         requestedDepartmentId: encounter ? encounter.departmentId : '', // Điền sẵn khoa
         requestedByEmployeeId: encounter ? encounter.createdByEmployeeId : '', // Điền sẵn BS
         expectedAdmissionDate: new Date().toISOString().split('T')[0], // Đặt ngày mặc định
@@ -677,7 +677,7 @@ const CreateAdmissionRequestModal = ({ onClose, onSuccess, encounter }) => {
                         <div className="form-group">
                             <label>Loại giường: *</label>
                             <select name="bedTypeRequired" value={formData.bedTypeRequired} onChange={handleChange} required>
-                                <option value="GENERAL">Thường</option>
+                                <option value="STANDARD">Thường</option>
                                 <option value="ICU">ICU</option>
                                 <option value="ISOLATION">Cách ly</option>
                                 <option value="PRIVATE">Riêng</option>

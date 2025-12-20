@@ -172,11 +172,11 @@ const EmergencyDetailPage = () => {
                     <p>Emergency Encounter ID: {emergency.emergencyEncounterId}</p>
                 </div>
                 <div className="header-actions">
-                    {!emergency.isTriageComplete && (
+                    {/*{!emergency.isTriageComplete && (*/}
                         <button className="btn-complete-triage" onClick={handleOpenTriageModal}>
                             <FiCheckCircle /> Hoàn thành Triage
                         </button>
-                    )}
+                    {/*)}*/}
                     <button className="btn-refresh" onClick={fetchEmergencyDetail}>
                         <FiRefreshCw /> Làm mới
                     </button>

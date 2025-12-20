@@ -202,7 +202,7 @@ const NewsEventsPage = () => {
 
       {/* Newsletter Subscription */}
       <section className="newsletter-section">
-        <div className="newsletter-content">
+        <div className="newsletter-content text-green">
           <h2>Đăng ký nhận tin tức</h2>
           <p>Nhận thông tin mới nhất về sức khỏe và các chương trình của bệnh viện</p>
           <div className="newsletter-form">
