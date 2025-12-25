@@ -1,0 +1,442 @@
+/* Imaging Orders Page */
+.imaging-orders-page {
+    padding: 24px;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.imaging-orders-page .page-header {
+    margin-bottom: 24px;
+}
+
+.imaging-orders-page .header-content {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.imaging-orders-page .header-icon {
+    font-size: 36px;
+    color: #3b82f6;
+}
+
+.imaging-orders-page .page-header h1 {
+    margin: 0;
+    font-size: 28px;
+    color: #1a1a1a;
+}
+
+.imaging-orders-page .page-header p {
+    margin: 4px 0 0 0;
+    color: #666;
+    font-size: 14px;
+}
+
+/* Tabs Section */
+.imaging-orders-page .tabs-section {
+    background: white;
+    padding: 20px 24px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 24px;
+}
+
+.imaging-orders-page .tabs {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.imaging-orders-page .tab {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 20px;
+    background: transparent;
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    color: #6b7280;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+}
+
+.imaging-orders-page .tab:hover {
+    background: #f3f4f6;
+    color: #3b82f6;
+    border-color: #3b82f6;
+}
+
+.imaging-orders-page .tab.active {
+    background: #3b82f6;
+    color: white;
+    border-color: #3b82f6;
+}
+
+/* Loading and Error States */
+.imaging-orders-page .loading-state,
+.imaging-orders-page .error-state,
+.imaging-orders-page .no-data {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+.imaging-orders-page .loading-state svg,
+.imaging-orders-page .error-state svg,
+.imaging-orders-page .no-data svg {
+    font-size: 48px;
+    color: #9ca3af;
+    margin-bottom: 16px;
+}
+
+.imaging-orders-page .loading-state .spinner {
+    animation: spin 1s linear infinite;
+    color: #3b82f6;
+}
+
+.imaging-orders-page .error-state svg {
+    color: #ef4444;
+}
+
+.imaging-orders-page .btn-retry {
+    margin-top: 16px;
+    padding: 10px 24px;
+    background: #3b82f6;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.imaging-orders-page .btn-retry:hover {
+    background: #2563eb;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* Orders Container */
+.imaging-orders-page .orders-container {
+    background: white;
+    padding: 24px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.imaging-orders-page .orders-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(500px, 1fr));
+    gap: 20px;
+}
+
+/* Imaging Order Card */
+.imaging-order-card {
+    background: white;
+    border: 2px solid #e5e7eb;
+    border-radius: 12px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.imaging-order-card:hover {
+    border-color: #3b82f6;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+}
+
+.imaging-order-card .card-header {
+    padding: 16px 20px;
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    border-bottom: 1px solid #e5e7eb;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.imaging-order-card .card-title h3 {
+    margin: 0 0 8px 0;
+    font-size: 16px;
+    color: #1a1a1a;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.imaging-order-card .card-title h3 svg {
+    color: #3b82f6;
+    font-size: 18px;
+}
+
+.imaging-order-card .badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 4px;
+}
+
+.imaging-order-card .order-id {
+    font-size: 12px;
+    color: #6b7280;
+    background: #f3f4f6;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-weight: 500;
+}
+
+/* Status and Urgency Badges */
+.status-badge, .urgency-badge, .critical-badge {
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    white-space: nowrap;
+}
+
+.status-badge.status-ordered {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.status-badge.status-confirmed {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+.status-badge.status-scheduled {
+    background: #e0e7ff;
+    color: #3730a3;
+}
+
+.status-badge.status-in-progress {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.status-badge.status-completed {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.status-badge.status-reported {
+    background: #dcfce7;
+    color: #16a34a;
+}
+
+.status-badge.status-cancelled {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.urgency-badge.urgency-routine {
+    background: #f3f4f6;
+    color: #374151;
+}
+
+.urgency-badge.urgency-urgent {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.urgency-badge.urgency-stat {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.critical-badge {
+    background: #fee2e2;
+    color: #991b1b;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+}
+
+/* Card Body */
+.imaging-order-card .card-body {
+    padding: 20px;
+}
+
+.imaging-order-card .patient-info,
+.imaging-order-card .doctor-info,
+.imaging-order-card .schedule-info,
+.imaging-order-card .contrast-info,
+.imaging-order-card .cost-info {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-bottom: 16px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #f3f4f6;
+}
+
+.imaging-order-card .cost-info {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+.imaging-order-card .imaging-details {
+    margin-bottom: 16px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #f3f4f6;
+}
+
+.imaging-order-card .detail-row {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.imaging-order-card .detail-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.imaging-order-card .detail-item.full-width {
+    grid-column: 1 / -1;
+    margin-bottom: 8px;
+}
+
+.imaging-order-card .info-item {
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+}
+
+.imaging-order-card .info-icon {
+    color: #6b7280;
+    font-size: 16px;
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+.imaging-order-card .info-item > div {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    flex: 1;
+}
+
+.imaging-order-card label {
+    font-size: 12px;
+    color: #6b7280;
+    font-weight: 500;
+}
+
+.imaging-order-card span {
+    font-size: 14px;
+    color: #1a1a1a;
+    font-weight: 500;
+}
+
+/* Card Footer */
+.imaging-order-card .card-footer {
+    padding: 16px 20px;
+    background: #f9fafb;
+    border-top: 1px solid #e5e7eb;
+    display: flex;
+    gap: 12px;
+}
+
+.imaging-order-card .btn-action {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.imaging-order-card .btn-action:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.imaging-order-card .btn-confirm {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: white;
+}
+
+.imaging-order-card .btn-confirm:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.imaging-order-card .btn-results {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    color: white;
+}
+
+.imaging-order-card .btn-results:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.imaging-order-card .btn-action svg {
+    font-size: 16px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .imaging-orders-page {
+        padding: 16px;
+    }
+
+    .imaging-orders-page .tabs {
+        flex-direction: column;
+    }
+
+    .imaging-orders-page .tab {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .imaging-orders-page .orders-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .imaging-order-card .patient-info,
+    .imaging-order-card .doctor-info,
+    .imaging-order-card .schedule-info,
+    .imaging-order-card .contrast-info,
+    .imaging-order-card .cost-info {
+        grid-template-columns: 1fr;
+    }
+
+    .imaging-order-card .detail-row {
+        grid-template-columns: 1fr;
+    }
+
+    .imaging-order-card .card-footer {
+        flex-direction: column;
+    }
+
+    .imaging-order-card .btn-action {
+        width: 100%;
+    }
+}
