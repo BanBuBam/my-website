@@ -245,9 +245,67 @@ export const labTechnicianDiagnosticAPI = {
   },
 };
 
+// API Imaging Orders (Chẩn đoán hình ảnh)
+export const labTechnicianImagingAPI = {
+  // Lấy danh sách imaging orders chờ xử lý
+  getPendingImagingOrders: async () => {
+    return apiCall('api/v1/imaging-orders/pending', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Lấy danh sách imaging orders đã lên lịch
+  getScheduledImagingOrders: async () => {
+    return apiCall('api/v1/imaging-orders/scheduled', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Lấy danh sách imaging orders chờ báo cáo
+  getWaitingForReportOrders: async () => {
+    return apiCall('api/v1/imaging-orders/waiting-for-report', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Xác nhận imaging order
+  confirmImagingOrder: async (orderId, confirmationData) => {
+    return apiCall(`api/v1/imaging-orders/${orderId}/confirm`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(confirmationData),
+    });
+  },
+
+  // Nhập kết quả imaging
+  enterImagingResults: async (orderId, resultsData) => {
+    return apiCall(`api/v1/imaging-orders/${orderId}/results`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(resultsData),
+    });
+  },
+};
+
 export default {
   labTechnicianOrderAPI,
   labTechnicianResultAPI,
   labTechnicianDiagnosticAPI,
+  labTechnicianImagingAPI,
 };
 
