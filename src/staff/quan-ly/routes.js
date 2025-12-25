@@ -8,11 +8,16 @@ import CreateEmployeePage from './pages/employees/CreateEmployeePage';
 import DoctorScheduleListPage from './pages/doctor-schedules/DoctorScheduleListPage';
 import CreateDoctorSchedulePage from './pages/doctor-schedules/CreateDoctorSchedulePage';
 import RoleListPage from './pages/roles/RoleListPage';
+import PermissionListPage from './pages/permissions/PermissionListPage';
 import AdmissionRequestPage from './pages/inpatient/AdmissionRequestPage';
 import SupplierManagementPage from './pages/nha-cung-cap/SupplierManagementPage';
 import CabinetManagementPage from './pages/tu-thuoc/CabinetManagementPage';
 import AdmissionRequestDetailPage from "./pages/inpatient/AdmissionRequestDetailPage";
 import LockedCabinetsPage from './pages/tu-thuoc/LockedCabinetsPage';
+import AccountManagementPage from './pages/employee-accounts/AccountManagementPage';
+import SessionManagementPage from './pages/sessions/SessionManagementPage';
+import AuditLogsPage from './pages/audit/AuditLogsPage';
+import DataImportPage from './pages/import/DataImportPage';
 
 const AdminRoutes = () => {
     return (
@@ -25,46 +30,30 @@ const AdminRoutes = () => {
                 {/* Employee Management */}
                 <Route path="employees" element={<EmployeeListPage />} />
                 <Route path="employees/create" element={<CreateEmployeePage />} />
-                <Route path="employees/search" element={<div>Trang Tìm kiếm Nhân viên</div>} />
 
                 {/* Employee Account Management */}
-                <Route path="employee-accounts" element={<div>Trang Danh sách Tài khoản NV</div>} />
-                <Route path="employee-accounts/create" element={<div>Trang Tạo Tài khoản NV</div>} />
-                <Route path="employee-accounts/roles" element={<div>Trang Quản lý Role</div>} />
+                <Route path="employee-accounts" element={<AccountManagementPage />} />
 
                 {/* Doctor Schedule */}
                 <Route path="doctor-schedules" element={<DoctorScheduleListPage />} />
                 <Route path="doctor-schedules/create" element={<CreateDoctorSchedulePage />} />
-                <Route path="doctor-schedules/time-slots" element={<div>Trang Khung giờ khả dụng</div>} />
-
-                {/* Employee Schedule */}
-                <Route path="employee-schedules" element={<div>Trang Danh sách Lịch NV</div>} />
-                <Route path="employee-schedules/create" element={<div>Trang Tạo Lịch NV</div>} />
-                <Route path="employee-schedules/attendance" element={<div>Trang Check-in/out</div>} />
-                <Route path="employee-schedules/overtime" element={<div>Trang Tính giờ OT</div>} />
-
-                {/* Shifts */}
-                <Route path="shifts" element={<div>Trang Danh sách Ca</div>} />
-                <Route path="shifts/create" element={<div>Trang Tạo Ca làm việc</div>} />
-
-                {/* Availability */}
-                <Route path="availability" element={<div>Trang Tình trạng Sẵn sàng</div>} />
 
                 {/* Admission Requests */}
                 <Route path="yeu-cau-nhap-vien" element={<AdmissionRequestPage />} />
                 <Route path="yeu-cau-nhap-vien/:id" element={<AdmissionRequestDetailPage />} /> {/* Do trang chi tiết lấy ra tên biến là id */}
 
-                {/* Leaves */}
-                <Route path="leaves" element={<div>Trang Danh sách Nghỉ phép</div>} />
-                <Route path="leaves/create" element={<div>Trang Tạo Đơn nghỉ phép</div>} />
-                <Route path="leaves/approval" element={<div>Trang Phê duyệt</div>} />
-
                 {/* Role & Permission Management */}
                 <Route path="roles" element={<RoleListPage />} />
-                <Route path="roles/permissions" element={<div>Trang Quyền theo Role</div>} />
-                <Route path="roles/create" element={<div>Trang Tạo Role mới</div>} />
-                <Route path="permissions/grant" element={<div>Trang Cấp quyền cho NV</div>} />
-                <Route path="permissions/revoke" element={<div>Trang Loại bỏ quyền NV</div>} />
+                <Route path="permissions" element={<PermissionListPage />} />
+
+                {/* Session Management */}
+                <Route path="sessions" element={<SessionManagementPage />} />
+
+                {/* Audit Logs */}
+                <Route path="audit" element={<AuditLogsPage />} />
+
+                {/* Data Import */}
+                <Route path="data-import" element={<DataImportPage />} />
 
                 {/* Supplier Management */}
                 <Route path="nha-cung-cap" element={<SupplierManagementPage />} />
@@ -75,7 +64,6 @@ const AdminRoutes = () => {
 
                 {/* Legacy routes */}
                 <Route path="users" element={<UserListPage />} />
-                <Route path="catalogs" element={<div>Trang Quản lý Danh mục</div>} />
             </Route>
         </Routes>
     );

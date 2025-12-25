@@ -401,6 +401,26 @@ export const adminRoleAPI = {
     });
   },
 
+  // Lấy role theo ID
+  getRoleById: async (id) => {
+    return apiCall(`api/v1/roles/${id}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Lấy role theo tên
+  getRoleByName: async (roleName) => {
+    return apiCall(`api/v1/roles/name/${roleName}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
   // Lấy permissions của một role
   getRolePermissions: async (roleId) => {
     return apiCall(`api/v1/roles/${roleId}/permissions`, {
@@ -422,6 +442,68 @@ export const adminRoleAPI = {
     });
   },
 
+  // Cập nhật role
+  updateRole: async (id, roleData) => {
+    return apiCall(`api/v1/roles/${id}`, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+      body: JSON.stringify(roleData),
+    });
+  },
+
+  // Xóa role
+  deleteRole: async (id) => {
+    return apiCall(`api/v1/roles/${id}`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Gán permissions cho role
+  assignPermissionsToRole: async (roleId, permissionIds) => {
+    return apiCall(`api/v1/roles/${roleId}/permissions`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+      body: JSON.stringify({ permissionIds }),
+    });
+  },
+
+  // Lấy tất cả permissions trong hệ thống
+  getAllPermissions: async () => {
+    return apiCall('api/v1/permissions', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Xóa một permission khỏi role
+  removePermissionFromRole: async (roleId, permissionId) => {
+    return apiCall(`api/v1/roles/${roleId}/permissions/${permissionId}`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Xóa tất cả permissions khỏi role
+  removeAllPermissionsFromRole: async (roleId) => {
+    return apiCall(`api/v1/roles/${roleId}/permissions`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
   // Cấp quyền cho employee
   grantPermission: async (employeeId, permissionData) => {
     return apiCall(`api/v1/employees/${employeeId}/permissions`, {
@@ -437,6 +519,295 @@ export const adminRoleAPI = {
   revokePermission: async (employeeId, permissionId) => {
     return apiCall(`api/v1/employees/${employeeId}/permissions/${permissionId}`, {
       method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+};
+
+// API Quản lý Permissions
+export const adminPermissionAPI = {
+  // Lấy tất cả permissions (đã có trong adminRoleAPI.getAllPermissions, nhưng tạo riêng cho rõ ràng)
+  getPermissions: async () => {
+    return apiCall('api/v1/permissions', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Lấy permission theo ID
+  getPermissionById: async (id) => {
+    return apiCall(`api/v1/permissions/${id}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Lấy permission theo tên
+  getPermissionByName: async (permissionName) => {
+    return apiCall(`api/v1/permissions/name/${permissionName}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Tạo permission mới
+  createPermission: async (permissionData) => {
+    return apiCall('api/v1/permissions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+      body: JSON.stringify(permissionData),
+    });
+  },
+
+  // Cập nhật permission
+  updatePermission: async (id, permissionData) => {
+    return apiCall(`api/v1/permissions/${id}`, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+      body: JSON.stringify(permissionData),
+    });
+  },
+
+  // Xóa permission
+  deletePermission: async (id) => {
+    return apiCall(`api/v1/permissions/${id}`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+};
+
+// API Quản lý Sessions
+export const adminSessionAPI = {
+  // Lấy danh sách users đang online
+  getOnlineUsers: async (hoursBack = 8) => {
+    return apiCall(`api/v1/admin/sessions/online?hoursBack=${hoursBack}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Lấy tất cả phiên đăng nhập đang active
+  getActiveSessions: async () => {
+    return apiCall('api/v1/admin/sessions/active', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Lấy sessions theo username
+  getSessionsByUsername: async (username) => {
+    return apiCall(`api/v1/admin/sessions/user/${username}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Đóng một phiên đăng nhập cụ thể
+  terminateSession: async (sessionId) => {
+    return apiCall(`api/v1/admin/sessions/${sessionId}`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Đóng tất cả phiên đăng nhập của một user
+  terminateAllUserSessions: async (username) => {
+    return apiCall(`api/v1/admin/sessions/user/${username}`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Lấy thống kê sessions
+  getSessionStatistics: async (date = null) => {
+    const url = date
+      ? `api/v1/admin/sessions/statistics?date=${date}`
+      : 'api/v1/admin/sessions/statistics';
+
+    return apiCall(url, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+};
+
+// API Quản lý Audit Logs
+export const adminAuditAPI = {
+  // Tìm kiếm audit logs với nhiều điều kiện
+  searchAuditLogs: async (searchParams, page = 0, size = 20) => {
+    return apiCall(`api/v1/audit/search?page=${page}&size=${size}`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(searchParams),
+    });
+  },
+
+  // Lấy các hoạt động gần đây
+  getRecentActivity: async (limit = 50, hours = 24) => {
+    return apiCall(`api/v1/audit/recent?limit=${limit}&hours=${hours}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Lịch sử hoạt động của một user
+  getUserActivityHistory: async (username, startDate = null, endDate = null, page = 0, size = 20) => {
+    let url = `api/v1/audit/user/${username}?page=${page}&size=${size}`;
+    if (startDate) url += `&startDate=${startDate}`;
+    if (endDate) url += `&endDate=${endDate}`;
+
+    return apiCall(url, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Lịch sử đăng nhập/đăng xuất
+  getLoginHistory: async (params = {}) => {
+    const { username, status, action, startDate, endDate, page = 0, size = 20 } = params;
+    let url = `api/v1/audit/logins?page=${page}&size=${size}`;
+
+    if (username) url += `&username=${username}`;
+    if (status) url += `&status=${status}`;
+    if (action) url += `&action=${action}`;
+    if (startDate) url += `&startDate=${startDate}`;
+    if (endDate) url += `&endDate=${endDate}`;
+
+    return apiCall(url, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Lấy danh sách các lần đăng nhập thất bại
+  getFailedLoginAttempts: async (hours = 24, minAttempts = 3) => {
+    return apiCall(`api/v1/audit/logins/failed?hours=${hours}&minAttempts=${minAttempts}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Thống kê tổng quan về audit logs
+  getAuditStatistics: async (startDate = null, endDate = null) => {
+    let url = 'api/v1/audit/statistics';
+    const params = [];
+    if (startDate) params.push(`startDate=${startDate}`);
+    if (endDate) params.push(`endDate=${endDate}`);
+    if (params.length > 0) url += `?${params.join('&')}`;
+
+    return apiCall(url, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Dashboard tổng quan cho admin
+  getAuditDashboard: async () => {
+    return apiCall('api/v1/audit/dashboard', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+};
+
+// API Data Import
+export const adminDataImportAPI = {
+  // Import medicines from Excel
+  importMedicines: async (file) => {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    return apiCall('api/v1/admin/import/medicines', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+        // Don't set Content-Type, browser will set it with boundary for multipart/form-data
+      },
+      body: formData,
+    });
+  },
+
+  // Import services from Excel
+  importServices: async (file) => {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    return apiCall('api/v1/admin/import/services', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+      body: formData,
+    });
+  },
+
+  // Import medical supplies from Excel
+  importSupplies: async (file) => {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    return apiCall('api/v1/admin/import/supplies', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+      body: formData,
+    });
+  },
+
+  // Get import history
+  getImportHistory: async (params = {}) => {
+    const { page = 0, size = 10, type, startDate, endDate } = params;
+    let url = `api/v1/admin/import/history?page=${page}&size=${size}`;
+
+    if (type) url += `&type=${type}`;
+    if (startDate) url += `&startDate=${startDate}`;
+    if (endDate) url += `&endDate=${endDate}`;
+
+    return apiCall(url, {
+      method: 'GET',
       headers: {
         'Authorization': `Bearer ${getAccessToken()}`,
       },
@@ -554,20 +925,6 @@ export const adminAdmissionRequestAPI = {
       body: JSON.stringify(data),
     });
   },
-};
-
-export default {
-  adminAuthAPI,
-  adminDashboardAPI,
-  adminEmployeeAPI,
-  adminStaffAPI: adminEmployeeAPI, // Alias for backward compatibility
-  adminDepartmentAPI,
-  adminClinicAPI,
-  adminDoctorScheduleAPI,
-  adminServiceAPI,
-  adminReportAPI,
-  adminRoleAPI,
-  adminAdmissionRequestAPI,
 };
 
 // ==================== API Quản lý Nhà cung cấp (Supplier Management) ====================
@@ -905,4 +1262,216 @@ export const adminCabinetAPI = {
       },
     });
   },
+};
+
+// API Quản lý Tài khoản Nhân viên (Employee Account Management)
+export const adminAccountAPI = {
+  // Lấy tất cả tài khoản nhân viên
+  getAccounts: async () => {
+    console.log('Getting all employee accounts');
+    try {
+      const response = await apiCall('api/v1/employee-accounts', {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${getAccessToken()}`,
+        },
+      });
+      console.log('getAccounts response:', response);
+      return response;
+    } catch (error) {
+      console.error('getAccounts error:', error);
+      throw error;
+    }
+  },
+
+  // Lấy tài khoản với pagination
+  getAccountsPage: async (page = 0, size = 10) => {
+    console.log(`Getting employee accounts page ${page}, size ${size}`);
+    try {
+      const response = await apiCall(`api/v1/employee-accounts/page?page=${page}&size=${size}`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${getAccessToken()}`,
+        },
+      });
+      console.log('getAccountsPage response:', response);
+      return response;
+    } catch (error) {
+      console.error('getAccountsPage error:', error);
+      throw error;
+    }
+  },
+
+  // Lấy tài khoản theo ID
+  getAccountById: async (id) => {
+    console.log('Getting employee account by ID:', id);
+    try {
+      const response = await apiCall(`api/v1/employee-accounts/${id}`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${getAccessToken()}`,
+        },
+      });
+      console.log('getAccountById response:', response);
+      return response;
+    } catch (error) {
+      console.error('getAccountById error:', error);
+      throw error;
+    }
+  },
+
+  // Tạo tài khoản cho nhân viên
+  // API: POST /api/v1/employee-accounts
+  // Permission: user.manage
+  // Request body: { employeeId, username, password, isActive }
+  createAccountForExistingEmployee: async (accountData) => {
+    console.log('🔵 Creating account for existing employee');
+    console.log('📦 Request data:', JSON.stringify(accountData, null, 2));
+
+    // Validate required fields
+    if (!accountData.employeeId || !accountData.username || !accountData.password) {
+      throw new Error('Missing required fields: employeeId, username, password');
+    }
+
+    // Prepare request body theo đúng API specification
+    const requestBody = {
+      employeeId: parseInt(accountData.employeeId),
+      username: accountData.username.trim(),
+      password: accountData.password,
+      isActive: accountData.isActive !== undefined ? accountData.isActive : true,
+    };
+
+    const endpoint = 'api/v1/employee-accounts';
+    console.log('🌐 Endpoint:', endpoint);
+    console.log('🔑 Access Token:', getAccessToken() ? 'Present' : 'Missing');
+    console.log('📤 Final request body:', JSON.stringify(requestBody, null, 2));
+
+    try {
+      const response = await apiCall(endpoint, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${getAccessToken()}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(requestBody),
+      });
+      console.log('✅ createAccountForExistingEmployee response:', response);
+      return response;
+    } catch (error) {
+      console.error('❌ createAccountForExistingEmployee error:', error);
+      throw error;
+    }
+  },
+
+  // Cập nhật tài khoản
+  updateAccount: async (employeeId, accountData) => {
+    console.log('Updating employee account:', employeeId, accountData);
+    try {
+      const response = await apiCall(`api/v1/employee-accounts/${employeeId}`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${getAccessToken()}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(accountData),
+      });
+      console.log('updateAccount response:', response);
+      return response;
+    } catch (error) {
+      console.error('updateAccount error:', error);
+      throw error;
+    }
+  },
+
+  // Xóa tài khoản
+  deleteAccount: async (id) => {
+    console.log('Deleting employee account:', id);
+    try {
+      const response = await apiCall(`api/v1/employee-accounts/${id}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${getAccessToken()}`,
+        },
+      });
+      console.log('deleteAccount response:', response);
+      return response;
+    } catch (error) {
+      console.error('deleteAccount error:', error);
+      throw error;
+    }
+  },
+
+  // Kích hoạt tài khoản
+  activateAccount: async (id) => {
+    console.log('Activating employee account:', id);
+    try {
+      const response = await apiCall(`api/v1/employee-accounts/${id}/activate`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${getAccessToken()}`,
+        },
+      });
+      console.log('activateAccount response:', response);
+      return response;
+    } catch (error) {
+      console.error('activateAccount error:', error);
+      throw error;
+    }
+  },
+
+  // Vô hiệu hóa tài khoản
+  deactivateAccount: async (id) => {
+    console.log('Deactivating employee account:', id);
+    try {
+      const response = await apiCall(`api/v1/employee-accounts/${id}/deactivate`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${getAccessToken()}`,
+        },
+      });
+      console.log('deactivateAccount response:', response);
+      return response;
+    } catch (error) {
+      console.error('deactivateAccount error:', error);
+      throw error;
+    }
+  },
+
+  // Reset mật khẩu
+  resetPassword: async (id, newPassword) => {
+    console.log('Resetting password for account:', id);
+    try {
+      const response = await apiCall(`api/v1/employee-accounts/${id}/reset-password`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${getAccessToken()}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ newPassword }),
+      });
+      console.log('resetPassword response:', response);
+      return response;
+    } catch (error) {
+      console.error('resetPassword error:', error);
+      throw error;
+    }
+  },
+};
+
+// ==================== Export Default ====================
+export default {
+  adminAuthAPI,
+  adminDashboardAPI,
+  adminEmployeeAPI,
+  adminStaffAPI: adminEmployeeAPI, // Alias for backward compatibility
+  adminDepartmentAPI,
+  adminClinicAPI,
+  adminDoctorScheduleAPI,
+  adminServiceAPI,
+  adminReportAPI,
+  adminRoleAPI,
+  adminAdmissionRequestAPI,
+  adminSupplierAPI,
+  adminCabinetAPI,
+  adminAccountAPI,
 };

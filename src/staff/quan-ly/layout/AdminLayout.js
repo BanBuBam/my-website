@@ -2,9 +2,8 @@ import React, { useState } from 'react';
 import { NavLink, Outlet } from 'react-router-dom';
 import './AdminLayout.css';
 import {
-    FiUsers, FiShield, FiGrid, FiHome, FiUserCheck, FiCalendar,
-    FiClock, FiCheckSquare, FiUmbrella, FiChevronDown, FiChevronRight,
-    FiClipboard, FiPackage, FiArchive
+    FiUsers, FiShield, FiHome, FiUserCheck, FiCalendar,
+    FiChevronDown, FiChevronRight, FiClipboard, FiPackage, FiArchive, FiMonitor, FiFileText, FiUpload
 } from 'react-icons/fi';
 import StaffAvatarDropdown from '../../components/StaffAvatarDropdown';
 
@@ -46,27 +45,16 @@ const AdminLayout = () => {
                                 <ul className="submenu">
                                     <li><NavLink to="/staff/admin/employees">Danh sách Nhân viên</NavLink></li>
                                     <li><NavLink to="/staff/admin/employees/create">Tạo Nhân viên</NavLink></li>
-                                    <li><NavLink to="/staff/admin/employees/search">Tìm kiếm Nhân viên</NavLink></li>
                                 </ul>
                             )}
                         </li>
 
                         {/* Quản lý Tài khoản Nhân viên */}
-                        <li className="menu-group">
-                            <div className="menu-header" onClick={() => toggleMenu('accounts')}>
-                                <div className="menu-title">
-                                    <FiUserCheck />
-                                    <span>Quản lý Tài khoản NV</span>
-                                </div>
-                                {openMenus.accounts ? <FiChevronDown /> : <FiChevronRight />}
-                            </div>
-                            {openMenus.accounts && (
-                                <ul className="submenu">
-                                    <li><NavLink to="/staff/admin/employee-accounts">Danh sách Tài khoản</NavLink></li>
-                                    <li><NavLink to="/staff/admin/employee-accounts/create">Tạo Tài khoản</NavLink></li>
-                                    <li><NavLink to="/staff/admin/employee-accounts/roles">Quản lý Role</NavLink></li>
-                                </ul>
-                            )}
+                        <li>
+                            <NavLink to="/staff/admin/employee-accounts">
+                                <FiUserCheck />
+                                <span>Quản lý Tài khoản NV</span>
+                            </NavLink>
                         </li>
 
                         {/* Quản lý Lịch làm việc Bác sĩ */}
@@ -82,53 +70,8 @@ const AdminLayout = () => {
                                 <ul className="submenu">
                                     <li><NavLink to="/staff/admin/doctor-schedules">Danh sách Lịch BS</NavLink></li>
                                     <li><NavLink to="/staff/admin/doctor-schedules/create">Tạo Lịch BS</NavLink></li>
-                                    <li><NavLink to="/staff/admin/doctor-schedules/time-slots">Khung giờ khả dụng</NavLink></li>
                                 </ul>
                             )}
-                        </li>
-
-                        {/* Quản lý Lịch làm việc Nhân viên */}
-                        <li className="menu-group">
-                            <div className="menu-header" onClick={() => toggleMenu('employeeSchedule')}>
-                                <div className="menu-title">
-                                    <FiClock />
-                                    <span>Lịch làm việc NV</span>
-                                </div>
-                                {openMenus.employeeSchedule ? <FiChevronDown /> : <FiChevronRight />}
-                            </div>
-                            {openMenus.employeeSchedule && (
-                                <ul className="submenu">
-                                    <li><NavLink to="/staff/admin/employee-schedules">Danh sách Lịch NV</NavLink></li>
-                                    <li><NavLink to="/staff/admin/employee-schedules/create">Tạo Lịch NV</NavLink></li>
-                                    <li><NavLink to="/staff/admin/employee-schedules/attendance">Check-in/out</NavLink></li>
-                                    <li><NavLink to="/staff/admin/employee-schedules/overtime">Tính giờ OT</NavLink></li>
-                                </ul>
-                            )}
-                        </li>
-
-                        {/* Quản lý Ca làm việc */}
-                        <li className="menu-group">
-                            <div className="menu-header" onClick={() => toggleMenu('shifts')}>
-                                <div className="menu-title">
-                                    <FiCheckSquare />
-                                    <span>Quản lý Ca làm việc</span>
-                                </div>
-                                {openMenus.shifts ? <FiChevronDown /> : <FiChevronRight />}
-                            </div>
-                            {openMenus.shifts && (
-                                <ul className="submenu">
-                                    <li><NavLink to="/staff/admin/shifts">Danh sách Ca</NavLink></li>
-                                    <li><NavLink to="/staff/admin/shifts/create">Tạo Ca làm việc</NavLink></li>
-                                </ul>
-                            )}
-                        </li>
-
-                        {/* Quản lý Tình trạng Sẵn sàng */}
-                        <li>
-                            <NavLink to="/staff/admin/availability">
-                                <FiGrid />
-                                <span>Tình trạng Sẵn sàng</span>
-                            </NavLink>
                         </li>
 
                         {/* Quản lý Yêu cầu Nhập viện */}
@@ -137,24 +80,6 @@ const AdminLayout = () => {
                                 <FiClipboard />
                                 <span>Yêu cầu Nhập viện</span>
                             </NavLink>
-                        </li>
-
-                        {/* Quản lý Nghỉ phép */}
-                        <li className="menu-group">
-                            <div className="menu-header" onClick={() => toggleMenu('leaves')}>
-                                <div className="menu-title">
-                                    <FiUmbrella />
-                                    <span>Quản lý Nghỉ phép</span>
-                                </div>
-                                {openMenus.leaves ? <FiChevronDown /> : <FiChevronRight />}
-                            </div>
-                            {openMenus.leaves && (
-                                <ul className="submenu">
-                                    <li><NavLink to="/staff/admin/leaves">Danh sách Nghỉ phép</NavLink></li>
-                                    <li><NavLink to="/staff/admin/leaves/create">Tạo Đơn nghỉ phép</NavLink></li>
-                                    <li><NavLink to="/staff/admin/leaves/approval">Phê duyệt</NavLink></li>
-                                </ul>
-                            )}
                         </li>
 
                         {/* Quản lý Quyền truy cập */}
@@ -169,12 +94,33 @@ const AdminLayout = () => {
                             {openMenus.permissions && (
                                 <ul className="submenu">
                                     <li><NavLink to="/staff/admin/roles">Danh sách Role</NavLink></li>
-                                    <li><NavLink to="/staff/admin/roles/permissions">Quyền theo Role</NavLink></li>
-                                    <li><NavLink to="/staff/admin/roles/create">Tạo Role mới</NavLink></li>
-                                    <li><NavLink to="/staff/admin/permissions/grant">Cấp quyền cho NV</NavLink></li>
-                                    <li><NavLink to="/staff/admin/permissions/revoke">Loại bỏ quyền NV</NavLink></li>
+                                    <li><NavLink to="/staff/admin/permissions">Danh sách Permission</NavLink></li>
                                 </ul>
                             )}
+                        </li>
+
+                        {/* Quản lý Sessions */}
+                        <li>
+                            <NavLink to="/staff/admin/sessions">
+                                <FiMonitor />
+                                <span>Quản lý Sessions</span>
+                            </NavLink>
+                        </li>
+
+                        {/* Audit Logs */}
+                        <li>
+                            <NavLink to="/staff/admin/audit">
+                                <FiFileText />
+                                <span>Audit Logs</span>
+                            </NavLink>
+                        </li>
+
+                        {/* Data Import */}
+                        <li>
+                            <NavLink to="/staff/admin/data-import">
+                                <FiUpload />
+                                <span>Data Import</span>
+                            </NavLink>
                         </li>
 
                         {/* Quản lý Nhà cung cấp */}

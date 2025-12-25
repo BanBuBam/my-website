@@ -3,9 +3,13 @@ import { useNavigate } from 'react-router-dom';
 import './RoleListPage.css';
 import {
     FiShield, FiUsers, FiEye, FiPlus, FiRefreshCw,
-    FiAlertCircle, FiClock
+    FiAlertCircle, FiClock, FiInfo, FiEdit2, FiTrash2, FiLock, FiX
 } from 'react-icons/fi';
 import { adminRoleAPI } from '../../../../services/staff/adminAPI';
+import ViewRoleDetailModal from '../../components/ViewRoleDetailModal';
+import EditRoleModal from '../../components/EditRoleModal';
+import CreateRoleModal from '../../components/CreateRoleModal';
+import AssignPermissionsModal from '../../components/AssignPermissionsModal';
 
 const RoleListPage = () => {
     const navigate = useNavigate();
@@ -15,6 +19,14 @@ const RoleListPage = () => {
     const [expandedRoles, setExpandedRoles] = useState({});
     const [loadingPermissions, setLoadingPermissions] = useState({});
     const [rolePermissions, setRolePermissions] = useState({});
+    const [selectedRoleId, setSelectedRoleId] = useState(null);
+    const [isViewModalOpen, setIsViewModalOpen] = useState(false);
+    const [selectedRole, setSelectedRole] = useState(null);
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+    const [isAssignPermissionsModalOpen, setIsAssignPermissionsModalOpen] = useState(false);
+    const [deletingRoleId, setDeletingRoleId] = useState(null);
+    const [removingPermission, setRemovingPermission] = useState({});
 
     useEffect(() => {
         fetchRoles();
@@ -111,7 +123,7 @@ const RoleListPage = () => {
 
     const groupPermissionsByResource = (permissions) => {
         if (!permissions || permissions.length === 0) return {};
-        
+
         const grouped = {};
         permissions.forEach(perm => {
             if (!grouped[perm.resource]) {
@@ -120,6 +132,127 @@ const RoleListPage = () => {
             grouped[perm.resource].push(perm);
         });
         return grouped;
+    };
+
+    const handleViewRoleDetail = (roleId) => {
+        setSelectedRoleId(roleId);
+        setIsViewModalOpen(true);
+    };
+
+    const handleCloseViewModal = () => {
+        setIsViewModalOpen(false);
+        setSelectedRoleId(null);
+    };
+
+    const handleEditRole = (role) => {
+        setSelectedRole(role);
+        setIsEditModalOpen(true);
+    };
+
+    const handleCloseEditModal = () => {
+        setIsEditModalOpen(false);
+        setSelectedRole(null);
+    };
+
+    const handleEditSuccess = () => {
+        fetchRoles();
+    };
+
+    const handleOpenCreateModal = () => {
+        setIsCreateModalOpen(true);
+    };
+
+    const handleCloseCreateModal = () => {
+        setIsCreateModalOpen(false);
+    };
+
+    const handleCreateSuccess = () => {
+        fetchRoles();
+    };
+
+    const handleOpenAssignPermissionsModal = (role) => {
+        setSelectedRole(role);
+        setIsAssignPermissionsModalOpen(true);
+    };
+
+    const handleCloseAssignPermissionsModal = () => {
+        setIsAssignPermissionsModalOpen(false);
+        setSelectedRole(null);
+    };
+
+    const handleAssignPermissionsSuccess = () => {
+        // Refresh permissions for the role if it's expanded
+        if (selectedRole && expandedRoles[selectedRole.roleId]) {
+            fetchRolePermissions(selectedRole.roleId);
+        }
+    };
+
+    const handleRemovePermission = async (roleId, roleName, permissionId, permissionName) => {
+        const confirmMessage = `Bạn có chắc chắn muốn xóa permission "${permissionName}" khỏi role "${roleName}"?`;
+
+        if (!window.confirm(confirmMessage)) {
+            return;
+        }
+
+        try {
+            setRemovingPermission({ [`${roleId}-${permissionId}`]: true });
+            const response = await adminRoleAPI.removePermissionFromRole(roleId, permissionId);
+
+            if (response && response.status === 'OK') {
+                alert('Xóa permission thành công!');
+                // Refresh permissions for this role
+                fetchRolePermissions(roleId);
+            }
+        } catch (err) {
+            console.error('Error removing permission:', err);
+            alert(err.message || 'Không thể xóa permission. Vui lòng thử lại!');
+        } finally {
+            setRemovingPermission({ [`${roleId}-${permissionId}`]: false });
+        }
+    };
+
+    const handleRemoveAllPermissions = async (roleId, roleName) => {
+        const confirmMessage = `Bạn có chắc chắn muốn xóa TẤT CẢ permissions khỏi role "${roleName}"?\n\nLưu ý: Hành động này không thể hoàn tác!`;
+
+        if (!window.confirm(confirmMessage)) {
+            return;
+        }
+
+        try {
+            const response = await adminRoleAPI.removeAllPermissionsFromRole(roleId);
+
+            if (response && response.status === 'OK') {
+                alert('Đã xóa tất cả permissions thành công!');
+                // Refresh permissions for this role
+                fetchRolePermissions(roleId);
+            }
+        } catch (err) {
+            console.error('Error removing all permissions:', err);
+            alert(err.message || 'Không thể xóa permissions. Vui lòng thử lại!');
+        }
+    };
+
+    const handleDeleteRole = async (roleId, roleName) => {
+        const confirmMessage = `Bạn có chắc chắn muốn xóa role "${roleName}"?\n\nLưu ý: Hành động này không thể hoàn tác!`;
+
+        if (!window.confirm(confirmMessage)) {
+            return;
+        }
+
+        try {
+            setDeletingRoleId(roleId);
+            const response = await adminRoleAPI.deleteRole(roleId);
+
+            if (response && response.status === 'OK') {
+                alert('Xóa role thành công!');
+                fetchRoles();
+            }
+        } catch (err) {
+            console.error('Error deleting role:', err);
+            alert(err.message || 'Không thể xóa role. Vui lòng thử lại!');
+        } finally {
+            setDeletingRoleId(null);
+        }
     };
 
     // Calculate stats
@@ -141,7 +274,7 @@ const RoleListPage = () => {
                     <button className="btn-refresh" onClick={fetchRoles}>
                         <FiRefreshCw /> Làm mới
                     </button>
-                    <button className="btn-create" onClick={() => navigate('/staff/admin/roles/create')}>
+                    <button className="btn-create" onClick={handleOpenCreateModal}>
                         <FiPlus /> Tạo Role mới
                     </button>
                 </div>
@@ -214,25 +347,71 @@ const RoleListPage = () => {
                                         </span>
                                     </div>
                                 </div>
-                                <button 
-                                    className="btn-view-permissions"
-                                    onClick={() => toggleRoleExpansion(role.roleId)}
-                                    disabled={loadingPermissions[role.roleId]}
-                                >
-                                    {loadingPermissions[role.roleId] ? (
-                                        <>Đang tải...</>
-                                    ) : expandedRoles[role.roleId] ? (
-                                        <>Ẩn quyền</>
-                                    ) : (
-                                        <><FiEye /> Xem quyền</>
-                                    )}
-                                </button>
+                                <div className="role-actions">
+                                    <button
+                                        className="btn-view-detail"
+                                        onClick={() => handleViewRoleDetail(role.roleId)}
+                                        title="Xem chi tiết role"
+                                    >
+                                        <FiInfo /> Chi tiết
+                                    </button>
+                                    <button
+                                        className="btn-view-permissions"
+                                        onClick={() => toggleRoleExpansion(role.roleId)}
+                                        disabled={loadingPermissions[role.roleId]}
+                                    >
+                                        {loadingPermissions[role.roleId] ? (
+                                            <>Đang tải...</>
+                                        ) : expandedRoles[role.roleId] ? (
+                                            <>Ẩn quyền</>
+                                        ) : (
+                                            <><FiEye /> Xem quyền</>
+                                        )}
+                                    </button>
+                                    <button
+                                        className="btn-assign-permissions"
+                                        onClick={() => handleOpenAssignPermissionsModal(role)}
+                                        title="Gán permissions cho role"
+                                    >
+                                        <FiLock /> Gán quyền
+                                    </button>
+                                    <button
+                                        className="btn-edit"
+                                        onClick={() => handleEditRole(role)}
+                                        title="Chỉnh sửa role"
+                                    >
+                                        <FiEdit2 /> Sửa
+                                    </button>
+                                    <button
+                                        className="btn-delete"
+                                        onClick={() => handleDeleteRole(role.roleId, role.roleName)}
+                                        disabled={deletingRoleId === role.roleId}
+                                        title="Xóa role"
+                                    >
+                                        {deletingRoleId === role.roleId ? (
+                                            <>Đang xóa...</>
+                                        ) : (
+                                            <><FiTrash2 /> Xóa</>
+                                        )}
+                                    </button>
+                                </div>
                             </div>
 
                             {/* Permissions Section */}
                             {expandedRoles[role.roleId] && rolePermissions[role.roleId] && (
                                 <div className="permissions-section">
-                                    <h4>Danh sách quyền ({rolePermissions[role.roleId].length})</h4>
+                                    <div className="permissions-header">
+                                        <h4>Danh sách quyền ({rolePermissions[role.roleId].length})</h4>
+                                        {rolePermissions[role.roleId].length > 0 && (
+                                            <button
+                                                className="btn-remove-all-permissions"
+                                                onClick={() => handleRemoveAllPermissions(role.roleId, role.roleName)}
+                                                title="Xóa tất cả permissions"
+                                            >
+                                                <FiTrash2 /> Xóa tất cả
+                                            </button>
+                                        )}
+                                    </div>
                                     {rolePermissions[role.roleId].length === 0 ? (
                                         <p className="no-permissions">Role này chưa có quyền nào</p>
                                     ) : (
@@ -246,8 +425,22 @@ const RoleListPage = () => {
                                                     <div className="permission-list">
                                                         {perms.map(perm => (
                                                             <div key={perm.permissionId} className="permission-item">
-                                                                <span className="permission-name">{perm.permissionName}</span>
-                                                                <span className="permission-action">{perm.action}</span>
+                                                                <div className="permission-info">
+                                                                    <span className="permission-name">{perm.permissionName}</span>
+                                                                    <span className="permission-action">{perm.action}</span>
+                                                                </div>
+                                                                <button
+                                                                    className="btn-remove-permission"
+                                                                    onClick={() => handleRemovePermission(role.roleId, role.roleName, perm.permissionId, perm.permissionName)}
+                                                                    disabled={removingPermission[`${role.roleId}-${perm.permissionId}`]}
+                                                                    title="Xóa permission này"
+                                                                >
+                                                                    {removingPermission[`${role.roleId}-${perm.permissionId}`] ? (
+                                                                        <div className="spinner-tiny"></div>
+                                                                    ) : (
+                                                                        <FiX />
+                                                                    )}
+                                                                </button>
                                                             </div>
                                                         ))}
                                                     </div>
@@ -269,6 +462,36 @@ const RoleListPage = () => {
                     <p>Không có role nào trong hệ thống</p>
                 </div>
             )}
+
+            {/* View Role Detail Modal */}
+            <ViewRoleDetailModal
+                isOpen={isViewModalOpen}
+                onClose={handleCloseViewModal}
+                roleId={selectedRoleId}
+            />
+
+            {/* Edit Role Modal */}
+            <EditRoleModal
+                isOpen={isEditModalOpen}
+                onClose={handleCloseEditModal}
+                role={selectedRole}
+                onSuccess={handleEditSuccess}
+            />
+
+            {/* Create Role Modal */}
+            <CreateRoleModal
+                isOpen={isCreateModalOpen}
+                onClose={handleCloseCreateModal}
+                onSuccess={handleCreateSuccess}
+            />
+
+            {/* Assign Permissions Modal */}
+            <AssignPermissionsModal
+                isOpen={isAssignPermissionsModalOpen}
+                onClose={handleCloseAssignPermissionsModal}
+                role={selectedRole}
+                onSuccess={handleAssignPermissionsSuccess}
+            />
         </div>
     );
 };
