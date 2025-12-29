@@ -95,12 +95,12 @@ const LabTestOrderPage = () => {
             if (response && response.data) {
                 setLabOrders(response.data);
                 if (response.data.length === 0) {
-                    setError('Không tìm thấy lab test order nào cho encounter này');
+                    setError('Không tìm thấy yêu cầu xét nghiệm nào cho encounter này');
                 }
             }
         } catch (err) {
             console.error('Error fetching lab orders:', err);
-            setError(err.message || 'Không thể tải danh sách lab test orders');
+            setError(err.message || 'Không thể tải danh sách yêu cầu xét nghiệm');
         } finally {
             setLoading(false);
         }
@@ -221,7 +221,7 @@ const LabTestOrderPage = () => {
                 <div className="header-content">
                     <FiClipboard className="header-icon" />
                     <div>
-                        <h1>Lab Test Order</h1>
+                        <h1>Yêu cầu xét nghiệm</h1>
                         <p>Quản lý yêu cầu xét nghiệm</p>
                     </div>
                 </div>
@@ -390,7 +390,7 @@ const LabTestOrderPage = () => {
                     {loading && (
                         <div className="loading-state">
                             <FiRefreshCw className="spinning" />
-                            <p>Đang tải danh sách lab test orders...</p>
+                            <p>Đang tải danh sách yêu cầu xét nghiệm...</p>
                         </div>
                     )}
 
@@ -398,7 +398,7 @@ const LabTestOrderPage = () => {
                     {!loading && labOrders.length > 0 && (
                 <div className="orders-section">
                     <div className="section-header">
-                        <h2>Danh sách Lab Test Orders</h2>
+                        <h2>Danh sách yêu cầu xét nghiệm</h2>
                         <span className="count-badge">{labOrders.length} order(s)</span>
                     </div>
 

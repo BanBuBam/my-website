@@ -183,7 +183,7 @@ const LabTestResultPage = () => {
                 <div className="header-content">
                     <FiFileText className="header-icon" />
                     <div>
-                        <h1>Lab Test Result</h1>
+                        <h1>Kết quả xét nghiệm</h1>
                         <p>Quản lý kết quả xét nghiệm</p>
                     </div>
                 </div>

@@ -263,7 +263,7 @@ const DiagnosticOrdersPage = () => {
                 <div className="header-title">
                     <FiActivity className="header-icon" />
                     <div>
-                        <h1>Quản lý Diagnostic Orders</h1>
+                        <h1>Quản lý y lệnh chẩn đoán</h1>
                         <p>Quản lý các chỉ định chẩn đoán cấp cứu</p>
                     </div>
                 </div>

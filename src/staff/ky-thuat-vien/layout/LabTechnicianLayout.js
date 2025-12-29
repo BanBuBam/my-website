@@ -37,13 +37,13 @@ const LabTechnicianLayout = () => {
                             <li>
                                 <NavLink to="/staff/ky-thuat-vien/lab-test-order">
                                     <FiClipboard />
-                                    <span>Lab Test Order</span>
+                                    <span>Yêu cầu xét nghiệm</span>
                                 </NavLink>
                             </li>
                             <li>
                                 <NavLink to="/staff/ky-thuat-vien/lab-test-result">
                                     <FiFileText />
-                                    <span>Lab Test Result</span>
+                                    <span>Kết quả xét nghiệm</span>
                                 </NavLink>
                             </li>
                         </ul>
@@ -56,7 +56,7 @@ const LabTechnicianLayout = () => {
                             <li>
                                 <NavLink to="/staff/ky-thuat-vien/diagnostic-orders">
                                     <FiActivity />
-                                    <span>Quản lý Diagnostic Orders</span>
+                                    <span>Quản lý y lệnh chẩn đoán</span>
                                 </NavLink>
                             </li>
                         </ul>

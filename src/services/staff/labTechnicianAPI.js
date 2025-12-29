@@ -51,9 +51,9 @@ export const clearTokens = () => {
   localStorage.removeItem('labtechRefreshToken');
 };
 
-// API Lab Test Orders
+// API Yêu cầu xét nghiệm
 export const labTechnicianOrderAPI = {
-  // Lấy danh sách lab test orders của encounter
+  // Lấy danh sách yêu cầu xét nghiệm của encounter
   getLabTestOrders: async (encounterId) => {
     return apiCall(`api/v1/encounters/${encounterId}/lab-orders`, {
       method: 'GET',
@@ -95,7 +95,7 @@ export const labTechnicianOrderAPI = {
   },
 };
 
-// API Lab Test Results
+// API Kết quả xét nghiệm
 export const labTechnicianResultAPI = {
   // Lấy danh sách lab results đang chờ nhập
   getPendingLabResults: async () => {
