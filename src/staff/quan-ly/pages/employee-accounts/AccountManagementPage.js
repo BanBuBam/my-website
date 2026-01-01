@@ -673,7 +673,7 @@ const AccountManagementPage = () => {
                           onClick={() => handleViewDetails(account)}
                           title="Xem chi tiết"
                         >
-                          <FiEye />
+                          <FiEye style={{ color: '#1976d2', width: '20px', height: '20px', strokeWidth: '2px', display: 'block' }} />
                         </button>
                         <button
                           className="btn-icon btn-edit"

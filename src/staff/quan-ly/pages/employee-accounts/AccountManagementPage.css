@@ -155,21 +155,43 @@
   gap: 0.5rem;
 }
 
+/* --- UPDATED BUTTON STYLES (MATCHING MEDICINE PAGE) --- */
 .btn-icon {
-  display: flex;
+  width: 36px;
+  height: 36px;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 32px;
-  height: 32px;
   border: none;
-  border-radius: 6px;
+  border-radius: 8px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
+  font-size: 16px; /* Icon size inherits from this */
 }
 
-.btn-icon svg {
-  width: 16px;
-  height: 16px;
+/* Specific Style for View Button (Gradient & Shadow) */
+.btn-view {
+  background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);
+  color: #0284c7;
+  border: 1px solid #7dd3fc;
+}
+
+.btn-view:hover {
+  background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+  color: white;
+  transform: scale(1.1);
+  box-shadow: 0 4px 12px rgba(14, 165, 233, 0.4);
+}
+
+/* Other buttons inherit the new base .btn-icon structure */
+.btn-edit {
+  background-color: #fff3e0;
+  color: #f57c00;
+}
+
+.btn-edit:hover {
+  background-color: #f57c00;
+  color: #fff;
 }
 
 .btn-lock {
@@ -192,6 +214,26 @@
   color: #fff;
 }
 
+.btn-activate {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+}
+
+.btn-activate:hover {
+  background-color: #2e7d32;
+  color: #fff;
+}
+
+.btn-deactivate {
+  background-color: #ffebee;
+  color: #c62828;
+}
+
+.btn-deactivate:hover {
+  background-color: #c62828;
+  color: #fff;
+}
+
 .btn-reset {
   background-color: #fff3e0;
   color: #f57c00;
@@ -199,6 +241,16 @@
 
 .btn-reset:hover {
   background-color: #f57c00;
+  color: #fff;
+}
+
+.btn-delete {
+  background-color: #ffebee;
+  color: #d32f2f;
+}
+
+.btn-delete:hover {
+  background-color: #d32f2f;
   color: #fff;
 }
 
@@ -409,57 +461,6 @@
   font-style: italic;
 }
 
-/* Enhanced Action Buttons */
-.btn-view {
-  background-color: #e3f2fd;
-  color: #1976d2;
-}
-
-.btn-view:hover {
-  background-color: #1976d2;
-  color: #fff;
-}
-
-.btn-edit {
-  background-color: #fff3e0;
-  color: #f57c00;
-}
-
-.btn-edit:hover {
-  background-color: #f57c00;
-  color: #fff;
-}
-
-.btn-activate {
-  background-color: #e8f5e9;
-  color: #2e7d32;
-}
-
-.btn-activate:hover {
-  background-color: #2e7d32;
-  color: #fff;
-}
-
-.btn-deactivate {
-  background-color: #ffebee;
-  color: #c62828;
-}
-
-.btn-deactivate:hover {
-  background-color: #c62828;
-  color: #fff;
-}
-
-.btn-delete {
-  background-color: #ffebee;
-  color: #d32f2f;
-}
-
-.btn-delete:hover {
-  background-color: #d32f2f;
-  color: #fff;
-}
-
 @media (max-width: 768px) {
   .page-header {
     flex-direction: column;
@@ -609,4 +610,29 @@
   .page-numbers {
     flex-wrap: wrap;
   }
+}
+/* --- SỬA LỖI HIỂN THỊ ICON MẮT (ĐẶC TRỊ) --- */
+
+/* 1. Ép màu và nét vẽ trực tiếp cho các nét bên trong SVG */
+.btn-view svg path,
+.btn-view svg circle {
+    stroke: #0284c7 !important; /* Gán cứng màu xanh */
+    stroke-width: 2px !important;
+    fill: none !important;      /* Bắt buộc không tô nền */
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+
+/* 2. Xử lý khi Hover (Chuyển sang màu trắng) */
+.btn-view:hover svg path,
+.btn-view:hover svg circle {
+    stroke: #ffffff !important;
+}
+
+/* 3. Đảm bảo SVG cha không bị ẩn */
+.btn-view svg {
+    display: block !important;
+    min-width: 20px !important;
+    min-height: 20px !important;
+    overflow: visible !important; /* Đề phòng icon bị cắt nếu khung quá nhỏ */
 }

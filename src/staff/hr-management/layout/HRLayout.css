@@ -2,6 +2,7 @@
   display: flex;
   height: 100vh;
   background-color: #f4f7f6;
+  overflow: hidden; /* Ngăn scroll toàn trang */
 }
 
 /* --- Sidebar --- */
@@ -12,14 +13,16 @@
   border-right: 1px solid #e9ecef;
   display: flex;
   flex-direction: column;
-  padding: 1.5rem;
-  overflow-y: auto;
+  height: 100vh; /* Chiều cao đầy đủ */
+  overflow: hidden; /* Ngăn scroll toàn sidebar */
 }
 
 .hr-sidebar .sidebar-header {
   margin-bottom: 2rem;
+  padding: 0 1.5rem;
   padding-bottom: 1rem;
   border-bottom: 2px solid #e9ecef;
+  flex-shrink: 0; /* Không co lại khi scroll */
 }
 
 .hr-sidebar .sidebar-header h1 {
@@ -33,6 +36,33 @@
   font-size: 0.875rem;
   color: #6c757d;
   margin: 0;
+}
+
+/* Phần nav có thể scroll */
+.hr-sidebar .sidebar-nav {
+  flex: 1;
+  overflow-y: auto; /* Cho phép scroll dọc */
+  overflow-x: hidden;
+  padding: 0 1.5rem;
+}
+
+/* Custom scrollbar cho sidebar */
+.hr-sidebar .sidebar-nav::-webkit-scrollbar {
+  width: 6px;
+}
+
+.hr-sidebar .sidebar-nav::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 3px;
+}
+
+.hr-sidebar .sidebar-nav::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 3px;
+}
+
+.hr-sidebar .sidebar-nav::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
 }
 
 .hr-sidebar .sidebar-nav ul {
@@ -79,7 +109,8 @@
   flex: 1;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+  height: 100vh; /* Chiều cao đầy đủ */
+  overflow: hidden; /* Ngăn scroll toàn content */
 }
 
 .hr-content .content-header {
@@ -90,12 +121,33 @@
   justify-content: flex-end;
   align-items: center;
   min-height: 70px;
+  flex-shrink: 0; /* Không co lại khi scroll */
 }
 
 .hr-content .content-body {
   flex: 1;
-  overflow-y: auto;
+  overflow-y: auto; /* Cho phép scroll dọc */
+  overflow-x: hidden;
   padding: 2rem;
+}
+
+/* Custom scrollbar cho content body */
+.hr-content .content-body::-webkit-scrollbar {
+  width: 8px;
+}
+
+.hr-content .content-body::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 4px;
+}
+
+.hr-content .content-body::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+.hr-content .content-body::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
 }
 
 /* --- Responsive --- */
