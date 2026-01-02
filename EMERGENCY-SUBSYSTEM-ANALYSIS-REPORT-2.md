@@ -590,7 +590,7 @@ Hệ thống tuân theo các chuẩn quốc tế về phân loại cấp cứu (
 │       "emergencyContactPhone": "..."                                        │
 │     }                                                                       │
 │     → Status: WAITING_TRIAGE                                                │
-│                                                                             │
+│                                                                              │
 │  3. PHÂN CÔNG ĐIỀU DƯỠNG TRIAGE                                             │
 │     PUT /api/v1/emergency/encounters/{id}/assign-nurse?nurseId=456          │
 │     → Status: IN_TRIAGE                                                     │
@@ -599,7 +599,7 @@ Hệ thống tuân theo các chuẩn quốc tế về phân loại cấp cứu (
 │     PUT /api/v1/emergency/encounters/{id}/complete-triage                   │
 │     ?category=EMERGENCY&assessment=...&vitalSigns=...&painScore=8           │
 │     → Status: WAITING_DOCTOR                                                │
-│     → Category: EMERGENCY (Level 2 - Màu cam - Chờ tối đa 10 phút)          │
+│     → Category: EMERGENCY (Level 2 - Màu cam - Chờ tối đa 10 phút)         │
 │                                                                             │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```

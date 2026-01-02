@@ -169,7 +169,7 @@ const LabTestOrderPage = () => {
             const response = await doctorEncounterAPI.createLabTestOrder(encounter.encounterId, payload);
 
             if (response && response.data) {
-                alert('Tạo lab test order thành công!');
+                alert('Tạo yêu cầu xét nghiệm thành công!');
                 setShowOrderModal(false);
                 setOrderFormData({
                     medicalTestIds: [],
@@ -182,7 +182,7 @@ const LabTestOrderPage = () => {
             }
         } catch (err) {
             console.error('Error creating lab order:', err);
-            alert(err.message || 'Không thể tạo lab test order');
+            alert(err.message || 'Không thể tạo yêu cầu xét nghiệm');
         } finally {
             setSubmitting(false);
         }
@@ -224,7 +224,7 @@ const LabTestOrderPage = () => {
                 <div className="header-content">
                     <FiClipboard className="header-icon" />
                     <div>
-                        <h1>Lab Test Order</h1>
+                        <h1>yêu cầu xét nghiệm</h1>
                         <p>Tạo và quản lý yêu cầu xét nghiệm</p>
                     </div>
                 </div>
@@ -329,7 +329,7 @@ const LabTestOrderPage = () => {
                 <div className="modal-overlay" onClick={() => setShowOrderModal(false)}>
                     <div className="modal-content order-modal" onClick={(e) => e.stopPropagation()}>
                         <div className="modal-header">
-                            <h3>Tạo Lab Test Order</h3>
+                            <h3>Tạo yêu cầu xét nghiệm</h3>
                             <button className="modal-close" onClick={() => setShowOrderModal(false)}>
                                 <FiX />
                             </button>
@@ -472,7 +472,7 @@ const LabTestOrderPage = () => {
                 <div className="modal-overlay" onClick={() => setShowOrderListModal(false)}>
                     <div className="modal-content order-list-modal" onClick={(e) => e.stopPropagation()}>
                         <div className="modal-header">
-                            <h3>Danh sách Lab Test Orders</h3>
+                            <h3>Danh sách yêu cầu xét nghiệms</h3>
                             <button className="modal-close" onClick={() => setShowOrderListModal(false)}>
                                 <FiX />
                             </button>

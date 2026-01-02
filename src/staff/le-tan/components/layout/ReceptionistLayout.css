@@ -1,7 +1,8 @@
 .receptionist-layout {
   display: flex;
-  height: 100%; /* Chiếm toàn bộ chiều cao của container cha */
+  height: 100vh; /* Chiếm toàn bộ chiều cao viewport */
   background-color: #f4f7f6;
+  overflow: hidden; /* Ngăn scroll toàn trang */
 }
 
 /* --- CSS cho Sidebar --- */
@@ -12,7 +13,8 @@
   border-right: 1px solid #e9ecef;
   display: flex;
   flex-direction: column;
-  padding: 1.5rem;
+  height: 100vh; /* Chiều cao đầy đủ */
+  overflow: hidden; /* Ngăn scroll toàn sidebar */
 }
 
 .receptionist-sidebar .sidebar-header {
@@ -20,6 +22,8 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 2rem;
+  padding: 0 1.5rem;
+  flex-shrink: 0; /* Không co lại khi scroll */
 }
 
 .receptionist-sidebar .sidebar-header h1 {
@@ -31,6 +35,33 @@
 .receptionist-sidebar .sidebar-header img {
   width: 40px;
   height: 40px;
+}
+
+/* Phần nav có thể scroll */
+.receptionist-sidebar .sidebar-nav {
+  flex: 1;
+  overflow-y: auto; /* Cho phép scroll dọc */
+  overflow-x: hidden;
+  padding: 0 1.5rem;
+}
+
+/* Custom scrollbar cho sidebar */
+.receptionist-sidebar .sidebar-nav::-webkit-scrollbar {
+  width: 6px;
+}
+
+.receptionist-sidebar .sidebar-nav::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 3px;
+}
+
+.receptionist-sidebar .sidebar-nav::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 3px;
+}
+
+.receptionist-sidebar .sidebar-nav::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
 }
 
 .receptionist-sidebar .sidebar-nav ul {
@@ -72,7 +103,8 @@
   flex-grow: 1;
   display: flex;
   flex-direction: column;
-  overflow-y: auto;
+  height: 100vh; /* Chiều cao đầy đủ */
+  overflow: hidden; /* Ngăn scroll toàn content */
 }
 
 .content-header {
@@ -82,15 +114,34 @@
   padding: 1rem 2rem;
   background-color: #fff;
   border-bottom: 1px solid #e9ecef;
-  position: sticky;
-  top: 0;
+  flex-shrink: 0; /* Không co lại khi scroll */
   z-index: 100;
 }
 
 .content-body {
   flex: 1;
   padding: 2rem;
-  overflow-y: auto;
+  overflow-y: auto; /* Cho phép scroll dọc */
+  overflow-x: hidden;
+}
+
+/* Custom scrollbar cho content body */
+.content-body::-webkit-scrollbar {
+  width: 8px;
+}
+
+.content-body::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 4px;
+}
+
+.content-body::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+.content-body::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
 }
 /* --- THÊM ĐOẠN NÀY VÀO CUỐI FILE --- */
 

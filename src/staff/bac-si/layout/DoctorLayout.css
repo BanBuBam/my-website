@@ -1,6 +1,7 @@
 .doctor-layout {
     display: flex;
     height: 100vh;
+    overflow: hidden; /* Ngăn scroll toàn trang */
 }
 
 .doctor-sidebar {
@@ -10,14 +11,16 @@
     border-right: 1px solid #e9ecef;
     display: flex;
     flex-direction: column;
-    padding: 1.5rem;
-    overflow-y: auto;
+    height: 100vh; /* Chiều cao đầy đủ */
+    overflow: hidden; /* Ngăn scroll toàn sidebar */
 }
 
 .doctor-sidebar .sidebar-header {
     margin-bottom: 2rem;
+    padding: 0 1.5rem;
     padding-bottom: 1.5rem;
     border-bottom: 1px solid #f1f5f9;
+    flex-shrink: 0; /* Không co lại khi scroll */
 }
 
 .doctor-sidebar .sidebar-header h1 {
@@ -25,6 +28,33 @@
     font-weight: 600;
     color: #212529;
     margin: 0;
+}
+
+/* Phần nav có thể scroll */
+.doctor-sidebar .sidebar-nav {
+    flex: 1;
+    overflow-y: auto; /* Cho phép scroll dọc */
+    overflow-x: hidden;
+    padding: 0 1.5rem;
+}
+
+/* Custom scrollbar cho sidebar */
+.doctor-sidebar .sidebar-nav::-webkit-scrollbar {
+    width: 6px;
+}
+
+.doctor-sidebar .sidebar-nav::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 3px;
+}
+
+.doctor-sidebar .sidebar-nav::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 3px;
+}
+
+.doctor-sidebar .sidebar-nav::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
 }
 
 /* Navigation Categories */
@@ -87,7 +117,8 @@
     flex-grow: 1;
     display: flex;
     flex-direction: column;
-    overflow-y: auto;
+    height: 100vh; /* Chiều cao đầy đủ */
+    overflow: hidden; /* Ngăn scroll toàn content */
     background-color: #f9fafb;
 }
 
@@ -98,13 +129,32 @@
     padding: 1rem 2rem;
     background-color: #fff;
     border-bottom: 1px solid #e9ecef;
-    position: sticky;
-    top: 0;
+    flex-shrink: 0; /* Không co lại khi scroll */
     z-index: 100;
 }
 
 .content-body {
     flex: 1;
     padding: 2rem;
-    overflow-y: auto;
+    overflow-y: auto; /* Cho phép scroll dọc */
+    overflow-x: hidden;
+}
+
+/* Custom scrollbar cho content body */
+.content-body::-webkit-scrollbar {
+    width: 8px;
+}
+
+.content-body::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 4px;
+}
+
+.content-body::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 4px;
+}
+
+.content-body::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
 }

@@ -276,7 +276,7 @@ const DiagnosticOrderDetailPage = () => {
                     <FiArrowLeft /> Quay lại
                 </button>
                 <div className="header-title">
-                    <h1>Chi tiết Diagnostic Order</h1>
+                    <h1>Chi tiết lệnh chẩn đoán</h1>
                     <p>Order ID: {order.id}</p>
                 </div>
                 <div className="header-actions">
