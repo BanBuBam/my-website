@@ -107,7 +107,7 @@ const AuditLogsPage = () => {
             }
         } catch (err) {
             console.error('Error searching audit logs:', err);
-            setError(err.message || 'Không thể tìm kiếm audit logs');
+            setError(err.message || 'Không thể tìm kiếm nhật ký kiểm toán');
         } finally {
             setLoading(false);
         }
@@ -174,7 +174,7 @@ const AuditLogsPage = () => {
                 setDashboard(response.data);
             }
         } catch (err) {
-            setError(err.message || 'Không thể tải dashboard data');
+            setError(err.message || 'Không thể tải dữ liệu bảng điều khiển');
             setDashboard(null);
         } finally {
             setLoading(false);
@@ -220,11 +220,21 @@ const AuditLogsPage = () => {
             LOGIN_FAILED: 'danger',
             LOGOUT: 'info',
         };
-        return <span className={`badge badge-${colors[action] || 'secondary'}`}>{action}</span>;
+        const labels = {
+            CREATE: 'Tạo mới',
+            UPDATE: 'Cập nhật',
+            DELETE: 'Xóa',
+            VIEW: 'Xem',
+            LOGIN_SUCCESS: 'Đăng nhập thành công',
+            LOGIN_FAILED: 'Đăng nhập thất bại',
+            LOGOUT: 'Đăng xuất',
+        };
+        return <span className={`badge badge-${colors[action] || 'secondary'}`}>{labels[action] || action}</span>;
     };
 
     const renderStatusBadge = (status) => {
-        return <span className={`badge badge-${status === 'SUCCESS' ? 'success' : 'danger'}`}>{status}</span>;
+        const label = status === 'SUCCESS' ? 'Thành công' : status === 'FAILED' ? 'Thất bại' : status;
+        return <span className={`badge badge-${status === 'SUCCESS' ? 'success' : 'danger'}`}>{label}</span>;
     };
 
     return (
@@ -234,7 +244,7 @@ const AuditLogsPage = () => {
                 <div className="header-left">
                     <FiFileText className="page-icon" />
                     <div>
-                        <h1>Audit Logs</h1>
+                        <h1>Nhật ký Kiểm toán</h1>
                         <p>Theo dõi và kiểm tra lịch sử hoạt động hệ thống</p>
                     </div>
                 </div>
@@ -256,37 +266,37 @@ const AuditLogsPage = () => {
                     className={`tab ${activeView === 'search' ? 'active' : ''}`}
                     onClick={() => setActiveView('search')}
                 >
-                    <FiSearch /> Search Logs
+                    <FiSearch /> Tìm kiếm Nhật ký
                 </button>
                 <button
                     className={`tab ${activeView === 'recent' ? 'active' : ''}`}
                     onClick={() => setActiveView('recent')}
                 >
-                    <FiClock /> Recent Activity
+                    <FiClock /> Hoạt động Gần đây
                 </button>
                 <button
                     className={`tab ${activeView === 'logins' ? 'active' : ''}`}
                     onClick={() => setActiveView('logins')}
                 >
-                    <FiLogIn /> Login History
+                    <FiLogIn /> Lịch sử Đăng nhập
                 </button>
                 <button
                     className={`tab ${activeView === 'failed' ? 'active' : ''}`}
                     onClick={() => setActiveView('failed')}
                 >
-                    <FiShield /> Failed Logins
+                    <FiShield /> Đăng nhập Thất bại
                 </button>
                 <button
                     className={`tab ${activeView === 'statistics' ? 'active' : ''}`}
                     onClick={() => setActiveView('statistics')}
                 >
-                    <FiBarChart2 /> Statistics
+                    <FiBarChart2 /> Thống kê
                 </button>
                 <button
                     className={`tab ${activeView === 'dashboard' ? 'active' : ''}`}
                     onClick={() => setActiveView('dashboard')}
                 >
-                    <FiActivity /> Dashboard
+                    <FiActivity /> Bảng điều khiển
                 </button>
             </div>
 
@@ -314,70 +324,70 @@ const AuditLogsPage = () => {
                         <h3><FiFilter /> Bộ lọc tìm kiếm</h3>
                         <div className="filters-grid">
                             <div className="filter-item">
-                                <label>Username</label>
+                                <label>Tên đăng nhập</label>
                                 <input
                                     type="text"
-                                    placeholder="Nhập username..."
+                                    placeholder="Nhập tên đăng nhập..."
                                     value={searchParams.username}
                                     onChange={(e) => setSearchParams({...searchParams, username: e.target.value})}
                                 />
                             </div>
                             <div className="filter-item">
-                                <label>Action</label>
+                                <label>Hành động</label>
                                 <select
                                     value={searchParams.action}
                                     onChange={(e) => setSearchParams({...searchParams, action: e.target.value})}
                                 >
                                     <option value="">Tất cả</option>
-                                    <option value="CREATE">CREATE</option>
-                                    <option value="UPDATE">UPDATE</option>
-                                    <option value="DELETE">DELETE</option>
-                                    <option value="VIEW">VIEW</option>
+                                    <option value="CREATE">Tạo mới</option>
+                                    <option value="UPDATE">Cập nhật</option>
+                                    <option value="DELETE">Xóa</option>
+                                    <option value="VIEW">Xem</option>
                                 </select>
                             </div>
                             <div className="filter-item">
-                                <label>Module</label>
+                                <label>Mô-đun</label>
                                 <select
                                     value={searchParams.module}
                                     onChange={(e) => setSearchParams({...searchParams, module: e.target.value})}
                                 >
                                     <option value="">Tất cả</option>
-                                    <option value="PATIENT">PATIENT</option>
-                                    <option value="BOOKING">BOOKING</option>
-                                    <option value="PRESCRIPTION">PRESCRIPTION</option>
-                                    <option value="EMPLOYEE">EMPLOYEE</option>
-                                    <option value="INPATIENT">INPATIENT</option>
+                                    <option value="PATIENT">Bệnh nhân</option>
+                                    <option value="BOOKING">Đặt lịch</option>
+                                    <option value="PRESCRIPTION">Đơn thuốc</option>
+                                    <option value="EMPLOYEE">Nhân viên</option>
+                                    <option value="INPATIENT">Nội trú</option>
                                 </select>
                             </div>
                             <div className="filter-item">
-                                <label>Entity Type</label>
+                                <label>Loại đối tượng</label>
                                 <input
                                     type="text"
-                                    placeholder="Nhập entity type..."
+                                    placeholder="Nhập loại đối tượng..."
                                     value={searchParams.entityType}
                                     onChange={(e) => setSearchParams({...searchParams, entityType: e.target.value})}
                                 />
                             </div>
                             <div className="filter-item">
-                                <label>Entity ID</label>
+                                <label>Mã đối tượng</label>
                                 <input
                                     type="text"
-                                    placeholder="Nhập entity ID..."
+                                    placeholder="Nhập mã đối tượng..."
                                     value={searchParams.entityId}
                                     onChange={(e) => setSearchParams({...searchParams, entityId: e.target.value})}
                                 />
                             </div>
                             <div className="filter-item">
-                                <label>IP Address</label>
+                                <label>Địa chỉ IP</label>
                                 <input
                                     type="text"
-                                    placeholder="Nhập IP address..."
+                                    placeholder="Nhập địa chỉ IP..."
                                     value={searchParams.ipAddress}
                                     onChange={(e) => setSearchParams({...searchParams, ipAddress: e.target.value})}
                                 />
                             </div>
                             <div className="filter-item">
-                                <label>Start Date</label>
+                                <label>Ngày bắt đầu</label>
                                 <input
                                     type="datetime-local"
                                     value={searchParams.startDate}
@@ -385,7 +395,7 @@ const AuditLogsPage = () => {
                                 />
                             </div>
                             <div className="filter-item">
-                                <label>End Date</label>
+                                <label>Ngày kết thúc</label>
                                 <input
                                     type="datetime-local"
                                     value={searchParams.endDate}
@@ -406,20 +416,20 @@ const AuditLogsPage = () => {
                     {searchResults.length > 0 && (
                         <div className="results-section">
                             <div className="results-header">
-                                <h3>Kết quả tìm kiếm ({pagination.totalElements} logs)</h3>
+                                <h3>Kết quả tìm kiếm ({pagination.totalElements} nhật ký)</h3>
                                 <span>Trang {pagination.page + 1} / {pagination.totalPages}</span>
                             </div>
                             <div className="logs-table">
                                 <table>
                                     <thead>
                                         <tr>
-                                            <th>Log ID</th>
-                                            <th>Time</th>
-                                            <th>User</th>
-                                            <th>Action</th>
-                                            <th>Module</th>
-                                            <th>Entity</th>
-                                            <th>Description</th>
+                                            <th>Mã nhật ký</th>
+                                            <th>Thời gian</th>
+                                            <th>Người dùng</th>
+                                            <th>Hành động</th>
+                                            <th>Mô-đun</th>
+                                            <th>Đối tượng</th>
+                                            <th>Mô tả</th>
                                             <th>IP</th>
                                         </tr>
                                     </thead>
@@ -477,18 +487,18 @@ const AuditLogsPage = () => {
                     <div className="section-header">
                         <h3>Hoạt động gần đây</h3>
                         <div className="filters-inline">
-                            <label>Limit:</label>
+                            <label>Giới hạn:</label>
                             <select value={recentLimit} onChange={(e) => setRecentLimit(Number(e.target.value))}>
                                 <option value={20}>20</option>
                                 <option value={50}>50</option>
                                 <option value={100}>100</option>
                             </select>
-                            <label>Hours:</label>
+                            <label>Số giờ:</label>
                             <select value={recentHours} onChange={(e) => setRecentHours(Number(e.target.value))}>
-                                <option value={1}>1h</option>
-                                <option value={6}>6h</option>
-                                <option value={24}>24h</option>
-                                <option value={72}>72h</option>
+                                <option value={1}>1 giờ</option>
+                                <option value={6}>6 giờ</option>
+                                <option value={24}>24 giờ</option>
+                                <option value={72}>72 giờ</option>
                             </select>
                             <button className="btn-apply" onClick={fetchRecentActivity}>Áp dụng</button>
                         </div>
@@ -506,7 +516,7 @@ const AuditLogsPage = () => {
                                     <div className="activity-description">{activity.description}</div>
                                     <div className="activity-meta">
                                         <span>IP: {activity.ipAddress}</span>
-                                        <span>Entity: {activity.entityType} #{activity.entityId}</span>
+                                        <span>Đối tượng: {activity.entityType} #{activity.entityId}</span>
                                     </div>
                                 </div>
                             </div>
@@ -519,42 +529,42 @@ const AuditLogsPage = () => {
             {!loading && !error && activeView === 'logins' && (
                 <div className="content-section">
                     <div className="search-filters">
-                        <h3><FiFilter /> Bộ lọc Login History</h3>
+                        <h3><FiFilter /> Bộ lọc Lịch sử Đăng nhập</h3>
                         <div className="filters-grid">
                             <div className="filter-item">
-                                <label>Username</label>
+                                <label>Tên đăng nhập</label>
                                 <input
                                     type="text"
-                                    placeholder="Nhập username..."
+                                    placeholder="Nhập tên đăng nhập..."
                                     value={loginFilters.username}
                                     onChange={(e) => setLoginFilters({...loginFilters, username: e.target.value})}
                                 />
                             </div>
                             <div className="filter-item">
-                                <label>Status</label>
+                                <label>Trạng thái</label>
                                 <select
                                     value={loginFilters.status}
                                     onChange={(e) => setLoginFilters({...loginFilters, status: e.target.value})}
                                 >
                                     <option value="">Tất cả</option>
-                                    <option value="SUCCESS">SUCCESS</option>
-                                    <option value="FAILED">FAILED</option>
+                                    <option value="SUCCESS">Thành công</option>
+                                    <option value="FAILED">Thất bại</option>
                                 </select>
                             </div>
                             <div className="filter-item">
-                                <label>Action</label>
+                                <label>Hành động</label>
                                 <select
                                     value={loginFilters.action}
                                     onChange={(e) => setLoginFilters({...loginFilters, action: e.target.value})}
                                 >
                                     <option value="">Tất cả</option>
-                                    <option value="LOGIN_SUCCESS">LOGIN_SUCCESS</option>
-                                    <option value="LOGIN_FAILED">LOGIN_FAILED</option>
-                                    <option value="LOGOUT">LOGOUT</option>
+                                    <option value="LOGIN_SUCCESS">Đăng nhập thành công</option>
+                                    <option value="LOGIN_FAILED">Đăng nhập thất bại</option>
+                                    <option value="LOGOUT">Đăng xuất</option>
                                 </select>
                             </div>
                             <div className="filter-item">
-                                <label>Start Date</label>
+                                <label>Ngày bắt đầu</label>
                                 <input
                                     type="datetime-local"
                                     value={loginFilters.startDate}
@@ -562,7 +572,7 @@ const AuditLogsPage = () => {
                                 />
                             </div>
                             <div className="filter-item">
-                                <label>End Date</label>
+                                <label>Ngày kết thúc</label>
                                 <input
                                     type="datetime-local"
                                     value={loginFilters.endDate}
@@ -583,23 +593,23 @@ const AuditLogsPage = () => {
                     {loginHistory.length > 0 && (
                         <div className="results-section">
                             <div className="results-header">
-                                <h3>Lịch sử đăng nhập ({loginPagination.totalElements} logs)</h3>
+                                <h3>Lịch sử đăng nhập ({loginPagination.totalElements} nhật ký)</h3>
                                 <span>Trang {loginPagination.page + 1} / {loginPagination.totalPages}</span>
                             </div>
                             <div className="logs-table">
                                 <table>
                                     <thead>
                                         <tr>
-                                            <th>Log ID</th>
-                                            <th>Time</th>
-                                            <th>User</th>
-                                            <th>Employee</th>
-                                            <th>Action</th>
-                                            <th>Status</th>
-                                            <th>IP Address</th>
-                                            <th>User Agent</th>
-                                            <th>Session ID</th>
-                                            <th>Failure Reason</th>
+                                            <th>Mã nhật ký</th>
+                                            <th>Thời gian</th>
+                                            <th>Người dùng</th>
+                                            <th>Nhân viên</th>
+                                            <th>Hành động</th>
+                                            <th>Trạng thái</th>
+                                            <th>Địa chỉ IP</th>
+                                            <th>Trình duyệt</th>
+                                            <th>Mã phiên</th>
+                                            <th>Lý do thất bại</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -674,15 +684,15 @@ const AuditLogsPage = () => {
             {!loading && !error && activeView === 'failed' && (
                 <div className="content-section">
                     <div className="section-header">
-                        <h3>Failed Login Attempts</h3>
+                        <h3>Đăng nhập Thất bại</h3>
                         <div className="filters-inline">
-                            <label>Hours:</label>
+                            <label>Số giờ:</label>
                             <select value={failedHours} onChange={(e) => setFailedHours(Number(e.target.value))}>
-                                <option value={6}>6h</option>
-                                <option value={24}>24h</option>
-                                <option value={72}>72h</option>
+                                <option value={6}>6 giờ</option>
+                                <option value={24}>24 giờ</option>
+                                <option value={72}>72 giờ</option>
                             </select>
-                            <label>Min Attempts:</label>
+                            <label>Số lần tối thiểu:</label>
                             <select value={minAttempts} onChange={(e) => setMinAttempts(Number(e.target.value))}>
                                 <option value={3}>3</option>
                                 <option value={5}>5</option>
@@ -697,19 +707,19 @@ const AuditLogsPage = () => {
                                 <div className="card-header">
                                     <FiUser />
                                     <strong>{item.username}</strong>
-                                    {item.accountLocked && <span className="badge badge-danger">LOCKED</span>}
+                                    {item.accountLocked && <span className="badge badge-danger">Đã khóa</span>}
                                 </div>
                                 <div className="card-body">
                                     <div className="stat-row">
-                                        <span>Failed Attempts:</span>
+                                        <span>Số lần thất bại:</span>
                                         <strong className="danger-text">{item.failedAttempts}</strong>
                                     </div>
                                     <div className="stat-row">
-                                        <span>Last Attempt:</span>
+                                        <span>Lần thử cuối:</span>
                                         <span>{formatDateTime(item.lastAttempt)}</span>
                                     </div>
                                     <div className="stat-row">
-                                        <span>IP Addresses:</span>
+                                        <span>Địa chỉ IP:</span>
                                         <div className="ip-list">
                                             {item.ipAddresses.map((ip, i) => (
                                                 <span key={i} className="ip-tag">{ip}</span>
@@ -727,15 +737,15 @@ const AuditLogsPage = () => {
             {!loading && !error && activeView === 'statistics' && statistics && (
                 <div className="content-section">
                     <div className="section-header">
-                        <h3>Thống kê Audit Logs</h3>
+                        <h3>Thống kê Nhật ký Kiểm toán</h3>
                         <div className="filters-inline">
-                            <label>Start Date:</label>
+                            <label>Ngày bắt đầu:</label>
                             <input
                                 type="date"
                                 value={statsDateRange.startDate}
                                 onChange={(e) => setStatsDateRange({...statsDateRange, startDate: e.target.value})}
                             />
-                            <label>End Date:</label>
+                            <label>Ngày kết thúc:</label>
                             <input
                                 type="date"
                                 value={statsDateRange.endDate}
@@ -747,22 +757,22 @@ const AuditLogsPage = () => {
 
                     {/* Login Statistics */}
                     <div className="stats-section">
-                        <h4>📊 Login Statistics</h4>
+                        <h4>📊 Thống kê Đăng nhập</h4>
                         <div className="stats-grid-small">
                             <div className="stat-card-small">
-                                <div className="stat-label">Total Logins Today</div>
+                                <div className="stat-label">Tổng đăng nhập hôm nay</div>
                                 <div className="stat-value-large">{statistics.todayLoginTotal || 0}</div>
                             </div>
                             <div className="stat-card-small success">
-                                <div className="stat-label">Successful Logins</div>
+                                <div className="stat-label">Đăng nhập thành công</div>
                                 <div className="stat-value-large">{statistics.todayLoginSuccess || 0}</div>
                             </div>
                             <div className="stat-card-small danger">
-                                <div className="stat-label">Failed Logins</div>
+                                <div className="stat-label">Đăng nhập thất bại</div>
                                 <div className="stat-value-large">{statistics.todayLoginFailed || 0}</div>
                             </div>
                             <div className="stat-card-small info">
-                                <div className="stat-label">Success Rate</div>
+                                <div className="stat-label">Tỷ lệ thành công</div>
                                 <div className="stat-value-large">
                                     {statistics.todayLoginTotal > 0
                                         ? ((statistics.todayLoginSuccess / statistics.todayLoginTotal) * 100).toFixed(1)
@@ -774,7 +784,7 @@ const AuditLogsPage = () => {
                         {/* Login by Action */}
                         {statistics.loginByAction && statistics.loginByAction.length > 0 && (
                             <div className="chart-section">
-                                <h5>Login by Action</h5>
+                                <h5>Đăng nhập theo Hành động</h5>
                                 <div className="bar-chart">
                                     {statistics.loginByAction.map((item, index) => (
                                         <div key={index} className="bar-item">
@@ -800,10 +810,10 @@ const AuditLogsPage = () => {
 
                     {/* Activity Statistics */}
                     <div className="stats-section">
-                        <h4>📈 Activity Statistics</h4>
+                        <h4>📈 Thống kê Hoạt động</h4>
                         <div className="stats-grid-small">
                             <div className="stat-card-small">
-                                <div className="stat-label">Total Activities Today</div>
+                                <div className="stat-label">Tổng hoạt động hôm nay</div>
                                 <div className="stat-value-large">{statistics.todayActivityTotal || 0}</div>
                             </div>
                         </div>
@@ -811,7 +821,7 @@ const AuditLogsPage = () => {
                         {/* Activity by Action */}
                         {statistics.activityByAction && statistics.activityByAction.length > 0 && (
                             <div className="chart-section">
-                                <h5>Activity by Action</h5>
+                                <h5>Hoạt động theo Hành động</h5>
                                 <div className="bar-chart">
                                     {statistics.activityByAction.map((item, index) => {
                                         const maxCount = Math.max(...statistics.activityByAction.map(a => a.count));
@@ -846,7 +856,7 @@ const AuditLogsPage = () => {
                         {/* Activity by Module */}
                         {statistics.activityByModule && statistics.activityByModule.length > 0 && (
                             <div className="chart-section">
-                                <h5>Activity by Module</h5>
+                                <h5>Hoạt động theo Mô-đun</h5>
                                 <div className="bar-chart">
                                     {statistics.activityByModule.map((item, index) => {
                                         const maxCount = Math.max(...statistics.activityByModule.map(m => m.count));
@@ -899,15 +909,15 @@ const AuditLogsPage = () => {
                             <h4>📊 Thống kê hiện tại</h4>
                             <div className="stats-list">
                                 <div className="stat-item">
-                                    <span>Users Online:</span>
+                                    <span>Người dùng Online:</span>
                                     <strong className="text-blue">{dashboard.currentOnlineUsers || 0}</strong>
                                 </div>
                                 <div className="stat-item">
-                                    <span>Logins hôm nay:</span>
+                                    <span>Đăng nhập hôm nay:</span>
                                     <strong className="text-green">{dashboard.todayLogins || 0}</strong>
                                 </div>
                                 <div className="stat-item">
-                                    <span>Failed Logins hôm nay:</span>
+                                    <span>Đăng nhập thất bại hôm nay:</span>
                                     <strong className="text-red">{dashboard.todayFailedLogins || 0}</strong>
                                 </div>
                             </div>
@@ -945,15 +955,15 @@ const AuditLogsPage = () => {
                                     {dashboard.suspiciousActivities.map((item, index) => (
                                         <div key={index} className="suspicious-item">
                                             <div className="suspicious-type">
-                                                {item.type === 'MULTIPLE_FAILED_LOGINS' && '🔒 Multiple Failed Logins'}
-                                                {item.type === 'SUSPICIOUS_IP' && '🌐 Suspicious IP Address'}
-                                                {item.type === 'UNUSUAL_ACTIVITY' && '⚡ Unusual Activity'}
+                                                {item.type === 'MULTIPLE_FAILED_LOGINS' && '🔒 Nhiều lần đăng nhập thất bại'}
+                                                {item.type === 'SUSPICIOUS_IP' && '🌐 Địa chỉ IP đáng ngờ'}
+                                                {item.type === 'UNUSUAL_ACTIVITY' && '⚡ Hoạt động bất thường'}
                                                 {!['MULTIPLE_FAILED_LOGINS', 'SUSPICIOUS_IP', 'UNUSUAL_ACTIVITY'].includes(item.type) && item.type}
                                             </div>
                                             <div className="suspicious-details">
-                                                <span>User: <strong>{item.username}</strong></span>
-                                                <span>Count: <strong className="text-red">{item.count}</strong></span>
-                                                <span>Last: {formatDateTime(item.lastOccurrence)}</span>
+                                                <span>Người dùng: <strong>{item.username}</strong></span>
+                                                <span>Số lần: <strong className="text-red">{item.count}</strong></span>
+                                                <span>Lần cuối: {formatDateTime(item.lastOccurrence)}</span>
                                             </div>
                                         </div>
                                     ))}
@@ -967,31 +977,31 @@ const AuditLogsPage = () => {
 
                         {/* System Health */}
                         <div className="dashboard-card health-card">
-                            <h4>💚 System Health</h4>
+                            <h4>💚 Tình trạng Hệ thống</h4>
                             {dashboard.systemHealth ? (
                                 <div className="stats-list">
                                     <div className="stat-item">
-                                        <span>Status:</span>
+                                        <span>Trạng thái:</span>
                                         <span className={`badge badge-${dashboard.systemHealth.status === 'HEALTHY' ? 'success' : 'danger'}`}>
-                                            {dashboard.systemHealth.status}
+                                            {dashboard.systemHealth.status === 'HEALTHY' ? 'Khỏe mạnh' : dashboard.systemHealth.status}
                                         </span>
                                     </div>
                                     {dashboard.systemHealth.lastBackup && (
                                         <div className="stat-item">
-                                            <span>Last Backup:</span>
+                                            <span>Sao lưu lần cuối:</span>
                                             <span>{formatDateTime(dashboard.systemHealth.lastBackup)}</span>
                                         </div>
                                     )}
                                     {dashboard.systemHealth.databaseSize && (
                                         <div className="stat-item">
-                                            <span>Database Size:</span>
+                                            <span>Kích thước CSDL:</span>
                                             <strong>{dashboard.systemHealth.databaseSize}</strong>
                                         </div>
                                     )}
                                 </div>
                             ) : (
                                 <div className="empty-state-small">
-                                    <p>Không có thông tin system health</p>
+                                    <p>Không có thông tin tình trạng hệ thống</p>
                                 </div>
                             )}
                         </div>
@@ -1003,7 +1013,7 @@ const AuditLogsPage = () => {
             {!loading && !error && activeView === 'dashboard' && !dashboard && (
                 <div className="empty-state">
                     <FiBarChart2 />
-                    <p>Không có dữ liệu dashboard</p>
+                    <p>Không có dữ liệu bảng điều khiển</p>
                     <button className="btn-retry" onClick={fetchDashboard}>
                         <FiRefreshCw /> Thử lại
                     </button>

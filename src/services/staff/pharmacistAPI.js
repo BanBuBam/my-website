@@ -859,6 +859,22 @@ export const pharmacistPatientAPI = {
     });
   },
 
+  // Tìm kiếm bệnh nhân theo tên (sử dụng API admin search)
+  // API: GET /api/v1/patient/admin/search?name={name}
+  searchPatientsByName: async (name, page = 0, size = 10) => {
+    const params = new URLSearchParams({
+      name: name,
+      page: page.toString(),
+      size: size.toString(),
+    });
+    return apiCall(`api/v1/patient/admin/search?${params.toString()}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
   // Lấy thông tin bệnh nhân
   getPatientById: async (patientId) => {
     return apiCall(`api/v1/patients/${patientId}`, {

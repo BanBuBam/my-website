@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './CabinetManagementPage.css';
 import { FiRefreshCw, FiSearch, FiPackage, FiAlertCircle, FiX, FiPlus, FiTrash2 } from 'react-icons/fi';
 import { pharmacistCabinetAPI, pharmacistPatientAPI, medicineAPI } from '../../../../services/staff/pharmacistAPI';
+import PatientSearchModal from '../../components/PatientSearchModal';
 
 const CabinetInventoryPage = () => {
     // State quản lý
@@ -26,6 +27,7 @@ const CabinetInventoryPage = () => {
     });
 
     // State cho tìm kiếm bệnh nhân
+    const [showPatientSearchModal, setShowPatientSearchModal] = useState(false);
     const [patientSearchTerm, setPatientSearchTerm] = useState('');
     const [patientSearchResults, setPatientSearchResults] = useState([]);
     const [selectedPatient, setSelectedPatient] = useState(null);
@@ -126,7 +128,18 @@ const CabinetInventoryPage = () => {
         }
     };
 
-    // Chọn bệnh nhân
+    // Chọn bệnh nhân từ modal
+    const handleSelectPatientFromModal = (patient) => {
+        console.log('✅ Selected patient from modal:', patient);
+        setSelectedPatient(patient);
+        setDispenseFormData(prev => ({
+            ...prev,
+            patientId: patient.id || patient.patientId
+        }));
+        setShowPatientSearchModal(false);
+    };
+
+    // Chọn bệnh nhân (legacy - giữ lại cho compatibility)
     const handleSelectPatient = (patient) => {
         setSelectedPatient(patient);
         setDispenseFormData(prev => ({
@@ -422,14 +435,14 @@ const CabinetInventoryPage = () => {
             }
         }
 
-        // Prepare data for API - sử dụng snake_case theo format backend
+        // Prepare data for API - sử dụng camelCase theo format backend
         const items = restockItems.map(item => ({
-            item_type: item.itemType,
-            item_id: parseInt(item.itemId),
+            itemType: item.itemType,
+            itemId: parseInt(item.itemId),
             quantity: parseInt(item.quantity),
-            batch_number: item.batchNumber,
-            expiry_date: item.expiryDate,
-            unit_price: parseFloat(item.unitPrice) || 0
+            batchNumber: item.batchNumber,
+            expiryDate: item.expiryDate,
+            unitPrice: parseFloat(item.unitPrice) || 0
         }));
 
         // API expects array of items directly, not wrapped in object
@@ -437,7 +450,7 @@ const CabinetInventoryPage = () => {
 
         console.log('=== RESTOCK DEBUG ===');
         console.log('Cabinet ID:', selectedCabinet.cabinetId);
-        console.log('Restock Data (snake_case):', restockData);
+        console.log('Restock Data (camelCase):', restockData);
         console.log('Items:', items);
 
         try {
@@ -446,8 +459,18 @@ const CabinetInventoryPage = () => {
 
             console.log('Restock Response:', response);
 
-            if (response && (response.status === 'success' || response.code === 200 || response.OK)) {
-                alert('✅ Bổ sung tồn kho thành công!');
+            // Check for success
+            if (response && (response.status === 'OK' || response.code === 200)) {
+                // Check if there are any errors in the data
+                if (response.data && response.data.errors && response.data.errors.length > 0) {
+                    // Partial success or complete failure
+                    const errorMessages = response.data.errors.join('\n');
+                    alert(`⚠️ Bổ sung tồn kho hoàn tất với một số lỗi:\n\n${errorMessages}\n\nThành công: ${response.data.success_count}/${response.data.total_items} items`);
+                } else {
+                    // Complete success
+                    alert('✅ Bổ sung tồn kho thành công!');
+                }
+
                 setShowRestockModal(false);
 
                 // Reload inventory
@@ -455,8 +478,18 @@ const CabinetInventoryPage = () => {
                     loadCabinetInventory(selectedCabinet.cabinetId);
                 }
             } else {
+                // Handle error response
                 console.error('Unexpected response:', response);
-                throw new Error(response.message || 'Có lỗi xảy ra khi bổ sung tồn kho');
+
+                // Extract error details from response
+                let errorMessage = response.message || 'Có lỗi xảy ra khi bổ sung tồn kho';
+
+                if (response.data && response.data.errors && response.data.errors.length > 0) {
+                    const errorDetails = response.data.errors.join('\n');
+                    errorMessage = `${errorMessage}\n\nChi tiết lỗi:\n${errorDetails}`;
+                }
+
+                throw new Error(errorMessage);
             }
         } catch (err) {
             console.error('Error restocking:', err);
@@ -465,7 +498,17 @@ const CabinetInventoryPage = () => {
                 response: err.response,
                 stack: err.stack
             });
-            alert('❌ Lỗi khi bổ sung tồn kho: ' + getErrorMessage(err));
+
+            // Get detailed error message
+            let errorMsg = getErrorMessage(err);
+
+            // If error has response data with errors array, show them
+            if (err.response && err.response.data && err.response.data.errors) {
+                const errorDetails = err.response.data.errors.join('\n');
+                errorMsg = `${err.response.message || 'Lỗi khi bổ sung tồn kho'}\n\nChi tiết:\n${errorDetails}`;
+            }
+
+            alert('❌ ' + errorMsg);
         } finally {
             setLoading(false);
         }
@@ -475,6 +518,15 @@ const CabinetInventoryPage = () => {
     const getErrorMessage = (err) => {
         if (err.response) {
             const status = err.response.status;
+            const data = err.response.data;
+
+            if (status === 400) {
+                // Bad Request - show detailed error message
+                if (data && data.message) {
+                    return data.message;
+                }
+                return 'Dữ liệu không hợp lệ. Vui lòng kiểm tra lại.';
+            }
             if (status === 401) return 'Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.';
             if (status === 403) return 'Bạn không có quyền thực hiện thao tác này.';
             if (status === 404) return 'Không tìm thấy dữ liệu.';
@@ -589,21 +641,26 @@ const CabinetInventoryPage = () => {
                 </div>
 
                 {/* Right Panel - Inventory Items */}
-                <div style={{ flex: 1 }}>
+                <div style={{ flex: 1, minWidth: 0, overflow: 'hidden' }}>
                     {selectedCabinet ? (
                         <div className="inventory-panel" style={{
                             background: '#fff',
                             borderRadius: '16px',
                             padding: '1.5rem',
-                            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.08)'
+                            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.08)',
+                            height: '100%',
+                            display: 'flex',
+                            flexDirection: 'column'
                         }}>
                             <div style={{
                                 display: 'flex',
                                 justifyContent: 'space-between',
                                 alignItems: 'center',
-                                marginBottom: '1.5rem'
+                                marginBottom: '1.5rem',
+                                flexWrap: 'wrap',
+                                gap: '1rem'
                             }}>
-                                <div>
+                                <div style={{ flex: '1 1 auto', minWidth: '200px' }}>
                                     <h3 style={{ fontSize: '1.2rem', fontWeight: '600', marginBottom: '0.25rem' }}>
                                         {selectedCabinet.cabinetLocation}
                                     </h3>
@@ -615,6 +672,7 @@ const CabinetInventoryPage = () => {
                                     className="btn-primary"
                                     onClick={handleOpenDispenseModal}
                                     disabled={selectedCabinet.isLocked}
+                                    style={{ flexShrink: 0 }}
                                 >
                                     <FiPlus />
                                     Cấp phát
@@ -732,96 +790,96 @@ const CabinetInventoryPage = () => {
                             {/* Patient Search */}
                             <div className="form-group">
                                 <label>Bệnh nhân <span style={{ color: '#dc3545' }}>*</span></label>
-                                <div style={{ position: 'relative' }}>
-                                    <input
-                                        type="text"
-                                        className="form-control"
-                                        placeholder="Tìm kiếm bệnh nhân (tên, ID, số điện thoại)..."
-                                        value={patientSearchTerm}
-                                        onChange={(e) => {
-                                            setPatientSearchTerm(e.target.value);
-                                            handleSearchPatient(e.target.value);
-                                        }}
-                                        disabled={selectedPatient !== null}
-                                    />
-                                    {selectedPatient && (
+
+                                {!selectedPatient ? (
+                                    <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
+                                        <input
+                                            type="text"
+                                            className="form-control"
+                                            placeholder="Ngô Thanh Vân - P34202"
+                                            value=""
+                                            readOnly
+                                            style={{
+                                                flex: 1,
+                                                cursor: 'pointer',
+                                                background: '#f8f9fa'
+                                            }}
+                                            onClick={() => setShowPatientSearchModal(true)}
+                                        />
+                                        <button
+                                            className="btn-primary"
+                                            onClick={() => setShowPatientSearchModal(true)}
+                                            style={{
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                gap: '0.5rem',
+                                                whiteSpace: 'nowrap'
+                                            }}
+                                        >
+                                            <FiSearch />
+                                            Tìm kiếm
+                                        </button>
+                                    </div>
+                                ) : (
+                                    <div style={{
+                                        padding: '1rem',
+                                        background: '#e7f3ff',
+                                        border: '2px solid #007bff',
+                                        borderRadius: '8px',
+                                        display: 'flex',
+                                        justifyContent: 'space-between',
+                                        alignItems: 'center'
+                                    }}>
+                                        <div>
+                                            <div style={{
+                                                fontWeight: '600',
+                                                color: '#212529',
+                                                fontSize: '1.05rem',
+                                                marginBottom: '0.25rem'
+                                            }}>
+                                                {selectedPatient.fullName || selectedPatient.name}
+                                            </div>
+                                            <div style={{
+                                                fontSize: '0.9rem',
+                                                color: '#495057',
+                                                display: 'flex',
+                                                gap: '1rem',
+                                                flexWrap: 'wrap'
+                                            }}>
+                                                <span>Mã: {selectedPatient.patientCode || selectedPatient.id} - {selectedPatient.age || 'N/A'} tuổi</span>
+                                            </div>
+                                            <div style={{
+                                                fontSize: '0.85rem',
+                                                color: '#6c757d',
+                                                marginTop: '0.25rem'
+                                            }}>
+                                                SĐT: {selectedPatient.phoneNumber || selectedPatient.phone || 'N/A'}
+                                            </div>
+                                        </div>
                                         <button
                                             onClick={() => {
                                                 setSelectedPatient(null);
-                                                setPatientSearchTerm('');
                                                 setDispenseFormData(prev => ({ ...prev, patientId: '' }));
                                             }}
                                             style={{
-                                                position: 'absolute',
-                                                right: '10px',
-                                                top: '50%',
-                                                transform: 'translateY(-50%)',
                                                 background: '#dc3545',
                                                 color: '#fff',
                                                 border: 'none',
-                                                borderRadius: '4px',
-                                                padding: '0.25rem 0.5rem',
-                                                cursor: 'pointer'
+                                                borderRadius: '6px',
+                                                padding: '0.5rem 0.75rem',
+                                                cursor: 'pointer',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                gap: '0.25rem',
+                                                fontSize: '0.9rem',
+                                                fontWeight: '500',
+                                                transition: 'all 0.2s'
                                             }}
+                                            onMouseEnter={(e) => e.currentTarget.style.background = '#c82333'}
+                                            onMouseLeave={(e) => e.currentTarget.style.background = '#dc3545'}
                                         >
-                                            <FiX />
+                                            <FiX /> Xóa
                                         </button>
-                                    )}
-                                </div>
-
-                                {/* Patient Search Results */}
-                                {patientSearchResults.length > 0 && !selectedPatient && (
-                                    <div style={{
-                                        position: 'absolute',
-                                        zIndex: 1000,
-                                        background: '#fff',
-                                        border: '1px solid #dee2e6',
-                                        borderRadius: '8px',
-                                        marginTop: '0.25rem',
-                                        maxHeight: '200px',
-                                        overflowY: 'auto',
-                                        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
-                                        width: '100%'
-                                    }}>
-                                        {patientSearchResults.map(patient => (
-                                            <div
-                                                key={patient.patientId || patient.id}
-                                                onClick={() => handleSelectPatient(patient)}
-                                                style={{
-                                                    padding: '0.75rem 1rem',
-                                                    cursor: 'pointer',
-                                                    borderBottom: '1px solid #f1f3f5',
-                                                    transition: 'background 0.2s'
-                                                }}
-                                                onMouseEnter={(e) => e.currentTarget.style.background = '#f8f9fa'}
-                                                onMouseLeave={(e) => e.currentTarget.style.background = '#fff'}
-                                            >
-                                                <div style={{ fontWeight: '600' }}>
-                                                    {patient.fullName || patient.name}
-                                                </div>
-                                                <div style={{ fontSize: '0.85rem', color: '#6c757d' }}>
-                                                    ID: {patient.patientId || patient.id} |
-                                                    SĐT: {patient.phoneNumber || patient.phone || 'N/A'}
-                                                </div>
-                                            </div>
-                                        ))}
-                                    </div>
-                                )}
-
-                                {selectedPatient && (
-                                    <div style={{
-                                        marginTop: '0.5rem',
-                                        padding: '0.75rem',
-                                        background: '#d4edda',
-                                        border: '1px solid #c3e6cb',
-                                        borderRadius: '6px'
-                                    }}>
-                                        <div style={{ fontWeight: '600', color: '#155724' }}>
-                                            ✓ {selectedPatient.fullName || selectedPatient.name}
-                                        </div>
-                                        <div style={{ fontSize: '0.85rem', color: '#155724' }}>
-                                            ID: {selectedPatient.patientId || selectedPatient.id}
-                                        </div>
                                     </div>
                                 )}
                             </div>
@@ -1326,6 +1384,14 @@ const CabinetInventoryPage = () => {
                     </div>
                 </div>
             )}
+
+            {/* Patient Search Modal */}
+            <PatientSearchModal
+                isOpen={showPatientSearchModal}
+                onClose={() => setShowPatientSearchModal(false)}
+                onSelectPatient={handleSelectPatientFromModal}
+                searchAPI={pharmacistPatientAPI.searchPatientsByName}
+            />
         </div>
     );
 };

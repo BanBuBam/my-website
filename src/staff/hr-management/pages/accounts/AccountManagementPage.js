@@ -215,6 +215,22 @@ const AccountManagementPage = () => {
 
       console.log('✏️ Found account:', account);
       console.log('✏️ Employee ID from account:', account.employeeId);
+      console.log('✏️ Current username:', account.username);
+      console.log('✏️ New username:', accountData.username);
+
+      // ✅ Kiểm tra username duplicate khi update (exclude account hiện tại)
+      if (accountData.username && accountData.username.trim() !== account.username) {
+        const existingAccount = allAccounts.find(acc =>
+          acc.id !== accountId && // ✅ Exclude current account
+          acc.username &&
+          acc.username.toLowerCase() === accountData.username.trim().toLowerCase()
+        );
+
+        if (existingAccount) {
+          alert(`Username "${accountData.username}" đã được sử dụng bởi ${existingAccount.fullName}. Vui lòng chọn username khác.`);
+          throw new Error('Username đã tồn tại');
+        }
+      }
 
       // Sử dụng employeeId từ account object
       const employeeId = account.employeeId || accountId;
@@ -227,7 +243,12 @@ const AccountManagementPage = () => {
       await fetchAllAccountsForStats();
     } catch (err) {
       console.error('❌ Error updating account:', err);
-      alert('Lỗi khi cập nhật tài khoản: ' + err.message);
+
+      // Chỉ hiển thị alert nếu chưa hiển thị
+      if (!err.message.includes('Username đã tồn tại')) {
+        alert('Lỗi khi cập nhật tài khoản: ' + err.message);
+      }
+      throw err; // Re-throw để modal không đóng
     }
   };
 
