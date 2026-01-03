@@ -180,7 +180,28 @@ export const hrDashboardAPI = {
 
 // API Quản lý Nhân viên (Employee Management)
 export const hrEmployeeAPI = {
-  // Lấy danh sách nhân viên
+  // Lấy TOÀN BỘ danh sách nhân viên (tối đa 1000 nhân viên)
+  // Đơn giản: page=0, size=1000
+  getAllEmployees: async (name = '') => {
+    const params = new URLSearchParams({
+      page: '0',
+      size: '200',
+    });
+
+    // Thêm name nếu có
+    if (name && name.trim() !== '') {
+      params.append('name', name.trim());
+    }
+
+    return apiCall(`api/v1/employees?${params.toString()}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Lấy danh sách nhân viên (CÓ PHÂN TRANG)
   getEmployees: async (name = '', page = 0, size = 10, additionalParams = {}) => {
     const params = new URLSearchParams({
       page: page.toString(),
