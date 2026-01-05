@@ -263,7 +263,7 @@ const DiagnosticOrdersPage = () => {
                 <div className="header-title">
                     <FiActivity className="header-icon" />
                     <div>
-                        <h1>Quản lý y lệnh chẩn đoán</h1>
+                        <h1>Quản lý Chỉ định chẩn đoán</h1>
                         <p>Quản lý các chỉ định chẩn đoán cấp cứu</p>
                     </div>
                 </div>
@@ -287,7 +287,7 @@ const DiagnosticOrdersPage = () => {
                     className={`tab-button ${activeTab === 'search' ? 'active' : ''}`}
                     onClick={() => setActiveTab('search')}
                 >
-                    <FiSearch /> Tìm theo Encounter
+                    <FiSearch /> Tìm theo lượt điều trị
                 </button>
                 <button
                     className={`tab-button ${activeTab === 'list' ? 'active' : ''}`}
@@ -327,7 +327,7 @@ const DiagnosticOrdersPage = () => {
                                     <FiSearch className="search-icon" />
                                     <input
                                         type="number"
-                                        placeholder="Nhập Emergency Encounter ID..."
+                                        placeholder="Nhập mã lượt điều trị cấp cứu..."
                                         value={encounterId}
                                         onChange={(e) => setEncounterId(e.target.value)}
                                     />

@@ -64,7 +64,7 @@ const CreateEmergencyPage = () => {
                 // Load departments
                 const deptResponse = await nurseDepartmentAPI.getDepartments();
                 if (deptResponse && deptResponse.data) {
-                    setDepartments(deptResponse.data);
+                    setDepartments(deptResponse.data.content);
                 }
 
                 // Load nurses

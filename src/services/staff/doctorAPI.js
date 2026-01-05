@@ -329,6 +329,16 @@ export const doctorBedAPI = {
 
 // API Emergency Encounter
 export const doctorEmergencyAPI = {
+  // Lấy danh sách cấp cứu chờ phân loại (triage)
+  getWaitingTriageEncounters: async () => {
+    return apiCall('api/v1/emergency/encounters/waiting-triage', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
   // Lấy danh sách cấp cứu đang hoạt động
   getActiveEmergencies: async () => {
     return apiCall('api/v1/emergency/encounters/active', {
@@ -959,8 +969,18 @@ export const doctorEncounterAPI = {
 // API ICD Diseases
 export const icdDiseaseAPI = {
   // Lấy danh sách ICD diseases
-  getICDDiseases: async () => {
-    return apiCall('api/v1/icd-diseases', {
+  getICDDiseases: async (keyword = '', page = 0, size = 20) => {
+    const params = new URLSearchParams({
+      page: page.toString(),
+      size: size.toString(),
+    });
+
+    // Thêm keyword nếu có
+    if (keyword && keyword.trim() !== '') {
+      params.append('keyword', keyword.trim());
+    }
+
+    return apiCall(`api/v1/icd-diseases?${params.toString()}`, {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${getAccessToken()}`,
@@ -971,19 +991,23 @@ export const icdDiseaseAPI = {
 
 // API Services
 export const serviceAPI = {
-  // Lấy danh sách services với pagination
-  getServices: async (page = 0, size = 100, sort = []) => {
+  // Lấy danh sách services với pagination và tìm kiếm
+  getServices: async (keyword = '', page = 0, size = 100, sort = []) => {
     const params = new URLSearchParams({
       page: page.toString(),
       size: size.toString(),
     });
 
+    // Thêm keyword nếu có
+    if (keyword && keyword.trim() !== '') {
+      params.append('keyword', keyword.trim());
+    }
+
     if (sort && sort.length > 0) {
       sort.forEach(s => params.append('sort', s));
     }
 
-    // return apiCall(`api/services?${params.toString()}`, {
-    return apiCall(`api/services`, {
+    return apiCall(`api/services?${params.toString()}`, {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${getAccessToken()}`,

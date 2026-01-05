@@ -11,19 +11,21 @@ const MedicationOrderGroupsPage = () => {
     const [activeTab, setActiveTab] = useState('ready-for-administration');
     const [readyForAdministration, setReadyForAdministration] = useState([]);
     const [filteredGroups, setFilteredGroups] = useState([]);
-    const [selectedStatus, setSelectedStatus] = useState('PENDING');
+    const [selectedStatus, setSelectedStatus] = useState('ORDERED');
+    const [selectedDepartmentId, setSelectedDepartmentId] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [actionLoading, setActionLoading] = useState(null);
     const navigate = useNavigate();
 
     const statusOptions = [
-        { value: 'PENDING', label: 'Chờ xử lý', color: '#6b7280' },
+        { value: 'DRAFT', label: 'Nháp', color: '#9ca3af' },
         { value: 'ORDERED', label: 'Đã ra lệnh', color: '#3b82f6' },
         { value: 'VERIFIED', label: 'Đã xác minh', color: '#f59e0b' },
-        { value: 'READY', label: 'Sẵn sàng', color: '#8b5cf6' },
-        { value: 'GIVEN', label: 'Đã cấp phát', color: '#10b981' },
-        { value: 'RECEIVED', label: 'Đã nhận', color: '#059669' },
+        { value: 'PREPARED', label: 'Đã chuẩn bị', color: '#8b5cf6' },
+        { value: 'DISPENSED', label: 'Đã xuất kho', color: '#10b981' },
+        { value: 'READY', label: 'Sẵn sàng', color: '#059669' },
+        { value: 'ADMINISTERED', label: 'Đã cấp phát', color: '#06b6d4' },
         { value: 'CANCELLED', label: 'Đã hủy', color: '#ef4444' },
         { value: 'DISCONTINUED', label: 'Ngừng thuốc', color: '#f97316' }
     ];
@@ -46,22 +48,17 @@ const MedicationOrderGroupsPage = () => {
         }
     };
 
-    // Hàm tải dữ liệu theo status (mock data vì chưa có API)
-    const fetchGroupsByStatus = async (status) => {
+    // Hàm tải dữ liệu theo status
+    const fetchGroupsByStatus = async (status, departmentId = null) => {
         setLoading(true);
         setError(null);
         try {
-            // Mock data - sẽ thay thế bằng API thật khi có
-            await new Promise(resolve => setTimeout(resolve, 500)); // Simulate API call
-            
-            // Filter from ready for administration data based on status
-            const filtered = readyForAdministration.filter(group => 
-                group.status === status || 
-                (status === 'READY' && group.status === 'DISPENSED') ||
-                (status === 'GIVEN' && group.status === 'RECEIVED')
-            );
-            
-            setFilteredGroups(filtered);
+            const response = await nurseMedicationOrderGroupAPI.getMedicationOrderGroups(status, departmentId);
+            if (response && response.data) {
+                setFilteredGroups(response.data);
+            } else {
+                setFilteredGroups([]);
+            }
         } catch (err) {
             setError(err.message || 'Không thể tải danh sách nhóm y lệnh theo trạng thái');
         } finally {
@@ -74,16 +71,16 @@ const MedicationOrderGroupsPage = () => {
         if (activeTab === 'ready-for-administration') {
             fetchReadyForAdministration();
         } else if (activeTab === 'by-status') {
-            fetchGroupsByStatus(selectedStatus);
+            fetchGroupsByStatus(selectedStatus, selectedDepartmentId);
         }
     }, [activeTab]);
 
-    // Tải dữ liệu khi status thay đổi
+    // Tải dữ liệu khi status hoặc departmentId thay đổi
     useEffect(() => {
         if (activeTab === 'by-status') {
-            fetchGroupsByStatus(selectedStatus);
+            fetchGroupsByStatus(selectedStatus, selectedDepartmentId);
         }
-    }, [selectedStatus]);
+    }, [selectedStatus, selectedDepartmentId]);
 
     // Xử lý nhận nhóm y lệnh
     const handleReceiveGroup = async (group) => {
@@ -240,18 +237,40 @@ const MedicationOrderGroupsPage = () => {
                     <div className="groups-container">
                         {/* Status Filter */}
                         <div className="status-filter">
-                            <label>Lọc theo trạng thái:</label>
-                            <select
-                                value={selectedStatus}
-                                onChange={(e) => setSelectedStatus(e.target.value)}
-                                className="status-select"
-                            >
-                                {statusOptions.map(option => (
-                                    <option key={option.value} value={option.value}>
-                                        {option.label}
-                                    </option>
-                                ))}
-                            </select>
+                            <div className="filter-group">
+                                <label>Lọc theo trạng thái:</label>
+                                <select
+                                    value={selectedStatus}
+                                    onChange={(e) => setSelectedStatus(e.target.value)}
+                                    className="status-select"
+                                >
+                                    {statusOptions.map(option => (
+                                        <option key={option.value} value={option.value}>
+                                            {option.label}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+
+                            <div className="filter-group">
+                                <label>Lọc theo khoa (tùy chọn):</label>
+                                <input
+                                    type="number"
+                                    placeholder="Nhập ID khoa..."
+                                    value={selectedDepartmentId || ''}
+                                    onChange={(e) => setSelectedDepartmentId(e.target.value || null)}
+                                    className="department-input"
+                                />
+                                {selectedDepartmentId && (
+                                    <button
+                                        className="btn-clear-filter"
+                                        onClick={() => setSelectedDepartmentId(null)}
+                                        title="Xóa filter khoa"
+                                    >
+                                        <FiXCircle />
+                                    </button>
+                                )}
+                            </div>
                         </div>
 
                         {filteredGroups.length === 0 ? (

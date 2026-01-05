@@ -70,7 +70,7 @@ const LabTechnicianLayout = () => {
                             <li>
                                 <NavLink to="/staff/ky-thuat-vien/diagnostic-orders">
                                     <FiActivity />
-                                    <span>Quản lý y lệnh chẩn đoán</span>
+                                    <span>Quản lý Chỉ định chẩn đoán</span>
                                 </NavLink>
                             </li>
                         </ul>

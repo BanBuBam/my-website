@@ -135,25 +135,25 @@ const InpatientStayDetailPage = () => {
                     className="btn-action btn-workflow"
                     onClick={() => navigate(`/staff/dieu-duong/dieu-tri-noi-tru/${stayId}/workflow`)}
                 >
-                    <FiActivity /> Xem Workflow
+                    <FiActivity /> Xem Luồng điều trị
                 </button>
                 <button
                     className="btn-action btn-nursing-notes"
                     onClick={() => navigate(`/staff/dieu-duong/dieu-tri-noi-tru/${stayId}/nursing-notes`)}
                 >
                     {/*<FiClipboard /> Xem Nursing Notes*/}
-                    <FiActivity /> Xem Nursing Notes
+                    <FiActivity /> Xem Ghi chú điều dưỡng
                 </button>
                 <button className="btn-action btn-medication"
                         onClick={() => navigate(`/staff/dieu-duong/dieu-tri-noi-tru/${stayId}/medications`)}
                 >
-                    <FiPackage /> Xem Medication
+                    <FiPackage /> Xem Y lệnh
                 </button>
                 <button className="btn-action btn-safety-assessment"
                         onClick={() => navigate(`/staff/dieu-duong/dieu-tri-noi-tru/${stayId}/safety-assessments`)}
                 >
                     {/*<FiPackage /> Xem Medication*/}
-                    <FiActivity /> Xem Safety Assessment
+                    <FiActivity /> Xem ĐGia Aan toàn BN
                 </button>
                 {/*<button className="btn-action btn-discharge"*/}
                 {/*        onClick={() => navigate(`/staff/dieu-duong/dieu-tri-noi-tru/${stayId}/discharge-planning`)}*/}

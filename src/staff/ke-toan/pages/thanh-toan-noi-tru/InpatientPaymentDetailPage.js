@@ -829,9 +829,9 @@ const InpatientPaymentDetailPage = () => {
                 <button className="btn-transaction-history" onClick={handleShowTransactionHistory}>
                     <FiList /> Lịch sử giao dịch
                 </button>
-                <button className="btn-refund-history" onClick={handleShowRefundHistory}>
-                    <FiRotateCcw /> Lịch sử hoàn tiền
-                </button>
+                {/*<button className="btn-refund-history" onClick={handleShowRefundHistory}>*/}
+                {/*    <FiRotateCcw /> Lịch sử hoàn tiền*/}
+                {/*</button>*/}
             </div>
 
             {/* Status and Balance Section */}
@@ -845,7 +845,7 @@ const InpatientPaymentDetailPage = () => {
                         <span className="balance-loading">Đang tải...</span>
                     ) : (
                         <span className="balance-amount">
-                            {advanceBalance !== null ? `${advanceBalance.toLocaleString('vi-VN')} VNĐ` : 'Chưa có dữ liệu'}
+                            {advanceBalance !== null ? `${advanceBalance.toLocaleString('vi-VN')} VNĐ, ` : 'Chưa có dữ liệu'}
                         </span>
                     )}
                 </div>

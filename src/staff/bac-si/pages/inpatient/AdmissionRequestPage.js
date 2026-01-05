@@ -232,14 +232,14 @@ const AdmissionRequestPage = () => {
                         className={`tab ${activeTab === 'search' ? 'active' : ''}`}
                         onClick={() => setActiveTab('search')}
                     >
-                        <FiSearch /> Tìm theo Encounter
+                        <FiSearch /> Tìm theo lượt khám
                     </button>
                     {/* TAB MỚI */}
                     <button
                         className={`tab ${activeTab === 'create' ? 'active' : ''}`}
                         onClick={() => setActiveTab('create')}
                     >
-                        <FiPlus /> Tạo Yêu Cầu (Từ Encounter)
+                        <FiPlus /> Tạo Yêu Cầu (Từ lượt khám)
                     </button>
                 </div>
                 {/*<button className="btn-create" onClick={() => setShowCreateModal(true)}>*/}
@@ -256,7 +256,7 @@ const AdmissionRequestPage = () => {
                             <input
                                 type="number"
                                 className="search-input"
-                                placeholder="Nhập Encounter ID..."
+                                placeholder="Nhập mã lượt khám..."
                                 value={encounterId}
                                 onChange={(e) => setEncounterId(e.target.value)}
                             />

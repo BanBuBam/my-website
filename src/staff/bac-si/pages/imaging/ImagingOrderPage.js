@@ -55,6 +55,13 @@ const ImagingOrderPage = () => {
     const [selectedOrderDetail, setSelectedOrderDetail] = useState(null);
     const [loadingDetail, setLoadingDetail] = useState(false);
 
+    // Service autocomplete states
+    const [serviceSearchKeyword, setServiceSearchKeyword] = useState('');
+    const [serviceSearchResults, setServiceSearchResults] = useState([]);
+    const [showServiceDropdown, setShowServiceDropdown] = useState(false);
+    const [selectedService, setSelectedService] = useState(null);
+    const [loadingServiceSearch, setLoadingServiceSearch] = useState(false);
+
     const [orderFormData, setOrderFormData] = useState({
         imagingType: '',
         bodyPart: '',
@@ -89,6 +96,20 @@ const ImagingOrderPage = () => {
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [location.state]);
+
+    // Close service dropdown when clicking outside
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (showServiceDropdown && !event.target.closest('.autocomplete-wrapper')) {
+                setShowServiceDropdown(false);
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, [showServiceDropdown]);
 
     const loadServices = async () => {
         try {
@@ -159,6 +180,11 @@ const ImagingOrderPage = () => {
             serviceId: '',
             notes: ''
         });
+        // Reset service autocomplete
+        setServiceSearchKeyword('');
+        setSelectedService(null);
+        setServiceSearchResults([]);
+        setShowServiceDropdown(false);
     };
 
     const handleViewImagingOrders = async () => {
@@ -183,6 +209,60 @@ const ImagingOrderPage = () => {
             ...prev,
             [name]: type === 'checkbox' ? checked : value
         }));
+    };
+
+    // Service autocomplete handlers
+    const handleServiceSearchChange = async (e) => {
+        const keyword = e.target.value;
+        setServiceSearchKeyword(keyword);
+        setShowServiceDropdown(true);
+
+        if (keyword.trim() === '') {
+            setServiceSearchResults([]);
+            return;
+        }
+
+        try {
+            setLoadingServiceSearch(true);
+            const response = await serviceAPI.getServices(keyword, 0, 20);
+
+            if (response && response.content) {
+                setServiceSearchResults(response.content);
+            }
+        } catch (err) {
+            console.error('Error searching services:', err);
+            setServiceSearchResults([]);
+        } finally {
+            setLoadingServiceSearch(false);
+        }
+    };
+
+    const handleSelectService = (service) => {
+        setSelectedService(service);
+        setServiceSearchKeyword(service.name);
+        setOrderFormData(prev => ({
+            ...prev,
+            serviceId: service.serviceId
+        }));
+        setShowServiceDropdown(false);
+    };
+
+    const handleServiceInputFocus = async () => {
+        setShowServiceDropdown(true);
+        // Load initial services if no search keyword
+        if (serviceSearchKeyword.trim() === '' && serviceSearchResults.length === 0) {
+            try {
+                setLoadingServiceSearch(true);
+                const response = await serviceAPI.getServices('', 0, 20);
+                if (response && response.content) {
+                    setServiceSearchResults(response.content);
+                }
+            } catch (err) {
+                console.error('Error loading services:', err);
+            } finally {
+                setLoadingServiceSearch(false);
+            }
+        }
     };
 
     const handleSubmitImagingOrder = async (e) => {
@@ -420,7 +500,7 @@ const ImagingOrderPage = () => {
                 <div className="header-content">
                     <FiImage className="header-icon" />
                     <div>
-                        <h1>Imaging Order</h1>
+                        <h1>Yêu cầu chẩn đoán hình ảnh</h1>
                         <p>Tạo và quản lý yêu cầu chẩn đoán hình ảnh</p>
                     </div>
                 </div>
@@ -457,7 +537,7 @@ const ImagingOrderPage = () => {
             {loading && (
                 <div className="loading-state">
                     <div className="spinner"></div>
-                    <p>Đang tìm kiếm encounter...</p>
+                    <p>Đang tìm kiếm lượt khám...</p>
                 </div>
             )}
 
@@ -501,10 +581,10 @@ const ImagingOrderPage = () => {
                         </div>
                         <div className="encounter-footer">
                             <button className="btn-add-order" onClick={handleAddImagingOrder}>
-                                <FiPlus /> Tạo Imaging Order
+                                <FiPlus /> Tạo Yêu cầu chẩn đoán hình ảnh
                             </button>
                             <button className="btn-view-order" onClick={handleViewImagingOrders}>
-                                <FiList /> Xem Imaging Orders
+                                <FiList /> Xem Yêu cầu chẩn đoán hình ảnh
                             </button>
                         </div>
                     </div>
@@ -516,7 +596,7 @@ const ImagingOrderPage = () => {
                 <div className="modal-overlay" onClick={() => setShowOrderModal(false)}>
                     <div className="modal-content order-modal" onClick={(e) => e.stopPropagation()}>
                         <div className="modal-header">
-                            <h3>Tạo Imaging Order</h3>
+                            <h3>Tạo Yêu cầu chẩn đoán hình ảnh</h3>
                             <button className="modal-close" onClick={() => setShowOrderModal(false)}>
                                 <FiX />
                             </button>
@@ -567,19 +647,39 @@ const ImagingOrderPage = () => {
                                     </div>
                                     <div className="form-group">
                                         <label>Service <span className="required">*</span></label>
-                                        <select
-                                            name="serviceId"
-                                            value={orderFormData.serviceId}
-                                            onChange={handleOrderFormChange}
-                                            required
-                                        >
-                                            <option value="">-- Chọn dịch vụ --</option>
-                                            {services.map(service => (
-                                                <option key={service.serviceId} value={service.serviceId}>
-                                                    {service.name} - {service.price?.toLocaleString('vi-VN')} VNĐ
-                                                </option>
-                                            ))}
-                                        </select>
+                                        <div className="autocomplete-wrapper">
+                                            <input
+                                                type="text"
+                                                value={serviceSearchKeyword}
+                                                onChange={handleServiceSearchChange}
+                                                onFocus={handleServiceInputFocus}
+                                                placeholder="Nhập tên dịch vụ để tìm kiếm..."
+                                                required
+                                                autoComplete="off"
+                                            />
+                                            {showServiceDropdown && (
+                                                <div className="autocomplete-dropdown">
+                                                    {loadingServiceSearch ? (
+                                                        <div className="autocomplete-loading">Đang tìm kiếm...</div>
+                                                    ) : serviceSearchResults.length === 0 ? (
+                                                        <div className="autocomplete-empty">Không tìm thấy dịch vụ</div>
+                                                    ) : (
+                                                        serviceSearchResults.map(service => (
+                                                            <div
+                                                                key={service.serviceId}
+                                                                className={`autocomplete-item ${selectedService?.serviceId === service.serviceId ? 'selected' : ''}`}
+                                                                onClick={() => handleSelectService(service)}
+                                                            >
+                                                                <div className="service-name">{service.name}</div>
+                                                                <div className="service-price">
+                                                                    {service.price?.toLocaleString('vi-VN')} VNĐ
+                                                                </div>
+                                                            </div>
+                                                        ))
+                                                    )}
+                                                </div>
+                                            )}
+                                        </div>
                                     </div>
                                 </div>
 
@@ -744,7 +844,7 @@ const ImagingOrderPage = () => {
                                         className="btn-primary"
                                         disabled={submitting}
                                     >
-                                        <FiImage /> {submitting ? 'Đang tạo...' : 'Tạo Imaging Order'}
+                                        <FiImage /> {submitting ? 'Đang tạo...' : 'Tạo Yêu cầu chẩn đoán hình ảnh'}
                                     </button>
                                 </div>
                             </form>
@@ -758,7 +858,7 @@ const ImagingOrderPage = () => {
                 <div className="modal-overlay" onClick={() => setShowOrderListModal(false)}>
                     <div className="modal-content order-list-modal" onClick={(e) => e.stopPropagation()}>
                         <div className="modal-header">
-                            <h3>Danh sách Imaging Orders</h3>
+                            <h3>Danh sách Yêu cầu chẩn đoán hình ảnh</h3>
                             <button className="modal-close" onClick={() => setShowOrderListModal(false)}>
                                 <FiX />
                             </button>
@@ -770,12 +870,12 @@ const ImagingOrderPage = () => {
                             {loadingOrders ? (
                                 <div className="loading-state-small">
                                     <div className="spinner-small"></div>
-                                    <p>Đang tải imaging orders...</p>
+                                    <p>Đang tải Yêu cầu chẩn đoán hình ảnh...</p>
                                 </div>
                             ) : imagingOrders.length === 0 ? (
                                 <div className="empty-state-small">
                                     <FiImage />
-                                    <p>Chưa có imaging order nào</p>
+                                        <p>Chưa có Yêu cầu chẩn đoán hình ảnh nào</p>
                                 </div>
                             ) : (
                                 <div className="imaging-orders-list">

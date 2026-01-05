@@ -23,6 +23,14 @@ const ClinicalNotesPage = () => {
     const [editingNote, setEditingNote] = useState(null);
     const [exportingNoteId, setExportingNoteId] = useState(null);
 
+    // ICD Disease Search Modal states
+    const [showIcdSearchModal, setShowIcdSearchModal] = useState(false);
+    const [icdSearchKeyword, setIcdSearchKeyword] = useState('');
+    const [icdSearchResults, setIcdSearchResults] = useState([]);
+    const [icdSearchLoading, setIcdSearchLoading] = useState(false);
+    const [icdSearchPage, setIcdSearchPage] = useState(0);
+    const [icdSearchTotalPages, setIcdSearchTotalPages] = useState(0);
+
     // Clinical note form data
     const [noteFormData, setNoteFormData] = useState({
         diagnosis: '',
@@ -54,13 +62,13 @@ const ClinicalNotesPage = () => {
         }
     };
 
-    // Load ICD diseases on component mount
+    // Load ICD diseases on component mount (load first page for dropdown)
     useEffect(() => {
         const fetchIcdDiseases = async () => {
             try {
-                const response = await icdDiseaseAPI.getICDDiseases();
-                if (response && response.data) {
-                    setIcdDiseases(response.data);
+                const response = await icdDiseaseAPI.getICDDiseases('', 0, 100);
+                if (response && response.data && response.data.content) {
+                    setIcdDiseases(response.data.content);
                 }
             } catch (err) {
                 console.error('Error loading ICD diseases:', err);
@@ -227,6 +235,54 @@ const ClinicalNotesPage = () => {
         }
     };
 
+    // ICD Disease Search Functions
+    const handleOpenIcdSearch = () => {
+        setShowIcdSearchModal(true);
+        setIcdSearchKeyword('');
+        setIcdSearchPage(0);
+        searchIcdDiseases('', 0);
+    };
+
+    const searchIcdDiseases = async (keyword, page) => {
+        try {
+            setIcdSearchLoading(true);
+            const response = await icdDiseaseAPI.getICDDiseases(keyword, page, 10);
+
+            if (response && response.data) {
+                setIcdSearchResults(response.data.content || []);
+                setIcdSearchTotalPages(response.data.totalPages || 0);
+            }
+        } catch (err) {
+            console.error('Error searching ICD diseases:', err);
+            alert('Không thể tìm kiếm bệnh ICD');
+        } finally {
+            setIcdSearchLoading(false);
+        }
+    };
+
+    const handleIcdSearchKeywordChange = (e) => {
+        setIcdSearchKeyword(e.target.value);
+    };
+
+    const handleIcdSearch = (e) => {
+        e.preventDefault();
+        setIcdSearchPage(0);
+        searchIcdDiseases(icdSearchKeyword, 0);
+    };
+
+    const handleIcdSearchPageChange = (newPage) => {
+        setIcdSearchPage(newPage);
+        searchIcdDiseases(icdSearchKeyword, newPage);
+    };
+
+    const handleSelectIcdDisease = (disease) => {
+        setNoteFormData(prev => ({
+            ...prev,
+            icdDiseaseId: disease.icdDiseaseId
+        }));
+        setShowIcdSearchModal(false);
+    };
+
     const handleSignNote = async (noteId) => {
         if (!window.confirm('Bạn có chắc chắn muốn ký clinical note này? Sau khi ký sẽ không thể chỉnh sửa.')) {
             return;
@@ -299,7 +355,7 @@ const ClinicalNotesPage = () => {
                 <div className="header-content">
                     <FiFileText className="header-icon" />
                     <div>
-                        <h1>Clinical Notes</h1>
+                        <h1>Ghi chú lâm sàng</h1>
                         <p>Quản lý ghi chú lâm sàng</p>
                     </div>
                 </div>
@@ -332,7 +388,7 @@ const ClinicalNotesPage = () => {
             {loading && (
                 <div className="loading-state">
                     <div className="spinner"></div>
-                    <p>Đang tải thông tin encounter...</p>
+                    <p>Đang tải thông tin lượt...</p>
                 </div>
             )}
 
@@ -341,7 +397,7 @@ const ClinicalNotesPage = () => {
                     <div className="encounter-header">
                         <div className="encounter-title">
                             <FiUser />
-                            <h2>Thông tin Encounter</h2>
+                            <h2>Thông tin Lượt khám</h2>
                         </div>
                         <span
                             className="encounter-status-badge"
@@ -381,10 +437,10 @@ const ClinicalNotesPage = () => {
                         </div>
                         <div className="encounter-footer">
                             <button className="btn-view-notes" onClick={handleViewClinicalNotes}>
-                                <FiList /> Xem Clinical Notes
+                                <FiList /> Xem Ghi chú lâm sàng
                             </button>
                             <button className="btn-create-note" onClick={handleCreateNote}>
-                                <FiPlus /> Tạo Clinical Note
+                                <FiPlus /> Tạo Ghi chú lâm sàng
                             </button>
                         </div>
                     </div>
@@ -396,7 +452,7 @@ const ClinicalNotesPage = () => {
                 <div className="modal-overlay" onClick={() => setShowNotesListModal(false)}>
                     <div className="modal-content notes-list-modal" onClick={(e) => e.stopPropagation()}>
                         <div className="modal-header">
-                            <h3>Danh sách Clinical Notes</h3>
+                            <h3>Danh sách Ghi chú lâm sàng</h3>
                             <button className="modal-close" onClick={() => setShowNotesListModal(false)}>
                                 <FiX />
                             </button>
@@ -408,12 +464,12 @@ const ClinicalNotesPage = () => {
                             {loadingNotes ? (
                                 <div className="loading-state-small">
                                     <div className="spinner-small"></div>
-                                    <p>Đang tải clinical notes...</p>
+                                    <p>Đang tải Ghi chú lâm sàng...</p>
                                 </div>
                             ) : clinicalNotes.length === 0 ? (
                                 <div className="empty-state-small">
                                     <FiFileText />
-                                    <p>Chưa có clinical note nào</p>
+                                        <p>Chưa có Ghi chú lâm sàng nào</p>
                                 </div>
                             ) : (
                                 <div className="notes-list">
@@ -422,7 +478,7 @@ const ClinicalNotesPage = () => {
                                             <div className="note-header">
                                                 <div className="note-title">
                                                     <FiFileText />
-                                                    <strong>Clinical Note #{note.clinicalNoteId}</strong>
+                                                    <strong>Ghi chú lâm sàng #{note.clinicalNoteId}</strong>
                                                     <span
                                                         className="note-status-badge"
                                                         style={{ backgroundColor: getStatusColor(note.status), color: '#fff' }}
@@ -522,7 +578,7 @@ const ClinicalNotesPage = () => {
                 <div className="modal-overlay" onClick={() => setShowCreateNoteModal(false)}>
                     <div className="modal-content create-note-modal" onClick={(e) => e.stopPropagation()}>
                         <div className="modal-header">
-                            <h3>Tạo Clinical Note</h3>
+                            <h3>Tạo Ghi chú lâm sàng</h3>
                             <button className="modal-close" onClick={() => setShowCreateNoteModal(false)}>
                                 <FiX />
                             </button>
@@ -546,18 +602,29 @@ const ClinicalNotesPage = () => {
                                     </div>
                                     <div className="form-group">
                                         <label>Mã bệnh ICD</label>
-                                        <select
-                                            name="icdDiseaseId"
-                                            value={noteFormData.icdDiseaseId}
-                                            onChange={handleNoteFormChange}
-                                        >
-                                            <option value="">-- Chọn mã ICD (tùy chọn) --</option>
-                                            {icdDiseases.map((disease) => (
-                                                <option key={disease.icdDiseaseId} value={disease.icdDiseaseId}>
-                                                    {disease.icdCode} - {disease.diseaseName}
-                                                </option>
-                                            ))}
-                                        </select>
+                                        <div style={{ display: 'flex', gap: '8px', alignItems: 'flex-start' }}>
+                                            <select
+                                                name="icdDiseaseId"
+                                                value={noteFormData.icdDiseaseId}
+                                                onChange={handleNoteFormChange}
+                                                style={{ flex: 1 }}
+                                            >
+                                                <option value="">-- Chọn mã ICD (tùy chọn) --</option>
+                                                {icdDiseases.map((disease) => (
+                                                    <option key={disease.icdDiseaseId} value={disease.icdDiseaseId}>
+                                                        {disease.icdCode} - {disease.diseaseName}
+                                                    </option>
+                                                ))}
+                                            </select>
+                                            <button
+                                                type="button"
+                                                className="btn-secondary"
+                                                onClick={handleOpenIcdSearch}
+                                                style={{ whiteSpace: 'nowrap' }}
+                                            >
+                                                <FiSearch /> Tìm kiếm bệnh
+                                            </button>
+                                        </div>
                                     </div>
                                     <div className="form-group">
                                         <label>Loại ghi chú <span className="required">*</span></label>
@@ -614,7 +681,7 @@ const ClinicalNotesPage = () => {
                 <div className="modal-overlay" onClick={() => setShowEditNoteModal(false)}>
                     <div className="modal-content create-note-modal" onClick={(e) => e.stopPropagation()}>
                         <div className="modal-header">
-                            <h3>Chỉnh sửa Clinical Note #{editingNote?.clinicalNoteId}</h3>
+                            <h3>Chỉnh sửa Ghi chú lâm sàng #{editingNote?.clinicalNoteId}</h3>
                             <button className="modal-close" onClick={() => setShowEditNoteModal(false)}>
                                 <FiX />
                             </button>
@@ -638,18 +705,29 @@ const ClinicalNotesPage = () => {
                                     </div>
                                     <div className="form-group">
                                         <label>Mã bệnh ICD</label>
-                                        <select
-                                            name="icdDiseaseId"
-                                            value={noteFormData.icdDiseaseId}
-                                            onChange={handleNoteFormChange}
-                                        >
-                                            <option value="">-- Chọn mã ICD (tùy chọn) --</option>
-                                            {icdDiseases.map((disease) => (
-                                                <option key={disease.icdDiseaseId} value={disease.icdDiseaseId}>
-                                                    {disease.icdCode} - {disease.diseaseName}
-                                                </option>
-                                            ))}
-                                        </select>
+                                        <div style={{ display: 'flex', gap: '8px', alignItems: 'flex-start' }}>
+                                            <select
+                                                name="icdDiseaseId"
+                                                value={noteFormData.icdDiseaseId}
+                                                onChange={handleNoteFormChange}
+                                                style={{ flex: 1 }}
+                                            >
+                                                <option value="">-- Chọn mã ICD (tùy chọn) --</option>
+                                                {icdDiseases.map((disease) => (
+                                                    <option key={disease.icdDiseaseId} value={disease.icdDiseaseId}>
+                                                        {disease.icdCode} - {disease.diseaseName}
+                                                    </option>
+                                                ))}
+                                            </select>
+                                            <button
+                                                type="button"
+                                                className="btn-secondary"
+                                                onClick={handleOpenIcdSearch}
+                                                style={{ whiteSpace: 'nowrap' }}
+                                            >
+                                                <FiSearch /> Tìm kiếm bệnh
+                                            </button>
+                                        </div>
                                     </div>
                                     <div className="form-group">
                                         <label>Loại ghi chú <span className="required">*</span></label>
@@ -696,6 +774,86 @@ const ClinicalNotesPage = () => {
                                     </button>
                                 </div>
                             </form>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* ICD Disease Search Modal */}
+            {showIcdSearchModal && (
+                <div className="modal-overlay" onClick={() => setShowIcdSearchModal(false)}>
+                    <div className="modal-content icd-search-modal" onClick={(e) => e.stopPropagation()}>
+                        <div className="modal-header">
+                            <h3>Tìm kiếm bệnh ICD</h3>
+                            <button className="modal-close" onClick={() => setShowIcdSearchModal(false)}>
+                                <FiX />
+                            </button>
+                        </div>
+                        <div className="modal-body">
+                            {/* Search Form */}
+                            <form onSubmit={handleIcdSearch} className="search-form">
+                                <div className="search-input-group">
+                                    <input
+                                        type="text"
+                                        placeholder="Nhập mã ICD hoặc tên bệnh..."
+                                        value={icdSearchKeyword}
+                                        onChange={handleIcdSearchKeywordChange}
+                                        className="search-input"
+                                    />
+                                    <button type="submit" className="btn-primary" disabled={icdSearchLoading}>
+                                        <FiSearch /> {icdSearchLoading ? 'Đang tìm...' : 'Tìm kiếm'}
+                                    </button>
+                                </div>
+                            </form>
+
+                            {/* Search Results */}
+                            <div className="icd-search-results">
+                                {icdSearchLoading ? (
+                                    <div className="loading-state">Đang tải...</div>
+                                ) : icdSearchResults.length === 0 ? (
+                                    <div className="empty-state">
+                                        <p>Không tìm thấy bệnh nào</p>
+                                    </div>
+                                ) : (
+                                    <>
+                                        <div className="icd-list">
+                                            {icdSearchResults.map((disease) => (
+                                                <div
+                                                    key={disease.icdDiseaseId}
+                                                    className={`icd-item ${noteFormData.icdDiseaseId === disease.icdDiseaseId ? 'selected' : ''}`}
+                                                    onClick={() => handleSelectIcdDisease(disease)}
+                                                >
+                                                    <div className="icd-code">{disease.icdCode}</div>
+                                                    <div className="icd-name">{disease.diseaseName}</div>
+                                                </div>
+                                            ))}
+                                        </div>
+
+                                        {/* Pagination */}
+                                        {icdSearchTotalPages > 1 && (
+                                            <div className="pagination">
+                                                <button
+                                                    className="btn-page"
+                                                    onClick={() => handleIcdSearchPageChange(icdSearchPage - 1)}
+                                                    disabled={icdSearchPage === 0}
+                                                >
+                                                    Trước
+                                                </button>
+                                                <span className="page-info">
+                                                    Trang {icdSearchPage + 1} / {icdSearchTotalPages}
+                                                </span>
+                                                <button
+                                                    className="btn-page"
+                                                    onClick={() => handleIcdSearchPageChange(icdSearchPage + 1)}
+                                                    disabled={icdSearchPage >= icdSearchTotalPages - 1}
+                                                >
+                                                    Sau
+                                                </button>
+                                            </div>
+                                        )}
+                                    </>
+                                )}
+                            </div>
                         </div>
                     </div>
                 </div>

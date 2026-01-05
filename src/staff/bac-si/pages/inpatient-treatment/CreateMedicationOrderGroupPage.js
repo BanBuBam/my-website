@@ -1,27 +1,37 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { FiArrowLeft, FiPlusCircle, FiTrash2, FiSave, FiAlertCircle } from 'react-icons/fi';
+import { FiArrowLeft, FiPlusCircle, FiTrash2, FiSave, FiAlertCircle, FiSearch, FiX } from 'react-icons/fi';
 import { medicationOrderAPI, medicineAPI, doctorInpatientTreatmentAPI } from '../../../../services/staff/doctorAPI';
 import './CreateMedicationOrderGroupPage.css';
 
 const CreateMedicationOrderGroupPage = () => {
     const { inpatientStayId } = useParams();
     const navigate = useNavigate();
-    
+
     const [stay, setStay] = useState(null);
     const [medicines, setMedicines] = useState([]);
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);
     const [error, setError] = useState(null);
-    
+
+    // Medicine search modal states
+    const [showMedicineModal, setShowMedicineModal] = useState(false);
+    const [currentMedicationIndex, setCurrentMedicationIndex] = useState(null);
+    const [medicineSearchKeyword, setMedicineSearchKeyword] = useState('');
+    const [medicineSearchResults, setMedicineSearchResults] = useState([]);
+    const [medicineSearchPage, setMedicineSearchPage] = useState(0);
+    const [medicineSearchTotalPages, setMedicineSearchTotalPages] = useState(0);
+    const [loadingMedicineSearch, setLoadingMedicineSearch] = useState(false);
+
     const [formData, setFormData] = useState({
         priority: 'ROUTINE',
         isStat: false,
         orderNotes: ''
     });
-    
+
     const [medications, setMedications] = useState([{
         medicineId: '',
+        medicineName: '',
         dosage: '',
         route: 'ORAL',
         frequency: 'BID',
@@ -77,6 +87,7 @@ const CreateMedicationOrderGroupPage = () => {
     const addMedication = () => {
         setMedications([...medications, {
             medicineId: '',
+            medicineName: '',
             dosage: '',
             route: 'ORAL',
             frequency: 'BID',
@@ -92,6 +103,54 @@ const CreateMedicationOrderGroupPage = () => {
         if (medications.length > 1) {
             setMedications(medications.filter((_, i) => i !== index));
         }
+    };
+
+    // Medicine search modal functions
+    const handleOpenMedicineSearch = async (index) => {
+        setCurrentMedicationIndex(index);
+        setShowMedicineModal(true);
+        setMedicineSearchKeyword('');
+        setMedicineSearchPage(0);
+        await searchMedicines('', 0);
+    };
+
+    const searchMedicines = async (keyword, page) => {
+        try {
+            setLoadingMedicineSearch(true);
+            const response = await medicineAPI.getMedicines(keyword, page, 10);
+            if (response && response.data) {
+                setMedicineSearchResults(response.data.content || []);
+                setMedicineSearchTotalPages(response.data.totalPages || 0);
+            }
+        } catch (err) {
+            console.error('Error searching medicines:', err);
+            alert('Không thể tìm kiếm thuốc');
+        } finally {
+            setLoadingMedicineSearch(false);
+        }
+    };
+
+    const handleMedicineSearchKeywordChange = (e) => {
+        setMedicineSearchKeyword(e.target.value);
+    };
+
+    const handleMedicineSearch = (e) => {
+        e.preventDefault();
+        setMedicineSearchPage(0);
+        searchMedicines(medicineSearchKeyword, 0);
+    };
+
+    const handleMedicineSearchPageChange = (newPage) => {
+        setMedicineSearchPage(newPage);
+        searchMedicines(medicineSearchKeyword, newPage);
+    };
+
+    const handleSelectMedicine = (medicine) => {
+        const updatedMedications = [...medications];
+        updatedMedications[currentMedicationIndex].medicineId = medicine.medicineId;
+        updatedMedications[currentMedicationIndex].medicineName = medicine.medicineName;
+        setMedications(updatedMedications);
+        setShowMedicineModal(false);
     };
 
     const handleSubmit = async (e) => {
@@ -264,22 +323,26 @@ const CreateMedicationOrderGroupPage = () => {
                                     </button>
                                 )}
                             </div>
-                            
+
                             <div className="form-grid">
                                 <div className="form-group full-width">
                                     <label>Thuốc <span className="required">*</span></label>
-                                    <select
-                                        value={medication.medicineId}
-                                        onChange={(e) => handleMedicationChange(index, 'medicineId', e.target.value)}
-                                        required
-                                    >
-                                        <option value="">-- Chọn thuốc --</option>
-                                        {medicines.map(med => (
-                                            <option key={med.medicineId} value={med.medicineId}>
-                                                {med.medicineName} {med.sku ? `(${med.sku})` : ''}
-                                            </option>
-                                        ))}
-                                    </select>
+                                    <div className="medicine-select-wrapper">
+                                        <input
+                                            type="text"
+                                            value={medication.medicineName || ''}
+                                            placeholder="Chọn thuốc..."
+                                            readOnly
+                                            required
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={() => handleOpenMedicineSearch(index)}
+                                            className="btn-search-medicine"
+                                        >
+                                            <FiSearch /> Tìm kiếm
+                                        </button>
+                                    </div>
                                 </div>
 
                                 <div className="form-group">
@@ -401,6 +464,89 @@ const CreateMedicationOrderGroupPage = () => {
                     </button>
                 </div>
             </form>
+
+            {/* Medicine Search Modal */}
+            {showMedicineModal && (
+                <div className="modal-overlay" onClick={() => setShowMedicineModal(false)}>
+                    <div className="modal-content medicine-search-modal" onClick={(e) => e.stopPropagation()}>
+                        <div className="modal-header">
+                            <h2>Tìm kiếm thuốc</h2>
+                            <button
+                                type="button"
+                                onClick={() => setShowMedicineModal(false)}
+                                className="btn-close-modal"
+                            >
+                                <FiX />
+                            </button>
+                        </div>
+
+                        <div className="modal-body">
+                            <form onSubmit={handleMedicineSearch} className="search-form">
+                                <input
+                                    type="text"
+                                    value={medicineSearchKeyword}
+                                    onChange={handleMedicineSearchKeywordChange}
+                                    placeholder="Nhập tên thuốc hoặc mã SKU..."
+                                    className="search-input"
+                                />
+                                <button type="submit" className="btn-search">
+                                    <FiSearch /> Tìm kiếm
+                                </button>
+                            </form>
+
+                            {loadingMedicineSearch ? (
+                                <div className="loading-state">Đang tìm kiếm...</div>
+                            ) : (
+                                <>
+                                    <div className="medicine-list">
+                                        {medicineSearchResults.length === 0 ? (
+                                            <div className="empty-state">Không tìm thấy thuốc</div>
+                                        ) : (
+                                            medicineSearchResults.map((medicine) => (
+                                                <div
+                                                    key={medicine.medicineId}
+                                                    className="medicine-item-search"
+                                                    onClick={() => handleSelectMedicine(medicine)}
+                                                >
+                                                    <div className="medicine-name">{medicine.medicineName}</div>
+                                                    <div className="medicine-info">
+                                                        {medicine.sku && <span className="medicine-sku">SKU: {medicine.sku}</span>}
+                                                        {medicine.manufacturer && <span className="medicine-manufacturer">{medicine.manufacturer}</span>}
+                                                    </div>
+                                                </div>
+                                            ))
+                                        )}
+                                    </div>
+
+                                    {medicineSearchTotalPages > 1 && (
+                                        <div className="pagination">
+                                            <button
+                                                type="button"
+                                                onClick={() => handleMedicineSearchPageChange(medicineSearchPage - 1)}
+                                                disabled={medicineSearchPage === 0}
+                                                className="btn-page"
+                                            >
+                                                Trước
+                                            </button>
+                                            <span className="page-info">
+                                                Trang {medicineSearchPage + 1} / {medicineSearchTotalPages}
+                                            </span>
+                                            <button
+                                                type="button"
+                                                onClick={() => handleMedicineSearchPageChange(medicineSearchPage + 1)}
+                                                disabled={medicineSearchPage >= medicineSearchTotalPages - 1}
+                                                className="btn-page"
+                                            >
+                                                Sau
+                                            </button>
+                                        </div>
+                                    )}
+                                </>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

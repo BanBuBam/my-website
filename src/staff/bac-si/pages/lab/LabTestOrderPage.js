@@ -224,7 +224,7 @@ const LabTestOrderPage = () => {
                 <div className="header-content">
                     <FiClipboard className="header-icon" />
                     <div>
-                        <h1>yêu cầu xét nghiệm</h1>
+                        <h1>Yêu cầu xét nghiệm</h1>
                         <p>Tạo và quản lý yêu cầu xét nghiệm</p>
                     </div>
                 </div>
@@ -258,7 +258,7 @@ const LabTestOrderPage = () => {
             {loading && (
                 <div className="loading-state">
                     <div className="spinner"></div>
-                    <p>Đang tải thông tin encounter...</p>
+                    <p>Đang tải thông tin lượt khám...</p>
                 </div>
             )}
 
@@ -311,10 +311,10 @@ const LabTestOrderPage = () => {
 
                         <div className="encounter-footer">
                             <button className="btn-add-order" onClick={handleAddLabOrder}>
-                                <FiPlus /> Tạo Lab Order
+                                <FiPlus /> Tạo Yêu cầu xét nghiệm
                             </button>
                             <button className="btn-view-order" onClick={handleViewLabOrders}>
-                                <FiList /> Xem Lab Orders
+                                <FiList /> Xem Yêu cầu xét nghiệm
                             </button>
                         </div>
                     </div>
@@ -329,7 +329,7 @@ const LabTestOrderPage = () => {
                 <div className="modal-overlay" onClick={() => setShowOrderModal(false)}>
                     <div className="modal-content order-modal" onClick={(e) => e.stopPropagation()}>
                         <div className="modal-header">
-                            <h3>Tạo yêu cầu xét nghiệm</h3>
+                            <h3>Tạo Yêu cầu xét nghiệm</h3>
                             <button className="modal-close" onClick={() => setShowOrderModal(false)}>
                                 <FiX />
                             </button>
@@ -384,7 +384,7 @@ const LabTestOrderPage = () => {
                                     <small>Chọn các xét nghiệm cần thực hiện</small>
                                 </div>
                                 <div className="form-group">
-                                    <label>Urgency Level</label>
+                                    <label>Mức độ khẩn cấp</label>
                                     <select
                                         name="urgencyLevel"
                                         value={orderFormData.urgencyLevel}
@@ -397,7 +397,7 @@ const LabTestOrderPage = () => {
                                     </select>
                                 </div>
                                 <div className="form-group">
-                                    <label>Specimen Type (Loại mẫu)</label>
+                                    <label>Loại mẫu</label>
                                     <select
                                         name="specimenType"
                                         value={orderFormData.specimenType}
@@ -415,7 +415,7 @@ const LabTestOrderPage = () => {
                                     </select>
                                 </div>
                                 <div className="form-group">
-                                    <label>Clinical Info</label>
+                                    <label>Thông tin lâm sàng</label>
                                     <textarea
                                         name="clinicalInfo"
                                         value={orderFormData.clinicalInfo}
@@ -425,7 +425,7 @@ const LabTestOrderPage = () => {
                                     />
                                 </div>
                                 <div className="form-group">
-                                    <label>Priority Notes</label>
+                                    <label>Ghi chú ưu tiên</label>
                                     <textarea
                                         name="priorityNotes"
                                         value={orderFormData.priorityNotes}
@@ -435,7 +435,7 @@ const LabTestOrderPage = () => {
                                     />
                                 </div>
                                 <div className="form-group">
-                                    <label>Notes</label>
+                                    <label>Ghi chú</label>
                                     <textarea
                                         name="notes"
                                         value={orderFormData.notes}
@@ -472,7 +472,7 @@ const LabTestOrderPage = () => {
                 <div className="modal-overlay" onClick={() => setShowOrderListModal(false)}>
                     <div className="modal-content order-list-modal" onClick={(e) => e.stopPropagation()}>
                         <div className="modal-header">
-                            <h3>Danh sách yêu cầu xét nghiệms</h3>
+                            <h3>Danh sách Yêu cầu xét nghiệm</h3>
                             <button className="modal-close" onClick={() => setShowOrderListModal(false)}>
                                 <FiX />
                             </button>
@@ -484,12 +484,12 @@ const LabTestOrderPage = () => {
                             {loadingOrders ? (
                                 <div className="loading-state-small">
                                     <div className="spinner-small"></div>
-                                    <p>Đang tải lab orders...</p>
+                                    <p>Đang tải Yêu cầu xét nghiệm...</p>
                                 </div>
                             ) : labOrders.length === 0 ? (
                                 <div className="empty-state-small">
                                     <FiClipboard />
-                                    <p>Chưa có lab order nào</p>
+                                        <p>Chưa có Yêu cầu xét nghiệm nào</p>
                                 </div>
                             ) : (
                                 <div className="lab-orders-list">

@@ -19,7 +19,7 @@ const CreateAdmissionRequestPage = () => {
         priorityLevel: 3,
         admissionDiagnosis: '',
         specialRequirements: '',
-        bedTypeRequired: 'GENERAL',
+        bedTypeRequired: 'STANDARD',
         requestedDepartmentId: '',
         expectedAdmissionDate: '',
         estimatedLengthOfStay: 1,

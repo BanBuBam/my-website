@@ -186,11 +186,11 @@ const NursingNotesPage = () => {
                     <FiArrowLeft /> Quay lại
                 </button>
                 <div className="header-content">
-                    <h1>Nursing Notes - Lượt điều trị #{stayId}</h1>
+                    <h1>Ghi chú điều dưỡng Notes - Lượt điều trị #{stayId}</h1>
                     <p>Ghi chép điều dưỡng theo ca trực</p>
                 </div>
                 <button className="btn-create" onClick={() => setShowForm(true)}>
-                    <FiPlus /> Tạo Nursing Note mới
+                    <FiPlus /> Tạo Ghi chú điều dưỡng mới
                 </button>
             </div>
             
@@ -199,7 +199,7 @@ const NursingNotesPage = () => {
                 <div className="modal-overlay" onClick={() => setShowForm(false)}>
                     <div className="modal-content" onClick={(e) => e.stopPropagation()}>
                         <div className="modal-header">
-                            <h2>Tạo Nursing Note mới</h2>
+                            <h2>Tạo Ghi chú điều dưỡng mới</h2>
                             <button className="btn-close" onClick={() => setShowForm(false)}>
                                 <FiX />
                             </button>
@@ -335,9 +335,9 @@ const NursingNotesPage = () => {
                 {notes.length === 0 ? (
                     <div className="empty-state">
                         <FiFileText />
-                        <p>Chưa có nursing notes nào</p>
+                        <p>Chưa có Ghi chú điều dưỡng nào</p>
                         <button className="btn-create-empty" onClick={() => setShowForm(true)}>
-                            <FiPlus /> Tạo nursing note đầu tiên
+                            <FiPlus /> Tạo Ghi chú điều dưỡng đầu tiên
                         </button>
                     </div>
                 ) : (

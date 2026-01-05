@@ -429,8 +429,8 @@ const EncounterVitalPage = () => {
             {/* Page Header */}
             <div className="page-header">
                 <div>
-                    <h2>Quản lý Vital Signs</h2>
-                    <p>Tìm kiếm encounter và quản lý vital signs</p>
+                    <h2>Quản lý Dấu hiệu sinh tồn</h2>
+                    <p>Tìm kiếm lượt khám và quản lý dấu hiệu sinh tồn</p>
                 </div>
             </div>
 
@@ -498,10 +498,10 @@ const EncounterVitalPage = () => {
 
                     <div className="encounter-footer">
                         <button className="btn-add-vital" onClick={handleAddVitalSigns}>
-                            <FiPlus /> Thêm Vital Sign
+                            <FiPlus /> Thêm Dấu sinh hiệu
                         </button>
                         <button className="btn-view-vital" onClick={handleViewVitalSigns}>
-                            <FiList /> Xem Vital Signs
+                            <FiList /> Xem Dấu sinh hiệu
                         </button>
                         {/*<button className="btn-add-note" onClick={handleAddClinicalNote}>*/}
                         {/*    <FiFileText /> Tạo Y lệnh*/}
@@ -522,7 +522,7 @@ const EncounterVitalPage = () => {
                 <div className="modal-overlay" onClick={() => setShowVitalModal(false)}>
                     <div className="modal-content vital-modal" onClick={(e) => e.stopPropagation()}>
                         <div className="modal-header">
-                            <h3>Thêm Vital Signs</h3>
+                            <h3>Thêm Dấu sinh hiệu</h3>
                             <button className="modal-close" onClick={() => setShowVitalModal(false)}>
                                 <FiX />
                             </button>
@@ -669,7 +669,7 @@ const EncounterVitalPage = () => {
                 <div className="modal-overlay" onClick={() => setShowVitalListModal(false)}>
                     <div className="modal-content vital-list-modal" onClick={(e) => e.stopPropagation()}>
                         <div className="modal-header">
-                            <h3>Danh sách Vital Signs</h3>
+                            <h3>Danh sách Dấu hiệu sinh tồn</h3>
                             <button className="modal-close" onClick={() => setShowVitalListModal(false)}>
                                 <FiX />
                             </button>
@@ -686,7 +686,7 @@ const EncounterVitalPage = () => {
                             ) : vitalSigns.length === 0 ? (
                                 <div className="empty-state-small">
                                     <FiThermometer />
-                                    <p>Chưa có vital signs nào</p>
+                                    <p>Chưa có dấu hiệu sinh tồn nào</p>
                                 </div>
                             ) : (
                                 <div className="vital-signs-list">
