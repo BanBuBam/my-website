@@ -548,6 +548,15 @@ export const pharmacistCabinetAPI = {
     });
   },
 
+  getLockedCabinets: async () => {
+    return apiCall('api/v1/cabinet-management/locked', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
   // Gán người chịu trách nhiệm (Assign Responsible Employee)
   assignResponsibleEmployee: async (cabinetId, employeeId) => {
     return apiCall(`api/v1/cabinet-management/${cabinetId}/assign?employeeId=${employeeId}`, {

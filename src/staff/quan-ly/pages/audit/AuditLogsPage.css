@@ -1050,3 +1050,128 @@
     font-weight: 500;
 }
 
+/* Layout mới cho Recent Activity */
+.recent-layout-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr; /* Cột hoạt động rộng gấp đôi cột login */
+    gap: 1.5rem;
+}
+
+.column-title {
+    font-size: 1.1rem;
+    color: #374151;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.activity-item {
+    display: flex;
+    gap: 1rem;
+    padding: 1rem;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    margin-bottom: 0.75rem;
+    transition: all 0.2s;
+}
+
+.activity-item:hover {
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    border-color: #8b5cf6;
+}
+
+.activity-time {
+    min-width: 140px;
+    font-size: 0.85rem;
+    color: #6b7280;
+    font-weight: 500;
+}
+
+.activity-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.5rem;
+}
+
+.user-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.employee-name {
+    font-size: 0.75rem;
+    color: #6b7280;
+}
+
+.activity-meta {
+    margin-top: 0.5rem;
+    font-size: 0.8rem;
+    color: #6b7280;
+    background: #f9fafb;
+    padding: 4px 8px;
+    border-radius: 4px;
+    display: inline-block;
+}
+
+.entity-name {
+    color: #4b5563;
+    font-style: italic;
+}
+
+.divider {
+    margin: 0 8px;
+    color: #d1d5db;
+}
+
+/* Mini Login List (Cột phải) */
+.recent-logins-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+.mini-login-item {
+    background: #f9fafb;
+    padding: 0.75rem;
+    border-radius: 6px;
+    border-left: 3px solid #10b981; /* Green for success */
+}
+
+.mini-login-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.25rem;
+}
+
+.mini-login-header strong {
+    color: #1f2937;
+    font-size: 0.9rem;
+}
+
+.mini-login-header small {
+    color: #9ca3af;
+    font-size: 0.75rem;
+}
+
+.mini-login-meta {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.8rem;
+    color: #6b7280;
+}
+
+/* Badge colors update */
+.badge-primary { background: #dbeafe; color: #1e40af; }
+
+/* Responsive */
+@media (max-width: 1024px) {
+    .recent-layout-grid {
+        grid-template-columns: 1fr;
+    }
+}
