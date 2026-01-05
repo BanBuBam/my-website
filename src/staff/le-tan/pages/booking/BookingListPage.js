@@ -212,7 +212,7 @@ const BookingListPage = () => {
             {/* Page Header */}
             <div className="page-header">
                 <div>
-                    <h2>Quản lý Booking</h2>
+                    <h2>Quản lý Lịch hẹn</h2>
                     <p>Tìm kiếm và quản lý lịch hẹn của bệnh nhân</p>
                 </div>
                 <div className="header-actions">
@@ -228,19 +228,19 @@ const BookingListPage = () => {
                     className={`tab ${activeTab === 'search' ? 'active' : ''}`}
                     onClick={() => handleTabChange('search')}
                 >
-                    <FiSearch /> Tìm kiếm Booking
+                    <FiSearch /> Tìm kiếm Lịch hẹn
                 </button>
                 <button
                     className={`tab ${activeTab === 'pending' ? 'active' : ''}`}
                     onClick={() => handleTabChange('pending')}
                 >
-                    <FiClock /> Booking chờ xác nhận
+                    <FiClock /> Lịch hẹn chờ xác nhận
                 </button>
                 <button
                     className={`tab ${activeTab === 'confirmed' ? 'active' : ''}`}
                     onClick={() => handleTabChange('confirmed')}
                 >
-                    <FiCheckCircle /> Booking đã xác nhận
+                    <FiCheckCircle /> Lịch hẹn đã xác nhận
                 </button>
             </div>
 
@@ -318,7 +318,7 @@ const BookingListPage = () => {
                         </div>
                         <div className="stat-info">
                             <div className="stat-value">{stats.total}</div>
-                            <div className="stat-label">Tổng booking</div>
+                            <div className="stat-label">Tổng lịch hẹn</div>
                         </div>
                     </div>
                     <div className="stat-card">
@@ -480,9 +480,9 @@ const BookingListPage = () => {
                 <div className="empty-state">
                     <FiCalendar />
                     {activeTab === 'search' ? (
-                        <p>Nhập tên bệnh nhân để tìm kiếm booking</p>
+                        <p>Nhập tên bệnh nhân để tìm kiếm lịch hẹn</p>
                     ) : (
-                        <p>Không có booking nào đang chờ xác nhận</p>
+                        <p>Không có lịch hẹn nào đang chờ xác nhận</p>
                     )}
                 </div>
             )}

@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { nurseMedicationOrderAPI } from '../../../../services/staff/nurseAPI';
 import {
     FiArrowLeft, FiAlertCircle, FiClock, FiCheckCircle,
-    FiPackage, FiInfo, FiActivity, FiXCircle, FiUser, FiList, FiCalendar, FiEye
+    FiPackage, FiInfo, FiActivity, FiXCircle, FiUser, FiList, FiCalendar, FiEye, FiX
 } from 'react-icons/fi';
 import './MedicationOrdersPage.css';
 
@@ -22,6 +22,15 @@ const MedicationOrdersPage = () => {
     const [error, setError] = useState(null);
     const [actionLoading, setActionLoading] = useState(null);
     const navigate = useNavigate();
+
+    // Modal states
+    const [showAdministerModal, setShowAdministerModal] = useState(false);
+    const [selectedOrder, setSelectedOrder] = useState(null);
+    const [administerFormData, setAdministerFormData] = useState({
+        patientResponse: '',
+        adverseReaction: '',
+        notes: ''
+    });
 
     const statusOptions = [
         { value: 'ORDERED', label: 'Đã ra lệnh', color: '#3b82f6' },
@@ -93,28 +102,42 @@ const MedicationOrdersPage = () => {
         }
     }, [selectedStatus]);
 
-    // Xử lý cấp phát y lệnh
-    const handleAdministerOrder = async (order) => {
-        const patientResponse = prompt(`Phản ứng của bệnh nhân với thuốc "${order.medicineName}" (tùy chọn):`);
-        if (patientResponse === null) return; // User cancelled
+    // Mở modal cấp phát
+    const handleAdministerOrder = (order) => {
+        setSelectedOrder(order);
+        setAdministerFormData({
+            patientResponse: '',
+            adverseReaction: '',
+            notes: ''
+        });
+        setShowAdministerModal(true);
+    };
 
-        const adverseReaction = prompt(`Phản ứng bất lợi (tùy chọn):`);
-        if (adverseReaction === null) return; // User cancelled
+    // Xử lý thay đổi form trong modal
+    const handleAdministerFormChange = (e) => {
+        const { name, value } = e.target;
+        setAdministerFormData(prev => ({
+            ...prev,
+            [name]: value
+        }));
+    };
 
-        const notes = prompt(`Ghi chú (tùy chọn):`);
-        if (notes === null) return; // User cancelled
+    // Xử lý submit cấp phát
+    const handleSubmitAdminister = async (e) => {
+        e.preventDefault();
 
-        setActionLoading(order.medicationOrderId);
+        setActionLoading(selectedOrder.medicationOrderId);
         try {
             const response = await nurseMedicationOrderAPI.administerOrder(
-                order.medicationOrderId,
-                patientResponse || '',
-                adverseReaction || '',
-                notes || ''
+                selectedOrder.medicationOrderId,
+                administerFormData.patientResponse || '',
+                administerFormData.adverseReaction || '',
+                administerFormData.notes || ''
             );
 
             if (response && (response.code === 200 || response.code === 201)) {
                 alert('Cấp phát y lệnh thành công!');
+                setShowAdministerModal(false);
                 if (activeTab === 'ready-for-administration') {
                     await fetchReadyForAdministration();
                 } else {
@@ -283,6 +306,17 @@ const MedicationOrdersPage = () => {
                     </div>
                 )}
             </div>
+
+            {/* Administer Modal */}
+            <AdministerModal
+                show={showAdministerModal}
+                order={selectedOrder}
+                formData={administerFormData}
+                onChange={handleAdministerFormChange}
+                onSubmit={handleSubmitAdminister}
+                onClose={() => setShowAdministerModal(false)}
+                loading={actionLoading !== null}
+            />
         </div>
     );
 };
@@ -405,6 +439,96 @@ const MedicationOrderCard = ({ order, onAdminister, onViewDetail, actionLoading,
                     <span>Y lệnh này đã quá hạn thực hiện</span>
                 </div>
             )}
+        </div>
+    );
+};
+
+// Administer Modal Component
+const AdministerModal = ({ show, order, formData, onChange, onSubmit, onClose, loading }) => {
+    if (!show || !order) return null;
+
+    return (
+        <div className="modal-overlay" onClick={onClose}>
+            <div className="modal-content administer-modal" onClick={(e) => e.stopPropagation()}>
+                <div className="modal-header">
+                    <h2>Cấp phát y lệnh</h2>
+                    <button type="button" onClick={onClose} className="btn-close-modal">
+                        <FiX />
+                    </button>
+                </div>
+
+                <div className="modal-body">
+                    <div className="order-info-summary">
+                        <h3>{order.medicineName}</h3>
+                        <div className="info-row">
+                            <span className="label">Bệnh nhân:</span>
+                            <span className="value">{order.patientName}</span>
+                        </div>
+                        <div className="info-row">
+                            <span className="label">Liều lượng:</span>
+                            <span className="value">{order.dosage}</span>
+                        </div>
+                        <div className="info-row">
+                            <span className="label">Đường dùng:</span>
+                            <span className="value">{order.route}</span>
+                        </div>
+                    </div>
+
+                    <form onSubmit={onSubmit} className="administer-form">
+                        <div className="form-group">
+                            <label>Phản ứng của bệnh nhân</label>
+                            <textarea
+                                name="patientResponse"
+                                value={formData.patientResponse}
+                                onChange={onChange}
+                                placeholder="Nhập phản ứng của bệnh nhân (tùy chọn)..."
+                                rows="3"
+                            />
+                        </div>
+
+                        <div className="form-group">
+                            <label>Phản ứng bất lợi</label>
+                            <textarea
+                                name="adverseReaction"
+                                value={formData.adverseReaction}
+                                onChange={onChange}
+                                placeholder="Nhập phản ứng bất lợi nếu có (tùy chọn)..."
+                                rows="3"
+                            />
+                        </div>
+
+                        <div className="form-group">
+                            <label>Ghi chú</label>
+                            <textarea
+                                name="notes"
+                                value={formData.notes}
+                                onChange={onChange}
+                                placeholder="Nhập ghi chú thêm (tùy chọn)..."
+                                rows="3"
+                            />
+                        </div>
+
+                        <div className="modal-actions">
+                            <button
+                                type="button"
+                                onClick={onClose}
+                                className="btn-cancel"
+                                disabled={loading}
+                            >
+                                Hủy
+                            </button>
+                            <button
+                                type="submit"
+                                className="btn-submit"
+                                disabled={loading}
+                            >
+                                <FiCheckCircle />
+                                {loading ? 'Đang xử lý...' : 'Xác nhận cấp phát'}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
     );
 };

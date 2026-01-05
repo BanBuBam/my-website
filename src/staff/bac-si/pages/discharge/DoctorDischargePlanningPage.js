@@ -74,7 +74,7 @@ const DoctorDischargePlanningPage = () => {
             const response = await doctorDischargePlanningAPI.getDischargePlanningByStay(inpatientStayId);
 
             if (response.status === 'OK' && response.data) {
-                setDischargePlan(response.data);
+                    setDischargePlan(response.data);
             } else {
                 setDischargePlan(null);
             }
@@ -338,8 +338,25 @@ const DoctorDischargePlanningPage = () => {
                     </div>
                 </div>
                 <div className="header-actions">
+                    {dischargePlan && !dischargePlan.approved && (
+                        <>
+                            <button className="btn-edit" onClick={handleShowEditForm}>
+                                <FiEdit /> Chỉnh sửa
+                            </button>
+                            {/* Bác sĩ có quyền phê duyệt */}
+                            { stay.currentStatus === 'ACTIVE' && (
+                                <button
+                                    className="btn-approve"
+                                    onClick={handleApprove}
+                                    disabled={approving}
+                                >
+                                    <FiCheckCircle /> {approving ? 'Đang phê duyệt...' : 'Phê duyệt Kế hoạch'}
+                                </button>
+                            )}
+                        </>
+                    )}
                     {/* Order/Cancel Discharge Buttons */}
-                    {stay && stay.currentStatus === 'ACTIVE' && (
+                    {stay && stay.currentStatus !== 'DISCHARGE_ORDERED' &&(
                         <button
                             className="btn-order-discharge"
                             onClick={() => openActionModal('ORDER')}
@@ -364,22 +381,8 @@ const DoctorDischargePlanningPage = () => {
                             <FiFileText /> Tạo Kế hoạch
                         </button>
                     )}
-                    {dischargePlan && !dischargePlan.approved && (
-                        <>
-                            <button className="btn-edit" onClick={handleShowEditForm}>
-                                <FiEdit /> Chỉnh sửa
-                            </button>
-                            {/* Bác sĩ có quyền phê duyệt */}
-                            <button
-                                className="btn-approve"
-                                onClick={handleApprove}
-                                disabled={approving}
-                            >
-                                <FiCheckCircle /> {approving ? 'Đang phê duyệt...' : 'Phê duyệt Kế hoạch'}
-                            </button>
-                        </>
-                    )}
-                    {dischargePlan && dischargePlan.approved && (
+                    
+                    {dischargePlan && dischargePlan.approved && stay.currentStatus === 'DISCHARGE_ORDERED' && (
                         <button
                             className="btn-execute"
                             onClick={handleShowExecuteModal}

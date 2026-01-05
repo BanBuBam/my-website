@@ -147,7 +147,7 @@ const ProtocolManagementPage = () => {
       return (
         <div className="empty-state">
           <FiAlertCircle />
-          <p>Không có protocol nào</p>
+          <p>Không có quy trình nào</p>
         </div>
       );
     }
@@ -208,7 +208,7 @@ const ProtocolManagementPage = () => {
     <div className="protocol-management-page">
       <div className="page-header">
         <h1>
-          <FiAlertTriangle /> Quản lý Protocol
+          <FiAlertTriangle /> Quản lý Quy trình cấp cứu
         </h1>
       </div>
 

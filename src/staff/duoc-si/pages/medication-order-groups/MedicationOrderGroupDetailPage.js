@@ -27,6 +27,7 @@ const MedicationOrderGroupDetailPage = () => {
     const [group, setGroup] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [status, setStatus] = useState(null);
 
     // Modal states
     const [showVerifyModal, setShowVerifyModal] = useState(false);
@@ -43,9 +44,11 @@ const MedicationOrderGroupDetailPage = () => {
         try {
             setLoading(true);
             setError(null);
+            
             const response = await medicationOrderGroupAPI.getGroupDetail(groupId);
             if (response && response.data) {
                 setGroup(response.data);
+                setStatus(response.data.status);
             }
         } catch (err) {
             console.error('Error loading group detail:', err);
@@ -164,6 +167,39 @@ const MedicationOrderGroupDetailPage = () => {
                     <FiPackage className="page-icon" />
                     <h1>Chi tiết nhóm y lệnh #{group.medicationOrderGroupId}</h1>
                 </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="action-buttons-header">
+                {
+                    status === 'DRAFT' && (
+                    <button className="btn-action-header btn-approve" onClick={handleApprove}>
+                        <FiCheckCircle />
+                        <span>Phê duyệt</span>
+                    </button>
+                    )
+                }
+                <button className="btn-action-header btn-reject" onClick={handleReject}>
+                    <FiXCircle />
+                    <span>Từ chối</span>
+                </button>
+                {status === 'VERIFIED' && (
+                    <button className="btn-action-header btn-prepare" onClick={handlePrepare}>
+                        <FiClock />
+                        <span>Chuẩn bị</span>
+                    </button>
+                )}
+                {status === 'PREPARED' && (
+                    <button className="btn-action-header btn-dispense" onClick={handleDispense}>
+                        <FiTruck />
+                        <span>Xuất kho</span>
+                    </button>
+                )}
+                
+                <button className="btn-action-header btn-hold" onClick={handleHold}>
+                    <FiPause />
+                    <span>Tạm dừng</span>
+                </button>
             </div>
 
             {/* Patient Information */}
@@ -377,34 +413,6 @@ const MedicationOrderGroupDetailPage = () => {
                         <p>Không có thuốc nào trong nhóm y lệnh này</p>
                     </div>
                 )}
-            </div>
-
-            {/* Action Buttons */}
-            <div className="action-section">
-                <h2>Thao tác</h2>
-                <div className="action-buttons">
-                    <button className="btn-action btn-approve" onClick={handleApprove}>
-                        <FiCheckCircle />
-                        <span>Phê duyệt</span>
-                    </button>
-                    <button className="btn-action btn-reject" onClick={handleReject}>
-                        <FiXCircle />
-                        <span>Từ chối</span>
-                    </button>
-                    <button className="btn-action btn-prepare" onClick={handlePrepare}>
-                        <FiClock />
-                        <span>Chuẩn bị</span>
-                    </button>
-                    <button className="btn-action btn-dispense" onClick={handleDispense}>
-                        <FiTruck />
-                        <span>Xuất kho</span>
-                    </button>
-                    
-                    <button className="btn-action btn-hold" onClick={handleHold}>
-                        <FiPause />
-                        <span>Tạm dừng</span>
-                    </button>
-                </div>
             </div>
 
             {/* Modals */}

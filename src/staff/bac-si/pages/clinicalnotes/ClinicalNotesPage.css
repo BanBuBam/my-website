@@ -701,6 +701,109 @@
     margin-bottom: 12px;
 }
 
+/* ICD Search Modal */
+.clinical-notes-page .icd-search-modal {
+    width: 90%;
+    max-width: 700px;
+}
+
+.clinical-notes-page .icd-search-results {
+    margin-top: 20px;
+}
+
+.clinical-notes-page .icd-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: 400px;
+    overflow-y: auto;
+    padding: 4px;
+}
+
+.clinical-notes-page .icd-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    background: #f9fafb;
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.clinical-notes-page .icd-item:hover {
+    background: #eff6ff;
+    border-color: #3b82f6;
+    transform: translateX(4px);
+}
+
+.clinical-notes-page .icd-item.selected {
+    background: #dbeafe;
+    border-color: #3b82f6;
+}
+
+.clinical-notes-page .icd-code {
+    font-weight: 700;
+    color: #1e40af;
+    font-size: 14px;
+    min-width: 80px;
+}
+
+.clinical-notes-page .icd-name {
+    flex: 1;
+    color: #374151;
+    font-size: 14px;
+}
+
+.clinical-notes-page .pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    margin-top: 20px;
+    padding-top: 16px;
+    border-top: 1px solid #e5e7eb;
+}
+
+.clinical-notes-page .btn-page {
+    padding: 8px 16px;
+    background: #3b82f6;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.clinical-notes-page .btn-page:hover:not(:disabled) {
+    background: #2563eb;
+}
+
+.clinical-notes-page .btn-page:disabled {
+    background: #d1d5db;
+    cursor: not-allowed;
+}
+
+.clinical-notes-page .page-info {
+    font-size: 14px;
+    color: #6b7280;
+    font-weight: 500;
+}
+
+.clinical-notes-page .empty-state {
+    text-align: center;
+    padding: 48px 24px;
+    color: #9ca3af;
+}
+
+.clinical-notes-page .empty-state p {
+    margin: 0;
+    font-size: 15px;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
     .clinical-notes-page {

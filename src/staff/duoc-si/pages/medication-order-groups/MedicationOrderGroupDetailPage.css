@@ -48,7 +48,7 @@
 .medication-order-group-detail-page .btn-back:hover {
     background: #2563eb;
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+    /*box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);*/
 }
 
 /* Page Header */
@@ -321,27 +321,92 @@
     font-size: 40px;
 }
 
-/* Action Section */
-.medication-order-group-detail-page .action-section {
+/* Action Buttons Header */
+.medication-order-group-detail-page .action-buttons-header {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 24px;
+    padding: 16px;
     background: white;
     border-radius: 12px;
-    padding: 24px;
-    margin-bottom: 24px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    flex-wrap: wrap;
 }
 
-.medication-order-group-detail-page .action-section h2 {
-    margin: 0 0 20px 0;
-    font-size: 20px;
-    color: #111827;
-    padding-bottom: 16px;
-    border-bottom: 2px solid #e5e7eb;
+.medication-order-group-detail-page .btn-action-header {
+    flex: 1;
+    min-width: 150px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 20px;
+    background: #3b82f6;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
 }
 
-.medication-order-group-detail-page .action-buttons {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 16px;
+.medication-order-group-detail-page .btn-action-header:hover:not(:disabled) {
+    background: #3b82f6;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(8, 145, 178, 0.3);
+}
+
+.medication-order-group-detail-page .btn-action-header:disabled {
+    background: #9ca3af;
+    cursor: not-allowed;
+    transform: none;
+    opacity: 0.6;
+}
+
+.medication-order-group-detail-page .btn-action-header svg {
+    font-size: 18px;
+}
+
+/* Specific button colors */
+.medication-order-group-detail-page .btn-action-header.btn-approve {
+    background: #3b82f6;
+}
+
+.medication-order-group-detail-page .btn-action-header.btn-approve:hover:not(:disabled) {
+    background: #3b82f6;
+}
+
+.medication-order-group-detail-page .btn-action-header.btn-reject {
+    background: #3b82f6;
+}
+
+.medication-order-group-detail-page .btn-action-header.btn-reject:hover:not(:disabled) {
+    background: #3b82f6;
+}
+
+.medication-order-group-detail-page .btn-action-header.btn-prepare {
+    background: #3b82f6;
+}
+
+.medication-order-group-detail-page .btn-action-header.btn-prepare:hover:not(:disabled) {
+    background: #3b82f6;
+}
+
+.medication-order-group-detail-page .btn-action-header.btn-dispense {
+    background: #3b82f6;
+}
+
+.medication-order-group-detail-page .btn-action-header.btn-dispense:hover:not(:disabled) {
+    background: #3b82f6;
+}
+
+.medication-order-group-detail-page .btn-action-header.btn-hold {
+    background: #3b82f6;
+}
+
+.medication-order-group-detail-page .btn-action-header.btn-hold:hover:not(:disabled) {
+    background: #3b82f6;
 }
 
 .medication-order-group-detail-page .btn-action {
@@ -419,8 +484,13 @@
         grid-template-columns: 1fr;
     }
 
-    .medication-order-group-detail-page .action-buttons {
-        grid-template-columns: 1fr;
+    .medication-order-group-detail-page .action-buttons-header {
+        flex-direction: column;
+    }
+
+    .medication-order-group-detail-page .btn-action-header {
+        width: 100%;
+        min-width: auto;
     }
 
     .medication-order-group-detail-page .medications-table {

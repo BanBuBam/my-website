@@ -159,8 +159,8 @@ const EncounterManagementPage = () => {
             {/* Page Header */}
             <div className="page-header">
                 <div>
-                    <h2>Quản lý Encounters</h2>
-                    <p>Danh sách encounters được phân công cho bác sĩ</p>
+                    <h2>Quản lý Lượt khám </h2>
+                    <p>Danh sách lượt khám được phân công cho bác sĩ</p>
                 </div>
                 <button className="btn-refresh" onClick={fetchEncounters} disabled={loading}>
                     <FiRefreshCw className={loading ? 'spinning' : ''} />

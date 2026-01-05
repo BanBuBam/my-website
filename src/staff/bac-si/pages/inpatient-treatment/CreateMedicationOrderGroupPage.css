@@ -123,7 +123,8 @@
 /* Form Grid */
 .create-medication-order-group-page .form-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(4, 1fr);
+    width: max-content;
     gap: 16px;
 }
 
@@ -203,6 +204,7 @@
 
 .create-medication-order-group-page .medication-header {
     display: flex;
+    width: 80px;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 16px;
@@ -212,8 +214,52 @@
 
 .create-medication-order-group-page .medication-header h3 {
     margin: 0;
-    font-size: 16px;
+    font-size: 14px;
+    font-weight: 600;
     color: #111827;
+}
+
+/* Medicine Select Wrapper */
+.create-medication-order-group-page .medicine-select-wrapper {
+    display: flex;
+    gap: 8px;
+    align-items: stretch;
+}
+
+.create-medication-order-group-page .medicine-select-wrapper input {
+    flex: 1;
+    background: white;
+    cursor: pointer;
+    padding: 10px 14px;
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    font-size: 14px;
+}
+
+.create-medication-order-group-page .medicine-select-wrapper input:focus {
+    outline: none;
+    border-color: #3b82f6;
+}
+
+.create-medication-order-group-page .btn-search-medicine {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 16px;
+    background: #3b82f6;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.create-medication-order-group-page .btn-search-medicine:hover {
+    background: #2563eb;
 }
 
 .create-medication-order-group-page .btn-remove {
@@ -314,6 +360,178 @@
     font-size: 48px;
 }
 
+/* Medicine Search Modal */
+.create-medication-order-group-page .modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.create-medication-order-group-page .medicine-search-modal {
+    background: white;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 700px;
+    max-height: 80vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.create-medication-order-group-page .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 24px;
+    border-bottom: 2px solid #e5e7eb;
+}
+
+.create-medication-order-group-page .modal-header h2 {
+    margin: 0;
+    font-size: 20px;
+    color: #111827;
+}
+
+.create-medication-order-group-page .btn-close-modal {
+    background: none;
+    border: none;
+    font-size: 24px;
+    color: #6b7280;
+    cursor: pointer;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.3s ease;
+}
+
+.create-medication-order-group-page .btn-close-modal:hover {
+    color: #111827;
+}
+
+.create-medication-order-group-page .modal-body {
+    padding: 24px;
+    overflow-y: auto;
+}
+
+.create-medication-order-group-page .search-form {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.create-medication-order-group-page .search-input {
+    flex: 1;
+    padding: 12px 16px;
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    font-size: 14px;
+}
+
+.create-medication-order-group-page .btn-search {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 20px;
+    background: #3b82f6;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.create-medication-order-group-page .btn-search:hover {
+    background: #2563eb;
+}
+
+.create-medication-order-group-page .medicine-list {
+    max-height: 400px;
+    overflow-y: auto;
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+}
+
+.create-medication-order-group-page .medicine-item-search {
+    padding: 16px;
+    border-bottom: 1px solid #e5e7eb;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.create-medication-order-group-page .medicine-item-search:last-child {
+    border-bottom: none;
+}
+
+.create-medication-order-group-page .medicine-item-search:hover {
+    background: #f3f4f6;
+}
+
+.create-medication-order-group-page .medicine-name {
+    font-size: 15px;
+    font-weight: 600;
+    color: #111827;
+    margin-bottom: 6px;
+}
+
+.create-medication-order-group-page .medicine-info {
+    display: flex;
+    gap: 12px;
+    font-size: 13px;
+    color: #6b7280;
+}
+
+.create-medication-order-group-page .medicine-sku {
+    font-weight: 500;
+}
+
+.create-medication-order-group-page .pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    margin-top: 20px;
+}
+
+.create-medication-order-group-page .btn-page {
+    padding: 8px 16px;
+    background: #f3f4f6;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.create-medication-order-group-page .btn-page:hover:not(:disabled) {
+    background: #e5e7eb;
+}
+
+.create-medication-order-group-page .btn-page:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.create-medication-order-group-page .page-info {
+    font-size: 14px;
+    color: #6b7280;
+}
+
+.create-medication-order-group-page .empty-state {
+    padding: 40px;
+    text-align: center;
+    color: #6b7280;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
     .create-medication-order-group-page {
@@ -346,6 +564,15 @@
 
     .create-medication-order-group-page .btn-cancel,
     .create-medication-order-group-page .btn-submit {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .create-medication-order-group-page .medicine-select-wrapper {
+        flex-direction: column;
+    }
+
+    .create-medication-order-group-page .btn-search-medicine {
         width: 100%;
         justify-content: center;
     }
