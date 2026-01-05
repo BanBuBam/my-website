@@ -548,6 +548,15 @@ export const pharmacistCabinetAPI = {
     });
   },
 
+  getLockedCabinets: async () => {
+    return apiCall('api/v1/cabinet-management/locked', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
   // Gán người chịu trách nhiệm (Assign Responsible Employee)
   assignResponsibleEmployee: async (cabinetId, employeeId) => {
     return apiCall(`api/v1/cabinet-management/${cabinetId}/assign?employeeId=${employeeId}`, {
@@ -852,6 +861,22 @@ export const pharmacistPatientAPI = {
   // Tìm kiếm bệnh nhân
   searchPatient: async (searchTerm) => {
     return apiCall(`api/v1/patients/search?q=${encodeURIComponent(searchTerm)}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Tìm kiếm bệnh nhân theo tên (sử dụng API admin search)
+  // API: GET /api/v1/patient/admin/search?name={name}
+  searchPatientsByName: async (name, page = 0, size = 10) => {
+    const params = new URLSearchParams({
+      name: name,
+      page: page.toString(),
+      size: size.toString(),
+    });
+    return apiCall(`api/v1/patient/admin/search?${params.toString()}`, {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${getAccessToken()}`,

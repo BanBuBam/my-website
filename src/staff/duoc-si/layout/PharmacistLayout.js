@@ -60,12 +60,12 @@ const PharmacistLayout = () => {
                                     <span>Đơn thuốc chờ cấp phát</span>
                                 </NavLink>
                             </li>
-                            <li>
-                                <NavLink to="/staff/duoc-si/prescriptions">
-                                    <FiFileText />
-                                    <span>Quản lý đơn thuốc</span>
-                                </NavLink>
-                            </li>
+                                {/* <li>
+                                    <NavLink to="/staff/duoc-si/prescriptions">
+                                        <FiFileText />
+                                        <span>Quản lý đơn thuốc</span>
+                                    </NavLink>
+                                </li> */}
                             <li>
                                 <NavLink to="/staff/duoc-si/lich-su-cap-phat">
                                     <FiCheckCircle />
@@ -147,7 +147,7 @@ const PharmacistLayout = () => {
                     <div className="nav-category">
                         <div className="category-header">Nhập xuất kho</div>
                         <ul>
-                            <li>
+                            {/* <li>
                                 <NavLink to="/staff/duoc-si/nhap-kho">
                                     <FiTruck />
                                     <span>Nhập kho</span>
@@ -158,19 +158,19 @@ const PharmacistLayout = () => {
                                     <FiFileText />
                                     <span>Phiếu nhập kho</span>
                                 </NavLink>
-                            </li>
+                            </li> */}
                             <li>
                                 <NavLink to="/staff/duoc-si/xuat-kho">
                                     <FiShoppingCart />
                                     <span>Xuất kho</span>
                                 </NavLink>
                             </li>
-                            <li>
+                            {/* <li>
                                 <NavLink to="/staff/duoc-si/phieu-xuat-kho">
                                     <FiFileText />
                                     <span>Phiếu xuất kho</span>
                                 </NavLink>
-                            </li>
+                            </li> */}
                         </ul>
                     </div>
 
@@ -199,7 +199,7 @@ const PharmacistLayout = () => {
                         </ul>
                     </div>
 
-                    {/* Báo cáo */}
+                    {/* Báo cáo
                     <div className="nav-category">
                         <div className="category-header">Báo cáo</div>
                         <ul>
@@ -222,7 +222,7 @@ const PharmacistLayout = () => {
                                 </NavLink>
                             </li>
                         </ul>
-                    </div>
+                    </div> */}
                 </nav>
             </aside>
             <main className="pharmacist-content">

@@ -17,7 +17,7 @@ const EditEmployeeModal = ({ employee, onClose, onSave, onDelete }) => {
     nationId: 1,
     emergencyContactName: '',
     emergencyContactPhone: '',
-    
+
     // Employee data
     employeeCode: '',
     departmentId: 1,
@@ -27,6 +27,9 @@ const EditEmployeeModal = ({ employee, onClose, onSave, onDelete }) => {
     licenseNumber: '',
     isActive: true,
     hireDate: '',
+
+    // Account data (read-only)
+    username: '',
   });
 
   const [loading, setLoading] = useState(false);
@@ -34,6 +37,7 @@ const EditEmployeeModal = ({ employee, onClose, onSave, onDelete }) => {
   useEffect(() => {
     if (employee) {
       const person = employee.person || {};
+      const account = employee.employeeAccount || {};
       setFormData({
         // Person data
         firstName: person.firstName || '',
@@ -48,7 +52,7 @@ const EditEmployeeModal = ({ employee, onClose, onSave, onDelete }) => {
         nationId: person.nationId || 1,
         emergencyContactName: person.emergencyContactName || '',
         emergencyContactPhone: person.emergencyContactPhone || '',
-        
+
         // Employee data
         employeeCode: employee.employeeCode || '',
         departmentId: employee.department?.id || 1,
@@ -58,6 +62,9 @@ const EditEmployeeModal = ({ employee, onClose, onSave, onDelete }) => {
         licenseNumber: employee.licenseNumber || '',
         isActive: employee.isActive !== undefined ? employee.isActive : true,
         hireDate: employee.hireDate || '',
+
+        // Account data (read-only)
+        username: account.username || '',
       });
     }
   }, [employee]);
@@ -269,6 +276,20 @@ const EditEmployeeModal = ({ employee, onClose, onSave, onDelete }) => {
                     required
                     disabled
                   />
+                </div>
+
+                <div className="form-group">
+                  <label>Tên đăng nhập</label>
+                  <input
+                    type="text"
+                    name="username"
+                    value={formData.username || 'Chưa có tài khoản'}
+                    disabled
+                    className={formData.username ? '' : 'no-account'}
+                  />
+                  {formData.username && (
+                    <small className="field-hint">Tài khoản đã được tạo</small>
+                  )}
                 </div>
 
                 <div className="form-group">
