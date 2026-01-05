@@ -9,21 +9,26 @@ import './EmergencyListPage.css';
 
 const EmergencyListPage = () => {
     const navigate = useNavigate();
-    const [activeTab, setActiveTab] = useState('emergencies');
+    const [activeTab, setActiveTab] = useState('waiting-triage');
+    const [waitingTriageEncounters, setWaitingTriageEncounters] = useState([]);
     const [emergencies, setEmergencies] = useState([]);
     const [createEmergencies, setCreateEmergencies] = useState([]);
     const [encounters, setEncounters] = useState([]);
     const [doctorEmergencies, setDoctorEmergencies] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    
+
     const [currentPage, setCurrentPage] = useState(0);
     const [pageSize] = useState(20);
     const [totalPages, setTotalPages] = useState(0);
     const [totalElements, setTotalElements] = useState(0);
 
     useEffect(() => {
-        if (activeTab === 'emergencies') {
+        if (activeTab === 'waiting-triage') {
+            fetchWaitingTriageEncounters();
+            const interval = setInterval(fetchWaitingTriageEncounters, 30000);
+            return () => clearInterval(interval);
+        } else if (activeTab === 'emergencies') {
             fetchEmergencies();
             const interval = setInterval(fetchEmergencies, 30000);
             return () => clearInterval(interval);
@@ -39,6 +44,24 @@ const EmergencyListPage = () => {
             return () => clearInterval(interval);
         }
     }, [activeTab, currentPage]);
+
+    const fetchWaitingTriageEncounters = async () => {
+        try {
+            setLoading(true);
+            setError(null);
+            const response = await doctorEmergencyAPI.getWaitingTriageEncounters();
+            if (response && response.data) {
+                // Sắp xếp theo priorityScore giảm dần
+                const sortedData = [...response.data].sort((a, b) => b.priorityScore - a.priorityScore);
+                setWaitingTriageEncounters(sortedData);
+            }
+        } catch (err) {
+            console.error('Error fetching waiting triage encounters:', err);
+            setError(err.message || 'Không thể tải danh sách chờ phân loại');
+        } finally {
+            setLoading(false);
+        }
+    };
 
     const fetchEmergencies = async () => {
         try {
@@ -195,6 +218,13 @@ const EmergencyListPage = () => {
 
             <div className="tabs-container">
                 <button
+                    className={`tab-button ${activeTab === 'waiting-triage' ? 'active' : ''}`}
+                    onClick={() => setActiveTab('waiting-triage')}
+                >
+                    <FiClock />
+                    Chờ Triage
+                </button>
+                <button
                     className={`tab-button ${activeTab === 'emergencies' ? 'active' : ''}`}
                     onClick={() => setActiveTab('emergencies')}
                 >
@@ -208,13 +238,13 @@ const EmergencyListPage = () => {
                     <FiSearch />
                     Tìm kiếm Encounter
                 </button>
-                <button
-                    className={`tab-button ${activeTab === 'create' ? 'active' : ''}`}
-                    onClick={() => setActiveTab('create')}
-                >
-                    <FiPlus />
-                    Tạo Cấp cứu Khẩn
-                </button>
+                {/*<button*/}
+                {/*    className={`tab-button ${activeTab === 'create' ? 'active' : ''}`}*/}
+                {/*    onClick={() => setActiveTab('create')}*/}
+                {/*>*/}
+                {/*    <FiPlus />*/}
+                {/*    Tạo Cấp cứu Khẩn*/}
+                {/*</button>*/}
                 <button
                     className={`tab-button ${activeTab === 'doctor' ? 'active' : ''}`}
                     onClick={() => setActiveTab('doctor')}
@@ -229,6 +259,16 @@ const EmergencyListPage = () => {
                     <FiAlertCircle />
                     <span>{error}</span>
                 </div>
+            )}
+
+            {activeTab === 'waiting-triage' && (
+                <WaitingTriageTab
+                    encounters={waitingTriageEncounters}
+                    loading={loading}
+                    onViewDetail={handleViewEmergencyDetail}
+                    formatDateTime={formatDateTime}
+                    getCategoryBadgeClass={getCategoryBadgeClass}
+                />
             )}
 
             {activeTab === 'emergencies' && (
@@ -580,6 +620,209 @@ const EncountersTab = ({
                     </>
                 )}
             </div>
+        </>
+    );
+};
+
+// Component tab Chờ Triage
+const WaitingTriageTab = ({ encounters, loading, onViewDetail, formatDateTime, getCategoryBadgeClass }) => {
+    if (loading) {
+        return (
+            <div className="loading-container">
+                <FiRefreshCw className="spinner" />
+                <p>Đang tải danh sách chờ phân loại...</p>
+            </div>
+        );
+    }
+
+    const getStatusBadgeClass = (statusColor) => {
+        const colorMap = {
+            '#FFA500': 'status-waiting',
+            '#FF6B6B': 'status-critical',
+            '#4ECDC4': 'status-stable',
+            '#95E1D3': 'status-completed',
+        };
+        return colorMap[statusColor] || 'status-default';
+    };
+
+    return (
+        <>
+            <div className="stats-section">
+                <div className="stat-card">
+                    <div className="stat-icon total">
+                        <FiActivity />
+                    </div>
+                    <div className="stat-content">
+                        <div className="stat-value">{encounters.length}</div>
+                        <div className="stat-label">Tổng số ca chờ</div>
+                    </div>
+                </div>
+                <div className="stat-card">
+                    <div className="stat-icon critical">
+                        <FiAlertTriangle />
+                    </div>
+                    <div className="stat-content">
+                        <div className="stat-value">
+                            {encounters.filter(e => e.isLifeThreatening).length}
+                        </div>
+                        <div className="stat-label">Nguy kịch</div>
+                    </div>
+                </div>
+                <div className="stat-card">
+                    <div className="stat-icon urgent">
+                        <FiClock />
+                    </div>
+                    <div className="stat-content">
+                        <div className="stat-value">
+                            {encounters.filter(e => e.requiresImmediateAttention).length}
+                        </div>
+                        <div className="stat-label">Cần xử lý ngay</div>
+                    </div>
+                </div>
+                <div className="stat-card">
+                    <div className="stat-icon exceeded">
+                        <FiAlertCircle />
+                    </div>
+                    <div className="stat-content">
+                        <div className="stat-value">
+                            {encounters.filter(e => e.isWaitTimeExceeded).length}
+                        </div>
+                        <div className="stat-label">Quá thời gian chờ</div>
+                    </div>
+                </div>
+            </div>
+
+            {encounters.length === 0 ? (
+                <div className="empty-state">
+                    <FiClock className="empty-icon" />
+                    <h3>Không có ca nào chờ phân loại</h3>
+                    <p>Hiện tại không có ca cấp cứu nào đang chờ phân loại</p>
+                </div>
+            ) : (
+                <div className="emergency-grid">
+                    {encounters.map((encounter) => (
+                        <div
+                            key={encounter.emergencyEncounterId}
+                            className={`emergency-card ${encounter.isWaitTimeExceeded ? 'exceeded-wait' : ''} ${encounter.isLifeThreatening ? 'life-threatening' : ''}`}
+                        >
+                            <div className="card-header">
+                                <div className="header-left">
+                                    <span className={`category-badge ${getCategoryBadgeClass(encounter.colorCode)}`}>
+                                        {encounter.emergencyCategoryIcon && <span className="category-icon">{encounter.emergencyCategoryIcon}</span>}
+                                        {encounter.emergencyCategoryDisplay}
+                                    </span>
+                                    <span className="priority-score">
+                                        Độ ưu tiên: {encounter.priorityScore}
+                                    </span>
+                                </div>
+                                <span className={`status-badge ${getStatusBadgeClass(encounter.statusColor)}`}>
+                                    {encounter.statusDisplay}
+                                </span>
+                            </div>
+
+                            <div className="card-body">
+                                <div className="info-section">
+                                    <div className="info-row">
+                                        <FiUser className="info-icon" />
+                                        <div className="info-content">
+                                            <div className="patient-name">{encounter.patientName}</div>
+                                            <div className="patient-code">Mã BN: {encounter.patientCode}</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="complaint-section">
+                                    <div className="complaint-label">Triệu chứng chính:</div>
+                                    <div className="complaint-text">{encounter.chiefComplaint || '-'}</div>
+                                </div>
+
+                                <div className="time-section">
+                                    <div className="time-item">
+                                        <FiClock className="time-icon" />
+                                        <div>
+                                            <div className="time-label">Thời gian đến</div>
+                                            <div className="time-value">{formatDateTime(encounter.arrivalTime)}</div>
+                                        </div>
+                                    </div>
+                                    <div className="time-item">
+                                        <div className={`wait-time ${encounter.isWaitTimeExceeded ? 'exceeded' : ''}`}>
+                                            <FiAlertCircle />
+                                            <span>Chờ: {encounter.waitTimeMinutes} phút</span>
+                                            {encounter.isWaitTimeExceeded && <span className="exceeded-badge">Quá hạn</span>}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="additional-info">
+                                    <div className="info-item">
+                                        <FiMapPin className="icon" />
+                                        <span>{encounter.arrivalMethod || '-'}</span>
+                                    </div>
+                                    {encounter.painScore > 0 && (
+                                        <div className={`info-item pain-indicator ${encounter.hasSeverePain ? 'severe' : ''}`}>
+                                            <span className="pain-score">
+                                                Đau: {encounter.painScore}/10
+                                                {encounter.hasSeverePain && ' ⚠️'}
+                                            </span>
+                                        </div>
+                                    )}
+                                    {encounter.emergencyContactPhone && (
+                                        <div className="info-item">
+                                            <FiPhone className="icon" />
+                                            <span>{encounter.emergencyContactPhone}</span>
+                                        </div>
+                                    )}
+                                </div>
+
+                                {/* Highlight các trường hợp đặc biệt */}
+                                {(encounter.isLifeThreatening || encounter.requiresImmediateAttention) && (
+                                    <div className="alert-section">
+                                        {encounter.isLifeThreatening && (
+                                            <div className="alert-badge critical">
+                                                <FiAlertTriangle />
+                                                <span>Nguy kịch</span>
+                                            </div>
+                                        )}
+                                        {encounter.requiresImmediateAttention && (
+                                            <div className="alert-badge urgent">
+                                                <FiAlertCircle />
+                                                <span>Cần xử lý ngay</span>
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
+
+                                {(encounter.triageNurseName || encounter.assignedDoctorName) && (
+                                    <div className="staff-section">
+                                        {encounter.triageNurseName && (
+                                            <div className="staff-item">
+                                                <span className="staff-label">Y tá phân loại:</span>
+                                                <span className="staff-name">{encounter.triageNurseName}</span>
+                                            </div>
+                                        )}
+                                        {encounter.assignedDoctorName && (
+                                            <div className="staff-item">
+                                                <span className="staff-label">Bác sĩ:</span>
+                                                <span className="staff-name">{encounter.assignedDoctorName}</span>
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
+                            </div>
+
+                            <div className="card-footer">
+                                <button
+                                    className="btn-view-detail"
+                                    onClick={() => onViewDetail(encounter.emergencyEncounterId)}
+                                >
+                                    <FiEye />
+                                    Xem chi tiết
+                                </button>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            )}
         </>
     );
 };

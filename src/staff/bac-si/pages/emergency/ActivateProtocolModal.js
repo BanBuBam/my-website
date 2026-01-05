@@ -29,7 +29,7 @@ const ActivateProtocolModal = ({ patientId, onClose, onSuccess }) => {
   const [formData, setFormData] = useState({
     protocolType: '',
     departmentId: '',
-    patientId: patientId || '',
+    patientId: '',
     location: '',
     severityLevel: 'CRITICAL',
     description: '',

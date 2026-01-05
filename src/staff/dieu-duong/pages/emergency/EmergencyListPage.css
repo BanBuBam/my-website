@@ -400,11 +400,25 @@
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
     overflow: hidden;
     transition: all 0.2s;
+    border: 2px solid transparent;
 }
 
 .emergency-list-page .emergency-card:hover {
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
     transform: translateY(-2px);
+}
+
+/* Highlight cards với thời gian chờ quá hạn */
+.emergency-list-page .emergency-card.exceeded-wait {
+    border-color: #f97316;
+    background: linear-gradient(to right, #fff7ed 0%, white 10%);
+}
+
+/* Highlight cards nguy kịch */
+.emergency-list-page .emergency-card.life-threatening {
+    border-color: #dc2626;
+    background: linear-gradient(to right, #fef2f2 0%, white 10%);
+    box-shadow: 0 4px 12px rgba(220, 38, 38, 0.15);
 }
 
 /* Card Header */
@@ -694,6 +708,50 @@
 .emergency-list-page .alert-badge.ambulance {
     background: #dbeafe;
     color: #1e40af;
+}
+
+/* Alert Section - Highlight các trường hợp đặc biệt */
+.emergency-list-page .alert-section {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid #f3f4f6;
+    flex-wrap: wrap;
+}
+
+.emergency-list-page .alert-section .alert-badge {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.emergency-list-page .alert-section .alert-badge.critical {
+    background: #fee2e2;
+    color: #991b1b;
+    border: 1px solid #fca5a5;
+}
+
+.emergency-list-page .alert-section .alert-badge.urgent {
+    background: #ffedd5;
+    color: #9a3412;
+    border: 1px solid #fdba74;
+}
+
+/* Pain Indicator */
+.emergency-list-page .pain-indicator.severe {
+    background: #fee2e2;
+    padding: 4px 8px;
+    border-radius: 6px;
+}
+
+.emergency-list-page .pain-indicator.severe .pain-score {
+    color: #991b1b;
+    font-weight: 600;
 }
 
 /* Card Footer */

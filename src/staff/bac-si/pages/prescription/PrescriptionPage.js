@@ -457,7 +457,7 @@ const PrescriptionPage = () => {
                 <div className="header-content">
                     <FiFileText className="header-icon" />
                     <div>
-                        <h1>Prescription</h1>
+                        <h1>Đơn thuốc</h1>
                         <p>Xem danh sách đơn thuốc</p>
                     </div>
                 </div>
@@ -469,7 +469,7 @@ const PrescriptionPage = () => {
                         <FiSearch className="search-icon" />
                         <input
                             type="text"
-                            placeholder="Nhập Encounter ID..."
+                            placeholder="Nhập mã lượt khám..."
                             value={encounterId}
                             onChange={(e) => setEncounterId(e.target.value)}
                             className="search-input"
@@ -499,7 +499,7 @@ const PrescriptionPage = () => {
                     <div className="encounter-header">
                         <div className="encounter-title">
                             <FiUser />
-                            <h2>Thông tin Encounter</h2>
+                            <h2>Thông tin Lượt khám</h2>
                         </div>
                         <span
                             className="encounter-status-badge"
@@ -539,10 +539,10 @@ const PrescriptionPage = () => {
                         </div>
                         <div className="encounter-footer">
                             <button className="btn-view-prescription" onClick={handleViewPrescriptions}>
-                                <FiList /> Xem Prescriptions
+                                <FiList /> Xem Đơn thuốc
                             </button>
                             <button className="btn-create-prescription" onClick={handleCreatePrescription}>
-                                <FiShoppingCart /> Tạo Prescription
+                                <FiShoppingCart /> Tạo Đơn thuốc
                             </button>
                         </div>
                     </div>
@@ -554,7 +554,7 @@ const PrescriptionPage = () => {
                 <div className="modal-overlay" onClick={() => setShowPrescriptionListModal(false)}>
                     <div className="modal-content prescription-list-modal" onClick={(e) => e.stopPropagation()}>
                         <div className="modal-header">
-                            <h3>Danh sách Prescriptions</h3>
+                            <h3>Danh sách Đơn thuốc</h3>
                             <button className="modal-close" onClick={() => setShowPrescriptionListModal(false)}>
                                 <FiX />
                             </button>
@@ -566,12 +566,12 @@ const PrescriptionPage = () => {
                             {loadingPrescriptions ? (
                                 <div className="loading-state-small">
                                     <div className="spinner-small"></div>
-                                    <p>Đang tải prescriptions...</p>
+                                    <p>Đang tải Đơn thuốc...</p>
                                 </div>
                             ) : prescriptions.length === 0 ? (
                                 <div className="empty-state-small">
                                     <FiFileText />
-                                    <p>Chưa có prescription nào</p>
+                                        <p>Chưa có Đơn thuốc nào</p>
                                 </div>
                             ) : (
                                 <div className="prescriptions-list">

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { nurseAdmissionRequestAPI } from '../../../../services/staff/nurseAPI';
 import {
     FiSearch, FiFilter, FiAlertCircle, FiClock,
-    FiCheckCircle, FiClipboard, FiX, FiCalendar
+    FiCheckCircle, FiClipboard, FiX, FiCalendar, FiList
 } from 'react-icons/fi';
 import './AdmissionRequestPage.css';
 import {useNavigate} from "react-router-dom";
@@ -19,10 +19,13 @@ const AdmissionRequestPage = () => {
     const [patientNameFilter, setPatientNameFilter] = useState('');
     const [approvalDateFilter, setApprovalDateFilter] = useState('');
 
+    // Status filter for new tab
+    const [selectedStatus, setSelectedStatus] = useState('PENDING');
+
     // Fetch data based on active tab
     useEffect(() => {
         fetchRequests();
-    }, [activeTab]);
+    }, [activeTab, selectedStatus]);
 
     // Apply filters
     useEffect(() => {
@@ -46,6 +49,9 @@ const AdmissionRequestPage = () => {
                     break;
                 case 'longWaiting':
                     response = await nurseAdmissionRequestAPI.getLongWaitingRequests();
+                    break;
+                case 'byStatus':
+                    response = await nurseAdmissionRequestAPI.getRequestsByStatus(selectedStatus);
                     break;
                 default:
                     response = await nurseAdmissionRequestAPI.getApprovedRequests();
@@ -137,8 +143,35 @@ const AdmissionRequestPage = () => {
                     >
                         <FiClock /> Chờ lâu
                     </button>
+                    <button
+                        className={`tab ${activeTab === 'byStatus' ? 'active' : ''}`}
+                        onClick={() => setActiveTab('byStatus')}
+                    >
+                        <FiList /> Theo trạng thái
+                    </button>
                 </div>
             </div>
+
+            {/* Status Filter - Only show when byStatus tab is active */}
+            {activeTab === 'byStatus' && (
+                <div className="status-filter-section">
+                    <label htmlFor="status-select">Chọn trạng thái:</label>
+                    <select
+                        id="status-select"
+                        value={selectedStatus}
+                        onChange={(e) => setSelectedStatus(e.target.value)}
+                        className="status-select"
+                    >
+                        <option value="PENDING">Chờ xác nhận (PENDING)</option>
+                        <option value="UNDER_REVIEW">Đang xem xét (UNDER_REVIEW)</option>
+                        <option value="APPROVED">Đã phê duyệt (APPROVED)</option>
+                        <option value="BED_ASSIGNED">Đã gán giường (BED_ASSIGNED)</option>
+                        <option value="ADMITTED">Đã nhập viện (ADMITTED)</option>
+                        <option value="REJECTED">Từ chối (REJECTED)</option>
+                        <option value="CANCELLED">Đã hủy (CANCELLED)</option>
+                    </select>
+                </div>
+            )}
 
             {/* Filters */}
             <div className="filters-section">

@@ -30,18 +30,18 @@ const ReceptionistLayout = () => {
                 <span>Tổng quan</span>
               </NavLink>
             </li>
-            <li>
-              <NavLink to="/staff/le-tan/tim-kiem">
-                <FiUserPlus />
-                <span>Tìm kiếm / Đăng ký bệnh nhân</span>
-              </NavLink>
-            </li>
-            <li>
-              <NavLink to="/staff/le-tan/tiep-nhan">
-                <FiUserCheck />
-                <span>Tiếp nhận bệnh nhân</span>
-              </NavLink>
-            </li>
+            {/*<li>*/}
+            {/*  <NavLink to="/staff/le-tan/tim-kiem">*/}
+            {/*    <FiUserPlus />*/}
+            {/*    <span>Tìm kiếm / Đăng ký bệnh nhân</span>*/}
+            {/*  </NavLink>*/}
+            {/*</li>*/}
+            {/*<li>*/}
+            {/*  <NavLink to="/staff/le-tan/tiep-nhan">*/}
+            {/*    <FiUserCheck />*/}
+            {/*    <span>Tiếp nhận bệnh nhân</span>*/}
+            {/*  </NavLink>*/}
+            {/*</li>*/}
             <li>
               <NavLink to="/staff/le-tan/cap-cuu">
                 <FiAlertCircle />
@@ -54,12 +54,12 @@ const ReceptionistLayout = () => {
                 <span>Quản lý lịch hẹn</span>
               </NavLink>
             </li>
-            <li>
-              <NavLink to="/staff/le-tan/tra-cuu">
-                <FiSearch />
-                <span>Tra cứu</span>
-              </NavLink>
-            </li>
+            {/*<li>*/}
+            {/*  <NavLink to="/staff/le-tan/tra-cuu">*/}
+            {/*    <FiSearch />*/}
+            {/*    <span>Tra cứu</span>*/}
+            {/*  </NavLink>*/}
+            {/*</li>*/}
             <li>
               <NavLink to="/staff/le-tan/booking">
                 <FiList />

@@ -320,7 +320,17 @@ export const nurseAdmissionRequestAPI = {
       },
     });
   },
-  
+
+  // Lấy danh sách yêu cầu theo trạng thái
+  getRequestsByStatus: async (status) => {
+    return apiCall(`api/v1/admission-requests/status/${status}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
   //Get Detail request
   getAdmissionRequestDetail: async (admissionRequestId) => {
     return apiCall(`api/v1/admission-requests/${admissionRequestId}`, {
@@ -595,6 +605,25 @@ export const nurseMedicationOrderGroupAPI = {
     });
   },
 
+  // Lấy danh sách nhóm y lệnh với filter
+  getMedicationOrderGroups: async (status = null, departmentId = null) => {
+    const params = new URLSearchParams();
+    if (status) params.append('status', status);
+    if (departmentId) params.append('departmentId', departmentId);
+
+    const queryString = params.toString();
+    const url = queryString
+      ? `api/v1/medication-order-groups?${queryString}`
+      : 'api/v1/medication-order-groups';
+
+    return apiCall(url, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
   // Lấy chi tiết nhóm y lệnh
   getGroupDetail: async (groupId) => {
     return apiCall(`api/v1/medication-order-groups/${groupId}`, {
@@ -816,6 +845,16 @@ export const nurseDischargePlanningAPI = {
 
 // API Quản lý Emergency
 export const nurseEmergencyAPI = {
+  // Lấy danh sách cấp cứu chờ phân loại (triage)
+  getWaitingTriageEncounters: async () => {
+    return apiCall('api/v1/emergency/encounters/waiting-triage', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
   // Lấy danh sách cấp cứu đang hoạt động
   getActiveEmergencies: async () => {
     return apiCall('api/v1/emergency/encounters/active', {

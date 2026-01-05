@@ -273,7 +273,7 @@ const WorkflowPage = () => {
                     <FiArrowLeft /> Quay lại
                 </button>
                 <div className="header-content">
-                    <h1>Workflow - Lượt điều trị #{stayId}</h1>
+                    <h1>Luồng điều trị - Lượt điều trị #{stayId}</h1>
                     <p>Theo dõi tiến trình điều trị nội trú</p>
                 </div>
                 {workflowSteps.length === 0 && !loading && (

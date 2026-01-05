@@ -182,34 +182,70 @@
     font-weight: 500;
     cursor: pointer;
     color: white;
+    background: #3b82f6;
+    transition: all 0.3s ease;
+}
+
+.inpatient-treatment-detail-page .action-buttons-row .btn-action:hover {
+    background: #2563eb;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
 }
 
 .inpatient-treatment-detail-page .btn-medication-group {
-    background: #4CAF50;
+    background: #3b82f6;
+}
+
+.inpatient-treatment-detail-page .btn-medication-group:hover {
+    background: #2563eb;
 }
 
 .inpatient-treatment-detail-page .btn-medication-single {
-    background: #2196F3;
+    background: #3b82f6;
+}
+
+.inpatient-treatment-detail-page .btn-medication-single:hover {
+    background: #2563eb;
 }
 
 .inpatient-treatment-detail-page .btn-medication-view {
-    background: #9C27B0;
+    background: #3b82f6;
+}
+
+.inpatient-treatment-detail-page .btn-medication-view:hover {
+    background: #2563eb;
 }
 
 .inpatient-treatment-detail-page .btn-discharge-planning {
-    background: #FF9800;
+    background: #3b82f6;
+}
+
+.inpatient-treatment-detail-page .btn-discharge-planning:hover {
+    background: #2563eb;
 }
 
 .inpatient-treatment-detail-page .btn-transfer-hospital {
-    background: #00BCD4;
+    background: #3b82f6;
+}
+
+.inpatient-treatment-detail-page .btn-transfer-hospital:hover {
+    background: #2563eb;
 }
 
 .inpatient-treatment-detail-page .btn-transfer-bed {
-    background: #FFC107;
+    background: #3b82f6;
+}
+
+.inpatient-treatment-detail-page .btn-transfer-bed:hover {
+    background: #2563eb;
 }
 
 .inpatient-treatment-detail-page .btn-discharge-modal {
-    background: #F44336;
+    background: #3b82f6;
+}
+
+.inpatient-treatment-detail-page .btn-discharge-modal:hover {
+    background: #2563eb;
 }
 
 /* States */
@@ -635,26 +671,26 @@
 
 /* Thêm vào file InpatientTreatmentDetailPage.css */
 
-/* Nút Đặt lệnh xuất viện - Màu tím hoặc xanh đậm để gây chú ý */
+/* Nút Đặt lệnh xuất viện */
 .btn-order-discharge {
-    background-color: #7c3aed; /* Màu tím */
-    color: black;
+    background-color: #3b82f6;
+    color: white;
 }
 .btn-order-discharge:hover {
-    background-color: #6d28d9;
+    background-color: #2563eb;
     transform: translateY(-2px);
-    box-shadow: 0 4px 6px rgba(124, 58, 237, 0.2);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
 }
 
-/* Nút Hủy lệnh xuất viện - Màu cam/đỏ nhạt để cảnh báo */
+/* Nút Hủy lệnh xuất viện */
 .btn-cancel-discharge-order {
-    background-color: #f59e0b; /* Màu cam */
-    color: black;
+    background-color: #3b82f6;
+    color: white;
 }
 .btn-cancel-discharge-order:hover {
-    background-color: #d97706;
+    background-color: #2563eb;
     transform: translateY(-2px);
-    box-shadow: 0 4px 6px rgba(245, 158, 11, 0.2);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
 }
 
 /* Style cho Badge trạng thái DISCHARGE_ORDERED */

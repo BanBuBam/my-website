@@ -240,7 +240,7 @@ const LabTestOrderPage = () => {
                         className={`tab ${activeTab === 'search' ? 'active' : ''}`}
                         onClick={() => setActiveTab('search')}
                     >
-                        <FiSearch /> Tìm kiếm theo Encounter ID
+                        <FiSearch /> Tìm kiếm theo mã lượt khám
                     </button>
                     <button
                         className={`tab ${activeTab === 'verification' ? 'active' : ''}`}
@@ -390,7 +390,7 @@ const LabTestOrderPage = () => {
                     {loading && (
                         <div className="loading-state">
                             <FiRefreshCw className="spinning" />
-                            <p>Đang tải danh sách yêu cầu xét nghiệm...</p>
+                            <p>Đang tải danh sách Yêu cầu xét nghiệm...</p>
                         </div>
                     )}
 
@@ -398,7 +398,7 @@ const LabTestOrderPage = () => {
                     {!loading && labOrders.length > 0 && (
                 <div className="orders-section">
                     <div className="section-header">
-                        <h2>Danh sách yêu cầu xét nghiệm</h2>
+                        <h2>Danh sách Yêu cầu xét nghiệm</h2>
                         <span className="count-badge">{labOrders.length} order(s)</span>
                     </div>
 

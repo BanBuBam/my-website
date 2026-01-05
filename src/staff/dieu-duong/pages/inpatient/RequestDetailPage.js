@@ -43,6 +43,7 @@ const RequestDetailPage = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [status, setStatus] = useState(null);
     
     // Lấy requestId từ URL
     const { requestId } = useParams();
@@ -90,6 +91,7 @@ const RequestDetailPage = () => {
             const response = await nurseAdmissionRequestAPI.getAdmissionRequestDetail(requestId);
             if (response && response.data) {
                 setRequest(response.data);
+                setStatus(response.data.status);
             } else {
                 setError('Không tìm thấy dữ liệu cho yêu cầu này');
             }
@@ -167,15 +169,16 @@ const RequestDetailPage = () => {
                 <div className="header-actions" style={{ display: 'flex', gap: '12px', marginLeft: 'auto' }}>
                     
                     {/* Nút Gán giường (Giữ nguyên logic cũ: Hiện khi chưa có giường) */}
-                    {!request.assignedBedCode && !request.isCompleted && (
+                    {status === 'APPROVED' && (
                         <button className="btn-assign-bed" onClick={() => setIsModalOpen(true)}>
                             <FiGrid /> Gán giường
                         </button>
                     )}
                     
                     {/* === ADDED: NÚT HOÀN THÀNH === */}
-                    {/* Hiện khi ĐÃ CÓ giường VÀ CHƯA hoàn thành */}
-                    {/*{request.assignedBedCode && !request.isCompleted && (*/}
+                    {/* Hiện khi ĐÃ CÓ giường VÀ CHƯA hoàn thành, BED_ASSIGNED, ADMITTED, APPROVED */}
+                    
+                    {status === 'BED_ASSIGNED' && (
                         <button
                             className="btn-complete"
                             onClick={handleComplete}
@@ -183,7 +186,7 @@ const RequestDetailPage = () => {
                         >
                             <FiCheckCircle /> {completing ? 'Đang xử lý...' : 'Hoàn thành'}
                         </button>
-                    {/*)}*/}
+                    )}
                 </div>
             </div>
             

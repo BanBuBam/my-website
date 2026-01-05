@@ -95,7 +95,7 @@ const EncounterDetailPage = () => {
             <div className="encounter-detail-page">
                 <div className="loading-state">
                     <FiRefreshCw className="spinning" />
-                    <p>Đang tải chi tiết encounter...</p>
+                    <p>Đang tải chi tiết lượt khám...</p>
                 </div>
             </div>
         );
@@ -120,7 +120,7 @@ const EncounterDetailPage = () => {
             <div className="encounter-detail-page">
                 <div className="empty-state">
                     <FiAlertCircle />
-                    <p>Không tìm thấy encounter</p>
+                    <p>Không tìm thấy lượt khám</p>
                     <button onClick={() => navigate(-1)} className="btn-back">
                         <FiArrowLeft /> Quay lại
                     </button>
@@ -139,8 +139,8 @@ const EncounterDetailPage = () => {
                 <div className="header-content">
                     <FiFileText className="header-icon" />
                     <div>
-                        <h1>Chi tiết Encounter #{encounterId}</h1>
-                        <p>Thông tin chi tiết về encounter</p>
+                        <h1>Chi tiết lượt khám #{encounterId}</h1>
+                        <p>Thông tin chi tiết về lượt khám</p>
                     </div>
                 </div>
             </div>
@@ -148,22 +148,22 @@ const EncounterDetailPage = () => {
             {/* Action Buttons - Single Container with 2 Rows */}
             <div className="action-buttons-row">
                 <button className="btn-action btn-vital" onClick={handleAddVitalSign}>
-                    Thêm Vital Sign
+                    Thêm DH sinh tồn
                 </button>
                 <button className="btn-action btn-note" onClick={handleAddClinicalNote}>
-                    Thêm Clinical Note
+                    Thêm GC lâm sàng
                 </button>
                 <button className="btn-action btn-lab" onClick={handleAddLabTestOrder}>
-                    Thêm Lab Test Order
+                    Thêm YC xét nghiệm
                 </button>
                 <button className="btn-action btn-imaging" onClick={handleAddImagingOrder}>
-                    Thêm Imaging Order
+                    Thêm YC CĐHA
                 </button>
                 <button className="btn-action btn-prescription" onClick={handleAddPrescription}>
-                    Thêm Prescription
+                    Thêm Đơn thuốc
                 </button>
                 <button className="btn-action btn-admission" onClick={handleCreateAdmissionRequest}>
-                    Tạo yêu cầu nhập viện
+                    Tạo YC nhập viện
                 </button>
                 <button className="btn-action btn-follow-up" onClick={() => setShowCreateFollowUpModal(true)}>
                     Hẹn tái khám

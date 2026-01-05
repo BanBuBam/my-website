@@ -96,7 +96,7 @@ const MedicationOrderGroupsPage = () => {
                     <FiArrowLeft /> Quay lại
                 </button>
                 <div className="header-content">
-                    <h1>Danh sách Nhóm Y lệnh (Medication Order Groups)</h1>
+                    <h1>Danh sách Nhóm Y lệnh </h1>
                     <p>Điều trị nội trú #{inpatientStayId}</p>
                 </div>
             </div>
