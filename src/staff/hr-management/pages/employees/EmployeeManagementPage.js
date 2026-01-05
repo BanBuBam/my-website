@@ -128,12 +128,26 @@ const EmployeeManagementPage = () => {
     setShowAddModal(true);
   };
 
-  const handleEditEmployee = (employee) => {
-    console.log('Selected employee for edit:', employee);
-    console.log('Employee ID:', employee.id);
-    console.log('Employee ID type:', typeof employee.id);
-    setSelectedEmployee(employee);
-    setShowEditModal(true);
+  const handleEditEmployee = async (employee) => {
+    try {
+      console.log('Selected employee for edit:', employee);
+      console.log('Employee ID:', employee.id);
+
+      // Gọi API để lấy thông tin chi tiết nhân viên
+      const response = await hrEmployeeAPI.getEmployeeById(employee.id);
+      console.log('Employee detail response:', response);
+
+      if (response.data) {
+        // Set employee data với cấu trúc đầy đủ từ API
+        setSelectedEmployee(response.data);
+        setShowEditModal(true);
+      } else {
+        alert('Không thể lấy thông tin chi tiết nhân viên');
+      }
+    } catch (err) {
+      console.error('Error fetching employee details:', err);
+      alert('Lỗi khi tải thông tin nhân viên: ' + err.message);
+    }
   };
 
   const handleDeleteEmployee = async (id) => {
@@ -766,10 +780,13 @@ const EmployeeManagementPage = () => {
             <tr>
               <th>Mã NV</th>
               <th>Họ và tên</th>
+              <th>Chức vụ</th>
+              <th>Vai trò</th>
+              <th>Chuyên khoa</th>
+              <th>Khoa/Phòng ban</th>
               <th>Email</th>
               <th>Số điện thoại</th>
-              <th>Phòng ban</th>
-              <th>Chức vụ</th>
+              <th>Ngày vào làm</th>
               <th>Trạng thái</th>
               <th>Thao tác</th>
             </tr>
@@ -777,48 +794,70 @@ const EmployeeManagementPage = () => {
           <tbody>
             {filteredEmployees.length > 0 ? (
               filteredEmployees.map((employee) => {
-                // Extract data from different possible structures
-                const person = employee.person || {};
-                const fullName = person.firstName && person.lastName
-                  ? `${person.lastName} ${person.firstName}`
-                  : employee.name || 'N/A';
-                const email = person.email || employee.email || 'N/A';
-                const phone = person.phoneNumber || employee.phone || 'N/A';
-                const department = employee.department?.name || employee.departmentName || 'N/A';
-                const position = employee.jobTitle || employee.position || 'N/A';
-                const isEmployeeActive = employee.isActive !== undefined ? employee.isActive : true; // data.isActive
+                // Extract data from API response structure
+                const fullName = employee.fullName || 'N/A';
+                const email = employee.email || 'N/A';
+                const phone = employee.phoneNumber || 'N/A';
+                const department = employee.departmentName || 'N/A';
+                const position = employee.jobTitle || 'N/A';
+                const roleType = employee.roleType || 'N/A';
+                const specialization = employee.specialization || '-';
+                const hireDate = employee.hireDate || 'N/A';
+                const hasAccount = employee.hasAccount || false;
+                const isEmployeeActive = employee.isActive !== undefined ? employee.isActive : true;
                 const isDeleted = employee.deletedAt !== null && employee.deletedAt !== undefined;
-                const isAccountActive = employee.employeeAccount?.isActive; // employeeAccount.isActive
 
-                // Determine status based on both isActive flags
+                // Determine status
                 let statusClass = 'active';
                 let statusText = 'Đang làm việc';
 
                 if (isDeleted) {
                   statusClass = 'deleted';
                   statusText = 'Đã xóa';
-                } else if (isEmployeeActive && isAccountActive) {
-                  // Both active -> Đang hoạt động
-                  statusClass = 'active';
-                  statusText = 'Đang hoạt động';
-                } else if (!isEmployeeActive && isAccountActive) {
-                  // Employee inactive but account active -> Nghỉ việc
-                  statusClass = 'inactive';
-                  statusText = 'Nghỉ việc';
                 } else if (!isEmployeeActive) {
-                  // Employee inactive -> Nghỉ việc
                   statusClass = 'inactive';
                   statusText = 'Nghỉ việc';
+                } else {
+                  statusClass = 'active';
+                  statusText = 'Đang làm việc';
                 }
+
+                // Map roleType to Vietnamese
+                const roleTypeMap = {
+                  'SYSTEM': 'Hệ thống',
+                  'DOCTOR': 'Bác sĩ',
+                  'NURSE': 'Điều dưỡng',
+                  'LAB_TECH': 'Kỹ thuật viên',
+                  'PHARMACIST': 'Dược sĩ',
+                  'CASHIER': 'Thu ngân',
+                  'RECEPTIONIST': 'Lễ tân',
+                  'ADMIN': 'Quản trị viên',
+                  'HR': 'Nhân sự'
+                };
+                const roleTypeVN = roleTypeMap[roleType] || roleType;
 
                 return (
                   <tr key={employee.id || employee.employeeId}>
-                    <td>{employee.employeeCode || 'N/A'}</td>
-                    <td>{fullName}</td>
+                    <td>
+                      <span className="employee-code">{employee.employeeCode || 'N/A'}</span>
+                    </td>
+                    <td>
+                      <div className="employee-name-cell">
+                        <strong>{fullName}</strong>
+                        {hasAccount && (
+                          <span className="has-account-badge" title="Có tài khoản">
+                            <FiUserCheck size={14} />
+                          </span>
+                        )}
+                      </div>
+                    </td>
+                    <td>{position}</td>
+                    <td>{roleTypeVN}</td>
+                    <td>{specialization}</td>
+                    <td>{department}</td>
                     <td>{email}</td>
                     <td>{phone}</td>
-                    <td>{department}</td>
-                    <td>{position}</td>
+                    <td>{hireDate}</td>
                     <td>
                       <span className={`status-badge ${statusClass}`}>
                         {statusText}
@@ -856,7 +895,7 @@ const EmployeeManagementPage = () => {
               })
             ) : (
               <tr>
-                <td colSpan="8" className="no-data">
+                <td colSpan="11" className="no-data">
                   Không tìm thấy nhân viên nào
                 </td>
               </tr>

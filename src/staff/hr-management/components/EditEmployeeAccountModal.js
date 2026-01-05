@@ -5,6 +5,7 @@ import './EditEmployeeAccountModal.css';
 const EditEmployeeAccountModal = ({ account, isOpen, onClose, onSubmit }) => {
   const [formData, setFormData] = useState({
     username: '',
+    email: '', // Thêm field email
     roles: [],
     isActive: true,
   });
@@ -26,6 +27,7 @@ const EditEmployeeAccountModal = ({ account, isOpen, onClose, onSubmit }) => {
     if (account && isOpen) {
       setFormData({
         username: account.username || '',
+        email: account.email || '', // Lấy email từ account prop
         roles: account.roles || [],
         isActive: account.isActive !== false,
       });
@@ -58,6 +60,14 @@ const EditEmployeeAccountModal = ({ account, isOpen, onClose, onSubmit }) => {
     if (!formData.username.trim()) {
       newErrors.username = 'Vui lòng nhập username';
     }
+    
+    // Thêm validate email
+    if (!formData.email.trim()) {
+      newErrors.email = 'Vui lòng nhập email';
+    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      newErrors.email = 'Email không đúng định dạng';
+    }
+
     if (formData.roles.length === 0) {
       newErrors.roles = 'Vui lòng chọn ít nhất 1 vai trò';
     }
@@ -71,22 +81,21 @@ const EditEmployeeAccountModal = ({ account, isOpen, onClose, onSubmit }) => {
 
     if (!validate()) return;
 
+    // Chuẩn bị payload đúng chuẩn theo API Document
     const submitData = {
       username: formData.username.trim(),
-      roles: formData.roles,
+      email: formData.email.trim(), // Thêm email vào payload
       isActive: formData.isActive,
+      roles: formData.roles, 
     };
 
+    // Log kiểm tra
     console.log('📝 EditEmployeeAccountModal - Submitting...');
-    console.log('📝 Account object:', account);
-    console.log('📝 Account ID:', account.id);
-    console.log('📝 Employee ID:', account.employeeId);
     console.log('📝 Submit data:', submitData);
 
-    // Sử dụng employeeId nếu có, nếu không thì dùng id
-    const idToUse = account.employeeId || account.id;
-    console.log('📝 Using ID:', idToUse);
-
+    // API Endpoint: PUT /api/v1/employee-accounts/{id}
+    const idToUse = account.id; // API thường dùng ID của account, không phải employeeId
+    
     await onSubmit(idToUse, submitData);
     handleClose();
   };
@@ -94,6 +103,7 @@ const EditEmployeeAccountModal = ({ account, isOpen, onClose, onSubmit }) => {
   const handleClose = () => {
     setFormData({
       username: '',
+      email: '',
       roles: [],
       isActive: true,
     });
@@ -123,6 +133,7 @@ const EditEmployeeAccountModal = ({ account, isOpen, onClose, onSubmit }) => {
             <div className="form-section">
               <h3>Thông tin tài khoản</h3>
               
+              {/* Username Input */}
               <div className="form-group">
                 <label>Username <span className="required">*</span></label>
                 <input
@@ -136,6 +147,21 @@ const EditEmployeeAccountModal = ({ account, isOpen, onClose, onSubmit }) => {
                 {errors.username && <span className="error-message">{errors.username}</span>}
               </div>
 
+              {/* Email Input - Mới thêm */}
+              <div className="form-group">
+                <label>Email <span className="required">*</span></label>
+                <input
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  placeholder="Nhập email (ví dụ: bsy@hospital.com)"
+                  className={errors.email ? 'error' : ''}
+                />
+                {errors.email && <span className="error-message">{errors.email}</span>}
+              </div>
+
+              {/* Roles Selection */}
               <div className="form-group">
                 <label>Vai trò <span className="required">*</span></label>
                 <div className="roles-grid">
@@ -153,6 +179,7 @@ const EditEmployeeAccountModal = ({ account, isOpen, onClose, onSubmit }) => {
                 {errors.roles && <span className="error-message">{errors.roles}</span>}
               </div>
 
+              {/* Is Active Checkbox */}
               <div className="form-group">
                 <label className="checkbox-label">
                   <input
@@ -171,7 +198,7 @@ const EditEmployeeAccountModal = ({ account, isOpen, onClose, onSubmit }) => {
               <ul>
                 <li>Không thể thay đổi mật khẩu ở đây. Sử dụng chức năng "Reset mật khẩu" để đổi mật khẩu.</li>
                 <li>Thay đổi vai trò sẽ ảnh hưởng đến quyền truy cập của nhân viên.</li>
-                <li>Vô hiệu hóa tài khoản sẽ ngăn nhân viên đăng nhập vào hệ thống.</li>
+                <li>Email được sử dụng để nhận thông báo và khôi phục mật khẩu.</li>
               </ul>
             </div>
           </div>
@@ -192,4 +219,3 @@ const EditEmployeeAccountModal = ({ account, isOpen, onClose, onSubmit }) => {
 };
 
 export default EditEmployeeAccountModal;
-

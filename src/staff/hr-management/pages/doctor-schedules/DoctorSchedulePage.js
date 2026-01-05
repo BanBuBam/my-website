@@ -133,10 +133,7 @@ const DoctorSchedulePage = () => {
           }
           break;
 
-        case 'all':
-          console.log('📞 Fetching all schedules');
-          response = await hrDoctorScheduleAPI.getDoctorSchedules();
-          break;
+        
 
         default:
           console.log('📞 Default case: fetching schedules for today');
@@ -530,7 +527,6 @@ const DoctorSchedulePage = () => {
                   }}
                 >
                   <option value="today">🗓️ Lịch hôm nay ({selectedDate})</option>
-                  <option value="all">Tất cả lịch làm việc</option>
                   <option value="doctor">Theo bác sĩ</option>
                   <option value="clinic">Theo phòng khám & ngày</option>
                   <option value="date">Theo ngày</option>

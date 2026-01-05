@@ -33,7 +33,7 @@ const AdminLayout = () => {
                         </li>
 
                         {/* Quản lý Nhân viên */}
-                        <li className="menu-group">
+                        {/* <li className="menu-group">
                             <div className="menu-header" onClick={() => toggleMenu('employees')}>
                                 <div className="menu-title">
                                     <FiUsers />
@@ -47,7 +47,7 @@ const AdminLayout = () => {
                                     <li><NavLink to="/staff/admin/employees/create">Tạo Nhân viên</NavLink></li>
                                 </ul>
                             )}
-                        </li>
+                        </li> */}
 
                         {/* Quản lý Tài khoản Nhân viên */}
                         <li>
@@ -103,7 +103,7 @@ const AdminLayout = () => {
                         <li>
                             <NavLink to="/staff/admin/sessions">
                                 <FiMonitor />
-                                <span>Quản lý Sessions</span>
+                                <span>Quản lý Phiên đăng nhập</span>
                             </NavLink>
                         </li>
 
@@ -111,7 +111,7 @@ const AdminLayout = () => {
                         <li>
                             <NavLink to="/staff/admin/audit">
                                 <FiFileText />
-                                <span>Audit Logs</span>
+                                <span>Nhật ký Kiểm toán</span>
                             </NavLink>
                         </li>
 
@@ -119,7 +119,7 @@ const AdminLayout = () => {
                         <li>
                             <NavLink to="/staff/admin/data-import">
                                 <FiUpload />
-                                <span>Data Import</span>
+                                <span>Nhập dữ liệu</span>
                             </NavLink>
                         </li>
 
@@ -131,13 +131,13 @@ const AdminLayout = () => {
                             </NavLink>
                         </li>
 
-                        {/* Quản lý Tủ thuốc/Vật tư */}
+                        {/* Quản lý Tủ thuốc/Vật tư
                         <li>
                             <NavLink to="/staff/admin/tu-thuoc">
                                 <FiArchive />
                                 <span>Quản lý Tủ thuốc/Vật tư</span>
                             </NavLink>
-                        </li>
+                        </li> */}
                     </ul>
                 </nav>
             </aside>

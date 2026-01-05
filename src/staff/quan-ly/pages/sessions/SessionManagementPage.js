@@ -35,7 +35,8 @@ const SessionManagementPage = () => {
             } else if (activeView === 'all') {
                 const response = await adminSessionAPI.getActiveSessions();
                 if (response && response.data) {
-                    setActiveSessions(response.data.activeSessions || []);
+                    // API trả về data là array trực tiếp, không phải object có property activeSessions
+                    setActiveSessions(Array.isArray(response.data) ? response.data : []);
                 }
             } else if (activeView === 'statistics') {
                 const response = await adminSessionAPI.getSessionStatistics();
@@ -45,7 +46,7 @@ const SessionManagementPage = () => {
             }
         } catch (err) {
             console.error('Error fetching session data:', err);
-            setError(err.message || 'Không thể tải dữ liệu sessions');
+            setError(err.message || 'Không thể tải dữ liệu phiên đăng nhập');
         } finally {
             setLoading(false);
         }
@@ -53,7 +54,7 @@ const SessionManagementPage = () => {
 
     const handleSearchUser = async () => {
         if (!searchUsername.trim()) {
-            alert('Vui lòng nhập username');
+            alert('Vui lòng nhập tên đăng nhập');
             return;
         }
 
@@ -61,24 +62,24 @@ const SessionManagementPage = () => {
             setLoading(true);
             setError(null);
             const response = await adminSessionAPI.getSessionsByUsername(searchUsername.trim());
-            
+
             if (response && response.data) {
                 setUserSessions(response.data);
                 if (response.data.length === 0) {
-                    alert(`Không tìm thấy session nào cho user: ${searchUsername}`);
+                    alert(`Không tìm thấy phiên đăng nhập nào cho người dùng: ${searchUsername}`);
                 }
             }
         } catch (err) {
             console.error('Error searching user sessions:', err);
-            alert(err.message || 'Không thể tìm kiếm sessions');
+            alert(err.message || 'Không thể tìm kiếm phiên đăng nhập');
         } finally {
             setLoading(false);
         }
     };
 
     const handleTerminateSession = async (sessionId, username) => {
-        const confirmMessage = `Bạn có chắc chắn muốn đóng phiên đăng nhập này?\n\nSession ID: ${sessionId}\nUser: ${username}\n\nNgười dùng sẽ bị đăng xuất ngay lập tức!`;
-        
+        const confirmMessage = `Bạn có chắc chắn muốn đóng phiên đăng nhập này?\n\nMã phiên: ${sessionId}\nNgười dùng: ${username}\n\nNgười dùng sẽ bị đăng xuất ngay lập tức!`;
+
         if (!window.confirm(confirmMessage)) {
             return;
         }
@@ -103,8 +104,8 @@ const SessionManagementPage = () => {
     };
 
     const handleTerminateAllUserSessions = async (username) => {
-        const confirmMessage = `Bạn có chắc chắn muốn đóng TẤT CẢ phiên đăng nhập của user "${username}"?\n\nNgười dùng sẽ bị đăng xuất khỏi tất cả thiết bị!`;
-        
+        const confirmMessage = `Bạn có chắc chắn muốn đóng TẤT CẢ phiên đăng nhập của người dùng "${username}"?\n\nNgười dùng sẽ bị đăng xuất khỏi tất cả thiết bị!`;
+
         if (!window.confirm(confirmMessage)) {
             return;
         }
@@ -152,7 +153,7 @@ const SessionManagementPage = () => {
                 <div className="header-left">
                     <FiMonitor className="page-icon" />
                     <div>
-                        <h1>Quản lý Sessions</h1>
+                        <h1>Quản lý Phiên đăng nhập</h1>
                         <p>Giám sát và quản lý phiên đăng nhập của người dùng</p>
                     </div>
                 </div>
@@ -174,19 +175,19 @@ const SessionManagementPage = () => {
                     className={`tab ${activeView === 'online' ? 'active' : ''}`}
                     onClick={() => setActiveView('online')}
                 >
-                    <FiUsers /> Online Users
+                    <FiUsers /> Người dùng Online
                 </button>
                 <button
                     className={`tab ${activeView === 'all' ? 'active' : ''}`}
                     onClick={() => setActiveView('all')}
                 >
-                    <FiActivity /> All Active Sessions
+                    <FiActivity /> Tất cả phiên hoạt động
                 </button>
                 <button
                     className={`tab ${activeView === 'statistics' ? 'active' : ''}`}
                     onClick={() => setActiveView('statistics')}
                 >
-                    <FiClock /> Statistics
+                    <FiClock /> Thống kê
                 </button>
             </div>
 
@@ -196,7 +197,7 @@ const SessionManagementPage = () => {
                     <FiSearch />
                     <input
                         type="text"
-                        placeholder="Tìm kiếm sessions theo username..."
+                        placeholder="Tìm kiếm phiên đăng nhập theo tên đăng nhập..."
                         value={searchUsername}
                         onChange={(e) => setSearchUsername(e.target.value)}
                         onKeyPress={(e) => e.key === 'Enter' && handleSearchUser()}
@@ -222,12 +223,12 @@ const SessionManagementPage = () => {
             {userSessions.length > 0 && (
                 <div className="user-sessions-section">
                     <div className="section-header">
-                        <h3>Sessions của user: {searchUsername}</h3>
+                        <h3>Phiên đăng nhập của người dùng: {searchUsername}</h3>
                         <button
                             className="btn-terminate-all"
                             onClick={() => handleTerminateAllUserSessions(searchUsername)}
                         >
-                            <FiLogOut /> Đóng tất cả sessions
+                            <FiLogOut /> Đóng tất cả phiên
                         </button>
                     </div>
                     <div className="sessions-grid">
@@ -252,10 +253,10 @@ const SessionManagementPage = () => {
                                         <strong>IP:</strong> {session.ipAddress}
                                     </div>
                                     <div className="info-item">
-                                        <strong>Login:</strong> {formatDateTime(session.loginTime)}
+                                        <strong>Đăng nhập:</strong> {formatDateTime(session.loginTime)}
                                     </div>
                                     <div className="info-item">
-                                        <strong>Duration:</strong> {formatDuration(session.loginTime)}
+                                        <strong>Thời lượng:</strong> {formatDuration(session.loginTime)}
                                     </div>
                                 </div>
                             </div>
@@ -285,7 +286,7 @@ const SessionManagementPage = () => {
             {!loading && !error && activeView === 'online' && (
                 <div className="content-section">
                     <div className="section-header">
-                        <h3>Users đang Online ({onlineUsers.length})</h3>
+                        <h3>Người dùng đang Online ({onlineUsers.length})</h3>
                         <div className="hours-filter">
                             <label>Xem trong:</label>
                             <select value={hoursBack} onChange={(e) => setHoursBack(Number(e.target.value))}>
@@ -300,23 +301,23 @@ const SessionManagementPage = () => {
                     {onlineUsers.length === 0 ? (
                         <div className="empty-state">
                             <FiUsers />
-                            <p>Không có user nào online trong {hoursBack} giờ qua</p>
+                            <p>Không có người dùng nào online trong {hoursBack} giờ qua</p>
                         </div>
                     ) : (
                         <div className="users-table">
                             <table>
                                 <thead>
                                     <tr>
-                                        <th>User ID</th>
-                                        <th>Username</th>
+                                        <th>Mã người dùng</th>
+                                        <th>Tên đăng nhập</th>
                                         <th>Tên nhân viên</th>
-                                        <th>Session ID</th>
-                                        <th>IP Address</th>
-                                        <th>Login Time</th>
-                                        <th>Duration</th>
-                                        <th>Sessions</th>
-                                        <th>Status</th>
-                                        <th>Actions</th>
+                                        <th>Mã phiên</th>
+                                        <th>Địa chỉ IP</th>
+                                        <th>Thời gian đăng nhập</th>
+                                        <th>Thời lượng</th>
+                                        <th>Số phiên</th>
+                                        <th>Trạng thái</th>
+                                        <th>Thao tác</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -344,7 +345,7 @@ const SessionManagementPage = () => {
                                                     className="btn-terminate"
                                                     onClick={() => handleTerminateSession(user.sessionId, user.username)}
                                                     disabled={terminatingSessionId === user.sessionId}
-                                                    title="Đóng session"
+                                                    title="Đóng phiên"
                                                 >
                                                     {terminatingSessionId === user.sessionId ? (
                                                         <div className="spinner-small"></div>
@@ -366,29 +367,30 @@ const SessionManagementPage = () => {
             {!loading && !error && activeView === 'all' && (
                 <div className="content-section">
                     <div className="section-header">
-                        <h3>Tất cả Active Sessions ({activeSessions.length})</h3>
+                        <h3>Tất cả phiên hoạt động ({activeSessions.length})</h3>
                     </div>
 
                     {activeSessions.length === 0 ? (
                         <div className="empty-state">
                             <FiActivity />
-                            <p>Không có session nào đang active</p>
+                            <p>Không có phiên nào đang hoạt động</p>
                         </div>
                     ) : (
                         <div className="users-table">
                             <table>
                                 <thead>
                                     <tr>
-                                        <th>User ID</th>
-                                        <th>Employee ID</th>
-                                        <th>Username</th>
-                                        <th>Session ID</th>
-                                        <th>IP Address</th>
-                                        <th>Login Time</th>
-                                        <th>Duration</th>
-                                        <th>Sessions</th>
-                                        <th>Status</th>
-                                        <th>Actions</th>
+                                        <th>Mã người dùng</th>
+                                        <th>Mã nhân viên</th>
+                                        <th>Tên đăng nhập</th>
+                                        <th>Tên nhân viên</th>
+                                        <th>Mã phiên</th>
+                                        <th>Địa chỉ IP</th>
+                                        <th>Thời gian đăng nhập</th>
+                                        <th>Thời lượng</th>
+                                        <th>Số phiên</th>
+                                        <th>Trạng thái</th>
+                                        <th>Thao tác</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -397,6 +399,7 @@ const SessionManagementPage = () => {
                                             <td>{session.userId}</td>
                                             <td>{session.employeeId || 'N/A'}</td>
                                             <td className="username">{session.username}</td>
+                                            <td>{session.employeeName || 'N/A'}</td>
                                             <td className="session-id">{session.sessionId}</td>
                                             <td>{session.ipAddress}</td>
                                             <td>{formatDateTime(session.loginTime)}</td>
@@ -416,7 +419,7 @@ const SessionManagementPage = () => {
                                                     className="btn-terminate"
                                                     onClick={() => handleTerminateSession(session.sessionId, session.username)}
                                                     disabled={terminatingSessionId === session.sessionId}
-                                                    title="Đóng session"
+                                                    title="Đóng phiên"
                                                 >
                                                     {terminatingSessionId === session.sessionId ? (
                                                         <div className="spinner-small"></div>
@@ -438,7 +441,7 @@ const SessionManagementPage = () => {
             {!loading && !error && activeView === 'statistics' && statistics && (
                 <div className="content-section">
                     <div className="section-header">
-                        <h3>Thống kê Sessions</h3>
+                        <h3>Thống kê Phiên đăng nhập</h3>
                     </div>
 
                     <div className="stats-grid">
@@ -448,7 +451,7 @@ const SessionManagementPage = () => {
                             </div>
                             <div className="stat-content">
                                 <div className="stat-value">{statistics.currentOnlineUsers}</div>
-                                <div className="stat-label">Users Online hiện tại</div>
+                                <div className="stat-label">Người dùng Online hiện tại</div>
                             </div>
                         </div>
 
@@ -488,7 +491,7 @@ const SessionManagementPage = () => {
                             </div>
                             <div className="stat-content">
                                 <div className="stat-value">{statistics.peakConcurrentUsers}</div>
-                                <div className="stat-label">Peak Concurrent Users</div>
+                                <div className="stat-label">Số người dùng đồng thời cao nhất</div>
                             </div>
                         </div>
 
@@ -498,7 +501,7 @@ const SessionManagementPage = () => {
                             </div>
                             <div className="stat-content">
                                 <div className="stat-value">{statistics.avgSessionDurationMinutes} phút</div>
-                                <div className="stat-label">Thời gian session TB</div>
+                                <div className="stat-label">Thời gian phiên trung bình</div>
                             </div>
                         </div>
                     </div>

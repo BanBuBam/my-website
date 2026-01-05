@@ -13,6 +13,10 @@ const EmployeeStatusPage = () => {
   const [submitting, setSubmitting] = useState(false);
   const [notification, setNotification] = useState(null);
 
+  // Employee search state
+  const [employeeSearchTerm, setEmployeeSearchTerm] = useState('');
+  const [isSearchingEmployees, setIsSearchingEmployees] = useState(false);
+
   // View mode: 'employee', 'date', 'preferred', 'recurring'
   const [viewMode, setViewMode] = useState('employee');
 
@@ -38,17 +42,39 @@ const EmployeeStatusPage = () => {
     priorityLevel: 'NORMAL',
   });
 
+  // Load initial employees on mount
   useEffect(() => {
     fetchEmployees();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Debounce employee search
   useEffect(() => {
+    if (employeeSearchTerm === '') {
+      // Nếu search term rỗng, load lại danh sách mặc định
+      fetchEmployees();
+      return;
+    }
+
+    // Debounce search
+    const timeoutId = setTimeout(() => {
+      handleEmployeeSearch(employeeSearchTerm);
+    }, 500); // 500ms delay
+
+    return () => clearTimeout(timeoutId);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [employeeSearchTerm]);
+
+  useEffect(() => {
+    // Chỉ fetch khi có selectedEmployee và viewMode là 'employee'
     if (viewMode === 'employee' && selectedEmployee) {
       fetchEmployeeAvailability(selectedEmployee);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [viewMode, selectedEmployee, useDateRange, startDate, endDate]);
 
   useEffect(() => {
+    // Chỉ fetch khi viewMode thay đổi và không phải 'employee'
     if (viewMode === 'date' && selectedDate) {
       fetchEmployeesByDate(selectedDate, dateViewType);
     } else if (viewMode === 'preferred') {
@@ -56,6 +82,7 @@ const EmployeeStatusPage = () => {
     } else if (viewMode === 'recurring') {
       fetchRecurringAvailability();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [viewMode, selectedDate, dateViewType]);
 
   const fetchEmployeeAvailability = async (employeeId) => {
@@ -94,19 +121,77 @@ const EmployeeStatusPage = () => {
     }
   };
 
-  const fetchEmployees = async () => {
+  // Lấy TOÀN BỘ danh sách nhân viên bằng cách loop qua tất cả các trang
+  const fetchAllEmployees = async (searchName = '') => {
     try {
-      const response = await hrEmployeeAPI.getEmployees();
-      if (response.data) {
-        setEmployees(response.data || []);
-        // Tự động chọn nhân viên đầu tiên nếu có và đang ở chế độ employee
-        if (response.data.length > 0 && viewMode === 'employee') {
-          setSelectedEmployee(response.data[0].employeeId.toString());
+      setIsSearchingEmployees(true);
+      console.log('🔄 Fetching ALL employees by looping through pages...');
+
+      // Bước 1: Gọi API lần đầu (page=0) để lấy totalPages
+      const firstResponse = await hrEmployeeAPI.getEmployees(searchName, 0, 20);
+      console.log('📦 First page response:', firstResponse);
+
+      if (!firstResponse.data) {
+        console.warn('⚠️ No data in response');
+        setEmployees([]);
+        return;
+      }
+
+      let allEmployees = [];
+      let totalPages = 1;
+
+      // Xử lý response có thể là array hoặc paginated object
+      if (Array.isArray(firstResponse.data)) {
+        // Nếu response là array (không phân trang) → Lấy luôn
+        allEmployees = firstResponse.data;
+        console.log('✅ Response is array, loaded all employees:', allEmployees.length);
+      } else if (firstResponse.data.content) {
+        // Nếu response là paginated object
+        allEmployees = [...firstResponse.data.content];
+        totalPages = firstResponse.data.totalPages || 1;
+        const totalElements = firstResponse.data.totalElements || 0;
+
+        console.log(`📊 Total pages: ${totalPages}, Total elements: ${totalElements}`);
+        console.log(`✅ Loaded page 1/${totalPages} (${allEmployees.length} employees)`);
+
+        // Bước 2: Loop từ page=1 đến page=totalPages-1
+        if (totalPages > 1) {
+          console.log(`🔄 Fetching remaining ${totalPages - 1} pages...`);
+
+          for (let page = 1; page < totalPages; page++) {
+            console.log(`📄 Fetching page ${page + 1}/${totalPages}...`);
+
+            const response = await hrEmployeeAPI.getEmployees(searchName, page, 20);
+
+            if (response.data && response.data.content) {
+              // Bước 3: Gộp (concat) mảng content
+              allEmployees = [...allEmployees, ...response.data.content];
+              console.log(`✅ Loaded page ${page + 1}/${totalPages} (total: ${allEmployees.length} employees)`);
+            }
+          }
         }
       }
+
+      setEmployees(allEmployees);
+      console.log(`🎉 Successfully loaded ALL ${allEmployees.length} employees from ${totalPages} pages!`);
     } catch (err) {
-      console.error('Error fetching employees:', err);
+      console.error('❌ Error fetching all employees:', err);
+      showNotification('Không thể tải danh sách nhân viên: ' + err.message, 'error');
+      setEmployees([]);
+    } finally {
+      setIsSearchingEmployees(false);
     }
+  };
+
+  // Wrapper function để giữ tên cũ
+  const fetchEmployees = async (searchName = '') => {
+    await fetchAllEmployees(searchName);
+  };
+
+  // Handle employee search
+  const handleEmployeeSearch = async (searchTerm) => {
+    console.log('🔍 Searching employees with term:', searchTerm);
+    await fetchAllEmployees(searchTerm);
   };
 
   const fetchEmployeesByDate = async (date, type) => {
@@ -419,10 +504,10 @@ const EmployeeStatusPage = () => {
       setSelectedEmployee('');
       setUseDateRange(false);
     } else if (mode === 'employee') {
-      // Auto-select first employee if available
-      if (employees.length > 0 && !selectedEmployee) {
-        setSelectedEmployee(employees[0].employeeId.toString());
-      }
+      // KHÔNG tự động chọn nhân viên nữa
+      // Để user tự chọn để tránh load chậm
+      setSelectedEmployee('');
+      setUseDateRange(false);
     } else if (mode === 'preferred' || mode === 'recurring') {
       // Reset filters for preferred/recurring modes
       setSelectedEmployee('');
@@ -430,16 +515,17 @@ const EmployeeStatusPage = () => {
     }
   };
 
-  if (loading && viewMode === 'employee' && !selectedEmployee) {
-    return (
-      <div className="employee-status-page">
-        <div className="loading-container">
-          <div className="spinner"></div>
-          <p>Đang tải dữ liệu...</p>
-        </div>
-      </div>
-    );
-  }
+  // Không cần loading state này nữa vì không tự động load
+  // if (loading && viewMode === 'employee' && !selectedEmployee) {
+  //   return (
+  //     <div className="employee-status-page">
+  //       <div className="loading-container">
+  //         <div className="spinner"></div>
+  //         <p>Đang tải dữ liệu...</p>
+  //       </div>
+  //     </div>
+  //   );
+  // }
 
   return (
     <div className="employee-status-page">
@@ -613,9 +699,13 @@ const EmployeeStatusPage = () => {
                         <FiUser size={14} style={{ color: '#0ea5e9' }} />
                         Chọn nhân viên
                       </label>
-                      <select
-                        value={selectedEmployee}
-                        onChange={(e) => setSelectedEmployee(e.target.value)}
+
+                      {/* Search input */}
+                      <input
+                        type="text"
+                        placeholder="Tìm kiếm nhân viên..."
+                        value={employeeSearchTerm}
+                        onChange={(e) => setEmployeeSearchTerm(e.target.value)}
                         style={{
                           width: '100%',
                           padding: '0.75rem 1rem',
@@ -623,18 +713,70 @@ const EmployeeStatusPage = () => {
                           borderRadius: '10px',
                           fontSize: '0.95rem',
                           backgroundColor: '#fff',
-                          cursor: 'pointer',
+                          outline: 'none',
+                          boxSizing: 'border-box',
+                          marginBottom: '0.5rem'
+                        }}
+                      />
+
+                      {/* Employee dropdown */}
+                      <select
+                        value={selectedEmployee}
+                        onChange={(e) => setSelectedEmployee(e.target.value)}
+                        disabled={isSearchingEmployees}
+                        style={{
+                          width: '100%',
+                          padding: '0.75rem 1rem',
+                          border: '2px solid #e2e8f0',
+                          borderRadius: '10px',
+                          fontSize: '0.95rem',
+                          backgroundColor: isSearchingEmployees ? '#f7fafc' : '#fff',
+                          cursor: isSearchingEmployees ? 'wait' : 'pointer',
                           outline: 'none',
                           boxSizing: 'border-box'
                         }}
                       >
-                        <option value="">-- Chọn nhân viên --</option>
+                        <option value="">
+                          {isSearchingEmployees ? '-- Đang tìm kiếm... --' : '-- Chọn nhân viên --'}
+                        </option>
                         {employees.map((emp) => (
                           <option key={emp.employeeId} value={emp.employeeId}>
                             {emp.fullName} ({emp.employeeCode})
                           </option>
                         ))}
                       </select>
+
+                      {/* Show result count or loading message */}
+                      {isSearchingEmployees ? (
+                        <p style={{
+                          fontSize: '0.8rem',
+                          color: '#3182ce',
+                          marginTop: '0.25rem',
+                          marginBottom: 0,
+                          fontWeight: '500'
+                        }}>
+                          ⏳ Đang tải toàn bộ danh sách nhân viên...
+                        </p>
+                      ) : employees.length > 0 ? (
+                        <p style={{
+                          fontSize: '0.8rem',
+                          color: '#38a169',
+                          marginTop: '0.25rem',
+                          marginBottom: 0,
+                          fontWeight: '600'
+                        }}>
+                          ✅ Đã tải {employees.length} nhân viên
+                        </p>
+                      ) : (
+                        <p style={{
+                          fontSize: '0.8rem',
+                          color: '#e53e3e',
+                          marginTop: '0.25rem',
+                          marginBottom: 0
+                        }}>
+                          Không tìm thấy nhân viên nào
+                        </p>
+                      )}
                     </div>
 
                     <div>
