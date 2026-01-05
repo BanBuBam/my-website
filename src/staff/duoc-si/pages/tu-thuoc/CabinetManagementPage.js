@@ -71,7 +71,7 @@ const CabinetManagementPage = () => {
     });
 
     const [maintenanceFormData, setMaintenanceFormData] = useState({ 
-        maintenanceType: 'CLEANING', scheduledDate: '', notes: '' 
+        maintenanceType: 'ROUTINE_CHECK', scheduledDate: '', notes: '' 
     });
     
     const [assignEmployeeId, setAssignEmployeeId] = useState('');
@@ -82,14 +82,12 @@ const CabinetManagementPage = () => {
     useEffect(() => {
         loadDepartments();
         loadCabinets(0);
-        // [MỚI] Gọi API lấy danh sách khóa ngay khi vào trang để update số lượng
         fetchLockedCount();
     }, []);
 
     useEffect(() => {
         setSearchTerm('');
         loadCabinets(0);
-        // Nếu chuyển sang tab khác không phải locked, vẫn nên refresh lại số lượng locked
         if (viewMode !== 'locked') {
             fetchLockedCount();
         }
@@ -97,7 +95,6 @@ const CabinetManagementPage = () => {
 
     // ==================== CORE DATA LOADING ====================
 
-    // [MỚI] Hàm riêng để lấy số lượng tủ đang khóa
     const fetchLockedCount = async () => {
         try {
             const response = await pharmacistCabinetAPI.getLockedCabinets();
@@ -116,7 +113,6 @@ const CabinetManagementPage = () => {
             setError(null);
             let response;
 
-            // --- TRƯỜNG HỢP 1: LOCKED MODE (API Riêng) ---
             if (viewMode === 'locked') {
                 response = await pharmacistCabinetAPI.getLockedCabinets();
                 
@@ -124,7 +120,6 @@ const CabinetManagementPage = () => {
                     const data = response.data || [];
                     setAllCabinets(data);
                     
-                    // Client-side pagination cho Locked list
                     const pageSize = pagination.pageSize;
                     const totalElements = data.length;
                     const totalPages = Math.ceil(totalElements / pageSize);
@@ -132,8 +127,6 @@ const CabinetManagementPage = () => {
                     const endIndex = startIndex + pageSize;
                     
                     setCabinets(data.slice(startIndex, endIndex));
-                    
-                    // Cập nhật stats
                     setStats(prev => ({ ...prev, locked: totalElements }));
 
                     setPagination({
@@ -146,7 +139,6 @@ const CabinetManagementPage = () => {
                     throw new Error(response.message || 'Không thể tải danh sách tủ khóa');
                 }
             } 
-            // --- TRƯỜNG HỢP 2: CÁC MODE KHÁC (API Chung) ---
             else {
                 response = await pharmacistCabinetAPI.getAllCabinets(page, pagination.pageSize);
 
@@ -168,19 +160,16 @@ const CabinetManagementPage = () => {
 
                     setAllCabinets(content);
                     
-                    // Cập nhật stats ước lượng (active/inactive) từ trang hiện tại
-                    // (Lưu ý: Để chính xác tuyệt đối cần API stats tổng quát từ BE)
                     const activeCount = content.filter(c => c.isActive).length;
                     const inactiveCount = content.filter(c => !c.isActive).length;
                     
                     setStats(prev => ({
                         ...prev,
                         total: data.totalElements || content.length,
-                        active: activeCount, // Tạm tính trên trang này
+                        active: activeCount,
                         inactive: inactiveCount
                     }));
 
-                    // Filter hiển thị
                     if (viewMode === 'active') {
                         setCabinets(content.filter(c => c.isActive === true));
                     } else if (viewMode === 'inactive') {
@@ -206,7 +195,6 @@ const CabinetManagementPage = () => {
 
     const handlePageChange = (newPage) => {
         if (viewMode === 'locked') {
-            // Client-side pagination logic
             let sourceData = allCabinets;
             if (searchTerm.trim()) {
                 const term = searchTerm.toLowerCase().trim();
@@ -242,7 +230,6 @@ const CabinetManagementPage = () => {
                 pageSize: pageSize
             });
         } else {
-            // Client-side search for current page content (active/inactive/all)
             if (!term) {
                 if (viewMode === 'active') setCabinets(allCabinets.filter(c => c.isActive));
                 else if (viewMode === 'inactive') setCabinets(allCabinets.filter(c => !c.isActive));
@@ -288,7 +275,6 @@ const CabinetManagementPage = () => {
 
     const handleRefresh = () => { setSearchTerm(''); loadCabinets(0); fetchLockedCount(); };
     
-    // Create
     const handleOpenCreateModal = () => {
         setCreateFormData({
             cabinetLocation: '', cabinetType: 'MEDICATION', departmentId: '', 
@@ -325,11 +311,10 @@ const CabinetManagementPage = () => {
             alert('✅ Tạo tủ thành công!');
             handleCloseCreateModal();
             loadCabinets(0);
-            fetchLockedCount(); // Update lại số lượng locked nếu tạo mới bị lock
+            fetchLockedCount();
         } catch (err) { alert('❌ Lỗi: ' + getErrorMessage(err)); } finally { setSubmitting(false); }
     };
 
-    // Lock/Unlock
     const handleLockUnlock = async (cabinet) => {
         const currentStatus = lockStatusCache[cabinet.cabinetId] ?? cabinet.isLocked;
         const action = currentStatus ? 'MỞ KHÓA' : 'KHÓA';
@@ -341,17 +326,15 @@ const CabinetManagementPage = () => {
             alert(`✅ Đã ${action} thành công!`);
             setLockStatusCache(prev => ({ ...prev, [cabinet.cabinetId]: !currentStatus }));
             
-            // Reload nếu đang ở tab Locked và vừa mở khóa
             if (viewMode === 'locked' && currentStatus === true) {
                 loadCabinets(0); 
             } else {
                 setCabinets(prev => prev.map(c => c.cabinetId === cabinet.cabinetId ? { ...c, isLocked: !currentStatus } : c));
-                fetchLockedCount(); // Update số lượng trên badge
+                fetchLockedCount();
             }
         } catch (err) { alert('❌ Lỗi: ' + getErrorMessage(err)); }
     };
 
-    // Other Actions
     const handleDeactivate = async (cabinet) => {
         const reason = window.prompt('Nhập lý do ngừng hoạt động:');
         if (!reason) return;
@@ -365,13 +348,13 @@ const CabinetManagementPage = () => {
     const handleViewDetail = (c) => { setSelectedCabinet(c); setShowDetailModal(true); };
     const handleOpenEditModal = () => alert('⚠️ Tính năng đang phát triển');
 
-    // Modal Loaders
     const handleViewAlerts = async (c) => {
         try {
             setSelectedCabinet(c);
             const res = await pharmacistCabinetAPI.getCabinetAlerts(c.cabinetId);
             if (res?.status === 'OK' || res?.code === 200) {
-                setAlerts(Array.isArray(res.data) ? res.data : []);
+                const rawAlerts = Array.isArray(res.data) ? res.data : [];
+                setAlerts(rawAlerts);
                 setShowAlertsModal(true);
             }
         } catch(e) { alert(getErrorMessage(e)); }
@@ -394,18 +377,22 @@ const CabinetManagementPage = () => {
             setSelectedCabinet(c);
             const res = await pharmacistCabinetAPI.getCabinetAccessLog(c.cabinetId, accessLogDateRange.startDate, accessLogDateRange.endDate);
             if(res?.status === 'OK' || res?.code === 200) {
-                setAccessLog(Array.isArray(res.data) ? res.data : []);
+                const rawLogs = Array.isArray(res.data) ? res.data : [];
+                setAccessLog(rawLogs);
                 setShowAccessLogModal(true);
             }
         } catch(e) { alert(getErrorMessage(e)); }
     };
 
+    // === MODAL LOADERS (UPDATED: handleViewMaintenance) ===
     const handleViewMaintenance = async (c) => {
         try {
             setSelectedCabinet(c);
             const res = await pharmacistCabinetAPI.getCabinetMaintenance(c.cabinetId);
             if(res?.status === 'OK' || res?.code === 200) {
-                setMaintenanceSchedule(Array.isArray(res.data) ? res.data : []);
+                // Map dữ liệu từ JSON mới (snake_case -> dùng trực tiếp hoặc map)
+                const rawData = Array.isArray(res.data) ? res.data : [];
+                setMaintenanceSchedule(rawData);
                 setShowMaintenanceModal(true);
             }
         } catch(e) { alert(getErrorMessage(e)); }
@@ -413,7 +400,7 @@ const CabinetManagementPage = () => {
 
     const handleOpenScheduleMaintenance = (c) => {
         setSelectedCabinet(c);
-        setMaintenanceFormData({ maintenanceType: 'CLEANING', scheduledDate: '', notes: '' });
+        setMaintenanceFormData({ maintenanceType: 'ROUTINE_CHECK', scheduledDate: '', notes: '' });
         setShowScheduleMaintenanceModal(true);
     };
 
@@ -424,6 +411,8 @@ const CabinetManagementPage = () => {
             await pharmacistCabinetAPI.scheduleCabinetMaintenance(selectedCabinet.cabinetId, maintenanceFormData.maintenanceType, maintenanceFormData.scheduledDate, maintenanceFormData.notes);
             alert('✅ Đã lên lịch!');
             setShowScheduleMaintenanceModal(false);
+            // Refresh danh sách bảo trì nếu đang xem
+            handleViewMaintenance(selectedCabinet);
         } catch(err) { alert('❌ ' + getErrorMessage(err)); } finally { setSubmitting(false); }
     };
 
@@ -444,13 +433,12 @@ const CabinetManagementPage = () => {
         } catch(err) { alert('❌ ' + getErrorMessage(err)); } finally { setSubmitting(false); }
     };
 
-    // ==================== VIETNAMESE HELPERS ====================
+    // ==================== HELPERS ====================
     const getErrorMessage = (err) => err.response?.data?.message || err.message || 'Lỗi hệ thống';
     const getCurrentLockStatus = (c) => lockStatusCache[c.cabinetId] ?? c.isLocked;
     const formatDateTime = (d) => d ? new Date(d).toLocaleString('vi-VN') : 'N/A';
     const formatDate = (d) => d ? new Date(d).toLocaleDateString('vi-VN') : 'N/A';
     
-    // Việt hóa loại tủ
     const getCabinetTypeLabel = (t) => ({
         'MEDICATION': 'Tủ thuốc',
         'MATERIAL': 'Tủ vật tư',
@@ -458,7 +446,6 @@ const CabinetManagementPage = () => {
         'EMERGENCY': 'Tủ cấp cứu'
     }[t] || t);
 
-    // Việt hóa mức độ truy cập
     const getAccessLevelLabel = (l) => ({
         'PUBLIC': 'Công khai',
         'RESTRICTED': 'Hạn chế',
@@ -466,23 +453,39 @@ const CabinetManagementPage = () => {
         'CONTROLLED': 'Kiểm soát'
     }[l] || l);
 
-    // Việt hóa loại bảo trì
+    // Cập nhật nhãn loại bảo trì theo JSON mới
     const getMaintenanceTypeLabel = (t) => ({
-        'CLEANING': 'Vệ sinh',
+        'ROUTINE_CHECK': 'Kiểm tra định kỳ',
+        'DEEP_CLEANING': 'Vệ sinh sâu',
         'REPAIR': 'Sửa chữa',
         'INSPECTION': 'Kiểm tra',
-        'CALIBRATION': 'Hiệu chuẩn'
+        'CALIBRATION': 'Hiệu chuẩn',
+        'CLEANING': 'Vệ sinh'
     }[t] || t);
 
     const getUtilizationColor = (p) => p < 50 ? '#28a745' : p < 80 ? '#ffc107' : '#dc3545';
     const getSeverityClass = (s) => ({'LOW':'severity-low','MEDIUM':'severity-medium','HIGH':'severity-high'}[s] || 'severity-low');
     
-    // Việt hóa trạng thái bảo trì
+    // Cập nhật trạng thái bảo trì theo JSON mới
     const getMaintenanceStatusInfo = (s) => ({
-        'SCHEDULED':{label:'Đã lên lịch',class:'badge-scheduled'},
-        'COMPLETED':{label:'Hoàn thành',class:'badge-completed'},
-        'PENDING':{label:'Chờ xử lý',class:'badge-pending'}
-    }[s] || {label:s,class:'badge-default'});
+        'SCHEDULED': { label: 'Đã lên lịch', class: 'badge-scheduled' },
+        'PLANNED': { label: 'Đã kế hoạch', class: 'badge-planned' },
+        'COMPLETED': { label: 'Hoàn thành', class: 'badge-completed' },
+        'PENDING': { label: 'Chờ xử lý', class: 'badge-pending' }
+    }[s] || { label: s, class: 'badge-default' });
+
+    const getAlertTypeLabel = (t) => ({
+        'LOW_STOCK': 'Sắp hết hàng',
+        'EXPIRED_ITEMS': 'Hết hạn sử dụng',
+        'TEMPERATURE_ALERT': 'Cảnh báo nhiệt độ'
+    }[t] || t);
+
+    const getAccessTypeLabel = (t) => ({
+        'RESTOCK': '📦 Nhập hàng',
+        'DISPENSE': '💊 Xuất thuốc',
+        'INSPECTION': '🔍 Kiểm tra',
+        'MAINTENANCE': '🔧 Bảo trì'
+    }[t] || t);
     
     const isExpiredDate = (d) => d ? new Date(d) < new Date().setHours(0,0,0,0) : false;
     const isExpiringWithin30Days = (d) => {
@@ -655,7 +658,6 @@ const CabinetManagementPage = () => {
                 </div>
             )}
 
-            {/* Pagination */}
             <Pagination
                 currentPage={pagination.currentPage}
                 totalPages={pagination.totalPages}
@@ -690,8 +692,8 @@ const CabinetManagementPage = () => {
                                 <div className="form-row">
                                     <div className="form-group"><label>Mã bảo mật</label><input type="text" name="securityCode" value={createFormData.securityCode} onChange={handleCreateInputChange} /></div>
                                     <div className="form-group checkbox-group">
-                                        <label><input type="checkbox" name="isActive" checked={createFormData.isActive} onChange={handleCreateInputChange} /> Hoạt động</label>
-                                        <label><input type="checkbox" name="isLocked" checked={createFormData.isLocked} onChange={handleCreateInputChange} /> Khóa</label>
+                                        <label><input type="checkbox" name="isActive" checked={createFormData.isActive} onChange={handleCreateInputChange} /> Active</label>
+                                        <label><input type="checkbox" name="isLocked" checked={createFormData.isLocked} onChange={handleCreateInputChange} /> Locked</label>
                                     </div>
                                 </div>
                                 <div className="form-group"><label>Mô tả</label><textarea name="description" value={createFormData.description} onChange={handleCreateInputChange} /></div>
@@ -713,9 +715,8 @@ const CabinetManagementPage = () => {
                             <div className="detail-row"><span className="detail-label">Khoa:</span><span className="detail-value">{selectedCabinet.departmentName}</span></div>
                             <div className="detail-row"><span className="detail-label">Phụ trách:</span><span className="detail-value">{selectedCabinet.responsibleEmployeeName}</span></div>
                             <div className="detail-row"><span className="detail-label">Sức chứa:</span><span className="detail-value">{selectedCabinet.capacityDisplay || `${selectedCabinet.currentCapacity||0}/${selectedCabinet.maxCapacity}`}</span></div>
-                            <div className="detail-row"><span className="detail-label">Mức độ truy cập:</span><span className="detail-value">{getAccessLevelLabel(selectedCabinet.accessLevel)}</span></div>
                             <div className="detail-row"><span className="detail-label">Trạng thái:</span><span className={`detail-value status ${selectedCabinet.isActive?'active':'inactive'}`}>{selectedCabinet.isActive?'Hoạt động':'Ngừng'}</span></div>
-                            <div className="detail-row"><span className="detail-label">Khóa:</span><span className="detail-value" style={{color: selectedCabinet.isLocked?'red':'green'}}>{selectedCabinet.isLocked?'ĐÃ KHÓA':'MỞ'}</span></div>
+                            <div className="detail-row"><span className="detail-label">Khóa:</span><span className="detail-value" style={{color: selectedCabinet.isLocked?'red':'green'}}>{selectedCabinet.isLocked?'LOCKED':'UNLOCKED'}</span></div>
                         </div>
                         <div className="modal-footer"><button className="btn-secondary" onClick={() => setShowDetailModal(false)}>Đóng</button></div>
                     </div>
@@ -768,21 +769,25 @@ const CabinetManagementPage = () => {
             {/* 4. Alerts Modal */}
             {showAlertsModal && (
                 <div className="modal-overlay" onClick={() => setShowAlertsModal(false)}>
-                    <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                    <div className="modal-content modal-large" onClick={(e) => e.stopPropagation()}>
                         <div className="modal-header"><h3>⚠️ Cảnh báo</h3><button className="btn-close" onClick={() => setShowAlertsModal(false)}>✕</button></div>
                         <div className="modal-body">
                             {alerts.length > 0 ? (
                                 <div className="alerts-list">
                                     {alerts.map((a, i) => (
                                         <div key={i} className={`alert-item ${getSeverityClass(a.severity)}`}>
-                                            <div className="alert-header"><strong>{a.alertType}</strong> <span className="severity-badge">{a.severity}</span></div>
+                                            <div className="alert-header">
+                                                <strong>{getAlertTypeLabel(a.alert_type)}</strong> 
+                                                <span className={`severity-badge ${getSeverityClass(a.severity)}`}>{a.severity}</span>
+                                            </div>
                                             <div>{a.message}</div>
-                                            <small>{formatDateTime(a.createdAt)}</small>
+                                            <small>{formatDateTime(a.created_at)}</small>
                                         </div>
                                     ))}
                                 </div>
                             ) : <p className="text-center">✅ Không có cảnh báo nào</p>}
                         </div>
+                        <div className="modal-footer"><button className="btn-secondary" onClick={() => setShowAlertsModal(false)}>Đóng</button></div>
                     </div>
                 </div>
             )}
@@ -800,10 +805,15 @@ const CabinetManagementPage = () => {
                             </div>
                             <div className="access-log-table-container">
                                 <table className="access-log-table">
-                                    <thead><tr><th>NV</th><th>Hành động</th><th>Thời gian</th></tr></thead>
+                                    <thead><tr><th>NV</th><th>Hành động</th><th>Thời lượng</th><th>Thời gian</th></tr></thead>
                                     <tbody>
                                         {accessLog.map((log, i) => (
-                                            <tr key={i}><td>{log.employeeName}</td><td>{log.action}</td><td>{formatDateTime(log.timestamp)}</td></tr>
+                                            <tr key={i}>
+                                                <td>{log.employee_name}</td>
+                                                <td>{getAccessTypeLabel(log.access_type)}</td>
+                                                <td>{log.duration_minutes} phút</td>
+                                                <td>{formatDateTime(log.access_time)}</td>
+                                            </tr>
                                         ))}
                                     </tbody>
                                 </table>
@@ -813,7 +823,7 @@ const CabinetManagementPage = () => {
                 </div>
             )}
 
-            {/* 6. Maintenance Modal */}
+            {/* 6. Maintenance Modal (UPDATED) */}
             {showMaintenanceModal && (
                 <div className="modal-overlay" onClick={() => setShowMaintenanceModal(false)}>
                     <div className="modal-content modal-large">
@@ -821,12 +831,13 @@ const CabinetManagementPage = () => {
                         <div className="modal-body">
                             <div className="maintenance-actions"><button className="btn-primary" onClick={() => { setShowMaintenanceModal(false); handleOpenScheduleMaintenance(selectedCabinet); }}><FiPlus/> Lên lịch</button></div>
                             <table className="maintenance-table">
-                                <thead><tr><th>Loại</th><th>Ngày</th><th>Trạng thái</th></tr></thead>
+                                <thead><tr><th>Loại</th><th>Ngày</th><th>Thời lượng</th><th>Trạng thái</th></tr></thead>
                                 <tbody>
                                     {maintenanceSchedule.map((m, i) => (
                                         <tr key={i}>
-                                            <td>{getMaintenanceTypeLabel(m.maintenanceType)}</td>
-                                            <td>{formatDate(m.scheduledDate)}</td>
+                                            <td>{getMaintenanceTypeLabel(m.maintenance_type)}</td>
+                                            <td>{formatDate(m.scheduled_date)}</td>
+                                            <td>{m.estimated_duration}</td>
                                             <td><span className={`badge ${getMaintenanceStatusInfo(m.status).class}`}>{getMaintenanceStatusInfo(m.status).label}</span></td>
                                         </tr>
                                     ))}
@@ -844,7 +855,7 @@ const CabinetManagementPage = () => {
                         <div className="modal-header"><h3>📅 Lên lịch bảo trì</h3><button className="btn-close" onClick={() => setShowScheduleMaintenanceModal(false)}>✕</button></div>
                         <form onSubmit={handleScheduleMaintenance}>
                             <div className="modal-body">
-                                <div className="form-group"><label>Loại</label><select value={maintenanceFormData.maintenanceType} onChange={(e) => setMaintenanceFormData(p=>({...p, maintenanceType:e.target.value}))}><option value="CLEANING">Vệ sinh</option><option value="REPAIR">Sửa chữa</option><option value="INSPECTION">Kiểm tra</option><option value="CALIBRATION">Hiệu chuẩn</option></select></div>
+                                <div className="form-group"><label>Loại</label><select value={maintenanceFormData.maintenanceType} onChange={(e) => setMaintenanceFormData(p=>({...p, maintenanceType:e.target.value}))}><option value="ROUTINE_CHECK">Kiểm tra định kỳ</option><option value="DEEP_CLEANING">Vệ sinh sâu</option><option value="REPAIR">Sửa chữa</option><option value="INSPECTION">Kiểm tra</option><option value="CALIBRATION">Hiệu chuẩn</option></select></div>
                                 <div className="form-group"><label>Ngày</label><input type="date" value={maintenanceFormData.scheduledDate} onChange={(e) => setMaintenanceFormData(p=>({...p, scheduledDate:e.target.value}))} required /></div>
                                 <div className="form-group"><label>Ghi chú</label><textarea value={maintenanceFormData.notes} onChange={(e) => setMaintenanceFormData(p=>({...p, notes:e.target.value}))}/></div>
                             </div>

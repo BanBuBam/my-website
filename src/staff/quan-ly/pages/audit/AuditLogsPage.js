@@ -16,7 +16,7 @@ const AuditLogsPage = () => {
     // --- STATES CHO DASHBOARD ---
     const [dashboardData, setDashboardData] = useState(null);
 
-    // --- STATES CHO RECENT ACTIVITY (Cấu trúc mới từ API) ---
+    // --- STATES CHO RECENT ACTIVITY ---
     const [recentData, setRecentData] = useState({
         activities: [],
         logins: [],
@@ -33,13 +33,18 @@ const AuditLogsPage = () => {
     const [searchResults, setSearchResults] = useState([]);
     const [pagination, setPagination] = useState({ page: 0, size: 20, totalPages: 0, totalElements: 0 });
 
-    // --- STATES KHÁC (Login History, Failed...) ---
+    // --- STATES CHO LOGIN HISTORY ---
     const [loginHistory, setLoginHistory] = useState([]);
     const [loginFilters, setLoginFilters] = useState({ username: '', status: '', action: '', startDate: '', endDate: '' });
     const [loginPagination, setLoginPagination] = useState({ page: 0, size: 20, totalPages: 0, totalElements: 0 });
+
+    // --- STATES CHO FAILED LOGINS ---
     const [failedLogins, setFailedLogins] = useState([]);
+    const [failedPagination, setFailedPagination] = useState({ page: 0, size: 20, totalPages: 0, totalElements: 0 });
     const [failedHours, setFailedHours] = useState(24);
     const [minAttempts, setMinAttempts] = useState(3);
+
+    // --- STATES THỐNG KÊ CHI TIẾT ---
     const [statistics, setStatistics] = useState(null);
     const [statsDateRange, setStatsDateRange] = useState({ startDate: '', endDate: '' });
 
@@ -56,7 +61,7 @@ const AuditLogsPage = () => {
 
             if (activeView === 'dashboard') await fetchDashboard();
             else if (activeView === 'recent') await fetchRecentActivity();
-            else if (activeView === 'search') setLoading(false); // Search đợi user submit
+            else if (activeView === 'search') setLoading(false);
             else if (activeView === 'logins') await fetchLoginHistory();
             else if (activeView === 'failed') await fetchFailedLogins();
             else if (activeView === 'statistics') await fetchStatistics();
@@ -83,12 +88,11 @@ const AuditLogsPage = () => {
         }
     };
 
-    // 2. Fetch Recent Activity (Cập nhật theo JSON mới)
+    // 2. Fetch Recent Activity
     const fetchRecentActivity = async () => {
         try {
             const response = await adminAuditAPI.getRecentActivity(recentLimit, recentHours);
             if (response && response.status === 'OK' && response.data) {
-                // API trả về data chứa recentActivities và recentLogins riêng biệt
                 setRecentData({
                     activities: response.data.recentActivities || [],
                     logins: response.data.recentLogins || [],
@@ -150,18 +154,37 @@ const AuditLogsPage = () => {
     };
 
     // 5. Fetch Failed Logins
-    const fetchFailedLogins = async () => {
-        const response = await adminAuditAPI.getFailedLoginAttempts(failedHours, minAttempts);
-        if (response && response.data) {
-            setFailedLogins(response.data || []);
+    const fetchFailedLogins = async (page = 0) => {
+        setLoading(true);
+        try {
+            const response = await adminAuditAPI.getFailedLoginAttempts(page, failedPagination.size);
+            if (response && response.status === 'OK' && response.data) {
+                setFailedLogins(response.data.content || []);
+                setFailedPagination({
+                    page: response.data.pageable?.pageNumber || 0,
+                    size: response.data.pageable?.pageSize || 20,
+                    totalPages: response.data.totalPages || 0,
+                    totalElements: response.data.totalElements || 0,
+                });
+            } else {
+                setFailedLogins([]);
+            }
+        } catch (err) {
+            setError(err.message);
+        } finally {
+            setLoading(false);
         }
     };
 
-    // 6. Fetch Statistics (Legacy)
+    // 6. Fetch Statistics (UPDATED)
     const fetchStatistics = async () => {
-        const response = await adminAuditAPI.getAuditStatistics(statsDateRange.startDate || null, statsDateRange.endDate || null);
-        if (response && response.data) {
-            setStatistics(response.data);
+        try {
+            const response = await adminAuditAPI.getAuditStatistics(statsDateRange.startDate || null, statsDateRange.endDate || null);
+            if (response && response.status === 'OK' && response.data) {
+                setStatistics(response.data);
+            }
+        } catch (err) {
+            setError(err.message);
         }
     };
 
@@ -176,18 +199,10 @@ const AuditLogsPage = () => {
 
     const renderActionBadge = (action) => {
         const colors = {
-            CREATE: 'success',
-            UPDATE: 'warning',
-            DELETE: 'danger',
-            VIEW: 'info',
-            LOGIN_SUCCESS: 'success',
-            LOGIN_FAILED: 'danger',
-            LOGOUT: 'secondary',
-            SETTLE: 'primary', // Màu cho quyết toán
-            CANCEL: 'danger',
-            APPROVE: 'success'
+            CREATE: 'success', UPDATE: 'warning', DELETE: 'danger', VIEW: 'info',
+            LOGIN_SUCCESS: 'success', LOGIN_FAILED: 'danger', LOGOUT: 'secondary',
+            SETTLE: 'primary', CANCEL: 'danger', APPROVE: 'success'
         };
-        // Sử dụng class badge-{color} đã định nghĩa trong CSS hoặc bootstrap
         return <span className={`badge badge-${colors[action] || 'secondary'}`}>{action}</span>;
     };
 
@@ -450,12 +465,12 @@ const AuditLogsPage = () => {
             </div>
 
             <div className="view-tabs">
-                <button className={`tab ${activeView === 'recent' ? 'active' : ''}`} onClick={() => setActiveView('recent')}><FiClock /> Hoạt động gần đây</button>
                 <button className={`tab ${activeView === 'dashboard' ? 'active' : ''}`} onClick={() => setActiveView('dashboard')}><FiActivity /> Dashboard</button>
                 <button className={`tab ${activeView === 'search' ? 'active' : ''}`} onClick={() => setActiveView('search')}><FiSearch /> Tìm kiếm</button>
                 <button className={`tab ${activeView === 'logins' ? 'active' : ''}`} onClick={() => setActiveView('logins')}><FiLogIn /> Lịch sử Đăng nhập</button>
                 <button className={`tab ${activeView === 'failed' ? 'active' : ''}`} onClick={() => setActiveView('failed')}><FiShield /> Đăng nhập Thất bại</button>
-                <button className={`tab ${activeView === 'statistics' ? 'active' : ''}`} onClick={() => setActiveView('statistics')}><FiBarChart2 /> Thống kê cũ</button>
+                <button className={`tab ${activeView === 'recent' ? 'active' : ''}`} onClick={() => setActiveView('recent')}><FiClock /> Hoạt động gần đây</button>
+                <button className={`tab ${activeView === 'statistics' ? 'active' : ''}`} onClick={() => setActiveView('statistics')}><FiBarChart2 /> Thống kê chi tiết</button>
             </div>
 
             {error && <div className="error-message"><FiAlertCircle /> <span>{error}</span><button onClick={fetchData}>Thử lại</button></div>}
@@ -542,29 +557,157 @@ const AuditLogsPage = () => {
                     {/* FAILED LOGINS VIEW */}
                     {activeView === 'failed' && (
                         <div className="content-section">
-                             <div className="section-header"><h3>Đăng nhập thất bại nhiều lần</h3><div className="filters-inline"><select value={failedHours} onChange={e=>setFailedHours(Number(e.target.value))}><option value={24}>24h</option></select><button className="btn-apply" onClick={fetchFailedLogins}>Apply</button></div></div>
+                             <div className="section-header">
+                                 <h3>Đăng nhập thất bại ({failedPagination.totalElements})</h3>
+                                 <div className="filters-inline">
+                                     <button className="btn-refresh" onClick={() => fetchFailedLogins(0)}>
+                                        <FiRefreshCw /> Tải lại
+                                     </button>
+                                 </div>
+                             </div>
                              <div className="failed-logins-grid">
-                                {failedLogins.map((item, i) => (
-                                    <div key={i} className={`failed-login-card ${item.accountLocked?'locked':''}`}>
-                                        <div className="card-header"><FiUser/><strong>{item.username}</strong>{item.accountLocked&&<span className="badge badge-danger">Locked</span>}</div>
+                                {failedLogins.map((item) => (
+                                    <div key={item.logId} className="failed-login-card">
+                                        <div className="card-header" style={{borderBottom: '1px solid #fee2e2', paddingBottom: '10px', marginBottom: '10px'}}>
+                                            <div style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
+                                                <FiUser className="text-red"/>
+                                                <strong>{item.username}</strong>
+                                            </div>
+                                            <span className="badge badge-danger">{item.statusDisplayName || 'Thất bại'}</span>
+                                        </div>
                                         <div className="card-body">
-                                            <div className="stat-row"><span>Failures:</span><strong className="danger-text">{item.failedAttempts}</strong></div>
-                                            <div className="stat-row"><span>Last:</span>{formatDateTime(item.lastAttempt)}</div>
-                                            <div className="ip-list">{item.ipAddresses.map((ip,j)=><span key={j} className="ip-tag">{ip}</span>)}</div>
+                                            <div className="stat-row">
+                                                <span>Lý do:</span>
+                                                <strong className="text-red">{item.failureReason}</strong>
+                                            </div>
+                                            <div className="stat-row">
+                                                <span>Thời gian:</span>
+                                                <span>{formatDateTime(item.createdAt)}</span>
+                                            </div>
+                                            <div className="stat-row">
+                                                <span>IP:</span>
+                                                <code className="ip-tag">{item.ipAddress}</code>
+                                            </div>
+                                            <div className="stat-row" style={{flexDirection: 'column', alignItems: 'flex-start', gap: '4px', marginTop: '5px'}}>
+                                                <span style={{fontSize: '0.8rem', color: '#666'}}>User Agent:</span>
+                                                <span style={{fontSize: '0.75rem', color: '#888', wordBreak: 'break-all'}}>
+                                                    {item.userAgent}
+                                                </span>
+                                            </div>
                                         </div>
                                     </div>
                                 ))}
                              </div>
+                             {failedPagination.totalPages > 1 && (
+                                <div className="pagination">
+                                    <button onClick={() => fetchFailedLogins(failedPagination.page - 1)} disabled={failedPagination.page === 0}>Trước</button>
+                                    <span>Trang {failedPagination.page + 1} / {failedPagination.totalPages}</span>
+                                    <button onClick={() => fetchFailedLogins(failedPagination.page + 1)} disabled={failedPagination.page >= failedPagination.totalPages - 1}>Sau</button>
+                                </div>
+                             )}
+                             {failedLogins.length === 0 && !loading && (
+                                <div className="empty-state-small">
+                                    <p>Không có dữ liệu đăng nhập thất bại.</p>
+                                </div>
+                             )}
                         </div>
                     )}
 
-                    {/* STATISTICS LEGACY VIEW */}
+                    {/* STATISTICS VIEW (UPDATED) */}
                     {activeView === 'statistics' && statistics && (
                         <div className="content-section">
-                            <h3>Thống kê chi tiết (Legacy)</h3>
-                            <div className="stats-grid-small">
-                                <div className="stat-card-small">Login Today: {statistics.todayLoginTotal}</div>
-                                <div className="stat-card-small success">Activity Today: {statistics.todayActivityTotal}</div>
+                            <div className="section-header">
+                                <h3>Thống kê chi tiết</h3>
+                                <div className="filters-inline">
+                                    <input type="date" value={statsDateRange.startDate} onChange={(e) => setStatsDateRange({...statsDateRange, startDate: e.target.value})} />
+                                    <input type="date" value={statsDateRange.endDate} onChange={(e) => setStatsDateRange({...statsDateRange, endDate: e.target.value})} />
+                                    <button className="btn-apply" onClick={fetchStatistics}>Áp dụng</button>
+                                </div>
+                            </div>
+
+                            {/* 1. Tổng quan số liệu */}
+                            <div className="stats-section">
+                                <h4>Tổng quan</h4>
+                                <div className="stats-grid-small">
+                                    <div className="stat-card-small">
+                                        <div className="stat-label">Tổng đăng nhập</div>
+                                        <div className="stat-value-large">{statistics.todayLoginTotal}</div>
+                                    </div>
+                                    <div className="stat-card-small success">
+                                        <div className="stat-label">Đăng nhập thành công</div>
+                                        <div className="stat-value-large text-green">{statistics.todayLoginSuccess}</div>
+                                    </div>
+                                    <div className="stat-card-small danger">
+                                        <div className="stat-label">Đăng nhập thất bại</div>
+                                        <div className="stat-value-large text-red">{statistics.todayLoginFailed}</div>
+                                    </div>
+                                    <div className="stat-card-small info">
+                                        <div className="stat-label">Tổng hoạt động</div>
+                                        <div className="stat-value-large text-blue">{statistics.todayActivityTotal}</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="dashboard-grid" style={{marginTop: '20px'}}>
+                                {/* 2. Phân loại Đăng nhập */}
+                                {statistics.loginByAction && statistics.loginByAction.length > 0 && (
+                                    <div className="dashboard-card">
+                                        <h4>Phân loại Đăng nhập</h4>
+                                        <div className="bar-chart">
+                                            {statistics.loginByAction.map((item, index) => (
+                                                <div key={index} className="bar-item">
+                                                    <div className="bar-label">
+                                                        <span>{item.actionDisplayName || item.action}</span>
+                                                        <strong>{item.count}</strong>
+                                                    </div>
+                                                    <div className="bar-container">
+                                                        <div className="bar-fill" style={{ width: `${(item.count / statistics.todayLoginTotal) * 100}%`, background: item.action === 'LOGIN_SUCCESS' ? '#10b981' : '#ef4444' }}></div>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* 3. Phân loại Hoạt động (Action) */}
+                                {statistics.activityByAction && statistics.activityByAction.length > 0 && (
+                                    <div className="dashboard-card">
+                                        <h4>Phân loại Hoạt động</h4>
+                                        <div className="bar-chart">
+                                            {statistics.activityByAction.map((item, index) => (
+                                                <div key={index} className="bar-item">
+                                                    <div className="bar-label">
+                                                        <span>{item.actionDisplayName || item.action}</span>
+                                                        <strong>{item.count}</strong>
+                                                    </div>
+                                                    <div className="bar-container">
+                                                        <div className="bar-fill" style={{ width: `${(item.count / statistics.todayActivityTotal) * 100}%`, background: '#8b5cf6' }}></div>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* 4. Phân loại Module */}
+                                {statistics.activityByModule && statistics.activityByModule.length > 0 && (
+                                    <div className="dashboard-card">
+                                        <h4>Hoạt động theo Module</h4>
+                                        <div className="bar-chart">
+                                            {statistics.activityByModule.map((item, index) => (
+                                                <div key={index} className="bar-item">
+                                                    <div className="bar-label">
+                                                        <span>{item.moduleDisplayName || item.module}</span>
+                                                        <strong>{item.count}</strong>
+                                                    </div>
+                                                    <div className="bar-container">
+                                                        <div className="bar-fill" style={{ width: `${(item.count / statistics.todayActivityTotal) * 100}%`, background: '#3b82f6' }}></div>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
                             </div>
                         </div>
                     )}
