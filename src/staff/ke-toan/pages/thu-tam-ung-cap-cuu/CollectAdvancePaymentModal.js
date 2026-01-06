@@ -46,7 +46,7 @@ const CollectAdvancePaymentModal = ({ isOpen, onClose, encounter, onSuccess }) =
     try {
       const depositData = {
         emergencyEncounterId: encounter.emergencyEncounterId,
-        patientId: encounter.encounterId, // Using encounterId as patientId based on API structure
+        patientId: encounter.patientId, // Use correct patientId from encounter data
         amount: parseFloat(formData.amount),
         paymentMethod: formData.paymentMethod,
         notes: formData.notes || '',

@@ -46,8 +46,12 @@ const InpatientTreatmentPage = () => {
             }
 
             if (response && response.data) {
-                setStays(response.data);
-                setFilteredStays(response.data);
+                // Sắp xếp giảm dần theo admissionDate
+                const sortedData = [...response.data].sort((a, b) => {
+                    return new Date(b.admissionDate) - new Date(a.admissionDate);
+                });
+                setStays(sortedData);
+                setFilteredStays(sortedData);
             } else {
                 setStays([]);
                 setFilteredStays([]);

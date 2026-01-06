@@ -2,7 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { financeEmergencyAPI } from '../../../../services/staff/financeAPI';
 import './EmergencyAdvancePaymentListPage.css';
-import { FiActivity, FiClock, FiUser, FiAlertCircle, FiCalendar } from 'react-icons/fi';
+import { 
+  FiActivity, FiClock, FiUser, FiAlertCircle, FiCalendar, 
+  FiDollarSign, FiFileText, FiCheckCircle 
+} from 'react-icons/fi';
 
 const EmergencyAdvancePaymentListPage = () => {
   const navigate = useNavigate();
@@ -12,6 +15,11 @@ const EmergencyAdvancePaymentListPage = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [hoursFilter, setHoursFilter] = useState(24);
+  const [actionLoading, setActionLoading] = useState(null);
+
+  // Modal states
+  const [showAdvancePaymentModal, setShowAdvancePaymentModal] = useState(false);
+  const [selectedEncounter, setSelectedEncounter] = useState(null);
 
   useEffect(() => {
     if (activeTab === 'active') {
@@ -55,6 +63,118 @@ const EmergencyAdvancePaymentListPage = () => {
     navigate(`/staff/tai-chinh/thu-tam-ung-cap-cuu/${emergencyEncounterId}`);
   };
 
+  // Handle advance payment
+  const handleAdvancePayment = (encounter) => {
+    setSelectedEncounter(encounter);
+    setShowAdvancePaymentModal(true);
+  };
+
+  // Handle create invoice
+  const handleCreateInvoice = async (encounter) => {
+    if (!window.confirm(`Bạn có chắc chắn muốn tạo hóa đơn cho bệnh nhân ${encounter.patientName}?`)) {
+      return;
+    }
+
+    setActionLoading(`invoice-${encounter.emergencyEncounterId}`);
+    try {
+      const response = await financeEmergencyAPI.createEmergencyInvoice(encounter.emergencyEncounterId);
+      
+      if (response && response.invoiceId) {
+        alert(`Tạo hóa đơn thành công!\nSố hóa đơn: ${response.invoiceNumber}\nTổng tiền: ${response.totalAmount.toLocaleString('vi-VN')} VND`);
+        // Refresh data
+        if (activeTab === 'active') {
+          fetchActiveEncounters();
+        } else {
+          fetchRecentDischarges();
+        }
+      } else {
+        alert('Tạo hóa đơn thành công!');
+      }
+    } catch (err) {
+      console.error('Error creating invoice:', err);
+      alert(err.message || 'Không thể tạo hóa đơn');
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
+  // Handle settlement
+  const handleSettlement = async (encounter) => {
+    const refundMethod = window.prompt(
+      'Chọn phương thức hoàn tiền:\n- CASH (Tiền mặt)\n- BANK_TRANSFER (Chuyển khoản)\n- VNPAY (VNPay)',
+      'CASH'
+    );
+
+    if (!refundMethod) return;
+
+    if (!['CASH', 'BANK_TRANSFER', 'VNPAY'].includes(refundMethod.toUpperCase())) {
+      alert('Phương thức hoàn tiền không hợp lệ!');
+      return;
+    }
+
+    if (!window.confirm(`Bạn có chắc chắn muốn quyết toán cho bệnh nhân ${encounter.patientName}?`)) {
+      return;
+    }
+
+    setActionLoading(`settlement-${encounter.emergencyEncounterId}`);
+    try {
+      const response = await financeEmergencyAPI.settleEmergencyEncounter(
+        encounter.emergencyEncounterId, 
+        refundMethod.toUpperCase()
+      );
+      
+      if (response && (response.code === 200 || response.code === 201)) {
+        alert('Quyết toán thành công!');
+        // Refresh data
+        if (activeTab === 'active') {
+          fetchActiveEncounters();
+        } else {
+          fetchRecentDischarges();
+        }
+      } else {
+        alert(response?.message || 'Quyết toán thành công!');
+      }
+    } catch (err) {
+      console.error('Error settling encounter:', err);
+      alert(err.message || 'Không thể quyết toán');
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
+  // Handle advance payment confirmation
+  const handleAdvancePaymentConfirm = async (paymentData) => {
+    setActionLoading(`advance-${selectedEncounter.emergencyEncounterId}`);
+    try {
+      const depositData = {
+        emergencyEncounterId: selectedEncounter.emergencyEncounterId,
+        patientId: selectedEncounter.patientId,
+        amount: parseFloat(paymentData.amount),
+        paymentMethod: paymentData.paymentMethod,
+        notes: paymentData.notes || '',
+      };
+
+      const response = await financeEmergencyAPI.collectAdvancePayment(depositData);
+      
+      if (response) {
+        alert(`Thu tạm ứng thành công!\nSố tiền: ${paymentData.amount.toLocaleString('vi-VN')} VND\nPhương thức: ${paymentData.paymentMethod}`);
+        setShowAdvancePaymentModal(false);
+        setSelectedEncounter(null);
+        // Refresh data
+        if (activeTab === 'active') {
+          fetchActiveEncounters();
+        } else {
+          fetchRecentDischarges();
+        }
+      }
+    } catch (err) {
+      console.error('Error collecting advance payment:', err);
+      alert(err.message || 'Không thể thu tạm ứng');
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
   const formatDateTime = (dateString) => {
     if (!dateString) return 'N/A';
     const date = new Date(dateString);
@@ -65,7 +185,6 @@ const EmergencyAdvancePaymentListPage = () => {
     <div
       key={encounter.emergencyEncounterId}
       className="emergency-encounter-card"
-      onClick={() => handleEncounterClick(encounter.emergencyEncounterId)}
       style={{ borderLeft: `4px solid ${encounter.emergencyCategoryColor || '#666'}` }}
     >
       <div className="encounter-header">
@@ -110,6 +229,43 @@ const EmergencyAdvancePaymentListPage = () => {
         </div>
       </div>
 
+      {/* Action Buttons Row */}
+      <div className="encounter-actions">
+        <button
+          className="btn-action btn-advance-payment"
+          onClick={(e) => {
+            e.stopPropagation();
+            handleAdvancePayment(encounter);
+          }}
+          disabled={actionLoading === `advance-${encounter.emergencyEncounterId}`}
+        >
+          <FiDollarSign />
+          {actionLoading === `advance-${encounter.emergencyEncounterId}` ? 'Đang xử lý...' : 'Thu tạm ứng'}
+        </button>
+        <button
+          className="btn-action btn-create-invoice"
+          onClick={(e) => {
+            e.stopPropagation();
+            handleCreateInvoice(encounter);
+          }}
+          disabled={actionLoading === `invoice-${encounter.emergencyEncounterId}`}
+        >
+          <FiFileText />
+          {actionLoading === `invoice-${encounter.emergencyEncounterId}` ? 'Đang xử lý...' : 'Tạo hóa đơn'}
+        </button>
+        <button
+          className="btn-action btn-settlement"
+          onClick={(e) => {
+            e.stopPropagation();
+            handleSettlement(encounter);
+          }}
+          disabled={actionLoading === `settlement-${encounter.emergencyEncounterId}`}
+        >
+          <FiCheckCircle />
+          {actionLoading === `settlement-${encounter.emergencyEncounterId}` ? 'Đang xử lý...' : 'Quyết toán'}
+        </button>
+      </div>
+
       <div className="encounter-footer">
         <div className="billing-info">
           <span className={`billing-type ${encounter.hasInsurance ? 'insured' : 'self-pay'}`}>
@@ -126,6 +282,12 @@ const EmergencyAdvancePaymentListPage = () => {
             ⚠️ Quá thời gian chờ
           </span>
         )}
+        <button
+          className="btn-view-detail"
+          onClick={() => handleEncounterClick(encounter.emergencyEncounterId)}
+        >
+          Xem chi tiết
+        </button>
       </div>
     </div>
   );
@@ -212,6 +374,123 @@ const EmergencyAdvancePaymentListPage = () => {
           {activeTab === 'discharged' && recentDischarges.map(renderEncounterCard)}
         </div>
       )}
+
+      {/* Advance Payment Modal */}
+      {showAdvancePaymentModal && selectedEncounter && (
+        <AdvancePaymentModal
+          encounter={selectedEncounter}
+          onConfirm={handleAdvancePaymentConfirm}
+          onCancel={() => {
+            setShowAdvancePaymentModal(false);
+            setSelectedEncounter(null);
+          }}
+          loading={actionLoading === `advance-${selectedEncounter.emergencyEncounterId}`}
+        />
+      )}
+    </div>
+  );
+};
+
+// Advance Payment Modal Component
+const AdvancePaymentModal = ({ encounter, onConfirm, onCancel, loading }) => {
+  const [amount, setAmount] = useState('');
+  const [paymentMethod, setPaymentMethod] = useState('CASH');
+  const [notes, setNotes] = useState('');
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    
+    if (!amount || parseFloat(amount) <= 0) {
+      alert('Vui lòng nhập số tiền hợp lệ');
+      return;
+    }
+
+    onConfirm({
+      amount: parseFloat(amount),
+      paymentMethod,
+      notes,
+    });
+  };
+
+  return (
+    <div className="modal-overlay">
+      <div className="modal-content advance-payment-modal">
+        <div className="modal-header">
+          <h3>Thu tạm ứng cấp cứu</h3>
+          <button className="btn-close" onClick={onCancel} disabled={loading}>×</button>
+        </div>
+
+        <div className="modal-body">
+          <div className="patient-info-modal">
+            <h4>Thông tin bệnh nhân</h4>
+            <p><strong>Tên:</strong> {encounter.patientName}</p>
+            <p><strong>Mã BN:</strong> {encounter.patientCode}</p>
+            <p><strong>Encounter ID:</strong> {encounter.emergencyEncounterId}</p>
+          </div>
+
+          <form onSubmit={handleSubmit}>
+            <div className="form-group">
+              <label htmlFor="amount">Số tiền tạm ứng (VND) *</label>
+              <input
+                type="number"
+                id="amount"
+                value={amount}
+                onChange={(e) => setAmount(e.target.value)}
+                placeholder="Nhập số tiền..."
+                min="1"
+                step="1000"
+                required
+                disabled={loading}
+              />
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="paymentMethod">Phương thức thanh toán *</label>
+              <select
+                id="paymentMethod"
+                value={paymentMethod}
+                onChange={(e) => setPaymentMethod(e.target.value)}
+                required
+                disabled={loading}
+              >
+                <option value="CASH">Tiền mặt</option>
+                <option value="BANK_TRANSFER">Chuyển khoản</option>
+                <option value="VNPAY">VNPay</option>
+                <option value="CREDIT_CARD">Thẻ tín dụng</option>
+              </select>
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="notes">Ghi chú</label>
+              <textarea
+                id="notes"
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
+                placeholder="Nhập ghi chú (tùy chọn)..."
+                rows="3"
+                disabled={loading}
+              />
+            </div>
+          </form>
+        </div>
+
+        <div className="modal-footer">
+          <button 
+            className="btn-cancel" 
+            onClick={onCancel}
+            disabled={loading}
+          >
+            Hủy
+          </button>
+          <button 
+            className="btn-confirm" 
+            onClick={handleSubmit}
+            disabled={loading || !amount}
+          >
+            {loading ? 'Đang xử lý...' : 'Xác nhận thu tiền'}
+          </button>
+        </div>
+      </div>
     </div>
   );
 };

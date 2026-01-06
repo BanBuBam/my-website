@@ -83,7 +83,7 @@ export const doctorAuthAPI = {
 export const doctorDashboardAPI = {
   // Lấy dashboard data
   getDashboard: async () => {
-    return apiCall('api/v1/dashboard/doctor', {
+    return apiCall('api/v1/dashboard/doctor/summary', {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${getAccessToken()}`,
@@ -1181,6 +1181,26 @@ export const doctorInpatientTreatmentAPI = {
       body: JSON.stringify(dischargePlanData),
     });
   },
+
+  // Lấy danh sách điều trị nội trú theo bác sĩ
+  getInpatientStaysByDoctor: async (doctorId) => {
+    return apiCall(`api/v1/inpatient/doctors/${doctorId}/stays`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Lấy danh sách điều trị nội trú theo khoa
+  getInpatientStaysByDepartment: async (departmentId) => {
+    return apiCall(`api/v1/inpatient/departments/${departmentId}/stays`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
 };
 
 // API Admission Requests (Yêu cầu nhập viện)
@@ -1418,6 +1438,26 @@ export const medicationOrderAPI = {
   getMedicationOrderGroupsByStay: async (inpatientStayId) => {
     return apiCall(`api/v1/medication-order-groups/inpatient-stays/${inpatientStayId}`, {
       method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Tạm dừng nhóm y lệnh (Discontinue)
+  discontinueMedicationOrderGroup: async (groupId, reason) => {
+    return apiCall(`api/v1/medication-order-groups/${groupId}/discontinue?reason=${encodeURIComponent(reason)}`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Hủy/Ngừng nhóm y lệnh (Cancel)
+  cancelMedicationOrderGroup: async (groupId, reason) => {
+    return apiCall(`api/v1/medication-order-groups/${groupId}/cancel?reason=${encodeURIComponent(reason)}`, {
+      method: 'POST',
       headers: {
         'Authorization': `Bearer ${getAccessToken()}`,
       },

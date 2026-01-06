@@ -115,14 +115,14 @@ const Sidebar = () => {
             <img src={phoneIcon} alt="Phone" />
             <div>
               <span>Cấp cứu</span>
-              <strong>024 1138 884</strong>
+              <strong>0393348819</strong>
             </div>
           </div>
           <div className="contact-item">
             <img src={phoneIcon} alt="Phone" />
             <div>
               <span>Hotline</span>
-              <strong>024 8345 555</strong>
+              <strong>0393348819</strong>
             </div>
           </div>
         </div>

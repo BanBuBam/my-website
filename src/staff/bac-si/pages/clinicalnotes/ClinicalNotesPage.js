@@ -67,8 +67,8 @@ const ClinicalNotesPage = () => {
         const fetchIcdDiseases = async () => {
             try {
                 const response = await icdDiseaseAPI.getICDDiseases('', 0, 100);
-                if (response && response.data && response.data.content) {
-                    setIcdDiseases(response.data.content);
+                if (response && response.data) {
+                    setIcdDiseases(response.data);
                 }
             } catch (err) {
                 console.error('Error loading ICD diseases:', err);
@@ -249,8 +249,14 @@ const ClinicalNotesPage = () => {
             const response = await icdDiseaseAPI.getICDDiseases(keyword, page, 10);
 
             if (response && response.data) {
-                setIcdSearchResults(response.data.content || []);
-                setIcdSearchTotalPages(response.data.totalPages || 0);
+                // API trả về data là mảng trực tiếp, không có content
+                if (Array.isArray(response.data)) {
+                    setIcdSearchResults(response.data);
+                    setIcdSearchTotalPages(1); // Không có pagination info
+                } else {
+                    setIcdSearchResults([]);
+                    setIcdSearchTotalPages(0);
+                }
             }
         } catch (err) {
             console.error('Error searching ICD diseases:', err);

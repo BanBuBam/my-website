@@ -37,7 +37,7 @@ const Footer = () => {
             <ul className="contact-list">
               <li>
                 <img src={addressIcon} alt="address icon" />
-                <div><span>Địa chỉ</span><strong>Số 12, Xuân Thủy, Cầu Giấy, Hà Nội</strong></div>
+                <div><span>Địa chỉ</span><strong>Số 10, Trần Phú, Hà Nội</strong></div>
               </li>
               <li>
                 {/* merged image */}
@@ -45,7 +45,7 @@ const Footer = () => {
                   <img src={phoneIcon} alt="phone icon" className="icon-visible" />
                   <img src={phoneIcon} alt="" className="icon-hidden" />
                 </div>
-                <div><span>Hotline</span><strong>035 818 3238</strong></div>
+                <div><span>Hotline</span><strong>0393348819</strong></div>
               </li>
               <li>
                 {/* merged image */}
@@ -53,7 +53,7 @@ const Footer = () => {
                   <img src={phoneIcon} alt="emergency icon" className="icon-visible" />
                   <img src={phoneIcon} alt="" className="icon-hidden" />
                 </div>
-                <div><span>Cấp cứu</span><strong>035 818 3238</strong></div>
+                <div><span>Cấp cứu</span><strong>0393348819</strong></div>
               </li>
               <li>
                 <img src={faxIcon} alt="fax icon" />

@@ -14,6 +14,7 @@ const EmergencyDetailPage = () => {
     const [emergency, setEmergency] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [status, setStatus] = useState(null);
 
     // Complete triage modal state
     const [showTriageModal, setShowTriageModal] = useState(false);
@@ -38,6 +39,7 @@ const EmergencyDetailPage = () => {
 
             if (response && response.data) {
                 setEmergency(response.data);
+                setStatus(response.data.status);
             }
         } catch (err) {
             console.error('Error fetching emergency detail:', err);
@@ -172,11 +174,12 @@ const EmergencyDetailPage = () => {
                     <p>Emergency Encounter ID: {emergency.emergencyEncounterId}</p>
                 </div>
                 <div className="header-actions">
-                    {/*{!emergency.isTriageComplete && (*/}
+                    {/*{status === 'WAITING_TRIAGE' && (*/}
                         <button className="btn-complete-triage" onClick={handleOpenTriageModal}>
                             <FiCheckCircle /> Hoàn thành Triage
                         </button>
                     {/*)}*/}
+                    
                     <button className="btn-refresh" onClick={fetchEmergencyDetail}>
                         <FiRefreshCw /> Làm mới
                     </button>

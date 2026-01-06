@@ -1339,3 +1339,158 @@
         justify-content: center;
     }
 }
+
+
+/* Button select medicine */
+.btn-select-medicine {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 16px;
+    background: #3b82f6;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    white-space: nowrap;
+    transition: background 0.2s;
+}
+
+.btn-select-medicine:hover {
+    background: #2563eb;
+}
+
+/* Medicine Selection Modal */
+.medicine-selection-modal {
+    max-width: 700px;
+    max-height: 80vh;
+}
+
+.medicine-search-section {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.btn-search-medicine {
+    padding: 10px 20px;
+    background: #10b981;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    white-space: nowrap;
+    transition: background 0.2s;
+}
+
+.btn-search-medicine:hover {
+    background: #059669;
+}
+
+.medicines-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-height: 400px;
+    overflow-y: auto;
+    margin-bottom: 20px;
+}
+
+.medicine-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    transition: all 0.2s;
+}
+
+.medicine-item:hover {
+    border-color: #3b82f6;
+    background: #f0f9ff;
+}
+
+.medicine-info {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    flex: 1;
+}
+
+.medicine-icon {
+    color: #3b82f6;
+    width: 20px;
+    height: 20px;
+    margin-top: 2px;
+}
+
+.medicine-details {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.medicine-details strong {
+    color: #111827;
+    font-size: 14px;
+}
+
+.medicine-sku,
+.medicine-unit {
+    color: #6b7280;
+    font-size: 12px;
+}
+
+.btn-select {
+    padding: 8px 16px;
+    background: #3b82f6;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 500;
+    transition: background 0.2s;
+}
+
+.btn-select:hover {
+    background: #2563eb;
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    padding: 15px 0;
+}
+
+.pagination-btn {
+    padding: 8px 16px;
+    background: #3b82f6;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+    transition: background 0.2s;
+}
+
+.pagination-btn:hover:not(:disabled) {
+    background: #2563eb;
+}
+
+.pagination-btn:disabled {
+    background: #9ca3af;
+    cursor: not-allowed;
+}
+
+.pagination-info {
+    color: #6b7280;
+    font-size: 14px;
+}

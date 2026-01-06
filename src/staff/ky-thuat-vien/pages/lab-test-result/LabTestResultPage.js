@@ -41,11 +41,15 @@ const LabTestResultPage = () => {
             }
 
             if (response.data) {
-                setLabResults(response.data);
-                setFilteredResults(response.data);
+                // Sắp xếp giảm dần theo createdAt
+                const sortedData = [...response.data].sort((a, b) => {
+                    return new Date(b.createdAt) - new Date(a.createdAt);
+                });
+                setLabResults(sortedData);
+                setFilteredResults(sortedData);
 
                 // Extract unique creators
-                const creators = [...new Set(response.data.map(r => r.createdByEmployeeName))];
+                const creators = [...new Set(sortedData.map(r => r.createdByEmployeeName))];
                 setCreatorList(creators);
             }
         } catch (err) {
