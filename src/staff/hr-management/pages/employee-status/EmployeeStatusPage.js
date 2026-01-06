@@ -42,17 +42,11 @@ const EmployeeStatusPage = () => {
     priorityLevel: 'NORMAL',
   });
 
-  // Load initial employees on mount
-  useEffect(() => {
-    fetchEmployees();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
   // Debounce employee search
   useEffect(() => {
     if (employeeSearchTerm === '') {
-      // Nếu search term rỗng, load lại danh sách mặc định
-      fetchEmployees();
+      // Nếu search term rỗng, xóa danh sách
+      setEmployees([]);
       return;
     }
 
@@ -121,11 +115,12 @@ const EmployeeStatusPage = () => {
     }
   };
 
-  // Lấy TOÀN BỘ danh sách nhân viên bằng cách loop qua tất cả các trang
+  // Lấy danh sách nhân viên theo tên tìm kiếm (có thể nhiều trang)
+  // Chỉ gọi khi user nhập search term, KHÔNG load khi mount component
   const fetchAllEmployees = async (searchName = '') => {
     try {
       setIsSearchingEmployees(true);
-      console.log('🔄 Fetching ALL employees by looping through pages...');
+      console.log('🔍 Searching employees with name:', searchName);
 
       // Bước 1: Gọi API lần đầu (page=0) để lấy totalPages
       const firstResponse = await hrEmployeeAPI.getEmployees(searchName, 0, 20);
@@ -154,7 +149,7 @@ const EmployeeStatusPage = () => {
         console.log(`📊 Total pages: ${totalPages}, Total elements: ${totalElements}`);
         console.log(`✅ Loaded page 1/${totalPages} (${allEmployees.length} employees)`);
 
-        // Bước 2: Loop từ page=1 đến page=totalPages-1
+        // Bước 2: Loop từ page=1 đến page=totalPages-1 để lấy hết kết quả tìm kiếm
         if (totalPages > 1) {
           console.log(`🔄 Fetching remaining ${totalPages - 1} pages...`);
 
@@ -173,19 +168,14 @@ const EmployeeStatusPage = () => {
       }
 
       setEmployees(allEmployees);
-      console.log(`🎉 Successfully loaded ALL ${allEmployees.length} employees from ${totalPages} pages!`);
+      console.log(`🎉 Successfully found ${allEmployees.length} employees matching "${searchName}"`);
     } catch (err) {
-      console.error('❌ Error fetching all employees:', err);
-      showNotification('Không thể tải danh sách nhân viên: ' + err.message, 'error');
+      console.error('❌ Error searching employees:', err);
+      showNotification('Không thể tìm kiếm nhân viên: ' + err.message, 'error');
       setEmployees([]);
     } finally {
       setIsSearchingEmployees(false);
     }
-  };
-
-  // Wrapper function để giữ tên cũ
-  const fetchEmployees = async (searchName = '') => {
-    await fetchAllEmployees(searchName);
   };
 
   // Handle employee search
@@ -723,21 +713,27 @@ const EmployeeStatusPage = () => {
                       <select
                         value={selectedEmployee}
                         onChange={(e) => setSelectedEmployee(e.target.value)}
-                        disabled={isSearchingEmployees}
+                        disabled={isSearchingEmployees || employees.length === 0}
                         style={{
                           width: '100%',
                           padding: '0.75rem 1rem',
                           border: '2px solid #e2e8f0',
                           borderRadius: '10px',
                           fontSize: '0.95rem',
-                          backgroundColor: isSearchingEmployees ? '#f7fafc' : '#fff',
-                          cursor: isSearchingEmployees ? 'wait' : 'pointer',
+                          backgroundColor: (isSearchingEmployees || employees.length === 0) ? '#f7fafc' : '#fff',
+                          cursor: (isSearchingEmployees || employees.length === 0) ? 'not-allowed' : 'pointer',
                           outline: 'none',
                           boxSizing: 'border-box'
                         }}
                       >
                         <option value="">
-                          {isSearchingEmployees ? '-- Đang tìm kiếm... --' : '-- Chọn nhân viên --'}
+                          {isSearchingEmployees
+                            ? '-- Đang tìm kiếm... --'
+                            : employees.length === 0 && employeeSearchTerm === ''
+                            ? '-- Nhập tên để tìm kiếm --'
+                            : employees.length === 0
+                            ? '-- Không tìm thấy --'
+                            : '-- Chọn nhân viên --'}
                         </option>
                         {employees.map((emp) => (
                           <option key={emp.employeeId} value={emp.employeeId}>
@@ -755,7 +751,17 @@ const EmployeeStatusPage = () => {
                           marginBottom: 0,
                           fontWeight: '500'
                         }}>
-                          ⏳ Đang tải toàn bộ danh sách nhân viên...
+                          ⏳ Đang tìm kiếm nhân viên...
+                        </p>
+                      ) : employeeSearchTerm === '' ? (
+                        <p style={{
+                          fontSize: '0.8rem',
+                          color: '#718096',
+                          marginTop: '0.25rem',
+                          marginBottom: 0,
+                          fontStyle: 'italic'
+                        }}>
+                          💡 Nhập tên nhân viên để tìm kiếm
                         </p>
                       ) : employees.length > 0 ? (
                         <p style={{
@@ -765,7 +771,7 @@ const EmployeeStatusPage = () => {
                           marginBottom: 0,
                           fontWeight: '600'
                         }}>
-                          ✅ Đã tải {employees.length} nhân viên
+                          ✅ Tìm thấy {employees.length} nhân viên
                         </p>
                       ) : (
                         <p style={{
@@ -774,7 +780,7 @@ const EmployeeStatusPage = () => {
                           marginTop: '0.25rem',
                           marginBottom: 0
                         }}>
-                          Không tìm thấy nhân viên nào
+                          ❌ Không tìm thấy nhân viên nào
                         </p>
                       )}
                     </div>
@@ -1139,19 +1145,82 @@ const EmployeeStatusPage = () => {
                       <label>
                         Nhân viên <span className="required">*</span>
                       </label>
+
+                      {/* Search input for modal */}
+                      <input
+                        type="text"
+                        placeholder="Tìm kiếm nhân viên..."
+                        value={employeeSearchTerm}
+                        onChange={(e) => setEmployeeSearchTerm(e.target.value)}
+                        style={{
+                          width: '100%',
+                          padding: '0.75rem',
+                          border: '1px solid #e2e8f0',
+                          borderRadius: '8px',
+                          fontSize: '0.95rem',
+                          marginBottom: '0.5rem',
+                          boxSizing: 'border-box'
+                        }}
+                      />
+
                       <select
                         name="employeeId"
                         value={formData.employeeId}
                         onChange={handleInputChange}
                         required
+                        disabled={employees.length === 0}
+                        style={{
+                          backgroundColor: employees.length === 0 ? '#f7fafc' : '#fff',
+                          cursor: employees.length === 0 ? 'not-allowed' : 'pointer'
+                        }}
                       >
-                        <option value="">-- Chọn nhân viên --</option>
+                        <option value="">
+                          {isSearchingEmployees
+                            ? '-- Đang tìm kiếm... --'
+                            : employees.length === 0 && employeeSearchTerm === ''
+                            ? '-- Nhập tên để tìm kiếm --'
+                            : employees.length === 0
+                            ? '-- Không tìm thấy --'
+                            : '-- Chọn nhân viên --'}
+                        </option>
                         {employees.map((emp) => (
                           <option key={emp.employeeId} value={emp.employeeId}>
                             {emp.fullName} ({emp.employeeCode})
                           </option>
                         ))}
                       </select>
+
+                      {/* Helper text */}
+                      {employeeSearchTerm === '' && employees.length === 0 && (
+                        <p style={{
+                          fontSize: '0.8rem',
+                          color: '#718096',
+                          marginTop: '0.25rem',
+                          fontStyle: 'italic'
+                        }}>
+                          💡 Nhập tên nhân viên để tìm kiếm
+                        </p>
+                      )}
+                      {isSearchingEmployees && (
+                        <p style={{
+                          fontSize: '0.8rem',
+                          color: '#3182ce',
+                          marginTop: '0.25rem',
+                          fontWeight: '500'
+                        }}>
+                          ⏳ Đang tìm kiếm...
+                        </p>
+                      )}
+                      {!isSearchingEmployees && employeeSearchTerm !== '' && employees.length > 0 && (
+                        <p style={{
+                          fontSize: '0.8rem',
+                          color: '#38a169',
+                          marginTop: '0.25rem',
+                          fontWeight: '600'
+                        }}>
+                          ✅ Tìm thấy {employees.length} nhân viên
+                        </p>
+                      )}
                     </div>
 
                     <div className="form-group">

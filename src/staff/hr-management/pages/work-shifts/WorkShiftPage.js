@@ -42,7 +42,7 @@ const WorkShiftPage = () => {
   const [formData, setFormData] = useState({
     shiftName: '',
     shiftCode: '',
-    shiftType: 'MORNING',
+    shiftType: 'MORNING_SHIFT',
     startTime: '',
     endTime: '',
     durationHours: 8,
@@ -235,7 +235,7 @@ const WorkShiftPage = () => {
     setFormData({
       shiftName: '',
       shiftCode: '',
-      shiftType: 'MORNING',
+      shiftType: 'MORNING_SHIFT',
       startTime: '',
       endTime: '',
       durationHours: 8,
@@ -261,7 +261,7 @@ const WorkShiftPage = () => {
     setFormData({
       shiftName: '',
       shiftCode: '',
-      shiftType: 'MORNING',
+      shiftType: 'MORNING_SHIFT',
       startTime: '',
       endTime: '',
       durationHours: 8,
@@ -882,11 +882,15 @@ const WorkShiftPage = () => {
                       value={formData.shiftType}
                       onChange={handleInputChange}
                     >
-                      <option value="MORNING">Ca sáng (MORNING)</option>
-                      <option value="AFTERNOON">Ca chiều (AFTERNOON)</option>
-                      <option value="EVENING">Ca tối (EVENING)</option>
-                      <option value="NIGHT">Ca đêm (NIGHT)</option>
-                      <option value="FULL_DAY">Cả ngày (FULL_DAY)</option>
+                      <option value="MORNING_SHIFT">Ca sáng </option>
+                      <option value="AFTERNOON_SHIFT">Ca chiều </option>
+                      <option value="EVENING_SHIFT">Ca tối </option>
+                      <option value="NIGHT_SHIFT">Ca đêm </option>
+                      <option value="DAY_SHIFT">ca ngày </option>
+                      <option value="ON_CALL">Ca trực </option>
+                      <option value="FLEXIBLE">Ca linh hoạt </option>
+                      <option value="SPLIT_SHIFT">Ca chia đôi </option>
+
                     </select>
                   </div>
 

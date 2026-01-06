@@ -79,7 +79,82 @@ export const adminAuthAPI = {
 
 // API Dashboard
 export const adminDashboardAPI = {
-  // Lấy dashboard data cho Admin
+  // 1. Lấy tổng quan dashboard (Summary)
+  getSummary: async () => {
+    return apiCall('api/v1/dashboard/admin/summary', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // 2. Lấy hiệu suất các khoa (Departments)
+  getDepartments: async (page = 0, size = 20, status = null) => {
+    const params = new URLSearchParams({
+      page: page.toString(),
+      size: size.toString(),
+    });
+    if (status) params.append('status', status);
+
+    return apiCall(`api/v1/dashboard/admin/departments?${params.toString()}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // 3. Lấy cảnh báo hệ thống (Alerts)
+  getAlerts: async (page = 0, size = 20, alertType = null, severity = null) => {
+    const params = new URLSearchParams({
+      page: page.toString(),
+      size: size.toString(),
+    });
+    if (alertType) params.append('alertType', alertType);
+    if (severity) params.append('severity', severity);
+
+    return apiCall(`api/v1/dashboard/admin/alerts?${params.toString()}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // 4. Lấy tài nguyên (Resources)
+  getResources: async (page = 0, size = 20, resourceType = null) => {
+    const params = new URLSearchParams({
+      page: page.toString(),
+      size: size.toString(),
+    });
+    if (resourceType) params.append('resourceType', resourceType);
+
+    return apiCall(`api/v1/dashboard/admin/resources?${params.toString()}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // 5. Lấy hoạt động gần đây (Activities)
+  getActivities: async (page = 0, size = 20, activityType = null) => {
+    const params = new URLSearchParams({
+      page: page.toString(),
+      size: size.toString(),
+    });
+    if (activityType) params.append('activityType', activityType);
+
+    return apiCall(`api/v1/dashboard/admin/activities?${params.toString()}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Legacy - Lấy dashboard data cho Admin
   getDashboard: async () => {
     return apiCall('api/v1/dashboard/admin', {
       method: 'GET',
@@ -89,7 +164,7 @@ export const adminDashboardAPI = {
     });
   },
 
-  // Lấy thống kê dashboard (legacy)
+  // Legacy - Lấy thống kê dashboard
   getStatistics: async () => {
     return apiCall('api/v1/admin/dashboard/statistics', {
       method: 'GET',

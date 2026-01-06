@@ -50,15 +50,15 @@ const AdminLayout = () => {
                         </li> */}
 
                         {/* Quản lý Tài khoản Nhân viên */}
-                        <li>
+                        {/* <li>
                             <NavLink to="/staff/admin/employee-accounts">
                                 <FiUserCheck />
                                 <span>Quản lý Tài khoản NV</span>
                             </NavLink>
-                        </li>
+                        </li> */}
 
                         {/* Quản lý Lịch làm việc Bác sĩ */}
-                        <li className="menu-group">
+                        {/* <li className="menu-group">
                             <div className="menu-header" onClick={() => toggleMenu('doctorSchedule')}>
                                 <div className="menu-title">
                                     <FiCalendar />
@@ -72,7 +72,7 @@ const AdminLayout = () => {
                                     <li><NavLink to="/staff/admin/doctor-schedules/create">Tạo Lịch BS</NavLink></li>
                                 </ul>
                             )}
-                        </li>
+                        </li> */}
 
                         {/* Quản lý Yêu cầu Nhập viện */}
                         <li>
@@ -111,7 +111,7 @@ const AdminLayout = () => {
                         <li>
                             <NavLink to="/staff/admin/audit">
                                 <FiFileText />
-                                <span>Nhật ký Kiểm toán</span>
+                                <span>Nhật ký hoạt động</span>
                             </NavLink>
                         </li>
 

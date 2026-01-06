@@ -100,6 +100,16 @@ export const pharmacistDashboardAPI = {
 
 // API Quản lý tồn kho (Inventory Lookup)
 export const pharmacistInventoryAPI = {
+  // Lấy tất cả tồn kho (All Inventory)
+  getAllInventory: async () => {
+    return apiCall('api/v1/inventory-lookup/all', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
   // Lấy danh sách thuốc tồn kho
   getInventory: async () => {
     return apiCall('api/v1/pharmacist/inventory', {

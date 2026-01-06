@@ -108,12 +108,12 @@ const DispenseHistoryPage = () => {
 
         // API: POST /api/v1/prescriptions/{prescriptionId}/items/{itemId}/return
         // prescriptionId = from selectedPrescription (the parent prescription)
-        // itemId = medicine.medicineId
+        // itemId = medicine.prescriptionItemId (NOT medicineId)
         const actualPrescriptionId = prescriptionId;
-        const itemId = medicine.medicineId;
+        const itemId = medicine.prescriptionItemId;
 
         console.log('prescriptionId:', actualPrescriptionId);
-        console.log('itemId:', itemId);
+        console.log('itemId (prescriptionItemId):', itemId);
 
         if (!actualPrescriptionId) {
             alert('❌ Lỗi: Không tìm thấy ID của đơn thuốc. Vui lòng thử lại.');
@@ -122,8 +122,8 @@ const DispenseHistoryPage = () => {
         }
 
         if (!itemId) {
-            alert('❌ Lỗi: Không tìm thấy ID của thuốc. Vui lòng thử lại.');
-            console.error('Missing itemId (medicineId) for medicine:', medicine);
+            alert('❌ Lỗi: Không tìm thấy ID của item trong đơn thuốc. Vui lòng thử lại.');
+            console.error('Missing itemId (prescriptionItemId) for medicine:', medicine);
             return;
         }
 
@@ -389,6 +389,7 @@ const DispenseHistoryPage = () => {
                                 <thead>
                                     <tr>
                                         <th>STT</th>
+                                        <th>ID Item</th>
                                         <th>Mã thuốc</th>
                                         <th>Tên thuốc</th>
                                         <th>Liều dùng</th>
@@ -401,6 +402,7 @@ const DispenseHistoryPage = () => {
                                     {selectedPrescription.items.map((item, index) => (
                                         <tr key={item.prescriptionItemId || index}>
                                             <td>{index + 1}</td>
+                                            <td><span className="item-id">{item.prescriptionItemId}</span></td>
                                             <td>{item.medicineId}</td>
                                             <td><strong>{item.medicineName}</strong></td>
                                             <td>{item.dosage || 'N/A'}</td>
@@ -451,24 +453,38 @@ const DispenseHistoryPage = () => {
                                     <thead>
                                         <tr>
                                             <th>STT</th>
+                                            <th>Mã Stock</th>
                                             <th>Tên thuốc</th>
                                             <th>Số lượng trả</th>
+                                            <th>Trước → Sau</th>
                                             <th>Lý do</th>
                                             <th>Người trả</th>
                                             <th>Thời gian</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {returnHistory.map((item, index) => (
-                                            <tr key={item.movementId || index}>
-                                                <td>{index + 1}</td>
-                                                <td><strong>{item.medicineName}</strong></td>
-                                                <td><span className="quantity-returned">{item.quantity}</span></td>
-                                                <td>{item.reason}</td>
-                                                <td>{item.returnedByEmployeeName}</td>
-                                                <td>{formatDateTime(item.returnedAt)}</td>
-                                            </tr>
-                                        ))}
+                                        {returnHistory.map((item, index) => {
+                                            // Extract reason from notes
+                                            const reasonMatch = item.notes?.match(/Reason:\s*(.+)$/);
+                                            const reason = reasonMatch ? reasonMatch[1] : item.notes || 'N/A';
+
+                                            return (
+                                                <tr key={item.movementId || index}>
+                                                    <td>{index + 1}</td>
+                                                    <td>#{item.stockId}</td>
+                                                    <td><strong>{item.itemName || 'N/A'}</strong></td>
+                                                    <td><span className="quantity-returned">{item.quantityMoved}</span></td>
+                                                    <td>
+                                                        <span className="quantity-change">
+                                                            {item.quantityBefore} → {item.quantityAfter}
+                                                        </span>
+                                                    </td>
+                                                    <td>{reason}</td>
+                                                    <td>{item.employeeName || `ID: ${item.employeeId}`}</td>
+                                                    <td>{formatDateTime(item.movementDate)}</td>
+                                                </tr>
+                                            );
+                                        })}
                                     </tbody>
                                 </table>
                             </div>
@@ -511,6 +527,7 @@ const DispenseHistoryPage = () => {
                                 <h4>Thông tin thuốc</h4>
                                 <p><strong>Tên thuốc:</strong> {selectedItem.medicineName}</p>
                                 <p><strong>Mã thuốc:</strong> {selectedItem.medicineId}</p>
+                                <p><strong>ID item trong đơn:</strong> {selectedItem.prescriptionItemId}</p>
                                 <p><strong>Số lượng đã cấp:</strong> {selectedItem.quantity}</p>
                                 <p><strong>Liều dùng:</strong> {selectedItem.dosage || 'N/A'}</p>
                             </div>
