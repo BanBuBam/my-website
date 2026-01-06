@@ -112,9 +112,9 @@ const LeTanDashboardPage = () => {
           <div className="card-icon blue"><FiCalendar /></div>
           <div className="card-info">
             <span className="card-title">Lịch hẹn hôm nay</span>
-            <span className="card-value">{dashboardData?.todayBookings || 0}</span>
+            <span className="card-value">{dashboardData?.todayTotalBookings || 0}</span>
             <span className="card-comparison">
-              {dashboardData?.pendingBookings || 0} đang chờ xử lý
+              {dashboardData?.pendingBookings || 0} đang chờ
             </span>
           </div>
         </div>
@@ -124,15 +124,15 @@ const LeTanDashboardPage = () => {
             <span className="card-title">Check-in hôm nay</span>
             <span className="card-value">{dashboardData?.todayCheckIns || 0}</span>
             <span className="card-comparison">
-              {dashboardData?.todayStats?.checkedIn || 0} đã check-in
+              {dashboardData?.checkedInBookings || 0} đã check-in
             </span>
           </div>
         </div>
         <div className="stats-card">
           <div className="card-icon purple"><FiUsers /></div>
           <div className="card-info">
-            <span className="card-title">Sẵn sàng xuất viện</span>
-            <span className="card-value">{dashboardData?.readyForDischarge || 0}</span>
+            <span className="card-title">Chờ khám</span>
+            <span className="card-value">{dashboardData?.waitingPatients || 0}</span>
             <span className="card-comparison">Bệnh nhân</span>
           </div>
         </div>
@@ -141,9 +141,45 @@ const LeTanDashboardPage = () => {
           <div className="card-info">
             <span className="card-title">Thời gian chờ TB</span>
             <span className="card-value">
-              {dashboardData?.todayStats?.averageWaitTime || 0} phút
+              {dashboardData?.averageWaitTime?.toFixed(1) || 0} phút
             </span>
             <span className="card-comparison">Trung bình</span>
+          </div>
+        </div>
+      </div>
+
+      {/* --- Additional Stats --- */}
+      <div className="stats-grid">
+        <div className="stats-card">
+          <div className="card-icon blue"><FiUsers /></div>
+          <div className="card-info">
+            <span className="card-title">Đang khám</span>
+            <span className="card-value">{dashboardData?.inExamination || 0}</span>
+            <span className="card-comparison">Bệnh nhân</span>
+          </div>
+        </div>
+        <div className="stats-card">
+          <div className="card-icon green"><FiUsers /></div>
+          <div className="card-info">
+            <span className="card-title">Sẵn sàng xuất viện</span>
+            <span className="card-value">{dashboardData?.readyForDischarge || 0}</span>
+            <span className="card-comparison">Bệnh nhân</span>
+          </div>
+        </div>
+        <div className="stats-card">
+          <div className="card-icon orange"><FiAlertCircle /></div>
+          <div className="card-info">
+            <span className="card-title">Hàng đợi hiện tại</span>
+            <span className="card-value">{dashboardData?.currentQueueLength || 0}</span>
+            <span className="card-comparison">Bệnh nhân</span>
+          </div>
+        </div>
+        <div className="stats-card">
+          <div className="card-icon purple"><FiClock /></div>
+          <div className="card-info">
+            <span className="card-title">Chờ lâu nhất</span>
+            <span className="card-value">{dashboardData?.longestWaitMinutes || 0} phút</span>
+            <span className="card-comparison">Thời gian</span>
           </div>
         </div>
       </div>
@@ -171,81 +207,41 @@ const LeTanDashboardPage = () => {
       {/* --- Today Stats Section --- */}
       <div className="stats-detail-section">
         <div className="stats-detail-card">
-          <h4>Thống kê hôm nay</h4>
+          <h4>Thống kê lịch hẹn hôm nay</h4>
           <div className="stats-detail-grid">
             <div className="stat-item">
               <span className="stat-label">Tổng lịch hẹn</span>
-              <span className="stat-value">{dashboardData?.todayStats?.totalScheduled || 0}</span>
+              <span className="stat-value">{dashboardData?.todayTotalBookings || 0}</span>
             </div>
             <div className="stat-item">
-              <span className="stat-label">Đã check-in</span>
-              <span className="stat-value green">{dashboardData?.todayStats?.checkedIn || 0}</span>
+              <span className="stat-label">Đã xác nhận</span>
+              <span className="stat-value green">{dashboardData?.confirmedBookings || 0}</span>
             </div>
             <div className="stat-item">
-              <span className="stat-label">Đã xuất viện</span>
-              <span className="stat-value blue">{dashboardData?.todayStats?.discharged || 0}</span>
+              <span className="stat-label">Hoàn thành</span>
+              <span className="stat-value blue">{dashboardData?.completedBookings || 0}</span>
             </div>
             <div className="stat-item">
               <span className="stat-label">Đã hủy</span>
-              <span className="stat-value red">{dashboardData?.todayStats?.cancelled || 0}</span>
+              <span className="stat-value red">{dashboardData?.cancelledBookings || 0}</span>
+            </div>
+            <div className="stat-item">
+              <span className="stat-label">Không đến</span>
+              <span className="stat-value orange">{dashboardData?.noShowBookings || 0}</span>
+            </div>
+            <div className="stat-item">
+              <span className="stat-label">Khẩn cấp</span>
+              <span className="stat-value red">{dashboardData?.urgentBookings || 0}</span>
+            </div>
+            <div className="stat-item">
+              <span className="stat-label">Quá hạn</span>
+              <span className="stat-value orange">{dashboardData?.overdueAppointments || 0}</span>
+            </div>
+            <div className="stat-item">
+              <span className="stat-label">Chờ thanh toán</span>
+              <span className="stat-value purple">{dashboardData?.pendingPayments || 0}</span>
             </div>
           </div>
-        </div>
-      </div>
-
-      {/* --- Activity Section --- */}
-      <div className="activity-section">
-        {/* Pending Actions */}
-        <div className="activity-list-container">
-          <div className="list-header">
-            <h4>Công việc cần xử lý</h4>
-            <button className="btn-refresh" onClick={fetchDashboardData}>
-              <FiRefreshCw /> Làm mới
-            </button>
-          </div>
-          <ul className="activity-list">
-            {dashboardData?.pendingActions && dashboardData.pendingActions.length > 0 ? (
-              dashboardData.pendingActions.map((action, index) => (
-                <li key={index} className="activity-item">
-                  <div className="item-icon"><FiAlertCircle /></div>
-                  <div className="item-details">
-                    <span className="item-action">{action}</span>
-                  </div>
-                  <div className="item-meta">
-                    <span className="status status-cho-xu-ly">Chờ xử lý</span>
-                  </div>
-                </li>
-              ))
-            ) : (
-              <li className="empty-state">
-                <p>Không có công việc cần xử lý</p>
-              </li>
-            )}
-          </ul>
-        </div>
-
-        {/* Alerts */}
-        <div className="activity-list-container">
-          <div className="list-header">
-            <h4>Thông báo & Cảnh báo</h4>
-            <button className="btn-view-all">Xem tất cả <FiChevronRight /></button>
-          </div>
-          <ul className="activity-list">
-            {dashboardData?.alerts && dashboardData.alerts.length > 0 ? (
-              dashboardData.alerts.map((alert, index) => (
-                <li key={index} className="activity-item alert-item">
-                  <div className="item-icon warning"><FiBell /></div>
-                  <div className="item-details">
-                    <span className="item-action">{alert}</span>
-                  </div>
-                </li>
-              ))
-            ) : (
-              <li className="empty-state">
-                <p>Không có thông báo mới</p>
-              </li>
-            )}
-          </ul>
         </div>
       </div>
     </div>

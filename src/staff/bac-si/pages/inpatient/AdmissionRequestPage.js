@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { admissionRequestAPI } from '../../../../services/staff/doctorAPI';
+import { admissionRequestAPI, departmentAPI } from '../../../../services/staff/doctorAPI';
 import {
     FiPlus, FiSearch, FiFilter, FiAlertCircle, FiClock,
     FiCheckCircle, FiClipboard, FiX, FiCalendar
@@ -566,6 +566,8 @@ const RequestCard = ({ request }) => {
 // Create Modal Component
 const CreateAdmissionRequestModal = ({ onClose, onSuccess, encounter }) => {
     const [loading, setLoading] = useState(false);
+    const [departments, setDepartments] = useState([]);
+    const [loadingDepartments, setLoadingDepartments] = useState(false);
     const [formData, setFormData] = useState({
         encounterId: encounter ? encounter.encounterId : '',
         admissionType: 'ELECTIVE',
@@ -585,7 +587,25 @@ const CreateAdmissionRequestModal = ({ onClose, onSuccess, encounter }) => {
         insuranceVerified: false,
         consentFormSigned: false,
     });
-    
+
+    // Load departments khi modal mở
+    useEffect(() => {
+        const loadDepartments = async () => {
+            setLoadingDepartments(true);
+            try {
+                const response = await departmentAPI.getDepartments('', 0, 100);
+                if (response.data && response.data.content) {
+                    setDepartments(response.data.content);
+                }
+            } catch (err) {
+                console.error('Lỗi khi tải danh sách khoa:', err);
+            } finally {
+                setLoadingDepartments(false);
+            }
+        };
+        loadDepartments();
+    }, []);
+
     // Tự động cập nhật form nếu encounter thay đổi (mặc dù modal sẽ re-render)
     useEffect(() => {
         if (encounter) {
@@ -686,14 +706,23 @@ const CreateAdmissionRequestModal = ({ onClose, onSuccess, encounter }) => {
                         </div>
 
                         <div className="form-group">
-                            <label>Khoa yêu cầu ID: *</label>
-                            <input
-                                type="number"
+                            <label>Khoa yêu cầu: *</label>
+                            <select
                                 name="requestedDepartmentId"
                                 value={formData.requestedDepartmentId}
                                 onChange={handleChange}
                                 required
-                            />
+                                disabled={loadingDepartments}
+                            >
+                                <option value="">
+                                    {loadingDepartments ? 'Đang tải...' : 'Chọn khoa...'}
+                                </option>
+                                {departments.map(dept => (
+                                    <option key={dept.id} value={dept.id}>
+                                        {dept.departmentName}
+                                    </option>
+                                ))}
+                            </select>
                         </div>
 
                         <div className="form-group">

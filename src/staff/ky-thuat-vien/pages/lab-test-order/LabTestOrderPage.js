@@ -43,7 +43,11 @@ const LabTestOrderPage = () => {
         try {
             const response = await labTechnicianResultAPI.getPendingLabResults();
             if (response && response.data) {
-                setPendingTests(response.data);
+                // Sắp xếp giảm dần theo createdAt
+                const sortedData = [...response.data].sort((a, b) => {
+                    return new Date(b.createdAt) - new Date(a.createdAt);
+                });
+                setPendingTests(sortedData);
             } else {
                 setPendingTests([]);
             }
@@ -63,7 +67,11 @@ const LabTestOrderPage = () => {
         try {
             const response = await labTechnicianResultAPI.getPendingVerificationResults();
             if (response && response.data) {
-                setPendingVerification(response.data);
+                // Sắp xếp giảm dần theo createdAt
+                const sortedData = [...response.data].sort((a, b) => {
+                    return new Date(b.createdAt) - new Date(a.createdAt);
+                });
+                setPendingVerification(sortedData);
             } else {
                 setPendingVerification([]);
             }
@@ -123,8 +131,14 @@ const LabTestOrderPage = () => {
 
             if (response) {
                 alert('Lấy mẫu thành công!');
-                // Refresh lab orders list
-                handleSearch({ preventDefault: () => {} });
+                // Refresh based on current tab
+                if (activeTab === 'search' && encounterId.trim()) {
+                    // Reload search results
+                    const searchResponse = await labTechnicianOrderAPI.getLabTestOrders(encounterId.trim());
+                    if (searchResponse && searchResponse.data) {
+                        setLabOrders(searchResponse.data);
+                    }
+                }
             }
         } catch (err) {
             console.error('Error collecting specimen:', err);
@@ -145,8 +159,14 @@ const LabTestOrderPage = () => {
 
             if (response) {
                 alert('Nhận mẫu thành công!');
-                // Refresh lab orders list
-                handleSearch({ preventDefault: () => {} });
+                // Refresh based on current tab
+                if (activeTab === 'search' && encounterId.trim()) {
+                    // Reload search results
+                    const searchResponse = await labTechnicianOrderAPI.getLabTestOrders(encounterId.trim());
+                    if (searchResponse && searchResponse.data) {
+                        setLabOrders(searchResponse.data);
+                    }
+                }
             }
         } catch (err) {
             console.error('Error receiving specimen:', err);
@@ -158,7 +178,7 @@ const LabTestOrderPage = () => {
 
     const handleRejectSpecimen = async (labTestOrderId) => {
         const rejectionReason = prompt('Vui lòng nhập lý do từ chối mẫu:');
-        
+
         if (!rejectionReason || !rejectionReason.trim()) {
             alert('Vui lòng nhập lý do từ chối');
             return;
@@ -177,13 +197,39 @@ const LabTestOrderPage = () => {
                 // Refresh based on current tab
                 if (activeTab === 'pending') {
                     fetchPendingTests();
-                } else if (activeTab === 'search') {
-                    handleSearch({ preventDefault: () => {} });
+                } else if (activeTab === 'search' && encounterId.trim()) {
+                    // Reload search results
+                    const searchResponse = await labTechnicianOrderAPI.getLabTestOrders(encounterId.trim());
+                    if (searchResponse && searchResponse.data) {
+                        setLabOrders(searchResponse.data);
+                    }
                 }
             }
         } catch (err) {
             console.error('Error rejecting specimen:', err);
             alert(err.message || 'Không thể từ chối mẫu');
+        } finally {
+            setProcessingOrderId(null);
+        }
+    };
+
+    const handleApproveLabOrder = async (labTestOrderId) => {
+        if (!window.confirm('Bạn có chắc chắn muốn phê duyệt tiếp nhận lab order này?')) {
+            return;
+        }
+
+        setProcessingOrderId(labTestOrderId);
+        try {
+            const response = await labTechnicianOrderAPI.approveLabOrder(labTestOrderId);
+
+            if (response) {
+                alert('Phê duyệt tiếp nhận thành công!');
+                // Refresh pending tests
+                fetchPendingTests();
+            }
+        } catch (err) {
+            console.error('Error approving lab order:', err);
+            alert(err.message || 'Không thể phê duyệt tiếp nhận');
         } finally {
             setProcessingOrderId(null);
         }
@@ -242,12 +288,12 @@ const LabTestOrderPage = () => {
                     >
                         <FiSearch /> Tìm kiếm theo mã lượt khám
                     </button>
-                    <button
-                        className={`tab ${activeTab === 'verification' ? 'active' : ''}`}
-                        onClick={() => setActiveTab('verification')}
-                    >
-                        <FiCheckCircle /> Xét nghiệm chờ xác nhận
-                    </button>
+                    {/*<button*/}
+                    {/*    className={`tab ${activeTab === 'verification' ? 'active' : ''}`}*/}
+                    {/*    onClick={() => setActiveTab('verification')}*/}
+                    {/*>*/}
+                    {/*    <FiCheckCircle /> Xét nghiệm chờ xác nhận*/}
+                    {/*</button>*/}
                 </div>
             </div>
 
@@ -315,9 +361,14 @@ const LabTestOrderPage = () => {
                                                     </div>
                                                 </div>
                                                 <div className="test-footer">
-                                                    {/* <button className="btn-action btn-enter-result">
-                                                        <FiEdit /> Nhập kết quả
-                                                    </button> */}
+                                                    <button
+                                                        className="btn-action btn-approve"
+                                                        onClick={() => handleApproveLabOrder(test.labTestOrderId)}
+                                                        disabled={processingOrderId === test.labTestOrderId}
+                                                    >
+                                                        <FiCheckCircle />
+                                                        {processingOrderId === test.labTestOrderId ? 'Đang xử lý...' : 'Phê duyệt tiếp nhận'}
+                                                    </button>
                                                     <button
                                                         className="btn-action btn-collect"
                                                         onClick={() => handleCollectSpecimen(test.labTestOrderId)}

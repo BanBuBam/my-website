@@ -243,9 +243,15 @@ const InpatientTreatmentDetailPage = () => {
                 >
                     K/Hoach xuất viện
                 </button>
-                <button className="btn-action btn-transfer-hospital">
-                    Tạo YC chuyển viện
+                <button
+                    className="btn-action btn-discharge-modal"
+                    onClick={() => setShowDischargePlanModal(true)}
+                >
+                    Tạo YC Xuất viện
                 </button>
+                {/*<button className="btn-action btn-transfer-hospital">*/}
+                {/*    Tạo YC chuyển viện*/}
+                {/*</button>*/}
                 <button
                     className="btn-action btn-transfer-bed"
                     onClick={() => navigate(`/staff/bac-si/dieu-tri-noi-tru/${inpatientStayId}/chuyen-giuong`)}
@@ -253,12 +259,7 @@ const InpatientTreatmentDetailPage = () => {
                     Tạo YC chuyển giường
                 </button>
                 {/*{isDischarged && (*/}
-                    <button
-                        className="btn-action btn-discharge-modal"
-                        onClick={() => setShowDischargePlanModal(true)}
-                    >
-                        Tạo YC Xuất viện
-                    </button>
+                
                 {/*)}*/}
             </div>
             

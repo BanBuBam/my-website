@@ -106,18 +106,18 @@ const AdminRequestDetailPage = () => {
                     </span>
                 </div>
                 <div className="header-actions">
-                    {!isEditing ? (
-                        <button className="btn-edit" onClick={() => setIsEditing(true)}>
-                            <FiEdit /> Chỉnh sửa
-                        </button>
-                    ) : (
-                        <>
-                            <button className="btn-cancel" onClick={() => setIsEditing(false)}>Hủy</button>
-                            <button className="btn-save" onClick={handleSave} disabled={saving}>
-                                <FiSave /> {saving ? 'Đang lưu...' : 'Lưu thay đổi'}
-                            </button>
-                        </>
-                    )}
+                    {/*{!isEditing ? (*/}
+                    {/*    <button className="btn-edit" onClick={() => setIsEditing(true)}>*/}
+                    {/*        <FiEdit /> Chỉnh sửa*/}
+                    {/*    </button>*/}
+                    {/*) : (*/}
+                    {/*    <>*/}
+                    {/*        <button className="btn-cancel" onClick={() => setIsEditing(false)}>Hủy</button>*/}
+                    {/*        <button className="btn-save" onClick={handleSave} disabled={saving}>*/}
+                    {/*            <FiSave /> {saving ? 'Đang lưu...' : 'Lưu thay đổi'}*/}
+                    {/*        </button>*/}
+                    {/*    </>*/}
+                    {/*)}*/}
                 </div>
             </div>
             

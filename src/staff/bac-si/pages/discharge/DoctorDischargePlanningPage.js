@@ -26,6 +26,7 @@ const DoctorDischargePlanningPage = () => {
     const [showReasonModal, setShowReasonModal] = useState(false);
     const [actionType, setActionType] = useState(null); // 'ORDER' or 'CANCEL'
     const [processingAction, setProcessingAction] = useState(false);
+    const [savedFollowUpDate, setSavedFollowUpDate] = useState(null); // Lưu followUpDate từ discharge plan
     
     // Form data
     const [formData, setFormData] = useState({
@@ -75,6 +76,17 @@ const DoctorDischargePlanningPage = () => {
 
             if (response.status === 'OK' && response.data) {
                     setDischargePlan(response.data);
+
+                    // Lưu followUpDate nếu có
+                    if (response.data.expectedDischargeDate) {
+                        setSavedFollowUpDate(response.data.expectedDischargeDate);
+                        
+                        // Cập nhật executeFormData với followUpDate
+                        setExecuteFormData(prev => ({
+                            ...prev,
+                            followUpDate: response.data.expectedDischargeDate
+                        }));
+                    }
             } else {
                 setDischargePlan(null);
             }
@@ -229,8 +241,23 @@ const DoctorDischargePlanningPage = () => {
         setProcessingAction(true);
         try {
             if (actionType === 'ORDER') {
-                await doctorDischargePlanningAPI.orderDischarge(inpatientStayId, reason);
+                const response = await doctorDischargePlanningAPI.orderDischarge(inpatientStayId, reason);
+
+                // Lưu followUpDate từ kết quả trả về
+                if (response && response.data && response.data.expectedDischargeDate) {
+                    setSavedFollowUpDate(response.data.expectedDischargeDate);
+                    console.log('HHHH followUpDate: ' + response.data.followUpDate);
+                    // Cập nhật executeFormData với followUpDate
+                    setExecuteFormData(prev => ({
+                        ...prev,
+                        followUpDate: response.data.expectedDischargeDate
+                    }));
+                }
+
                 alert('Đã đặt lệnh xuất viện thành công. Các y lệnh mới sẽ bị chặn.');
+
+                // Reload discharge plan để cập nhật thông tin
+                await fetchDischargePlan();
             } else if (actionType === 'CANCEL') {
                 await doctorDischargePlanningAPI.cancelDischargeOrder(inpatientStayId, reason);
                 alert('Đã hủy lệnh xuất viện. Có thể tạo y lệnh mới bình thường.');
@@ -264,26 +291,29 @@ const DoctorDischargePlanningPage = () => {
             alert('Vui lòng nhập chẩn đoán xuất viện');
             return;
         }
-        
+
         // Bác sĩ cần confirm kỹ hơn
         const confirmMessage = 'XÁC NHẬN: Bạn đang thực hiện xuất viện cho bệnh nhân này. Hành động này sẽ KẾT THÚC lượt điều trị nội trú và giường bệnh sẽ được giải phóng.';
-        
+
         if (!window.confirm(confirmMessage)) {
             return;
         }
-        
+
         try {
             setExecuting(true);
-            
+
+            // Sử dụng savedFollowUpDate nếu có, nếu không thì dùng từ executeFormData
+            const followUpDateToUse = savedFollowUpDate || executeFormData.followUpDate;
+
             const dischargeData = {
                 ...executeFormData,
-                followUpDate: executeFormData.followUpDate ? new Date(executeFormData.followUpDate).toISOString() : null,
+                followUpDate: followUpDateToUse ? new Date(followUpDateToUse).toISOString() : null,
                 dischargeDate: new Date(executeFormData.dischargeDate).toISOString(),
             };
-            
+
             await doctorDischargePlanningAPI.executeDischarge(inpatientStayId, dischargeData);
             alert('Đã thực hiện xuất viện thành công!');
-            
+
             // Điều hướng về trang danh sách bệnh nhân của bác sĩ
             navigate('/staff/bac-si/dieu-tri-noi-tru');
         } catch (err) {

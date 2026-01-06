@@ -532,12 +532,67 @@ export const financeEmergencyAPI = {
 
   // Thu tạm ứng cấp cứu
   collectAdvancePayment: async (depositData) => {
-    return apiCall('api/v1/emergency/billing/deposits', {
+    const employeeId = localStorage.getItem('employeeId');
+    
+    // Add employeeId as query parameter
+    const params = new URLSearchParams();
+    if (employeeId) {
+      params.append('employeeId', employeeId);
+    }
+
+    return apiCall(`api/v1/emergency/billing/deposits?${params.toString()}`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${getAccessToken()}`,
       },
       body: JSON.stringify(depositData),
+    });
+  },
+
+  // Tạo hóa đơn cấp cứu
+  createEmergencyInvoice: async (encounterId) => {
+    const employeeId = localStorage.getItem('employeeId');
+    
+    // Add employeeId as query parameter
+    const params = new URLSearchParams();
+    if (employeeId) {
+      params.append('employeeId', employeeId);
+    }
+
+    return apiCall(`api/v1/emergency/billing/encounters/${encounterId}/invoices?${params.toString()}`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Quyết toán cấp cứu
+  settleEmergencyEncounter: async (encounterId, refundMethod = 'CASH') => {
+    const employeeId = localStorage.getItem('employeeId');
+    
+    // Add employeeId and refundMethod as query parameters
+    const params = new URLSearchParams();
+    if (employeeId) {
+      params.append('employeeId', employeeId);
+    }
+    params.append('refundMethod', refundMethod);
+
+    return apiCall(`api/v1/emergency/billing/encounters/${encounterId}/settlements?${params.toString()}`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+
+  // Xem hóa đơn cấp cứu
+  getEmergencyInvoice: async (emergencyEncounterId) => {
+    return apiCall(`api/v1/emergency/billing/encounters/${emergencyEncounterId}/invoices`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
     });
   },
 };
