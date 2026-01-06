@@ -453,24 +453,38 @@ const DispenseHistoryPage = () => {
                                     <thead>
                                         <tr>
                                             <th>STT</th>
+                                            <th>Mã Stock</th>
                                             <th>Tên thuốc</th>
                                             <th>Số lượng trả</th>
+                                            <th>Trước → Sau</th>
                                             <th>Lý do</th>
                                             <th>Người trả</th>
                                             <th>Thời gian</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {returnHistory.map((item, index) => (
-                                            <tr key={item.movementId || index}>
-                                                <td>{index + 1}</td>
-                                                <td><strong>{item.medicineName}</strong></td>
-                                                <td><span className="quantity-returned">{item.quantity}</span></td>
-                                                <td>{item.reason}</td>
-                                                <td>{item.returnedByEmployeeName}</td>
-                                                <td>{formatDateTime(item.returnedAt)}</td>
-                                            </tr>
-                                        ))}
+                                        {returnHistory.map((item, index) => {
+                                            // Extract reason from notes
+                                            const reasonMatch = item.notes?.match(/Reason:\s*(.+)$/);
+                                            const reason = reasonMatch ? reasonMatch[1] : item.notes || 'N/A';
+
+                                            return (
+                                                <tr key={item.movementId || index}>
+                                                    <td>{index + 1}</td>
+                                                    <td>#{item.stockId}</td>
+                                                    <td><strong>{item.itemName || 'N/A'}</strong></td>
+                                                    <td><span className="quantity-returned">{item.quantityMoved}</span></td>
+                                                    <td>
+                                                        <span className="quantity-change">
+                                                            {item.quantityBefore} → {item.quantityAfter}
+                                                        </span>
+                                                    </td>
+                                                    <td>{reason}</td>
+                                                    <td>{item.employeeName || `ID: ${item.employeeId}`}</td>
+                                                    <td>{formatDateTime(item.movementDate)}</td>
+                                                </tr>
+                                            );
+                                        })}
                                     </tbody>
                                 </table>
                             </div>

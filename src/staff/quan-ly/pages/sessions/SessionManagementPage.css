@@ -513,8 +513,14 @@
 /* Statistics Grid */
 .stats-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    grid-template-columns: repeat(2, 1fr);
     gap: 1.5rem;
+}
+
+@media (max-width: 768px) {
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
 }
 
 .stat-card {
@@ -548,8 +554,6 @@
 .stat-icon.green { background: #10b981; }
 .stat-icon.orange { background: #f59e0b; }
 .stat-icon.red { background: #ef4444; }
-.stat-icon.purple { background: #8b5cf6; }
-.stat-icon.teal { background: #14b8a6; }
 
 .stat-content {
     flex: 1;
@@ -587,10 +591,6 @@
 
     .search-section {
         flex-direction: column;
-    }
-
-    .stats-grid {
-        grid-template-columns: 1fr;
     }
 
     .users-table {
