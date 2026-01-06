@@ -91,24 +91,19 @@ const StaffLoginPage = () => {
 
   return (
     <div className="staff-login-page">
-      {/* Left Section: Login Form */}
       <div className="login-form-section">
-        {/* Header/Logo */}
         <div className="login-header">
           <div className="logo-container">
             <FiHeart className="logo-icon" />
           </div>
           <div className="logo-text">
-            <h1 className="hospital-name">Trinity Care</h1>
-            <p className="hospital-subtitle">HOSPITAL</p>
+            <h1 className="hospital-name">Trinitycare Hospital</h1>
           </div>
         </div>
 
-        {/* Form Content */}
         <div className="form-content">
           <div className="form-title">
-            <h2>Staff Portal</h2>
-            <p>Secure access for medical professionals & staff.</p>
+            <h2>Đăng nhập</h2>
           </div>
 
           {error && (
@@ -118,15 +113,14 @@ const StaffLoginPage = () => {
           )}
 
           <form onSubmit={handleSubmit} className="login-form">
-            {/* Employee ID Input */}
             <div className="form-group">
-              <label htmlFor="username">Employee ID</label>
+              <label htmlFor="username">Tên đăng nhập</label>
               <div className="input-wrapper">
                 <FiUserCheck className="input-icon" />
                 <input
                   type="text"
                   id="username"
-                  placeholder="Ex: MD-8492"
+                  placeholder="Nhập tên đăng nhập"
                   required
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
@@ -135,15 +129,14 @@ const StaffLoginPage = () => {
               </div>
             </div>
 
-            {/* Password Input */}
             <div className="form-group">
-              <label htmlFor="password">Password</label>
+              <label htmlFor="password">Mật khẩu</label>
               <div className="input-wrapper">
                 <FiLock className="input-icon" />
                 <input
                   type={showPassword ? "text" : "password"}
                   id="password"
-                  placeholder="••••••••"
+                  placeholder="Nhập mật khẩu"
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
@@ -159,56 +152,15 @@ const StaffLoginPage = () => {
               </div>
             </div>
 
-            {/* Submit Button */}
             <button type="submit" className="login-button" disabled={loading}>
               <FiLogIn className="button-icon" />
-              <span>{loading ? 'Đang đăng nhập...' : 'Sign In securely'}</span>
+              <span>{loading ? 'Đang đăng nhập...' : 'Đăng nhập'}</span>
             </button>
           </form>
         </div>
 
-        {/* Footer */}
         <div className="login-footer">
-          <p>© 2025 Trinity Care</p>
-        </div>
-      </div>
-
-      {/* Right Section: Visual / Branding */}
-      <div className="login-visual-section">
-        {/* Abstract Background */}
-        <div className="visual-background">
-          <div className="gradient-blob gradient-blob-1"></div>
-          <div className="gradient-blob gradient-blob-2"></div>
-          <div className="gradient-blob gradient-blob-3"></div>
-        </div>
-
-        {/* Glassmorphism Card */}
-        <div className="visual-content">
-          <div className="glass-card">
-            <div className="card-icon">
-              <FiActivity />
-            </div>
-
-            <div className="card-text">
-              <h2>Advanced Healthcare, Compassionate Touch.</h2>
-              <p>
-                Access patient records, shift schedules, and hospital resources efficiently.
-                Securely serving over 5,000 staff members across all Trinity Care departments.
-              </p>
-            </div>
-
-            {/* Stats */}
-            <div className="card-stats">
-              <div className="stat-item">
-                <p className="stat-value">24/7</p>
-                <p className="stat-label">System Support</p>
-              </div>
-              <div className="stat-item">
-                <p className="stat-value">100%</p>
-                <p className="stat-label">Data Encrypted</p>
-              </div>
-            </div>
-          </div>
+          <p>© 2025 Trinitycare Hospital</p>
         </div>
       </div>
     </div>

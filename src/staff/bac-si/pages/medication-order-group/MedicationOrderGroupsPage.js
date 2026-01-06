@@ -14,7 +14,8 @@ const MedicationOrderGroupsPage = () => {
     const [groups, setGroups] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    
+    const [actionLoading, setActionLoading] = useState(null);
+
     // State để quản lý việc mở rộng (Xem chi tiết) của từng nhóm
     const [expandedGroups, setExpandedGroups] = useState({});
     
@@ -48,21 +49,75 @@ const MedicationOrderGroupsPage = () => {
     };
     
     // Các hàm xử lý hành động (Placeholder - Bạn cần API xử lý các hành động này)
-    const handleHoldGroup = (groupId) => {
-        if(window.confirm(`Bạn có chắc muốn TẠM DỪNG nhóm y lệnh #${groupId}?`)) {
-            alert(`Đã gửi yêu cầu tạm dừng nhóm #${groupId} (Cần API tích hợp)`);
+    const handleHoldGroup = async (groupId) => {
+        const reason = prompt('Nhập lý do tạm dừng nhóm y lệnh:');
+        if (!reason || !reason.trim()) {
+            return;
+        }
+
+        setActionLoading(groupId);
+        try {
+            const response = await medicationOrderAPI.discontinueMedicationOrderGroup(groupId, reason.trim());
+
+            if (response) {
+                alert('Tạm dừng nhóm y lệnh thành công!');
+                fetchGroups();
+            }
+        } catch (err) {
+            console.error('Error discontinuing group:', err);
+            alert(err.message || 'Không thể tạm dừng nhóm y lệnh');
+        } finally {
+            setActionLoading(null);
         }
     };
-    
+
     const handleResumeGroup = (groupId) => {
         if(window.confirm(`Bạn có chắc muốn TIẾP TỤC nhóm y lệnh #${groupId}?`)) {
             alert(`Đã gửi yêu cầu tiếp tục nhóm #${groupId} (Cần API tích hợp)`);
         }
     };
-    
-    const handleDiscontinueGroup = (groupId) => {
-        if(window.confirm(`Bạn có chắc muốn NGỪNG nhóm y lệnh #${groupId}?`)) {
-            alert(`Đã gửi yêu cầu ngừng nhóm #${groupId} (Cần API tích hợp)`);
+
+    const handleDiscontinueGroup = async (groupId) => {
+        const reason = prompt('Nhập lý do ngừng nhóm y lệnh:');
+        if (!reason || !reason.trim()) {
+            return;
+        }
+
+        setActionLoading(groupId);
+        try {
+            const response = await medicationOrderAPI.cancelMedicationOrderGroup(groupId, reason.trim());
+
+            if (response) {
+                alert('Ngừng nhóm y lệnh thành công!');
+                fetchGroups();
+            }
+        } catch (err) {
+            console.error('Error cancelling group:', err);
+            alert(err.message || 'Không thể ngừng nhóm y lệnh');
+        } finally {
+            setActionLoading(null);
+        }
+    };
+
+    const handleConfirmGroup = async (groupId) => {
+        if (!window.confirm(`Bạn có chắc chắn muốn xác nhận nhóm y lệnh #${groupId}?`)) {
+            return;
+        }
+
+        setActionLoading(groupId);
+        try {
+            const response = await medicationOrderAPI.confirmMedicationOrderGroup(groupId);
+
+            if (response) {
+                alert('Xác nhận nhóm y lệnh thành công!');
+                // Reload danh sách
+                fetchGroups();
+            }
+        } catch (err) {
+            console.error('Error confirming medication order group:', err);
+            alert(err.message || 'Không thể xác nhận nhóm y lệnh');
+        } finally {
+            setActionLoading(null);
         }
     };
     
@@ -133,23 +188,32 @@ const MedicationOrderGroupsPage = () => {
                                     </div>
                                 )}
                                 
-                                {/* Vùng chứa 4 Nút bấm */}
+                                {/* Vùng chứa 5 Nút bấm */}
                                 <div className="group-actions">
+                                    <button
+                                        className="btn-action btn-confirm"
+                                        onClick={() => handleConfirmGroup(group.medicationOrderGroupId)}
+                                        disabled={actionLoading === group.medicationOrderGroupId}
+                                    >
+                                        <FiCheckCircle />
+                                        {actionLoading === group.medicationOrderGroupId ? 'Đang xử lý...' : 'Xác nhận'}
+                                    </button>
+
                                     <button
                                         className="btn-action btn-view"
                                         onClick={() => toggleDetail(group.medicationOrderGroupId)}
                                     >
                                         <FiEye /> {expandedGroups[group.medicationOrderGroupId] ? 'Ẩn chi tiết' : 'Xem chi tiết'}
                                     </button>
-                                    
+
                                     <button
                                         className="btn-action btn-hold"
                                         onClick={() => handleHoldGroup(group.medicationOrderGroupId)}
-                                        disabled={group.status === 'HELD' || group.status === 'DISCONTINUED'}
+                                        disabled={actionLoading === group.medicationOrderGroupId || group.status === 'HELD' || group.status === 'DISCONTINUED'}
                                     >
-                                        <FiPause /> Tạm dừng
+                                        <FiPause /> {actionLoading === group.medicationOrderGroupId ? 'Đang xử lý...' : 'Tạm dừng'}
                                     </button>
-                                    
+
                                     <button
                                         className="btn-action btn-resume"
                                         onClick={() => handleResumeGroup(group.medicationOrderGroupId)}
@@ -157,13 +221,13 @@ const MedicationOrderGroupsPage = () => {
                                     >
                                         <FiPlay /> Tiếp tục
                                     </button>
-                                    
+
                                     <button
                                         className="btn-action btn-stop"
                                         onClick={() => handleDiscontinueGroup(group.medicationOrderGroupId)}
-                                        disabled={group.status === 'DISCONTINUED'}
+                                        disabled={actionLoading === group.medicationOrderGroupId || group.status === 'DISCONTINUED'}
                                     >
-                                        <FiXCircle /> Ngừng
+                                        <FiXCircle /> {actionLoading === group.medicationOrderGroupId ? 'Đang xử lý...' : 'Ngừng'}
                                     </button>
                                 </div>
                                 

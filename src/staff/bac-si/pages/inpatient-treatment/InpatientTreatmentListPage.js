@@ -1,27 +1,74 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { doctorInpatientTreatmentAPI } from '../../../../services/staff/doctorAPI';
+import { doctorInpatientTreatmentAPI, departmentAPI } from '../../../../services/staff/doctorAPI';
 import { FiSearch, FiAlertCircle, FiUser, FiCalendar, FiActivity } from 'react-icons/fi';
 import './InpatientTreatmentListPage.css';
 
 const InpatientTreatmentListPage = () => {
+    const [activeTab, setActiveTab] = useState('active'); // 'active', 'by-doctor', 'by-department'
     const [stays, setStays] = useState([]);
     const [filteredStays, setFilteredStays] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [searchTerm, setSearchTerm] = useState('');
-    
+
+    // State cho tab by-department
+    const [departments, setDepartments] = useState([]);
+    const [selectedDepartmentId, setSelectedDepartmentId] = useState('');
+    const [loadingDepartments, setLoadingDepartments] = useState(false);
+
     const navigate = useNavigate();
     
+    // Fetch departments cho tab by-department
+    const fetchDepartments = async () => {
+        setLoadingDepartments(true);
+        try {
+            const response = await departmentAPI.getDepartments('', 0, 100);
+            if (response && response.data && response.data.content) {
+                setDepartments(response.data.content);
+                if (response.data.content.length > 0) {
+                    setSelectedDepartmentId(response.data.content[0].id);
+                }
+            }
+        } catch (err) {
+            console.error('Error fetching departments:', err);
+        } finally {
+            setLoadingDepartments(false);
+        }
+    };
+
     // Fetch danh sách điều trị nội trú
     const fetchStays = async () => {
         setLoading(true);
         setError(null);
         try {
-            const response = await doctorInpatientTreatmentAPI.getActiveInpatientStays();
+            let response;
+
+            if (activeTab === 'active') {
+                response = await doctorInpatientTreatmentAPI.getActiveInpatientStays();
+            } else if (activeTab === 'by-doctor') {
+                const employeeId = localStorage.getItem('employeeId');
+                if (!employeeId) {
+                    throw new Error('Không tìm thấy thông tin bác sĩ');
+                }
+                response = await doctorInpatientTreatmentAPI.getInpatientStaysByDoctor(employeeId);
+            } else if (activeTab === 'by-department') {
+                if (!selectedDepartmentId) {
+                    setStays([]);
+                    setFilteredStays([]);
+                    setLoading(false);
+                    return;
+                }
+                response = await doctorInpatientTreatmentAPI.getInpatientStaysByDepartment(selectedDepartmentId);
+            }
+
             if (response && response.data) {
-                setStays(response.data);
-                setFilteredStays(response.data);
+                // Sắp xếp giảm dần theo admissionDate
+                const sortedData = [...response.data].sort((a, b) => {
+                    return new Date(b.admissionDate) - new Date(a.admissionDate);
+                });
+                setStays(sortedData);
+                setFilteredStays(sortedData);
             } else {
                 setStays([]);
                 setFilteredStays([]);
@@ -34,10 +81,16 @@ const InpatientTreatmentListPage = () => {
             setLoading(false);
         }
     };
-    
+
+    useEffect(() => {
+        if (activeTab === 'by-department' && departments.length === 0) {
+            fetchDepartments();
+        }
+    }, [activeTab]);
+
     useEffect(() => {
         fetchStays();
-    }, []);
+    }, [activeTab, selectedDepartmentId]);
     
     // Lọc theo tên bệnh nhân hoặc mã bệnh nhân
     useEffect(() => {
@@ -78,7 +131,29 @@ const InpatientTreatmentListPage = () => {
                     </div>
                 </div>
             </div>
-            
+
+            {/* Tabs */}
+            <div className="tabs-container">
+                <button
+                    className={`tab-button ${activeTab === 'active' ? 'active' : ''}`}
+                    onClick={() => setActiveTab('active')}
+                >
+                    DS Active
+                </button>
+                <button
+                    className={`tab-button ${activeTab === 'by-doctor' ? 'active' : ''}`}
+                    onClick={() => setActiveTab('by-doctor')}
+                >
+                    DS theo Bác sĩ
+                </button>
+                <button
+                    className={`tab-button ${activeTab === 'by-department' ? 'active' : ''}`}
+                    onClick={() => setActiveTab('by-department')}
+                >
+                    DS theo Khoa
+                </button>
+            </div>
+
             {/* Filter Section */}
             <div className="filter-section">
                 <div className="search-box">
@@ -90,6 +165,22 @@ const InpatientTreatmentListPage = () => {
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />
                 </div>
+                {activeTab === 'by-department' && (
+                    <div className="department-filter">
+                        <select
+                            value={selectedDepartmentId}
+                            onChange={(e) => setSelectedDepartmentId(e.target.value)}
+                            disabled={loadingDepartments}
+                        >
+                            <option value="">-- Chọn khoa --</option>
+                            {departments.map(dept => (
+                                <option key={dept.id} value={dept.id}>
+                                    {dept.departmentName}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+                )}
                 <div className="filter-stats">
                     <span className="stat-badge">
                         Tổng số: <strong>{filteredStays.length}</strong>

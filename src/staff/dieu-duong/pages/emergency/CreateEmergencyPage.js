@@ -581,7 +581,6 @@ const CreateEmergencyPage = () => {
                                         <div
                                             key={patient.patientId}
                                             className="patient-item"
-                                            onClick={() => handleSelectPatient(patient)}
                                         >
                                             <div className="patient-info">
                                                 <div className="patient-name">{patient.fullName}</div>
@@ -590,13 +589,18 @@ const CreateEmergencyPage = () => {
                                                     <span>•</span>
                                                     <span>Tuổi: {new Date().getFullYear() - new Date(patient.dateOfBirth).getFullYear()}</span>
                                                     <span>•</span>
-                                                    <span>Giới tính: {patient.gender === 'MALE' ? 'Nam' : 'Nữ'}</span>
+                                                    <span>Giới tính: {patient.gender === 'MALE' ? 'Nam' : patient.gender === 'FEMALE' ? 'Nữ' : 'Khác'}</span>
                                                 </div>
                                                 {patient.phoneNumber && (
                                                     <div className="patient-contact">SĐT: {patient.phoneNumber}</div>
                                                 )}
                                             </div>
-                                            <button className="btn-select">Chọn</button>
+                                            <button
+                                                className="btn-select"
+                                                onClick={() => handleSelectPatient(patient)}
+                                            >
+                                                Chọn
+                                            </button>
                                         </div>
                                     ))}
                                 </div>

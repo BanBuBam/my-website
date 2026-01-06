@@ -59,6 +59,11 @@ const EmergencyDetailPage = () => {
     // Protocol modal state
     const [showProtocolModal, setShowProtocolModal] = useState(false);
 
+    // View diagnostic orders modal state
+    const [showViewDiagnosticOrdersModal, setShowViewDiagnosticOrdersModal] = useState(false);
+    const [diagnosticOrders, setDiagnosticOrders] = useState([]);
+    const [loadingDiagnosticOrders, setLoadingDiagnosticOrders] = useState(false);
+
     useEffect(() => {
         fetchEmergencyDetail();
     }, [emergencyEncounterId]);
@@ -389,6 +394,25 @@ const EmergencyDetailPage = () => {
         }
     };
 
+    const handleOpenViewDiagnosticOrders = async () => {
+        setShowViewDiagnosticOrdersModal(true);
+        setLoadingDiagnosticOrders(true);
+        try {
+            const response = await doctorDiagnosticOrderAPI.getDiagnosticOrdersByEncounter(emergencyEncounterId);
+            if (response && response.data) {
+                const ordersData = Array.isArray(response.data) ? response.data : [];
+                setDiagnosticOrders(ordersData);
+            } else {
+                setDiagnosticOrders([]);
+            }
+        } catch (err) {
+            console.error('Error fetching diagnostic orders:', err);
+            setDiagnosticOrders([]);
+        } finally {
+            setLoadingDiagnosticOrders(false);
+        }
+    };
+
     const formatDateTime = (dateString) => {
         if (!dateString) return '-';
         const date = new Date(dateString);
@@ -476,8 +500,14 @@ const EmergencyDetailPage = () => {
                         <button className="btn-action btn-create-diagnostic" onClick={() => setShowDiagnosticOrderModal(true)}>
                             <FiPlus /> Tạo chỉ định XN
                         </button>
-                        <button 
-                            className="btn-action btn-create-consultation" 
+                        <button
+                            className="btn-action btn-view-diagnostic"
+                            onClick={handleOpenViewDiagnosticOrders}
+                        >
+                            <FiPlus /> Xem CĐXN
+                        </button>
+                        <button
+                            className="btn-action btn-create-consultation"
                             onClick={() => navigate(`/staff/bac-si/hoi-chan/tao-moi?emergencyEncounterId=${emergencyEncounterId}`)}
                         >
                             <FiUserPlus /> Tạo YC hội chẩn
@@ -1056,8 +1086,100 @@ const EmergencyDetailPage = () => {
                     onSuccess={handleActivateProtocol}
                 />
             )}
+
+            {/* View Diagnostic Orders Modal */}
+            {showViewDiagnosticOrdersModal && (
+                <div className="modal-overlay" onClick={() => setShowViewDiagnosticOrdersModal(false)}>
+                    <div className="modal-content large" onClick={(e) => e.stopPropagation()}>
+                        <div className="modal-header">
+                            <h3>
+                                <FiFileText /> Danh sách Chỉ định Xét nghiệm
+                            </h3>
+                            <button className="btn-close" onClick={() => setShowViewDiagnosticOrdersModal(false)}>
+                                <FiX />
+                            </button>
+                        </div>
+                        <div className="modal-body">
+                            {loadingDiagnosticOrders ? (
+                                <div className="loading-state">
+                                    <FiRefreshCw className="spinner" />
+                                    <p>Đang tải danh sách chỉ định...</p>
+                                </div>
+                            ) : diagnosticOrders.length > 0 ? (
+                                <div className="diagnostic-orders-list">
+                                    {diagnosticOrders.map((order) => (
+                                        <div key={order.id} className="diagnostic-order-card">
+                                            <div className="order-header">
+                                                <div className="order-type">
+                                                    <strong>{getDiagnosticTypeLabel(order.diagnosticType)}</strong>
+                                                    <span className={`urgency-badge ${order.urgencyLevel?.toLowerCase()}`}>
+                                                        {getUrgencyLabel(order.urgencyLevel)}
+                                                    </span>
+                                                    <span className={`status-badge ${order.status?.toLowerCase()}`}>
+                                                        {getStatusLabel(order.status)}
+                                                    </span>
+                                                </div>
+                                                <div className="order-id">ID: {order.id}</div>
+                                            </div>
+                                            <div className="order-body">
+                                                <p><strong>Chi tiết:</strong> {order.orderDetails || '-'}</p>
+                                                <p><strong>Chỉ định lâm sàng:</strong> {order.clinicalIndication || '-'}</p>
+                                                {order.results && <p><strong>Kết quả:</strong> {order.results}</p>}
+                                                {order.interpretation && <p><strong>Diễn giải:</strong> {order.interpretation}</p>}
+                                                <p><strong>Thời gian chỉ định:</strong> {formatDateTime(order.orderedAt)}</p>
+                                                {order.completedAt && <p><strong>Thời gian hoàn thành:</strong> {formatDateTime(order.completedAt)}</p>}
+                                                {order.targetCompletionTime && <p><strong>Thời gian dự kiến:</strong> {formatDateTime(order.targetCompletionTime)}</p>}
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            ) : (
+                                <div className="empty-state">
+                                    <FiFileText className="empty-icon" />
+                                    <p>Chưa có chỉ định xét nghiệm nào</p>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
+};
+
+// Helper functions for diagnostic orders
+const getDiagnosticTypeLabel = (type) => {
+    const typeMap = {
+        'XET_NGHIEM_MAU': 'Xét nghiệm máu',
+        'XET_NGHIEM_NUOC_TIEU': 'Xét nghiệm nước tiểu',
+        'X_QUANG': 'X-quang',
+        'CT_SCAN': 'CT Scan',
+        'ECG': 'Điện tâm đồ',
+        'ECHO_TIM': 'Siêu âm tim',
+        'SIEU_AM': 'Siêu âm',
+        'XET_NGHIEM_KHAC': 'Xét nghiệm khác',
+    };
+    return typeMap[type] || type;
+};
+
+const getUrgencyLabel = (urgency) => {
+    const urgencyMap = {
+        'STAT': 'Cấp cứu',
+        'URGENT': 'Khẩn',
+        'ROUTINE': 'Thường quy',
+    };
+    return urgencyMap[urgency] || urgency;
+};
+
+const getStatusLabel = (status) => {
+    const statusMap = {
+        'ORDERED': 'Đã chỉ định',
+        'IN_PROGRESS': 'Đang thực hiện',
+        'COMPLETED': 'Hoàn thành',
+        'CANCELLED': 'Đã hủy',
+        'PENDING': 'Chờ xử lý',
+    };
+    return statusMap[status] || status;
 };
 
 export default EmergencyDetailPage;

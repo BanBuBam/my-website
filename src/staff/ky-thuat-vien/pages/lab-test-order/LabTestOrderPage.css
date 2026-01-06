@@ -775,6 +775,17 @@
     box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
 }
 
+/* Approve Button */
+.lab-test-order-page .btn-approve {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    color: white;
+}
+
+.lab-test-order-page .btn-approve:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
 /* Update test-footer to handle 4 buttons - 2 buttons per row */
 .lab-test-order-page .test-footer {
     padding: 16px 20px;

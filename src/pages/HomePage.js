@@ -149,14 +149,14 @@ const HomePage = () => {
               <FiPhone />
               <div>
                 <span>Hotline</span>
-                <strong>024 8345 555</strong>
+                <strong>0393348819</strong>
               </div>
             </div>
             <div className="cta-item">
               <FiMapPin />
               <div>
                 <span>Địa chỉ</span>
-                <strong>Số 12, Xuân Thủy, Cầu Giấy, Hà Nội</strong>
+                <strong>Số 10, Trần Phú, Hà Nội</strong>
               </div>
             </div>
           </div>

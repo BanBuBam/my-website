@@ -51,6 +51,19 @@ export const clearTokens = () => {
   localStorage.removeItem('labtechRefreshToken');
 };
 
+// API Dashboard
+export const labTechnicianDashboardAPI = {
+  // Lấy dashboard data
+  getDashboard: async () => {
+    return apiCall('api/v1/dashboard/lab/summary', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
+    });
+  },
+};
+
 // API Yêu cầu xét nghiệm
 export const labTechnicianOrderAPI = {
   // Lấy danh sách yêu cầu xét nghiệm của encounter
@@ -91,6 +104,16 @@ export const labTechnicianOrderAPI = {
         'Authorization': `Bearer ${getAccessToken()}`,
       },
       body: JSON.stringify({ rejectionReason }),
+    });
+  },
+
+  // Approve lab test order
+  approveLabOrder: async (labTestOrderId) => {
+    return apiCall(`api/v1/lab-orders/${labTestOrderId}/approve`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${getAccessToken()}`,
+      },
     });
   },
 };
@@ -303,6 +326,7 @@ export const labTechnicianImagingAPI = {
 };
 
 export default {
+  labTechnicianDashboardAPI,
   labTechnicianOrderAPI,
   labTechnicianResultAPI,
   labTechnicianDiagnosticAPI,

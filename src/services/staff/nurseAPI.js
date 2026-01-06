@@ -83,7 +83,7 @@ export const nurseAuthAPI = {
 export const nurseDashboardAPI = {
   // Lấy dashboard data
   getDashboard: async () => {
-    return apiCall('api/v1/dashboard/nurse', {
+    return apiCall('api/v1/dashboard/nurse/summary', {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${getAccessToken()}`,

@@ -12,7 +12,8 @@ import {
   FiPhone,
   FiDollarSign,
   FiFileText,
-  FiCheckCircle
+  FiCheckCircle,
+  FiRefreshCw
 } from 'react-icons/fi';
 
 const EmergencyEncounterDetailPage = () => {
@@ -22,6 +23,9 @@ const EmergencyEncounterDetailPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [actionLoading, setActionLoading] = useState(null);
+  const [showInvoiceModal, setShowInvoiceModal] = useState(false);
+  const [invoiceData, setInvoiceData] = useState(null);
 
   useEffect(() => {
     fetchEncounterDetail();
@@ -52,10 +56,96 @@ const EmergencyEncounterDetailPage = () => {
     setShowPaymentModal(true);
   };
 
+  // Handle create invoice
+  const handleCreateInvoice = async () => {
+    if (!window.confirm(`Bạn có chắc chắn muốn tạo hóa đơn cho bệnh nhân ${encounter.patientName}?`)) {
+      return;
+    }
+
+    setActionLoading('invoice');
+    try {
+      const response = await financeEmergencyAPI.createEmergencyInvoice(encounter.emergencyEncounterId);
+      
+      if (response && response.invoiceId) {
+        alert(`Tạo hóa đơn thành công!\nSố hóa đơn: ${response.invoiceNumber}\nTổng tiền: ${response.totalAmount.toLocaleString('vi-VN')} VND`);
+        // Refresh encounter data
+        fetchEncounterDetail();
+      } else {
+        alert('Tạo hóa đơn thành công!');
+      }
+    } catch (err) {
+      console.error('Error creating invoice:', err);
+      alert(err.message || 'Không thể tạo hóa đơn');
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
+  // Handle settlement
+  const handleSettlement = async () => {
+    const refundMethod = window.prompt(
+      'Chọn phương thức hoàn tiền:\n- CASH (Tiền mặt)\n- BANK_TRANSFER (Chuyển khoản)\n- VNPAY (VNPay)',
+      'CASH'
+    );
+
+    if (!refundMethod) return;
+
+    if (!['CASH', 'BANK_TRANSFER', 'VNPAY'].includes(refundMethod.toUpperCase())) {
+      alert('Phương thức hoàn tiền không hợp lệ!');
+      return;
+    }
+
+    if (!window.confirm(`Bạn có chắc chắn muốn quyết toán cho bệnh nhân ${encounter.patientName}?`)) {
+      return;
+    }
+
+    setActionLoading('settlement');
+    try {
+      const response = await financeEmergencyAPI.settleEmergencyEncounter(
+        encounter.emergencyEncounterId, 
+        refundMethod.toUpperCase()
+      );
+      
+      if (response && (response.code === 200 || response.code === 201)) {
+        alert('Quyết toán thành công!');
+        // Refresh encounter data
+        fetchEncounterDetail();
+      } else {
+        alert(response?.message || 'Quyết toán thành công!');
+      }
+    } catch (err) {
+      console.error('Error settling encounter:', err);
+      alert(err.message || 'Không thể quyết toán');
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
+  // Handle view invoice
+  const handleViewInvoice = async () => {
+    setActionLoading('view-invoice');
+    try {
+      const response = await financeEmergencyAPI.getEmergencyInvoice(encounter.emergencyEncounterId);
+      
+      if (response && response.data) {
+        setInvoiceData(response.data);
+        setShowInvoiceModal(true);
+      } else {
+        alert('Không tìm thấy hóa đơn cho ca cấp cứu này');
+      }
+    } catch (err) {
+      console.error('Error viewing invoice:', err);
+      alert(err.message || 'Không thể xem hóa đơn');
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
   const handlePaymentSuccess = (response) => {
     alert('Thu tạm ứng thành công!');
     // Refresh encounter data
     fetchEncounterDetail();
+    setShowPaymentModal(false);
   };
 
   if (loading) {
@@ -90,7 +180,51 @@ const EmergencyEncounterDetailPage = () => {
           <FiArrowLeft />
           Quay lại
         </button>
-        <h1>Chi tiết ca cấp cứu</h1>
+        <div className="header-title">
+          <h1>Chi tiết ca cấp cứu</h1>
+          <p>Emergency Encounter ID: {encounter.emergencyEncounterId}</p>
+        </div>
+        <div className="header-actions">
+          <button className="btn-refresh" onClick={fetchEncounterDetail}>
+            <FiRefreshCw /> Làm mới
+          </button>
+        </div>
+      </div>
+
+      {/* Action Buttons Row */}
+      <div className="action-buttons-row">
+        <button 
+          className="btn-advance-payment" 
+          onClick={handleCollectAdvancePayment}
+          disabled={actionLoading === 'advance'}
+        >
+          <FiDollarSign /> 
+          {actionLoading === 'advance' ? 'Đang xử lý...' : 'Thu tạm ứng'}
+        </button>
+        <button 
+          className="btn-view-invoice" 
+          onClick={handleViewInvoice}
+          disabled={actionLoading === 'view-invoice'}
+        >
+          <FiFileText /> 
+          {actionLoading === 'view-invoice' ? 'Đang tải...' : 'Xem hóa đơn'}
+        </button>
+        <button 
+          className="btn-create-invoice" 
+          onClick={handleCreateInvoice}
+          disabled={actionLoading === 'invoice'}
+        >
+          <FiFileText /> 
+          {actionLoading === 'invoice' ? 'Đang xử lý...' : 'Tạo hóa đơn'}
+        </button>
+        <button 
+          className="btn-settlement" 
+          onClick={handleSettlement}
+          disabled={actionLoading === 'settlement'}
+        >
+          <FiCheckCircle /> 
+          {actionLoading === 'settlement' ? 'Đang xử lý...' : 'Quyết toán'}
+        </button>
       </div>
 
       <div className="encounter-content">
@@ -310,7 +444,7 @@ const EmergencyEncounterDetailPage = () => {
       </div>
 
       {/* Action Buttons */}
-      <div className="action-buttons">
+      <div className="legacy-action-buttons" style={{ display: 'none' }}>
         <button className="btn-primary" onClick={handleCollectAdvancePayment}>
           <FiDollarSign />
           Thu tạm ứng
@@ -324,6 +458,161 @@ const EmergencyEncounterDetailPage = () => {
         encounter={encounter}
         onSuccess={handlePaymentSuccess}
       />
+
+      {/* Invoice View Modal */}
+      {showInvoiceModal && invoiceData && (
+        <InvoiceViewModal
+          invoice={invoiceData}
+          onClose={() => {
+            setShowInvoiceModal(false);
+            setInvoiceData(null);
+          }}
+        />
+      )}
+    </div>
+  );
+};
+
+// Invoice View Modal Component
+const InvoiceViewModal = ({ invoice, onClose }) => {
+  const formatCurrency = (amount) => {
+    if (!amount && amount !== 0) return '-';
+    return `${amount.toLocaleString('vi-VN')} VND`;
+  };
+
+  const formatDate = (dateString) => {
+    if (!dateString) return '-';
+    const date = new Date(dateString);
+    return date.toLocaleDateString('vi-VN');
+  };
+
+  const getStatusBadge = (status) => {
+    const statusMap = {
+      'ISSUED': { label: 'Đã phát hành', className: 'status-issued' },
+      'PARTIAL_PAID': { label: 'Thanh toán một phần', className: 'status-partial' },
+      'PAID': { label: 'Đã thanh toán', className: 'status-paid' },
+      'CANCELLED': { label: 'Đã hủy', className: 'status-cancelled' },
+      'PARTIALLY_PAID': { label: 'Thanh toán một phần', className: 'status-partial' },
+    };
+    
+    const statusInfo = statusMap[status] || { label: status, className: 'status-default' };
+    return <span className={`invoice-status-badge ${statusInfo.className}`}>{statusInfo.label}</span>;
+  };
+
+  return (
+    <div className="modal-overlay">
+      <div className="modal-content invoice-view-modal">
+        <div className="modal-header">
+          <h3>
+            <FiFileText />
+            Chi tiết hóa đơn
+          </h3>
+          <button className="btn-close" onClick={onClose}>×</button>
+        </div>
+
+        <div className="modal-body">
+          <div className="invoice-header-info">
+            <div className="invoice-number">
+              <h4>Số hóa đơn: {invoice.invoiceNumber}</h4>
+              {getStatusBadge(invoice.status)}
+              {invoice.isOverdue && (
+                <span className="overdue-badge">⚠️ Quá hạn</span>
+              )}
+            </div>
+          </div>
+
+          <div className="invoice-details-grid">
+            <div className="detail-section">
+              <h5>Thông tin bệnh nhân</h5>
+              <div className="detail-item">
+                <label>Tên bệnh nhân:</label>
+                <span>{invoice.patientName}</span>
+              </div>
+              <div className="detail-item">
+                <label>Patient ID:</label>
+                <span>{invoice.patientId}</span>
+              </div>
+              <div className="detail-item">
+                <label>Encounter ID:</label>
+                <span>{invoice.encounterId}</span>
+              </div>
+            </div>
+
+            <div className="detail-section">
+              <h5>Thông tin thanh toán</h5>
+              <div className="detail-item">
+                <label>Tổng tiền:</label>
+                <span className="amount-total">{formatCurrency(invoice.totalAmount)}</span>
+              </div>
+              <div className="detail-item">
+                <label>Đã thanh toán:</label>
+                <span className="amount-paid">{formatCurrency(invoice.amountPaid)}</span>
+              </div>
+              <div className="detail-item">
+                <label>Còn lại:</label>
+                <span className="amount-unpaid">{formatCurrency(invoice.unpaidAmount)}</span>
+              </div>
+              <div className="detail-item">
+                <label>Trạng thái thanh toán:</label>
+                <span>{invoice.paymentStatus}</span>
+              </div>
+            </div>
+
+            <div className="detail-section">
+              <h5>Thông tin bảo hiểm</h5>
+              <div className="detail-item">
+                <label>Số thẻ BHYT:</label>
+                <span>{invoice.healthInsuranceNumber || 'Không có'}</span>
+              </div>
+              <div className="detail-item">
+                <label>BHYT chi trả:</label>
+                <span>{formatCurrency(invoice.insuranceCoveredAmount)}</span>
+              </div>
+              <div className="detail-item">
+                <label>Bệnh nhân trả:</label>
+                <span>{formatCurrency(invoice.patientResponsibleAmount)}</span>
+              </div>
+              <div className="detail-item">
+                <label>Trạng thái BHYT:</label>
+                <span>{invoice.insuranceClaimStatus}</span>
+              </div>
+            </div>
+
+            <div className="detail-section">
+              <h5>Thông tin khác</h5>
+              <div className="detail-item">
+                <label>Ngày phát hành:</label>
+                <span>{formatDate(invoice.issueDate)}</span>
+              </div>
+              <div className="detail-item">
+                <label>Ngày đến hạn:</label>
+                <span>{formatDate(invoice.dueDate)}</span>
+              </div>
+              <div className="detail-item">
+                <label>Người tạo:</label>
+                <span>{invoice.createdByEmployeeName}</span>
+              </div>
+              <div className="detail-item">
+                <label>Cập nhật cuối:</label>
+                <span>{invoice.updatedByEmployeeName}</span>
+              </div>
+            </div>
+          </div>
+
+          {invoice.notes && (
+            <div className="invoice-notes">
+              <h5>Ghi chú</h5>
+              <p>{invoice.notes}</p>
+            </div>
+          )}
+        </div>
+
+        <div className="modal-footer">
+          <button className="btn-close-modal" onClick={onClose}>
+            Đóng
+          </button>
+        </div>
+      </div>
     </div>
   );
 };

@@ -83,7 +83,7 @@ export const receptionistAuthAPI = {
 export const receptionistDashboardAPI = {
   // Lấy thống kê dashboard
   getDashboard: async () => {
-    return apiCall('api/v1/dashboard/receptionist', {
+    return apiCall('api/v1/dashboard/receptionist/summary', {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${getAccessToken()}`,

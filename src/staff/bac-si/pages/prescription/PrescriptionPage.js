@@ -20,6 +20,7 @@ const PrescriptionPage = () => {
     const [showCreatePrescriptionModal, setShowCreatePrescriptionModal] = useState(false);
     const [showPrescriptionDetailModal, setShowPrescriptionDetailModal] = useState(false);
     const [showReplacePrescriptionModal, setShowReplacePrescriptionModal] = useState(false);
+    const [showMedicineSelectionModal, setShowMedicineSelectionModal] = useState(false);
     const [selectedPrescription, setSelectedPrescription] = useState(null);
     const [prescriptionToReplace, setPrescriptionToReplace] = useState(null);
     const [replacementChain, setReplacementChain] = useState([]);
@@ -52,23 +53,11 @@ const PrescriptionPage = () => {
         notes: ''
     });
 
-    // Medicine search filter
+    // Medicine selection modal state
     const [medicineSearchTerm, setMedicineSearchTerm] = useState('');
-
-    // Load medicines on component mount
-    useEffect(() => {
-        const fetchMedicines = async () => {
-            try {
-                const response = await medicineAPI.getMedicines();
-                if (response && response.data.content) {
-                    setMedicines(response.data.content);
-                }
-            } catch (err) {
-                console.error('Error loading medicines:', err);
-            }
-        };
-        fetchMedicines();
-    }, []);
+    const [medicineCurrentPage, setMedicineCurrentPage] = useState(0);
+    const [medicineTotalPages, setMedicineTotalPages] = useState(0);
+    const [loadingMedicines, setLoadingMedicines] = useState(false);
 
     // Auto-load encounter if encounterId is passed via navigation state
     useEffect(() => {
@@ -80,6 +69,47 @@ const PrescriptionPage = () => {
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [location.state]);
+
+    // Load medicines for selection modal
+    const loadMedicines = async (page = 0, search = '') => {
+        try {
+            setLoadingMedicines(true);
+            const response = await medicineAPI.getMedicines(search, page, 10);
+            if (response && response.data) {
+                setMedicines(response.data.content || []);
+                setMedicineTotalPages(response.data.totalPages || 0);
+                setMedicineCurrentPage(page);
+            }
+        } catch (err) {
+            console.error('Error loading medicines:', err);
+            setMedicines([]);
+        } finally {
+            setLoadingMedicines(false);
+        }
+    };
+
+    const handleOpenMedicineSelection = () => {
+        setShowMedicineSelectionModal(true);
+        setMedicineSearchTerm('');
+        setMedicineCurrentPage(0);
+        loadMedicines(0, '');
+    };
+
+    const handleMedicineSearch = () => {
+        loadMedicines(0, medicineSearchTerm);
+    };
+
+    const handleMedicinePageChange = (newPage) => {
+        loadMedicines(newPage, medicineSearchTerm);
+    };
+
+    const handleSelectMedicine = (medicine) => {
+        setCurrentPrescriptionItem(prev => ({
+            ...prev,
+            medicineId: medicine.medicineId
+        }));
+        setShowMedicineSelectionModal(false);
+    };
 
     const loadEncounterById = async (id) => {
         if (!id || !id.trim()) return;
@@ -144,7 +174,6 @@ const PrescriptionPage = () => {
             quantity: '',
             notes: ''
         });
-        setMedicineSearchTerm('');
         setShowCreatePrescriptionModal(true);
     };
 
@@ -441,15 +470,10 @@ const PrescriptionPage = () => {
         return statusColors[status] || '#6b7280';
     };
 
-    // Filter medicines based on search term
-    const filteredMedicines = medicines.filter(medicine => {
-        if (!medicineSearchTerm) return true;
-        const searchLower = medicineSearchTerm.toLowerCase();
-        return (
-            medicine.medicineName?.toLowerCase().includes(searchLower) ||
-            medicine.sku?.toLowerCase().includes(searchLower)
-        );
-    });
+    const getSelectedMedicineName = () => {
+        const medicine = medicines.find(m => m.medicineId === parseInt(currentPrescriptionItem.medicineId));
+        return medicine ? medicine.medicineName : '';
+    };
 
     return (
         <div className="prescription-page">
@@ -903,37 +927,23 @@ const PrescriptionPage = () => {
                                     <h4>Thêm thuốc vào đơn</h4>
                                     <div className="form-grid">
                                         <div className="form-group">
-                                            <label>Tìm kiếm thuốc</label>
-                                            <div className="medicine-search-wrapper">
-                                                <FiSearch className="search-icon-small" />
+                                            <label>Thuốc <span className="required">*</span></label>
+                                            <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
                                                 <input
                                                     type="text"
-                                                    placeholder="Tìm theo tên thuốc hoặc mã SKU..."
-                                                    value={medicineSearchTerm}
-                                                    onChange={(e) => setMedicineSearchTerm(e.target.value)}
-                                                    className="medicine-search-input"
+                                                    value={getSelectedMedicineName()}
+                                                    placeholder="Chưa chọn thuốc"
+                                                    readOnly
+                                                    style={{ flex: 1, backgroundColor: '#f3f4f6', cursor: 'not-allowed' }}
                                                 />
+                                                <button
+                                                    type="button"
+                                                    className="btn-select-medicine"
+                                                    onClick={handleOpenMedicineSelection}
+                                                >
+                                                    <FiSearch /> Chọn thuốc
+                                                </button>
                                             </div>
-                                        </div>
-                                        <div className="form-group">
-                                            <label>Thuốc <span className="required">*</span></label>
-                                            <select
-                                                name="medicineId"
-                                                value={currentPrescriptionItem.medicineId}
-                                                onChange={handlePrescriptionItemChange}
-                                            >
-                                                <option value="">-- Chọn thuốc --</option>
-                                                {filteredMedicines.map((medicine) => (
-                                                    <option key={medicine.medicineId} value={medicine.medicineId}>
-                                                        {medicine.medicineName} {medicine.sku ? `(${medicine.sku})` : ''}
-                                                    </option>
-                                                ))}
-                                            </select>
-                                            {medicineSearchTerm && (
-                                                <small className="medicine-count-info">
-                                                    Hiển thị {filteredMedicines.length} / {medicines.length} thuốc
-                                                </small>
-                                            )}
                                         </div>
                                         <div className="form-group">
                                             <label>Liều lượng <span className="required">*</span></label>
@@ -1270,6 +1280,95 @@ const PrescriptionPage = () => {
                                     </button>
                                 </div>
                             </form>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Medicine Selection Modal */}
+            {showMedicineSelectionModal && (
+                <div className="modal-overlay" onClick={() => setShowMedicineSelectionModal(false)}>
+                    <div className="modal-content medicine-selection-modal" onClick={(e) => e.stopPropagation()}>
+                        <div className="modal-header">
+                            <h3>Chọn thuốc</h3>
+                            <button className="modal-close" onClick={() => setShowMedicineSelectionModal(false)}>
+                                <FiX />
+                            </button>
+                        </div>
+                        <div className="modal-body">
+                            <div className="medicine-search-section">
+                                <div className="search-input-group">
+                                    <FiSearch className="search-icon" />
+                                    <input
+                                        type="text"
+                                        placeholder="Tìm theo tên thuốc..."
+                                        value={medicineSearchTerm}
+                                        onChange={(e) => setMedicineSearchTerm(e.target.value)}
+                                        onKeyPress={(e) => e.key === 'Enter' && handleMedicineSearch()}
+                                        className="search-input"
+                                    />
+                                </div>
+                                <button className="btn-search-medicine" onClick={handleMedicineSearch}>
+                                    Tìm kiếm
+                                </button>
+                            </div>
+
+                            {loadingMedicines ? (
+                                <div className="loading-state-small">
+                                    <div className="spinner-small"></div>
+                                    <p>Đang tải danh sách thuốc...</p>
+                                </div>
+                            ) : medicines.length === 0 ? (
+                                <div className="empty-state-small">
+                                    <FiPackage />
+                                    <p>Không tìm thấy thuốc nào</p>
+                                </div>
+                            ) : (
+                                <>
+                                    <div className="medicines-list">
+                                        {medicines.map((medicine) => (
+                                            <div key={medicine.medicineId} className="medicine-item">
+                                                <div className="medicine-info">
+                                                    <FiPackage className="medicine-icon" />
+                                                    <div className="medicine-details">
+                                                        <strong>{medicine.medicineName}</strong>
+                                                        {medicine.sku && <span className="medicine-sku">SKU: {medicine.sku}</span>}
+                                                        {medicine.unit && <span className="medicine-unit">Đơn vị: {medicine.unit}</span>}
+                                                    </div>
+                                                </div>
+                                                <button
+                                                    className="btn-select"
+                                                    onClick={() => handleSelectMedicine(medicine)}
+                                                >
+                                                    Chọn
+                                                </button>
+                                            </div>
+                                        ))}
+                                    </div>
+
+                                    {medicineTotalPages > 1 && (
+                                        <div className="pagination">
+                                            <button
+                                                className="pagination-btn"
+                                                onClick={() => handleMedicinePageChange(medicineCurrentPage - 1)}
+                                                disabled={medicineCurrentPage === 0}
+                                            >
+                                                Trang trước
+                                            </button>
+                                            <span className="pagination-info">
+                                                Trang {medicineCurrentPage + 1} / {medicineTotalPages}
+                                            </span>
+                                            <button
+                                                className="pagination-btn"
+                                                onClick={() => handleMedicinePageChange(medicineCurrentPage + 1)}
+                                                disabled={medicineCurrentPage >= medicineTotalPages - 1}
+                                            >
+                                                Trang sau
+                                            </button>
+                                        </div>
+                                    )}
+                                </>
+                            )}
                         </div>
                     </div>
                 </div>
