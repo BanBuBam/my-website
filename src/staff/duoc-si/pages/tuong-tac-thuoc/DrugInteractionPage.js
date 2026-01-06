@@ -23,8 +23,8 @@ const DrugInteractionPage = () => {
 
   // Medicine search
   const [checkSearchTerm, setCheckSearchTerm] = useState('');
-  const [checkAllMedicines, setCheckAllMedicines] = useState([]); // All medicines for CHECK tab
-  const [checkFilteredMedicines, setCheckFilteredMedicines] = useState([]); // Filtered medicines for CHECK tab
+  const [checkAllMedicines, setCheckAllMedicines] = useState([]); 
+  const [checkFilteredMedicines, setCheckFilteredMedicines] = useState([]); 
   const [checkLoadingMedicines, setCheckLoadingMedicines] = useState(false);
   const [selectedMedicines, setSelectedMedicines] = useState([]);
   const [checkResult, setCheckResult] = useState(null);
@@ -39,27 +39,29 @@ const DrugInteractionPage = () => {
   // Form Create/Edit
   const [showFormModal, setShowFormModal] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
+
+  // --- UPDATED: FORM DATA STATE WITH CORRECT ENUMS ---
   const [formData, setFormData] = useState({
     interactionId: null,
     medicine1Id: '',
     medicine1Name: '',
     medicine2Id: '',
     medicine2Name: '',
-    interactionType: 'DRUG_DRUG',
-    severityLevel: 'MODERATE',
+    interactionType: 'PHARMACOKINETIC', // Enum chuẩn
+    severityLevel: 'MODERATE',          // Enum chuẩn
     clinicalEffect: '',
     mechanism: '',
     managementRecommendation: '',
     alternativeTherapy: '',
-    onsetTime: '',
-    documentationLevel: '',
+    onsetTime: 'RAPID',                 // Enum chuẩn (RAPID, DELAYED, VARIABLE)
+    documentationLevel: 'PROBABLE',     // Enum chuẩn (ESTABLISHED, PROBABLE...)
     isActive: true
   });
 
-  // Search medicine in form - NEW: Load all medicines and filter locally
+  // Search medicine in form
   const [medSearchTerm, setMedSearchTerm] = useState('');
-  const [allMedicines, setAllMedicines] = useState([]); // Store all medicines
-  const [filteredMedicines, setFilteredMedicines] = useState([]); // Filtered list for display
+  const [allMedicines, setAllMedicines] = useState([]); 
+  const [filteredMedicines, setFilteredMedicines] = useState([]); 
   const [loadingMedicines, setLoadingMedicines] = useState(false);
   const [searchingFor, setSearchingFor] = useState(null);
 
@@ -71,8 +73,8 @@ const DrugInteractionPage = () => {
   // ==================== STATE FOR DATA & TRASH & IMPORT ====================
   const [showDataModal, setShowDataModal] = useState(false);
   const [showImportModal, setShowImportModal] = useState(false);
-  const [dataTab, setDataTab] = useState('STATS'); // STATS, LIST
-  const [dataFilter, setDataFilter] = useState('ACTIVE'); // ACTIVE, DELETED
+  const [dataTab, setDataTab] = useState('STATS'); 
+  const [dataFilter, setDataFilter] = useState('ACTIVE'); 
   const [softDeleteStats, setSoftDeleteStats] = useState(null);
   const [paginatedList, setPaginatedList] = useState([]);
   const [page, setPage] = useState(0);
@@ -116,7 +118,6 @@ const DrugInteractionPage = () => {
     setPatientSearchResults([]);
   };
 
-  // Load all medicines for CHECK tab when component mounts
   useEffect(() => {
     loadCheckMedicines();
   }, []);
@@ -126,9 +127,8 @@ const DrugInteractionPage = () => {
     try {
       const res = await pharmacistAPI.medicineAPI.getMedicines('', 0, 1000, ['medicineName,asc']);
       if (res?.status === 'OK' && res.data?.content) {
-        const medicines = res.data.content;
-        setCheckAllMedicines(medicines);
-        setCheckFilteredMedicines(medicines);
+        setCheckAllMedicines(res.data.content);
+        setCheckFilteredMedicines(res.data.content);
       } else if (res?.data && Array.isArray(res.data)) {
         setCheckAllMedicines(res.data);
         setCheckFilteredMedicines(res.data);
@@ -140,7 +140,6 @@ const DrugInteractionPage = () => {
     }
   };
 
-  // Filter medicines based on search term for CHECK tab
   useEffect(() => {
     if (!checkSearchTerm.trim()) {
       setCheckFilteredMedicines(checkAllMedicines);
@@ -232,23 +231,23 @@ const DrugInteractionPage = () => {
       medicine1Name: '',
       medicine2Id: '',
       medicine2Name: '',
-      interactionType: 'DRUG_DRUG',
+      interactionType: 'PHARMACOKINETIC',
       severityLevel: 'MODERATE',
       clinicalEffect: '',
       mechanism: '',
       managementRecommendation: '',
       alternativeTherapy: '',
-      onsetTime: '',
-      documentationLevel: '',
+      onsetTime: 'RAPID',
+      documentationLevel: 'PROBABLE',
       isActive: true
     });
     setMedSearchTerm('');
     setShowFormModal(true);
-    loadAllMedicines(); // Load medicines when opening form
+    loadAllMedicines();
   };
+
   const handleOpenEdit = (item) => {
     setIsEditing(true);
-    // Hỗ trợ cả format cũ (medicine1Name) và format mới (medicine1.medicineName)
     const med1Name = item.medicine1?.medicineName || item.medicine1Name || '';
     const med2Name = item.medicine2?.medicineName || item.medicine2Name || '';
     setFormData({
@@ -257,20 +256,22 @@ const DrugInteractionPage = () => {
       medicine1Name: med1Name,
       medicine2Id: item.medicine2Id,
       medicine2Name: med2Name,
-      interactionType: item.interactionType || 'DRUG_DRUG',
+      interactionType: item.interactionType || 'PHARMACOKINETIC',
       severityLevel: item.severityLevel,
       clinicalEffect: item.clinicalEffect || '',
       mechanism: item.mechanism || '',
       managementRecommendation: item.managementRecommendation || '',
       alternativeTherapy: item.alternativeTherapy || '',
-      onsetTime: item.onsetTime || '',
-      documentationLevel: item.documentationLevel || '',
+      onsetTime: item.onsetTime || 'RAPID',
+      documentationLevel: item.documentationLevel || 'PROBABLE',
       isActive: item.isActive !== undefined ? item.isActive : true
     });
     setMedSearchTerm('');
     setShowFormModal(true);
-    loadAllMedicines(); // Load medicines when opening form
+    loadAllMedicines();
   };
+
+  // --- UPDATED: HANDLESUBMIT TO MATCH JSON PAYLOAD ---
   const handleSubmit = async () => {
     // Validation
     if (!formData.medicine1Id || !formData.medicine2Id) {
@@ -284,17 +285,18 @@ const DrugInteractionPage = () => {
 
     setLoading(true);
     try {
+      // Payload structure matches exactly the requirements
       const payload = {
         medicine1Id: parseInt(formData.medicine1Id),
         medicine2Id: parseInt(formData.medicine2Id),
         interactionType: formData.interactionType,
         severityLevel: formData.severityLevel,
         clinicalEffect: formData.clinicalEffect.trim(),
-        mechanism: formData.mechanism?.trim() || undefined,
-        managementRecommendation: formData.managementRecommendation?.trim() || undefined,
-        alternativeTherapy: formData.alternativeTherapy?.trim() || undefined,
-        onsetTime: formData.onsetTime || undefined,
-        documentationLevel: formData.documentationLevel || undefined,
+        mechanism: formData.mechanism?.trim() || null, // null or undefined is fine usually, keeping logic simple
+        managementRecommendation: formData.managementRecommendation?.trim() || null,
+        alternativeTherapy: formData.alternativeTherapy?.trim() || null,
+        onsetTime: formData.onsetTime,
+        documentationLevel: formData.documentationLevel,
         isActive: formData.isActive
       };
 
@@ -329,11 +331,9 @@ const DrugInteractionPage = () => {
     try {
       const res = await pharmacistAPI.medicineAPI.getMedicines('', 0, 1000, ['medicineName,asc']);
       if (res?.status === 'OK' && res.data?.content) {
-        const medicines = res.data.content;
-        setAllMedicines(medicines);
-        setFilteredMedicines(medicines);
+        setAllMedicines(res.data.content);
+        setFilteredMedicines(res.data.content);
       } else if (res?.data && Array.isArray(res.data)) {
-        // Fallback if response structure is different
         setAllMedicines(res.data);
         setFilteredMedicines(res.data);
       }
@@ -345,7 +345,6 @@ const DrugInteractionPage = () => {
     }
   };
 
-  // Filter medicines based on search term
   useEffect(() => {
     if (!medSearchTerm.trim()) {
       setFilteredMedicines(allMedicines);
@@ -422,7 +421,6 @@ const DrugInteractionPage = () => {
   };
 
   const getSeverityBadge = (level, item = null) => {
-    // Nếu có item với severityDisplayText và severityColor từ API, dùng nó
     if (item && item.severityDisplayText && item.severityColor) {
       return (
         <span className="severity-badge" style={{
@@ -434,7 +432,6 @@ const DrugInteractionPage = () => {
         </span>
       );
     }
-    // Fallback theo level
     switch (level) {
       case 'CONTRAINDICATED': return <span className="severity-badge contraindicated"><FaTimes/> Chống chỉ định</span>;
       case 'MAJOR': return <span className="severity-badge major"><FaExclamationTriangle/> Nghiêm trọng</span>;
@@ -442,6 +439,18 @@ const DrugInteractionPage = () => {
       case 'MINOR': return <span className="severity-badge minor"><FaCheckCircle/> Nhẹ</span>;
       default: return <span className="severity-badge unknown">{level}</span>;
     }
+  };
+
+  // --- UPDATED: Helper function to map new interaction types to text ---
+  const getInteractionTypeText = (type) => {
+      switch(type) {
+          case 'PHARMACOKINETIC': return 'Dược động học';
+          case 'PHARMACODYNAMIC': return 'Dược lực học';
+          case 'PHARMACEUTICAL': return 'Tương kỵ hóa lý';
+          case 'SYNERGISTIC': return 'Hiệp đồng';
+          case 'ANTAGONISTIC': return 'Đối kháng';
+          default: return type || '-';
+      }
   };
 
   // Helper: Lấy tên thuốc từ item (hỗ trợ cả format cũ và mới)
@@ -462,7 +471,6 @@ const DrugInteractionPage = () => {
         <button className={`tab-button ${activeTab==='STATS'?'active':''}`} onClick={()=>setActiveTab('STATS')}><FaChartLine/> Thống kê & Báo cáo</button>
       </div>
 
-      {/* TAB 1, 2, 3 giữ nguyên logic render cũ... */}
       {activeTab === 'CHECK' && (
         <div className="checker-layout">
           <div className="panel left-panel">
@@ -711,8 +719,7 @@ const DrugInteractionPage = () => {
                         color: item.interactionType === 'PHARMACODYNAMIC' ? '#1890ff' : '#52c41a',
                         padding: '2px 8px', borderRadius: '4px', fontSize: '12px'
                       }}>
-                        {item.interactionType === 'PHARMACODYNAMIC' ? 'Dược lực học' :
-                         item.interactionType === 'PHARMACOKINETIC' ? 'Dược động học' : item.interactionType || '-'}
+                        {getInteractionTypeText(item.interactionType)}
                       </span>
                     </td>
                     <td>{getSeverityBadge(item.severityLevel, item)}</td>
@@ -803,14 +810,14 @@ const DrugInteractionPage = () => {
                     color: selectedInteractionDetail.interactionType === 'PHARMACODYNAMIC' ? '#1890ff' : '#52c41a',
                     padding: '2px 8px', borderRadius: '4px', fontSize: '12px', marginLeft:'5px'
                   }}>
-                    {selectedInteractionDetail.interactionType === 'PHARMACODYNAMIC' ? 'Dược lực học' :
-                     selectedInteractionDetail.interactionType === 'PHARMACOKINETIC' ? 'Dược động học' : selectedInteractionDetail.interactionType || '-'}
+                    {getInteractionTypeText(selectedInteractionDetail.interactionType)}
                   </span>
                 </div>
                 <div className="detail-row"><span className="label" style={{fontWeight:'600'}}>Khởi phát:</span>
                   <span style={{marginLeft:'5px'}}>
                     {selectedInteractionDetail.onsetTime === 'RAPID' ? '⚡ Nhanh' :
-                     selectedInteractionDetail.onsetTime === 'DELAYED' ? '⏰ Chậm' : selectedInteractionDetail.onsetTime || '-'}
+                     selectedInteractionDetail.onsetTime === 'DELAYED' ? '⏰ Chậm' : 
+                     selectedInteractionDetail.onsetTime === 'VARIABLE' ? '🔄 Thay đổi' : selectedInteractionDetail.onsetTime || '-'}
                   </span>
                 </div>
                 <div className="detail-row"><span className="label" style={{fontWeight:'600'}}>Tài liệu:</span>
@@ -841,6 +848,8 @@ const DrugInteractionPage = () => {
           </div>
         </div>
       )}
+      
+      {/* --- UPDATED FORM MODAL WITH CORRECT SELECT OPTIONS --- */}
       {showFormModal && (
         <div className="modal-overlay">
           <div className="modal-content large-form">
@@ -989,21 +998,22 @@ const DrugInteractionPage = () => {
 
               <h4 className="form-section-title" style={{marginTop: '25px'}}>2. Thông tin tương tác</h4>
 
-              {/* Interaction Type */}
+              {/* Interaction Type - Corrected Enums */}
               <div className="form-group">
                 <label>Loại tương tác <span className="req">*</span></label>
                 <select
                   value={formData.interactionType}
                   onChange={e=>setFormData({...formData, interactionType:e.target.value})}
                 >
-                  <option value="DRUG_DRUG">Tương tác thuốc-thuốc</option>
-                  <option value="DRUG_FOOD">Tương tác thuốc-thức ăn</option>
-                  <option value="DRUG_DISEASE">Tương tác thuốc-bệnh</option>
-                  <option value="DRUG_LAB">Tương tác thuốc-xét nghiệm</option>
+                  <option value="PHARMACOKINETIC">Dược động học (Pharmacokinetic)</option>
+                  <option value="PHARMACODYNAMIC">Dược lực học (Pharmacodynamic)</option>
+                  <option value="PHARMACEUTICAL">Tương kỵ hóa lý (Pharmaceutical)</option>
+                  <option value="SYNERGISTIC">Hiệp đồng (Synergistic)</option>
+                  <option value="ANTAGONISTIC">Đối kháng (Antagonistic)</option>
                 </select>
               </div>
 
-              {/* Severity Level */}
+              {/* Severity Level - Corrected Enums */}
               <div className="form-group">
                 <label>Mức độ nghiêm trọng <span className="req">*</span></label>
                 <select value={formData.severityLevel} onChange={e=>setFormData({...formData, severityLevel:e.target.value})}>
@@ -1058,32 +1068,31 @@ const DrugInteractionPage = () => {
                 />
               </div>
 
-              {/* Onset Time */}
+              {/* Onset Time - Corrected Enums */}
               <div className="form-group">
                 <label>Thời gian khởi phát (Tùy chọn)</label>
                 <select
                   value={formData.onsetTime}
                   onChange={e=>setFormData({...formData, onsetTime:e.target.value})}
                 >
-                  <option value="">-- Chọn --</option>
-                  <option value="RAPID">Nhanh</option>
-                  <option value="DELAYED">Chậm</option>
-                  <option value="UNKNOWN">Không rõ</option>
+                  <option value="RAPID">Nhanh (Rapid)</option>
+                  <option value="DELAYED">Chậm (Delayed)</option>
+                  <option value="VARIABLE">Thay đổi (Variable)</option>
                 </select>
               </div>
 
-              {/* Documentation Level */}
+              {/* Documentation Level - Corrected Enums */}
               <div className="form-group">
                 <label>Mức độ tài liệu (Tùy chọn)</label>
                 <select
                   value={formData.documentationLevel}
                   onChange={e=>setFormData({...formData, documentationLevel:e.target.value})}
                 >
-                  <option value="">-- Chọn --</option>
-                  <option value="EXCELLENT">Xuất sắc</option>
-                  <option value="GOOD">Tốt</option>
-                  <option value="FAIR">Khá</option>
-                  <option value="POOR">Kém</option>
+                  <option value="ESTABLISHED">Thiết lập (Established)</option>
+                  <option value="PROBABLE">Có thể (Probable)</option>
+                  <option value="SUSPECTED">Nghi ngờ (Suspected)</option>
+                  <option value="POSSIBLE">Khả năng (Possible)</option>
+                  <option value="UNLIKELY">Ít khả năng (Unlikely)</option>
                 </select>
               </div>
 
@@ -1110,7 +1119,7 @@ const DrugInteractionPage = () => {
       )}
       {showImportModal && (<div className="modal-overlay"><div className="modal-content large-form"><div className="modal-header"><h2>Import JSON</h2><button className="close-btn" onClick={()=>setShowImportModal(false)}>&times;</button></div><div className="modal-body"><textarea rows="10" style={{width:'100%', padding:'10px', border:'1px solid #ddd', borderRadius:'4px', fontFamily:'monospace'}} value={importJson} onChange={e=>setImportJson(e.target.value)} placeholder='[{"medicine1Id": 1, "medicine2Id": 5...}]'/><div className="form-actions"><button className="btn-cancel" onClick={()=>setShowImportModal(false)}>Hủy</button><button className="btn-save" onClick={handleImport} disabled={loading}><FaFileImport/> Import</button></div></div></div></div>)}
       
-      {/* MODAL DATA & TRASH (UPDATED FOR JSON STRUCTURE) */}
+      {/* MODAL DATA & TRASH */}
       {showDataModal && (
         <div className="modal-overlay">
           <div className="modal-content large-modal">
@@ -1124,22 +1133,18 @@ const DrugInteractionPage = () => {
                 <button className={`tab-btn ${dataTab==='LIST'?'active':''}`} onClick={()=>{setDataTab('LIST'); fetchPaginatedList(0);}}>Danh sách Dữ liệu</button>
               </div>
               <div className="tab-content">
-                {/* TAB STATS: HIỂN THỊ THEO CHIỀU DỌC, LABEL SỐ */}
                 {dataTab === 'STATS' && softDeleteStats && (
                   <div className="stats-dashboard" style={{gap: '15px'}}>
-                    {/* Card Active */}
                     <div className="stat-card active" style={{display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', textAlign:'center'}}>
                       <h4>Active (Đang hoạt động)</h4>
                       <h3 style={{fontSize:'36px', margin:'10px 0'}}>{softDeleteStats.active}</h3>
                     </div>
 
-                    {/* Card Deleted */}
                     <div className="stat-card warning" style={{display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', textAlign:'center'}}>
                       <h4>Deleted (Đã xóa)</h4>
                       <h3 style={{fontSize:'36px', margin:'10px 0', color:'#fff'}}>{softDeleteStats.deleted}</h3>
                     </div>
 
-                    {/* Card Total */}
                     <div className="stat-card total" style={{display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', textAlign:'center'}}>
                       <h4>Total (Tổng cộng)</h4>
                       <h3 style={{fontSize:'36px', margin:'10px 0'}}>{softDeleteStats.total}</h3>
@@ -1167,8 +1172,7 @@ const DrugInteractionPage = () => {
                                 backgroundColor: item.interactionType === 'PHARMACODYNAMIC' ? '#e6f7ff' : '#f6ffed',
                                 color: item.interactionType === 'PHARMACODYNAMIC' ? '#1890ff' : '#52c41a'
                               }}>
-                                {item.interactionType === 'PHARMACODYNAMIC' ? 'Dược lực' :
-                                 item.interactionType === 'PHARMACOKINETIC' ? 'Dược động' : item.interactionType || '-'}
+                                {getInteractionTypeText(item.interactionType)}
                               </span>
                             </td>
                             <td>{getSeverityBadge(item.severityLevel, item)}</td>

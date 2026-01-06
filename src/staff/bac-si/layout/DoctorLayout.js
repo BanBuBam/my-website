@@ -222,7 +222,7 @@ const DoctorLayout = () => {
                         </ul>
                     </div>
 
-                    {/* Kết quả & Hồ sơ */}
+                    {/* Kết quả & Hồ sơ
                     <div className="nav-category">
                         <div className="category-header">Kết quả & Hồ sơ</div>
                         <ul>
@@ -232,7 +232,7 @@ const DoctorLayout = () => {
                                     <span>Kết quả cận lâm sàng</span>
                                 </NavLink>
                             </li>
-                            {/* <li>
+                            <li>
                                 <NavLink to="/staff/bac-si/ho-so-benh-an">
                                     <FiFolder />
                                     <span>//Hồ sơ bệnh án</span>
@@ -243,9 +243,9 @@ const DoctorLayout = () => {
                                     <FiClock />
                                     <span>//Lịch sử khám bệnh</span>
                                 </NavLink>
-                            </li> */}
+                            </li>
                         </ul>
-                    </div>
+                    </div> */}
 
                     {/* Phẫu thuật/Thủ thuật */}
                     {/* <div className="nav-category">
@@ -268,7 +268,7 @@ const DoctorLayout = () => {
 
                     
 
-                    {/* Báo cáo */}
+                    {/* Báo cáo
                     <div className="nav-category">
                         <div className="category-header">Báo cáo</div>
                         <ul>
@@ -285,7 +285,7 @@ const DoctorLayout = () => {
                                 </NavLink>
                             </li>
                         </ul>
-                    </div>
+                    </div> */}
                 </nav>
             </aside>
             <main className="doctor-content">

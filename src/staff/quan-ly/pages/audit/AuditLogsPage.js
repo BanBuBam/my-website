@@ -453,7 +453,7 @@ const AuditLogsPage = () => {
                 <div className="header-left">
                     <FiFileText className="page-icon" />
                     <div>
-                        <h1>Nhật ký Kiểm toán</h1>
+                        <h1>Nhật ký hoạt động</h1>
                         <p>Theo dõi và kiểm tra lịch sử hoạt động hệ thống</p>
                     </div>
                 </div>
