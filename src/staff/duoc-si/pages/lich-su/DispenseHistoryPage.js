@@ -108,12 +108,12 @@ const DispenseHistoryPage = () => {
 
         // API: POST /api/v1/prescriptions/{prescriptionId}/items/{itemId}/return
         // prescriptionId = from selectedPrescription (the parent prescription)
-        // itemId = medicine.medicineId
+        // itemId = medicine.prescriptionItemId (NOT medicineId)
         const actualPrescriptionId = prescriptionId;
-        const itemId = medicine.medicineId;
+        const itemId = medicine.prescriptionItemId;
 
         console.log('prescriptionId:', actualPrescriptionId);
-        console.log('itemId:', itemId);
+        console.log('itemId (prescriptionItemId):', itemId);
 
         if (!actualPrescriptionId) {
             alert('❌ Lỗi: Không tìm thấy ID của đơn thuốc. Vui lòng thử lại.');
@@ -122,8 +122,8 @@ const DispenseHistoryPage = () => {
         }
 
         if (!itemId) {
-            alert('❌ Lỗi: Không tìm thấy ID của thuốc. Vui lòng thử lại.');
-            console.error('Missing itemId (medicineId) for medicine:', medicine);
+            alert('❌ Lỗi: Không tìm thấy ID của item trong đơn thuốc. Vui lòng thử lại.');
+            console.error('Missing itemId (prescriptionItemId) for medicine:', medicine);
             return;
         }
 
@@ -389,6 +389,7 @@ const DispenseHistoryPage = () => {
                                 <thead>
                                     <tr>
                                         <th>STT</th>
+                                        <th>ID Item</th>
                                         <th>Mã thuốc</th>
                                         <th>Tên thuốc</th>
                                         <th>Liều dùng</th>
@@ -401,6 +402,7 @@ const DispenseHistoryPage = () => {
                                     {selectedPrescription.items.map((item, index) => (
                                         <tr key={item.prescriptionItemId || index}>
                                             <td>{index + 1}</td>
+                                            <td><span className="item-id">{item.prescriptionItemId}</span></td>
                                             <td>{item.medicineId}</td>
                                             <td><strong>{item.medicineName}</strong></td>
                                             <td>{item.dosage || 'N/A'}</td>
@@ -511,6 +513,7 @@ const DispenseHistoryPage = () => {
                                 <h4>Thông tin thuốc</h4>
                                 <p><strong>Tên thuốc:</strong> {selectedItem.medicineName}</p>
                                 <p><strong>Mã thuốc:</strong> {selectedItem.medicineId}</p>
+                                <p><strong>ID item trong đơn:</strong> {selectedItem.prescriptionItemId}</p>
                                 <p><strong>Số lượng đã cấp:</strong> {selectedItem.quantity}</p>
                                 <p><strong>Liều dùng:</strong> {selectedItem.dosage || 'N/A'}</p>
                             </div>

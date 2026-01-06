@@ -15,12 +15,20 @@ const DrugInteractionPage = () => {
   const [loading, setLoading] = useState(false);
 
   // ==================== STATE FOR TAB 1: CHECKER ====================
-  const [patientId, setPatientId] = useState('');
+  // Patient search
+  const [patientSearchTerm, setPatientSearchTerm] = useState('');
+  const [patientSearchResults, setPatientSearchResults] = useState([]);
+  const [selectedPatient, setSelectedPatient] = useState(null);
+  const [searchingPatient, setSearchingPatient] = useState(false);
+
+  // Medicine search
   const [checkSearchTerm, setCheckSearchTerm] = useState('');
-  const [checkSearchResults, setCheckSearchResults] = useState([]);
+  const [checkAllMedicines, setCheckAllMedicines] = useState([]); // All medicines for CHECK tab
+  const [checkFilteredMedicines, setCheckFilteredMedicines] = useState([]); // Filtered medicines for CHECK tab
+  const [checkLoadingMedicines, setCheckLoadingMedicines] = useState(false);
   const [selectedMedicines, setSelectedMedicines] = useState([]);
   const [checkResult, setCheckResult] = useState(null);
-  const [quickResult, setQuickResult] = useState(null); 
+  const [quickResult, setQuickResult] = useState(null);
 
   // ==================== STATE FOR TAB 2: MANAGE ====================
   const [interactionList, setInteractionList] = useState([]);
@@ -32,13 +40,27 @@ const DrugInteractionPage = () => {
   const [showFormModal, setShowFormModal] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
-    interactionId: null, medicine1Id: '', medicine1Name: '', medicine2Id: '', medicine2Name: '',
-    severityLevel: 'MODERATE', description: '', clinicalEffect: '', mechanism: '', management: ''
+    interactionId: null,
+    medicine1Id: '',
+    medicine1Name: '',
+    medicine2Id: '',
+    medicine2Name: '',
+    interactionType: 'DRUG_DRUG',
+    severityLevel: 'MODERATE',
+    clinicalEffect: '',
+    mechanism: '',
+    managementRecommendation: '',
+    alternativeTherapy: '',
+    onsetTime: '',
+    documentationLevel: '',
+    isActive: true
   });
-  
-  // Search medicine in form
+
+  // Search medicine in form - NEW: Load all medicines and filter locally
   const [medSearchTerm, setMedSearchTerm] = useState('');
-  const [medSearchResults, setMedSearchResults] = useState([]);
+  const [allMedicines, setAllMedicines] = useState([]); // Store all medicines
+  const [filteredMedicines, setFilteredMedicines] = useState([]); // Filtered list for display
+  const [loadingMedicines, setLoadingMedicines] = useState(false);
   const [searchingFor, setSearchingFor] = useState(null);
 
   // ==================== STATE FOR TAB 3: STATISTICS ====================
@@ -60,30 +82,84 @@ const DrugInteractionPage = () => {
   // ==================================================================
   // TAB 1 LOGIC: CHECK INTERACTIONS
   // ==================================================================
-  const handleSearchMedicineToAdd = async () => {
-    if (!checkSearchTerm) return;
+
+  // Patient search functions
+  const handleSearchPatient = async () => {
+    if (!patientSearchTerm.trim()) return;
+    setSearchingPatient(true);
     try {
-      const res = await pharmacistAPI.pharmacistInventoryAPI.searchMedicine(checkSearchTerm);
-      if (res?.status === 'OK') {
-        // Map snake_case từ API sang camelCase
-        const mappedData = res.data.map(m => ({
-          medicineId: m.medicine_id,
-          medicineName: m.medicine_name,
-          unit: m.unit,
-          manufacturer: m.manufacturer,
-          barcode: m.barcode,
-          sku: m.sku,
-          totalQuantity: m.total_quantity,
-          cabinetCount: m.cabinet_count,
-          stockStatus: m.stock_status
-        }));
-        setCheckSearchResults(mappedData);
+      const res = await pharmacistAPI.pharmacistPatientAPI.searchPatientsByName(patientSearchTerm, 0, 10);
+      if (res?.status === 'OK' && res.data?.content) {
+        setPatientSearchResults(res.data.content);
+      } else if (res?.data && Array.isArray(res.data)) {
+        setPatientSearchResults(res.data);
+      } else {
+        setPatientSearchResults([]);
       }
-    } catch (e) { console.error(e); }
+    } catch (e) {
+      console.error('Error searching patients:', e);
+      setPatientSearchResults([]);
+    } finally {
+      setSearchingPatient(false);
+    }
   };
+
+  const handleSelectPatient = (patient) => {
+    setSelectedPatient(patient);
+    setPatientSearchResults([]);
+    setPatientSearchTerm('');
+  };
+
+  const handleClearPatient = () => {
+    setSelectedPatient(null);
+    setPatientSearchTerm('');
+    setPatientSearchResults([]);
+  };
+
+  // Load all medicines for CHECK tab when component mounts
+  useEffect(() => {
+    loadCheckMedicines();
+  }, []);
+
+  const loadCheckMedicines = async () => {
+    setCheckLoadingMedicines(true);
+    try {
+      const res = await pharmacistAPI.medicineAPI.getMedicines('', 0, 1000, ['medicineName,asc']);
+      if (res?.status === 'OK' && res.data?.content) {
+        const medicines = res.data.content;
+        setCheckAllMedicines(medicines);
+        setCheckFilteredMedicines(medicines);
+      } else if (res?.data && Array.isArray(res.data)) {
+        setCheckAllMedicines(res.data);
+        setCheckFilteredMedicines(res.data);
+      }
+    } catch (e) {
+      console.error('Error loading medicines for CHECK tab:', e);
+    } finally {
+      setCheckLoadingMedicines(false);
+    }
+  };
+
+  // Filter medicines based on search term for CHECK tab
+  useEffect(() => {
+    if (!checkSearchTerm.trim()) {
+      setCheckFilteredMedicines(checkAllMedicines);
+    } else {
+      const searchLower = checkSearchTerm.toLowerCase();
+      const filtered = checkAllMedicines.filter(m =>
+        m.medicineName?.toLowerCase().includes(searchLower) ||
+        m.sku?.toLowerCase().includes(searchLower) ||
+        m.manufacturer?.toLowerCase().includes(searchLower)
+      );
+      setCheckFilteredMedicines(filtered);
+    }
+  }, [checkSearchTerm, checkAllMedicines]);
+
   const handleAddMedicine = (med) => {
     if (!selectedMedicines.find(m => m.medicineId === med.medicineId)) {
-      setSelectedMedicines([...selectedMedicines, med]); setCheckResult(null); setQuickResult(null); setCheckSearchResults([]); setCheckSearchTerm('');
+      setSelectedMedicines([...selectedMedicines, med]);
+      setCheckResult(null);
+      setQuickResult(null);
     }
   };
   const handleRemoveMedicine = (id) => { setSelectedMedicines(selectedMedicines.filter(m => m.medicineId !== id)); setCheckResult(null); setQuickResult(null); };
@@ -92,7 +168,7 @@ const DrugInteractionPage = () => {
     setLoading(true); setQuickResult(null);
     try {
       const ids = selectedMedicines.map(m => m.medicineId);
-      const pId = patientId ? parseInt(patientId) : null;
+      const pId = selectedPatient ? selectedPatient.patientId : null;
       const res = await pharmacistAPI.pharmacistInteractionAPI.checkInteractions(ids, pId);
       if (res?.status === 'OK') setCheckResult(res.data); else alert("Kiểm tra thất bại.");
     } catch (e) { console.error(e); alert("Lỗi khi kiểm tra."); } finally { setLoading(false); }
@@ -148,7 +224,28 @@ const DrugInteractionPage = () => {
     try { const res = await pharmacistAPI.pharmacistInteractionAPI.getInteractionById(id); if (res?.status === 'OK') setSelectedInteractionDetail(res.data); } catch (e) { console.error(e); } finally { setLoading(false); }
   };
 
-  const handleOpenCreate = () => { setIsEditing(false); setFormData({ interactionId: null, medicine1Id: '', medicine1Name: '', medicine2Id: '', medicine2Name: '', severityLevel: 'MODERATE', description: '', clinicalEffect: '', mechanism: '', management: '' }); setMedSearchResults([]); setShowFormModal(true); };
+  const handleOpenCreate = () => {
+    setIsEditing(false);
+    setFormData({
+      interactionId: null,
+      medicine1Id: '',
+      medicine1Name: '',
+      medicine2Id: '',
+      medicine2Name: '',
+      interactionType: 'DRUG_DRUG',
+      severityLevel: 'MODERATE',
+      clinicalEffect: '',
+      mechanism: '',
+      managementRecommendation: '',
+      alternativeTherapy: '',
+      onsetTime: '',
+      documentationLevel: '',
+      isActive: true
+    });
+    setMedSearchTerm('');
+    setShowFormModal(true);
+    loadAllMedicines(); // Load medicines when opening form
+  };
   const handleOpenEdit = (item) => {
     setIsEditing(true);
     // Hỗ trợ cả format cũ (medicine1Name) và format mới (medicine1.medicineName)
@@ -160,49 +257,113 @@ const DrugInteractionPage = () => {
       medicine1Name: med1Name,
       medicine2Id: item.medicine2Id,
       medicine2Name: med2Name,
+      interactionType: item.interactionType || 'DRUG_DRUG',
       severityLevel: item.severityLevel,
-      description: item.description||'',
-      clinicalEffect: item.clinicalEffect||'',
-      mechanism: item.mechanism||'',
-      management: item.managementRecommendation||''
+      clinicalEffect: item.clinicalEffect || '',
+      mechanism: item.mechanism || '',
+      managementRecommendation: item.managementRecommendation || '',
+      alternativeTherapy: item.alternativeTherapy || '',
+      onsetTime: item.onsetTime || '',
+      documentationLevel: item.documentationLevel || '',
+      isActive: item.isActive !== undefined ? item.isActive : true
     });
+    setMedSearchTerm('');
     setShowFormModal(true);
+    loadAllMedicines(); // Load medicines when opening form
   };
   const handleSubmit = async () => {
-    if (!formData.medicine1Id || !formData.medicine2Id || !formData.description) { alert("Thiếu thông tin!"); return; }
+    // Validation
+    if (!formData.medicine1Id || !formData.medicine2Id) {
+      alert("⚠️ Vui lòng chọn đủ 2 thuốc!");
+      return;
+    }
+    if (!formData.clinicalEffect || formData.clinicalEffect.trim() === '') {
+      alert("⚠️ Vui lòng nhập tác dụng lâm sàng!");
+      return;
+    }
+
     setLoading(true);
     try {
-      const payload = { medicine1Id: formData.medicine1Id, medicine2Id: formData.medicine2Id, severityLevel: formData.severityLevel, description: formData.description, clinicalEffect: formData.clinicalEffect, mechanism: formData.mechanism, management: formData.management };
+      const payload = {
+        medicine1Id: parseInt(formData.medicine1Id),
+        medicine2Id: parseInt(formData.medicine2Id),
+        interactionType: formData.interactionType,
+        severityLevel: formData.severityLevel,
+        clinicalEffect: formData.clinicalEffect.trim(),
+        mechanism: formData.mechanism?.trim() || undefined,
+        managementRecommendation: formData.managementRecommendation?.trim() || undefined,
+        alternativeTherapy: formData.alternativeTherapy?.trim() || undefined,
+        onsetTime: formData.onsetTime || undefined,
+        documentationLevel: formData.documentationLevel || undefined,
+        isActive: formData.isActive
+      };
+
+      console.log('=== DRUG INTERACTION PAYLOAD ===');
+      console.log(JSON.stringify(payload, null, 2));
+
       let res;
-      if (isEditing) res = await pharmacistAPI.pharmacistInteractionAPI.updateInteraction(formData.interactionId, payload);
-      else res = await pharmacistAPI.pharmacistInteractionAPI.createInteraction(payload);
-      if (res?.status === 'OK') { alert(isEditing ? "Cập nhật xong!" : "Tạo mới xong!"); setShowFormModal(false); fetchInteractions(); } else alert(res?.message || "Lỗi");
-    } catch (e) { console.error(e); } finally { setLoading(false); }
+      if (isEditing) {
+        res = await pharmacistAPI.pharmacistInteractionAPI.updateInteraction(formData.interactionId, payload);
+      } else {
+        res = await pharmacistAPI.pharmacistInteractionAPI.createInteraction(payload);
+      }
+
+      if (res?.status === 'OK') {
+        alert(isEditing ? "✅ Cập nhật tương tác thành công!" : "✅ Tạo mới tương tác thành công!");
+        setShowFormModal(false);
+        fetchInteractions();
+      } else {
+        alert(res?.message || "❌ Lỗi khi lưu tương tác");
+      }
+    } catch (e) {
+      console.error('Error submitting interaction:', e);
+      alert('❌ Lỗi: ' + (e.message || 'Không thể lưu'));
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleSearchMedicine = async () => {
-    if (!medSearchTerm.trim()) return;
+  // Load all medicines when opening the form
+  const loadAllMedicines = async () => {
+    setLoadingMedicines(true);
     try {
-      const res = await pharmacistAPI.pharmacistInventoryAPI.searchMedicine(medSearchTerm);
-      if (res?.status === 'OK') {
-        // Map snake_case từ API sang camelCase
-        const mappedData = res.data.map(m => ({
-          medicineId: m.medicine_id,
-          medicineName: m.medicine_name,
-          unit: m.unit,
-          manufacturer: m.manufacturer,
-          sku: m.sku,
-          totalQuantity: m.total_quantity,
-          stockStatus: m.stock_status
-        }));
-        setMedSearchResults(mappedData);
+      const res = await pharmacistAPI.medicineAPI.getMedicines('', 0, 1000, ['medicineName,asc']);
+      if (res?.status === 'OK' && res.data?.content) {
+        const medicines = res.data.content;
+        setAllMedicines(medicines);
+        setFilteredMedicines(medicines);
+      } else if (res?.data && Array.isArray(res.data)) {
+        // Fallback if response structure is different
+        setAllMedicines(res.data);
+        setFilteredMedicines(res.data);
       }
-    } catch (e) { console.error(e); }
+    } catch (e) {
+      console.error('Error loading medicines:', e);
+      alert('Không thể tải danh sách thuốc');
+    } finally {
+      setLoadingMedicines(false);
+    }
   };
+
+  // Filter medicines based on search term
+  useEffect(() => {
+    if (!medSearchTerm.trim()) {
+      setFilteredMedicines(allMedicines);
+    } else {
+      const searchLower = medSearchTerm.toLowerCase();
+      const filtered = allMedicines.filter(m =>
+        m.medicineName?.toLowerCase().includes(searchLower) ||
+        m.sku?.toLowerCase().includes(searchLower) ||
+        m.manufacturer?.toLowerCase().includes(searchLower)
+      );
+      setFilteredMedicines(filtered);
+    }
+  }, [medSearchTerm, allMedicines]);
+
   const handleSelectMedicine = (med) => {
     if (searchingFor === 'MED1') setFormData({ ...formData, medicine1Id: med.medicineId, medicine1Name: med.medicineName });
     else if (searchingFor === 'MED2') setFormData({ ...formData, medicine2Id: med.medicineId, medicine2Name: med.medicineName });
-    setSearchingFor(null); setMedSearchResults([]); setMedSearchTerm('');
+    setSearchingFor(null); setMedSearchTerm('');
   };
 
   // ==================================================================
@@ -306,11 +467,184 @@ const DrugInteractionPage = () => {
         <div className="checker-layout">
           <div className="panel left-panel">
             <h3><FaStethoscope/> Nhập thông tin</h3>
-            <div className="form-group"><label><FaUser/> ID Bệnh nhân</label><input type="number" placeholder="Nhập ID..." value={patientId} onChange={e=>setPatientId(e.target.value)} className="std-input"/></div>
-            <div className="form-group"><label><FaSearch/> Chọn thuốc</label><div className="search-box"><input placeholder="Nhập tên..." value={checkSearchTerm} onChange={e=>setCheckSearchTerm(e.target.value)} onKeyDown={e=>e.key==='Enter'&&handleSearchMedicineToAdd()}/><button onClick={handleSearchMedicineToAdd}><FaSearch/></button></div>{checkSearchResults.length>0 && <ul className="search-results-list">{checkSearchResults.map(med=><li key={med.medicineId}><span>{med.medicineName}</span> <button className="add-btn" onClick={()=>handleAddMedicine(med)}><FaPlus/></button></li>)}</ul>}</div>
-            <div className="selected-medicines-area"><h4>Đã chọn ({selectedMedicines.length})</h4><ul className="selected-list">{selectedMedicines.map(med=><li key={med.medicineId}><strong>{med.medicineName}</strong> <button className="remove-btn" onClick={()=>handleRemoveMedicine(med.medicineId)}><FaTrash/></button></li>)}{selectedMedicines.length===0 && <li className="empty-msg">Chưa chọn thuốc</li>}</ul></div>
-            <button className="check-action-btn" onClick={handleCheckInteraction} disabled={loading||selectedMedicines.length<2}>{loading?'Đang phân tích...':'KIỂM TRA AN TOÀN'}</button>
-            <div className="quick-tools"><h4>Công cụ nhanh</h4><div className="tool-buttons"><button onClick={handleQuickSafety} disabled={selectedMedicines.length<2}><FaShieldAlt/> Safety Check</button><button onClick={handleGetContraindicated} disabled={selectedMedicines.length<2} className="btn-contra"><FaBan/> Chống chỉ định</button><button onClick={handleGetMajor} disabled={selectedMedicines.length<2} className="btn-major"><FaRadiation/> Nghiêm trọng</button><button onClick={handleCheckPair} disabled={selectedMedicines.length<2}><FaExchangeAlt/> Check Cặp</button></div></div>
+
+            {/* Patient Search Section */}
+            <div className="form-group">
+              <label>
+                Bệnh nhân <span style={{color: 'red'}}>*</span>
+              </label>
+
+              {!selectedPatient ? (
+                <>
+                  <div className="search-box" style={{marginBottom: '10px'}}>
+                    <input
+                      placeholder="Nhập tên bệnh nhân để tìm kiếm..."
+                      value={patientSearchTerm}
+                      onChange={e => setPatientSearchTerm(e.target.value)}
+                      onKeyDown={e => e.key === 'Enter' && handleSearchPatient()}
+                      style={{flex: 1}}
+                    />
+                    <button onClick={handleSearchPatient} disabled={searchingPatient}>
+                      <FaSearch/>
+                    </button>
+                  </div>
+
+                  {searchingPatient && (
+                    <p style={{color: '#888', fontSize: '14px'}}>Đang tìm kiếm...</p>
+                  )}
+
+                  {patientSearchResults.length > 0 && (
+                    <ul className="search-results-list" style={{
+                      listStyle: 'none',
+                      padding: 0,
+                      margin: '10px 0',
+                      border: '1px solid #ddd',
+                      borderRadius: '4px',
+                      maxHeight: '200px',
+                      overflowY: 'auto'
+                    }}>
+                      {patientSearchResults.map(patient => (
+                        <li
+                          key={patient.patientId}
+                          onClick={() => handleSelectPatient(patient)}
+                          style={{
+                            padding: '10px',
+                            borderBottom: '1px solid #eee',
+                            cursor: 'pointer',
+                            transition: 'background-color 0.2s'
+                          }}
+                          onMouseEnter={e => e.currentTarget.style.backgroundColor = '#f5f5f5'}
+                          onMouseLeave={e => e.currentTarget.style.backgroundColor = 'white'}
+                        >
+                          <div style={{fontWeight: 'bold'}}>{patient.fullName}</div>
+                          <div style={{fontSize: '12px', color: '#666'}}>
+                            ID: {patient.patientId} | SĐT: {patient.phoneNumber || 'N/A'}
+                          </div>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </>
+              ) : (
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  padding: '10px',
+                  border: '1px solid #ddd',
+                  borderRadius: '4px',
+                  backgroundColor: '#f9f9f9'
+                }}>
+                  <div>
+                    <strong>{selectedPatient.fullName}</strong>
+                    <span style={{marginLeft: '10px', color: '#666'}}>
+                      (P{selectedPatient.patientId})
+                    </span>
+                  </div>
+                  <button
+                    onClick={handleClearPatient}
+                    style={{
+                      padding: '5px 10px',
+                      backgroundColor: 'transparent',
+                      border: 'none',
+                      color: '#e74c3c',
+                      cursor: 'pointer',
+                      fontSize: '14px'
+                    }}
+                  >
+                    Thay đổi
+                  </button>
+                </div>
+              )}
+            </div>
+
+            {/* Medicine Search Section */}
+            <div className="form-group">
+              <label><FaSearch/> Chọn thuốc</label>
+              <div className="search-box" style={{marginBottom: '10px'}}>
+                <input
+                  placeholder="Tìm kiếm thuốc theo tên, SKU, nhà sản xuất..."
+                  value={checkSearchTerm}
+                  onChange={e=>setCheckSearchTerm(e.target.value)}
+                  style={{flex: 1}}
+                />
+              </div>
+
+              {checkLoadingMedicines ? (
+                <p style={{color: '#888', fontSize: '14px'}}>Đang tải danh sách thuốc...</p>
+              ) : (
+                <>
+                  <select
+                    size="6"
+                    onChange={(e) => {
+                      const med = checkFilteredMedicines.find(m => m.medicineId === parseInt(e.target.value));
+                      if (med) handleAddMedicine(med);
+                    }}
+                    style={{
+                      width: '100%',
+                      padding: '8px',
+                      border: '1px solid #ddd',
+                      borderRadius: '4px',
+                      marginBottom: '8px'
+                    }}
+                  >
+                    {checkFilteredMedicines.length > 0 ? (
+                      checkFilteredMedicines.map(med => (
+                        <option key={med.medicineId} value={med.medicineId}>
+                          {med.medicineName} {med.manufacturer ? `- ${med.manufacturer}` : ''} {med.sku ? `(${med.sku})` : ''}
+                        </option>
+                      ))
+                    ) : (
+                      <option disabled>Không tìm thấy thuốc</option>
+                    )}
+                  </select>
+                  <small style={{color: '#888', display: 'block'}}>
+                    Hiển thị {checkFilteredMedicines.length} / {checkAllMedicines.length} thuốc - Click để thêm
+                  </small>
+                </>
+              )}
+            </div>
+
+            <div className="selected-medicines-area">
+              <h4>Đã chọn ({selectedMedicines.length})</h4>
+              <ul className="selected-list">
+                {selectedMedicines.map(med => (
+                  <li key={med.medicineId}>
+                    <strong>{med.medicineName}</strong>
+                    <button className="remove-btn" onClick={()=>handleRemoveMedicine(med.medicineId)}>
+                      <FaTrash/>
+                    </button>
+                  </li>
+                ))}
+                {selectedMedicines.length === 0 && <li className="empty-msg">Chưa chọn thuốc</li>}
+              </ul>
+            </div>
+
+            <button
+              className="check-action-btn"
+              onClick={handleCheckInteraction}
+              disabled={loading || selectedMedicines.length < 2}
+            >
+              {loading ? 'Đang phân tích...' : 'KIỂM TRA AN TOÀN'}
+            </button>
+
+            <div className="quick-tools">
+              <h4>Công cụ nhanh</h4>
+              <div className="tool-buttons">
+                <button onClick={handleQuickSafety} disabled={selectedMedicines.length<2}>
+                  <FaShieldAlt/> Safety Check
+                </button>
+                <button onClick={handleGetContraindicated} disabled={selectedMedicines.length<2} className="btn-contra">
+                  <FaBan/> Chống chỉ định
+                </button>
+                <button onClick={handleGetMajor} disabled={selectedMedicines.length<2} className="btn-major">
+                  <FaRadiation/> Nghiêm trọng
+                </button>
+                <button onClick={handleCheckPair} disabled={selectedMedicines.length<2}>
+                  <FaExchangeAlt/> Check Cặp
+                </button>
+              </div>
+            </div>
           </div>
           <div className="panel right-panel">
             <h3>Kết quả Phân tích</h3>
@@ -507,7 +841,273 @@ const DrugInteractionPage = () => {
           </div>
         </div>
       )}
-      {showFormModal && (<div className="modal-overlay"><div className="modal-content large-form"><div className="modal-header"><h2>{isEditing ? 'Cập nhật' : 'Tạo mới'}</h2><button className="close-btn" onClick={()=>setShowFormModal(false)}>&times;</button></div><div className="modal-body form-body"><h4 className="form-section-title">1. Chọn Cặp thuốc</h4><div className="form-row pair-select"><div className="form-group"><label>Thuốc 1 <span className="req">*</span></label><div className="drug-input-group"><input type="text" readOnly value={formData.medicine1Name} placeholder="Chưa chọn"/><button className="btn-pick" onClick={()=>setSearchingFor('MED1')}><FaSearch/></button></div></div><div className="exchange-icon-center"><FaExchangeAlt/></div><div className="form-group"><label>Thuốc 2 <span className="req">*</span></label><div className="drug-input-group"><input type="text" readOnly value={formData.medicine2Name} placeholder="Chưa chọn"/><button className="btn-pick" onClick={()=>setSearchingFor('MED2')}><FaSearch/></button></div></div></div>{searchingFor && (<div className="med-search-popup"><div className="search-header"><h5>Tìm thuốc</h5><button className="close-mini" onClick={()=>setSearchingFor(null)}>&times;</button></div><div className="search-input-row"><input autoFocus placeholder="Nhập tên..." value={medSearchTerm} onChange={e=>setMedSearchTerm(e.target.value)} onKeyDown={e=>e.key==='Enter'&&handleSearchMedicine()}/><button onClick={handleSearchMedicine}>Tìm</button></div><ul className="search-list">{medSearchResults.map(m=><li key={m.medicineId} onClick={()=>handleSelectMedicine(m)}>{m.medicineName}</li>)}</ul></div>)}<h4 className="form-section-title">2. Thông tin</h4><div className="form-group"><label>Mức độ <span className="req">*</span></label><select value={formData.severityLevel} onChange={e=>setFormData({...formData, severityLevel:e.target.value})}><option value="CONTRAINDICATED">Chống chỉ định</option><option value="MAJOR">Nghiêm trọng</option><option value="MODERATE">Trung bình</option><option value="MINOR">Nhẹ</option></select></div><div className="form-group"><label>Hậu quả</label><textarea rows="2" value={formData.clinicalEffect} onChange={e=>setFormData({...formData, clinicalEffect:e.target.value})}/></div><div className="form-group"><label>Cơ chế</label><textarea rows="2" value={formData.mechanism} onChange={e=>setFormData({...formData, mechanism:e.target.value})}/></div><div className="form-group"><label>Xử trí</label><textarea rows="3" value={formData.management} onChange={e=>setFormData({...formData, management:e.target.value})}/></div><div className="form-group"><label>Mô tả ngắn <span className="req">*</span></label><input type="text" value={formData.description} onChange={e=>setFormData({...formData, description:e.target.value})}/></div><div className="form-actions"><button className="btn-cancel" onClick={()=>setShowFormModal(false)}>Hủy</button><button className="btn-save" onClick={handleSubmit} disabled={loading}><FaSave/> Lưu</button></div></div></div></div>)}
+      {showFormModal && (
+        <div className="modal-overlay">
+          <div className="modal-content large-form">
+            <div className="modal-header">
+              <h2>{isEditing ? 'Cập nhật' : 'Tạo mới'}</h2>
+              <button className="close-btn" onClick={()=>setShowFormModal(false)}>&times;</button>
+            </div>
+            <div className="modal-body form-body">
+              <h4 className="form-section-title">1. Chọn Cặp thuốc</h4>
+
+              {/* Medicine 1 Selection */}
+              <div className="form-group">
+                <label>Thuốc 1 <span className="req">*</span></label>
+                {searchingFor === 'MED1' ? (
+                  <div>
+                    <div className="search-input-row" style={{marginBottom: '10px'}}>
+                      <input
+                        autoFocus
+                        placeholder="Tìm kiếm thuốc theo tên, SKU, nhà sản xuất..."
+                        value={medSearchTerm}
+                        onChange={e=>setMedSearchTerm(e.target.value)}
+                        style={{flex: 1, padding: '8px', border: '1px solid #ddd', borderRadius: '4px'}}
+                      />
+                      <button
+                        onClick={()=>setSearchingFor(null)}
+                        style={{marginLeft: '8px', padding: '8px 12px'}}
+                      >
+                        Đóng
+                      </button>
+                    </div>
+                    {loadingMedicines ? (
+                      <p>Đang tải danh sách thuốc...</p>
+                    ) : (
+                      <select
+                        size="8"
+                        onChange={(e) => {
+                          const med = filteredMedicines.find(m => m.medicineId === parseInt(e.target.value));
+                          if (med) handleSelectMedicine(med);
+                        }}
+                        style={{width: '100%', padding: '8px', border: '1px solid #ddd', borderRadius: '4px'}}
+                      >
+                        {filteredMedicines.length > 0 ? (
+                          filteredMedicines.map(m => (
+                            <option key={m.medicineId} value={m.medicineId}>
+                              {m.medicineName} {m.manufacturer ? `- ${m.manufacturer}` : ''} {m.sku ? `(${m.sku})` : ''}
+                            </option>
+                          ))
+                        ) : (
+                          <option disabled>Không tìm thấy thuốc</option>
+                        )}
+                      </select>
+                    )}
+                    <small style={{color: '#888', display: 'block', marginTop: '5px'}}>
+                      Hiển thị {filteredMedicines.length} / {allMedicines.length} thuốc
+                    </small>
+                  </div>
+                ) : (
+                  <div className="drug-input-group">
+                    <input
+                      type="text"
+                      readOnly
+                      value={formData.medicine1Name}
+                      placeholder="Chưa chọn"
+                      style={{flex: 1, padding: '8px', border: '1px solid #ddd', borderRadius: '4px', backgroundColor: '#f5f5f5'}}
+                    />
+                    <button
+                      className="btn-pick"
+                      onClick={()=>{setSearchingFor('MED1'); setMedSearchTerm('');}}
+                      style={{marginLeft: '8px', padding: '8px 12px'}}
+                    >
+                      <FaSearch/> Chọn
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              <div className="exchange-icon-center" style={{textAlign: 'center', margin: '15px 0'}}>
+                <FaExchangeAlt style={{fontSize: '24px', color: '#888'}}/>
+              </div>
+
+              {/* Medicine 2 Selection */}
+              <div className="form-group">
+                <label>Thuốc 2 <span className="req">*</span></label>
+                {searchingFor === 'MED2' ? (
+                  <div>
+                    <div className="search-input-row" style={{marginBottom: '10px'}}>
+                      <input
+                        autoFocus
+                        placeholder="Tìm kiếm thuốc theo tên, SKU, nhà sản xuất..."
+                        value={medSearchTerm}
+                        onChange={e=>setMedSearchTerm(e.target.value)}
+                        style={{flex: 1, padding: '8px', border: '1px solid #ddd', borderRadius: '4px'}}
+                      />
+                      <button
+                        onClick={()=>setSearchingFor(null)}
+                        style={{marginLeft: '8px', padding: '8px 12px'}}
+                      >
+                        Đóng
+                      </button>
+                    </div>
+                    {loadingMedicines ? (
+                      <p>Đang tải danh sách thuốc...</p>
+                    ) : (
+                      <select
+                        size="8"
+                        onChange={(e) => {
+                          const med = filteredMedicines.find(m => m.medicineId === parseInt(e.target.value));
+                          if (med) handleSelectMedicine(med);
+                        }}
+                        style={{width: '100%', padding: '8px', border: '1px solid #ddd', borderRadius: '4px'}}
+                      >
+                        {filteredMedicines.length > 0 ? (
+                          filteredMedicines.map(m => (
+                            <option key={m.medicineId} value={m.medicineId}>
+                              {m.medicineName} {m.manufacturer ? `- ${m.manufacturer}` : ''} {m.sku ? `(${m.sku})` : ''}
+                            </option>
+                          ))
+                        ) : (
+                          <option disabled>Không tìm thấy thuốc</option>
+                        )}
+                      </select>
+                    )}
+                    <small style={{color: '#888', display: 'block', marginTop: '5px'}}>
+                      Hiển thị {filteredMedicines.length} / {allMedicines.length} thuốc
+                    </small>
+                  </div>
+                ) : (
+                  <div className="drug-input-group">
+                    <input
+                      type="text"
+                      readOnly
+                      value={formData.medicine2Name}
+                      placeholder="Chưa chọn"
+                      style={{flex: 1, padding: '8px', border: '1px solid #ddd', borderRadius: '4px', backgroundColor: '#f5f5f5'}}
+                    />
+                    <button
+                      className="btn-pick"
+                      onClick={()=>{setSearchingFor('MED2'); setMedSearchTerm('');}}
+                      style={{marginLeft: '8px', padding: '8px 12px'}}
+                    >
+                      <FaSearch/> Chọn
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              <h4 className="form-section-title" style={{marginTop: '25px'}}>2. Thông tin tương tác</h4>
+
+              {/* Interaction Type */}
+              <div className="form-group">
+                <label>Loại tương tác <span className="req">*</span></label>
+                <select
+                  value={formData.interactionType}
+                  onChange={e=>setFormData({...formData, interactionType:e.target.value})}
+                >
+                  <option value="DRUG_DRUG">Tương tác thuốc-thuốc</option>
+                  <option value="DRUG_FOOD">Tương tác thuốc-thức ăn</option>
+                  <option value="DRUG_DISEASE">Tương tác thuốc-bệnh</option>
+                  <option value="DRUG_LAB">Tương tác thuốc-xét nghiệm</option>
+                </select>
+              </div>
+
+              {/* Severity Level */}
+              <div className="form-group">
+                <label>Mức độ nghiêm trọng <span className="req">*</span></label>
+                <select value={formData.severityLevel} onChange={e=>setFormData({...formData, severityLevel:e.target.value})}>
+                  <option value="CONTRAINDICATED">Chống chỉ định</option>
+                  <option value="MAJOR">Nghiêm trọng</option>
+                  <option value="MODERATE">Trung bình</option>
+                  <option value="MINOR">Nhẹ</option>
+                </select>
+              </div>
+
+              {/* Clinical Effect */}
+              <div className="form-group">
+                <label>Tác dụng lâm sàng <span className="req">*</span></label>
+                <textarea
+                  rows="3"
+                  value={formData.clinicalEffect}
+                  onChange={e=>setFormData({...formData, clinicalEffect:e.target.value})}
+                  placeholder="VD: May increase anticoagulant effect"
+                />
+              </div>
+
+              {/* Mechanism */}
+              <div className="form-group">
+                <label>Cơ chế (Tùy chọn)</label>
+                <textarea
+                  rows="2"
+                  value={formData.mechanism}
+                  onChange={e=>setFormData({...formData, mechanism:e.target.value})}
+                  placeholder="VD: Pharmacodynamic interaction"
+                />
+              </div>
+
+              {/* Management Recommendation */}
+              <div className="form-group">
+                <label>Khuyến nghị xử lý (Tùy chọn)</label>
+                <textarea
+                  rows="3"
+                  value={formData.managementRecommendation}
+                  onChange={e=>setFormData({...formData, managementRecommendation:e.target.value})}
+                  placeholder="VD: Monitor INR closely"
+                />
+              </div>
+
+              {/* Alternative Therapy */}
+              <div className="form-group">
+                <label>Thuốc thay thế (Tùy chọn)</label>
+                <textarea
+                  rows="2"
+                  value={formData.alternativeTherapy}
+                  onChange={e=>setFormData({...formData, alternativeTherapy:e.target.value})}
+                  placeholder="VD: Use alternative drug"
+                />
+              </div>
+
+              {/* Onset Time */}
+              <div className="form-group">
+                <label>Thời gian khởi phát (Tùy chọn)</label>
+                <select
+                  value={formData.onsetTime}
+                  onChange={e=>setFormData({...formData, onsetTime:e.target.value})}
+                >
+                  <option value="">-- Chọn --</option>
+                  <option value="RAPID">Nhanh</option>
+                  <option value="DELAYED">Chậm</option>
+                  <option value="UNKNOWN">Không rõ</option>
+                </select>
+              </div>
+
+              {/* Documentation Level */}
+              <div className="form-group">
+                <label>Mức độ tài liệu (Tùy chọn)</label>
+                <select
+                  value={formData.documentationLevel}
+                  onChange={e=>setFormData({...formData, documentationLevel:e.target.value})}
+                >
+                  <option value="">-- Chọn --</option>
+                  <option value="EXCELLENT">Xuất sắc</option>
+                  <option value="GOOD">Tốt</option>
+                  <option value="FAIR">Khá</option>
+                  <option value="POOR">Kém</option>
+                </select>
+              </div>
+
+              {/* Is Active */}
+              <div className="form-group">
+                <label style={{display: 'flex', alignItems: 'center', gap: '10px'}}>
+                  <input
+                    type="checkbox"
+                    checked={formData.isActive}
+                    onChange={e=>setFormData({...formData, isActive:e.target.checked})}
+                    style={{width: 'auto'}}
+                  />
+                  <span>Kích hoạt</span>
+                </label>
+              </div>
+
+              <div className="form-actions">
+                <button className="btn-cancel" onClick={()=>setShowFormModal(false)}>Hủy</button>
+                <button className="btn-save" onClick={handleSubmit} disabled={loading}><FaSave/> Lưu</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
       {showImportModal && (<div className="modal-overlay"><div className="modal-content large-form"><div className="modal-header"><h2>Import JSON</h2><button className="close-btn" onClick={()=>setShowImportModal(false)}>&times;</button></div><div className="modal-body"><textarea rows="10" style={{width:'100%', padding:'10px', border:'1px solid #ddd', borderRadius:'4px', fontFamily:'monospace'}} value={importJson} onChange={e=>setImportJson(e.target.value)} placeholder='[{"medicine1Id": 1, "medicine2Id": 5...}]'/><div className="form-actions"><button className="btn-cancel" onClick={()=>setShowImportModal(false)}>Hủy</button><button className="btn-save" onClick={handleImport} disabled={loading}><FaFileImport/> Import</button></div></div></div></div>)}
       
       {/* MODAL DATA & TRASH (UPDATED FOR JSON STRUCTURE) */}

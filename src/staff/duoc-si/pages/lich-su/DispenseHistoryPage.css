@@ -427,6 +427,18 @@
     border-bottom: none;
 }
 
+/* Item ID Badge */
+.item-id {
+    display: inline-block;
+    background: #e3f2fd;
+    color: #1976d2;
+    padding: 0.25rem 0.6rem;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    font-family: 'Courier New', monospace;
+}
+
 /* Return Medication Button */
 .btn-return {
     background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);

@@ -283,7 +283,7 @@ const CabinetInventoryPage = () => {
             itemName: '',
             quantity: 1,
             batchNumber: '',
-            // Đã bỏ expiryDate và unitPrice theo yêu cầu API mới nhất
+            expiryDate: '' // Thêm trường ngày hết hạn
         };
         setRestockItems([...restockItems, newItem]);
     };
@@ -309,20 +309,22 @@ const CabinetInventoryPage = () => {
     const handleRestock = async () => {
         // 1. Validation
         if (restockItems.length === 0) { alert('⚠️ Vui lòng thêm item!'); return; }
-        
+
         for (let i = 0; i < restockItems.length; i++) {
             const item = restockItems[i];
             if (!item.itemId) { alert(`⚠️ Item ${i + 1}: Vui lòng chọn thuốc!`); return; }
             if (!item.quantity || item.quantity < 1) { alert(`⚠️ Item ${i + 1}: Số lượng phải lớn hơn 0!`); return; }
             if (!item.batchNumber) { alert(`⚠️ Item ${i + 1}: Vui lòng nhập số lô!`); return; }
+            if (!item.expiryDate) { alert(`⚠️ Item ${i + 1}: Vui lòng nhập ngày hết hạn!`); return; }
         }
 
-        // 2. Chuẩn bị Payload (Chỉ gửi các trường API yêu cầu)
+        // 2. Chuẩn bị Payload (Bao gồm expiryDate)
         const payload = restockItems.map(item => ({
             itemType: item.itemType,
             itemId: parseInt(item.itemId),
             quantity: parseInt(item.quantity),
-            batchNumber: item.batchNumber
+            batchNumber: item.batchNumber,
+            expiryDate: item.expiryDate // Thêm ngày hết hạn vào payload
         }));
 
         try {
@@ -332,11 +334,11 @@ const CabinetInventoryPage = () => {
             if (response && response.status === 'OK') {
                 const result = response.data;
                 let message = `✅ ${response.message}\n• Thành công: ${result.success_count}\n• Thất bại: ${result.fail_count}`;
-                
+
                 if (result.errors?.length > 0) {
                     message += `\n⚠️ Lỗi chi tiết:\n${result.errors.join('\n')}`;
                 }
-                
+
                 alert(message);
                 setShowRestockModal(false);
                 if (selectedCabinet) loadCabinetInventory(selectedCabinet.cabinetId);
@@ -592,42 +594,321 @@ const CabinetInventoryPage = () => {
             {/* 2. RESTOCK MODAL */}
             {showRestockModal && selectedCabinet && (
                 <div className="modal-overlay">
-                    <div className="modal-content modal-large" style={{maxWidth: '1000px'}}>
-                        <div className="modal-header"><h3>📦 Bổ sung tồn kho - {selectedCabinet.cabinetLocation}</h3><button className="btn-close" onClick={()=>setShowRestockModal(false)}><FiX/></button></div>
-                        <div className="modal-body">
-                            <div style={{marginBottom: '10px', display:'flex', justifyContent:'space-between', alignItems: 'center'}}>
-                                <h4>Danh sách items</h4>
-                                <button className="btn-primary" onClick={handleAddRestockItem} style={{fontSize: '0.9rem'}}><FiPlus/> Thêm item</button>
+                    <div className="modal-content modal-large" style={{ maxWidth: '1200px', maxHeight: '90vh' }}>
+                        <div className="modal-header" style={{
+                            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                            color: '#fff',
+                            padding: '20px 24px',
+                            borderRadius: '12px 12px 0 0'
+                        }}>
+                            <div>
+                                <h3 style={{ margin: 0, fontSize: '20px', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                    <FiPackage size={24} /> Bổ sung tồn kho
+                                </h3>
+                                <p style={{ margin: '5px 0 0 0', fontSize: '14px', opacity: 0.9 }}>
+                                    📍 {selectedCabinet.cabinetLocation}
+                                </p>
                             </div>
-                            
+                            <button
+                                className="btn-close"
+                                onClick={() => setShowRestockModal(false)}
+                                style={{
+                                    background: 'rgba(255,255,255,0.2)',
+                                    color: '#fff',
+                                    border: 'none',
+                                    width: '36px',
+                                    height: '36px',
+                                    borderRadius: '50%',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    cursor: 'pointer',
+                                    transition: 'all 0.2s'
+                                }}
+                                onMouseEnter={(e) => e.target.style.background = 'rgba(255,255,255,0.3)'}
+                                onMouseLeave={(e) => e.target.style.background = 'rgba(255,255,255,0.2)'}
+                            >
+                                <FiX size={20} />
+                            </button>
+                        </div>
+                        <div className="modal-body" style={{ padding: '24px' }}>
+                            <div style={{
+                                marginBottom: '20px',
+                                display: 'flex',
+                                justifyContent: 'space-between',
+                                alignItems: 'center',
+                                padding: '15px',
+                                background: 'linear-gradient(135deg, #e0e7ff 0%, #f3e8ff 100%)',
+                                borderRadius: '10px',
+                                border: '2px solid #c7d2fe'
+                            }}>
+                                <div>
+                                    <h4 style={{ margin: 0, fontSize: '16px', fontWeight: '700', color: '#4338ca' }}>
+                                        📋 Danh sách items
+                                    </h4>
+                                    <p style={{ margin: '5px 0 0 0', fontSize: '13px', color: '#6366f1' }}>
+                                        Thêm các thuốc/vật tư cần bổ sung vào tủ
+                                    </p>
+                                </div>
+                                <button
+                                    className="btn-primary"
+                                    onClick={handleAddRestockItem}
+                                    style={{
+                                        fontSize: '14px',
+                                        fontWeight: '600',
+                                        padding: '10px 20px',
+                                        borderRadius: '8px',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '8px',
+                                        background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                                        border: 'none',
+                                        boxShadow: '0 4px 6px rgba(16, 185, 129, 0.3)',
+                                        transition: 'all 0.2s'
+                                    }}
+                                    onMouseEnter={(e) => {
+                                        e.target.style.transform = 'translateY(-2px)';
+                                        e.target.style.boxShadow = '0 6px 12px rgba(16, 185, 129, 0.4)';
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        e.target.style.transform = 'translateY(0)';
+                                        e.target.style.boxShadow = '0 4px 6px rgba(16, 185, 129, 0.3)';
+                                    }}
+                                >
+                                    <FiPlus size={18} /> Thêm item
+                                </button>
+                            </div>
+
                             {restockItems.length === 0 ? (
-                                <div style={{textAlign: 'center', padding: '2rem', background: '#f8f9fa', borderRadius: '8px', color: '#666'}}>
-                                    <FiPackage size={48}/> <p>Chưa có item nào. Nhấn "Thêm item" để bắt đầu.</p>
+                                <div style={{
+                                    textAlign: 'center',
+                                    padding: '60px 20px',
+                                    background: 'linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%)',
+                                    borderRadius: '12px',
+                                    border: '2px dashed #d1d5db'
+                                }}>
+                                    <FiPackage size={64} style={{ color: '#9ca3af', marginBottom: '15px' }} />
+                                    <p style={{ fontSize: '16px', fontWeight: '600', color: '#6b7280', margin: '10px 0' }}>
+                                        Chưa có item nào
+                                    </p>
+                                    <p style={{ fontSize: '14px', color: '#9ca3af', margin: 0 }}>
+                                        Nhấn nút "Thêm item" để bắt đầu bổ sung tồn kho
+                                    </p>
                                 </div>
                             ) : (
-                                <div style={{maxHeight: '400px', overflowY: 'auto'}}>
+                                <div style={{ maxHeight: '500px', overflowY: 'auto', paddingRight: '5px' }}>
                                     {restockItems.map((item, index) => (
-                                        <div key={index} style={{border:'1px solid #ddd', padding:'15px', marginBottom:'10px', borderRadius:'8px', background: '#fff'}}>
-                                            <div style={{display: 'flex', justifyContent: 'space-between', marginBottom: '5px'}}>
-                                                <strong>Item #{index+1}</strong>
-                                                <button onClick={()=>handleRemoveRestockItem(index)} style={{border:'none', background:'none', color:'red', cursor: 'pointer'}}><FiTrash2/></button>
+                                        <div key={index} style={{
+                                            border: '2px solid #e2e8f0',
+                                            padding: '20px',
+                                            marginBottom: '15px',
+                                            borderRadius: '12px',
+                                            background: 'linear-gradient(to bottom, #ffffff, #f8fafc)',
+                                            boxShadow: '0 2px 4px rgba(0,0,0,0.05)'
+                                        }}>
+                                            {/* Header */}
+                                            <div style={{
+                                                display: 'flex',
+                                                justifyContent: 'space-between',
+                                                alignItems: 'center',
+                                                marginBottom: '15px',
+                                                paddingBottom: '10px',
+                                                borderBottom: '2px solid #e2e8f0'
+                                            }}>
+                                                <div style={{
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    gap: '10px'
+                                                }}>
+                                                    <div style={{
+                                                        width: '32px',
+                                                        height: '32px',
+                                                        borderRadius: '50%',
+                                                        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                                                        color: '#fff',
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        justifyContent: 'center',
+                                                        fontWeight: '700',
+                                                        fontSize: '14px'
+                                                    }}>
+                                                        {index + 1}
+                                                    </div>
+                                                    <strong style={{ fontSize: '16px', color: '#2d3748' }}>
+                                                        Item #{index + 1}
+                                                    </strong>
+                                                </div>
+                                                <button
+                                                    onClick={() => handleRemoveRestockItem(index)}
+                                                    style={{
+                                                        border: 'none',
+                                                        background: '#fee2e2',
+                                                        color: '#dc2626',
+                                                        padding: '8px 12px',
+                                                        borderRadius: '8px',
+                                                        cursor: 'pointer',
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        gap: '5px',
+                                                        fontSize: '14px',
+                                                        fontWeight: '600',
+                                                        transition: 'all 0.2s'
+                                                    }}
+                                                    onMouseEnter={(e) => {
+                                                        e.target.style.background = '#fecaca';
+                                                        e.target.style.transform = 'scale(1.05)';
+                                                    }}
+                                                    onMouseLeave={(e) => {
+                                                        e.target.style.background = '#fee2e2';
+                                                        e.target.style.transform = 'scale(1)';
+                                                    }}
+                                                >
+                                                    <FiTrash2 size={16} /> Xóa
+                                                </button>
                                             </div>
-                                            <div style={{display:'grid', gridTemplateColumns:'1fr 2fr 1fr 1fr', gap:'10px'}}>
-                                                <div className="form-group">
-                                                    <label>Loại <span className="required">*</span></label>
-                                                    <select className="form-control" value={item.itemType} onChange={(e)=>handleUpdateRestockItem(index, 'itemType', e.target.value)}>
-                                                        <option value="MEDICINE">Thuốc</option><option value="MATERIAL">Vật tư</option><option value="EQUIPMENT">Thiết bị</option>
-                                                    </select>
+
+                                            {/* Form Fields - 2 Rows Layout */}
+                                            <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+                                                {/* Row 1: Loại và Thuốc */}
+                                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 3fr', gap: '15px' }}>
+                                                    <div className="form-group" style={{ margin: 0 }}>
+                                                        <label style={{
+                                                            display: 'block',
+                                                            marginBottom: '8px',
+                                                            fontWeight: '600',
+                                                            color: '#374151',
+                                                            fontSize: '14px'
+                                                        }}>
+                                                            Loại <span className="required" style={{ color: '#dc2626' }}>*</span>
+                                                        </label>
+                                                        <select
+                                                            className="form-control"
+                                                            value={item.itemType}
+                                                            onChange={(e) => handleUpdateRestockItem(index, 'itemType', e.target.value)}
+                                                            style={{
+                                                                padding: '10px 12px',
+                                                                fontSize: '14px',
+                                                                borderRadius: '8px',
+                                                                border: '1px solid #d1d5db',
+                                                                width: '100%'
+                                                            }}
+                                                        >
+                                                            <option value="MEDICINE">💊 Thuốc</option>
+                                                            <option value="MATERIAL">🧪 Vật tư</option>
+                                                            <option value="EQUIPMENT">🔧 Thiết bị</option>
+                                                        </select>
+                                                    </div>
+                                                    <div className="form-group" style={{ margin: 0 }}>
+                                                        <label style={{
+                                                            display: 'block',
+                                                            marginBottom: '8px',
+                                                            fontWeight: '600',
+                                                            color: '#374151',
+                                                            fontSize: '14px'
+                                                        }}>
+                                                            Chọn thuốc/vật tư <span className="required" style={{ color: '#dc2626' }}>*</span>
+                                                        </label>
+                                                        <select
+                                                            className="form-control"
+                                                            value={item.itemId}
+                                                            onChange={(e) => handleUpdateRestockItem(index, 'itemId', e.target.value)}
+                                                            disabled={loadingMedicines}
+                                                            style={{
+                                                                padding: '10px 12px',
+                                                                fontSize: '14px',
+                                                                borderRadius: '8px',
+                                                                border: '1px solid #d1d5db',
+                                                                width: '100%',
+                                                                background: loadingMedicines ? '#f3f4f6' : '#fff'
+                                                            }}
+                                                        >
+                                                            <option value="">{loadingMedicines ? '⏳ Đang tải...' : '-- Chọn thuốc/vật tư --'}</option>
+                                                            {medicines.map(m => (
+                                                                <option key={m.medicineId} value={m.medicineId}>
+                                                                    [{m.sku}] {m.medicineName}
+                                                                </option>
+                                                            ))}
+                                                        </select>
+                                                    </div>
                                                 </div>
-                                                <div className="form-group">
-                                                    <label>Thuốc <span className="required">*</span></label>
-                                                    <select className="form-control" value={item.itemId} onChange={(e)=>handleUpdateRestockItem(index, 'itemId', e.target.value)} disabled={loadingMedicines}>
-                                                        <option value="">{loadingMedicines ? 'Đang tải...' : '--Chọn thuốc--'}</option>
-                                                        {medicines.map(m=><option key={m.medicineId} value={m.medicineId}>[{m.sku}] {m.medicineName}</option>)}
-                                                    </select>
+
+                                                {/* Row 2: Số lượng, Số lô, Hạn sử dụng */}
+                                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr 1.5fr', gap: '15px' }}>
+                                                    <div className="form-group" style={{ margin: 0 }}>
+                                                        <label style={{
+                                                            display: 'block',
+                                                            marginBottom: '8px',
+                                                            fontWeight: '600',
+                                                            color: '#374151',
+                                                            fontSize: '14px'
+                                                        }}>
+                                                            Số lượng <span className="required" style={{ color: '#dc2626' }}>*</span>
+                                                        </label>
+                                                        <input
+                                                            type="number"
+                                                            min="1"
+                                                            className="form-control"
+                                                            value={item.quantity}
+                                                            onChange={(e) => handleUpdateRestockItem(index, 'quantity', e.target.value)}
+                                                            style={{
+                                                                padding: '10px 12px',
+                                                                fontSize: '14px',
+                                                                borderRadius: '8px',
+                                                                border: '1px solid #d1d5db',
+                                                                width: '100%'
+                                                            }}
+                                                        />
+                                                    </div>
+                                                    <div className="form-group" style={{ margin: 0 }}>
+                                                        <label style={{
+                                                            display: 'block',
+                                                            marginBottom: '8px',
+                                                            fontWeight: '600',
+                                                            color: '#374151',
+                                                            fontSize: '14px'
+                                                        }}>
+                                                            Số lô <span className="required" style={{ color: '#dc2626' }}>*</span>
+                                                        </label>
+                                                        <input
+                                                            type="text"
+                                                            className="form-control"
+                                                            value={item.batchNumber}
+                                                            onChange={(e) => handleUpdateRestockItem(index, 'batchNumber', e.target.value)}
+                                                            placeholder="VD: BATCH-2026-001"
+                                                            style={{
+                                                                padding: '10px 12px',
+                                                                fontSize: '14px',
+                                                                borderRadius: '8px',
+                                                                border: '1px solid #d1d5db',
+                                                                width: '100%'
+                                                            }}
+                                                        />
+                                                    </div>
+                                                    <div className="form-group" style={{ margin: 0 }}>
+                                                        <label style={{
+                                                            display: 'block',
+                                                            marginBottom: '8px',
+                                                            fontWeight: '600',
+                                                            color: '#374151',
+                                                            fontSize: '14px'
+                                                        }}>
+                                                            Hạn sử dụng <span className="required" style={{ color: '#dc2626' }}>*</span>
+                                                        </label>
+                                                        <input
+                                                            type="date"
+                                                            className="form-control"
+                                                            value={item.expiryDate}
+                                                            onChange={(e) => handleUpdateRestockItem(index, 'expiryDate', e.target.value)}
+                                                            style={{
+                                                                padding: '10px 12px',
+                                                                fontSize: '14px',
+                                                                borderRadius: '8px',
+                                                                border: '1px solid #d1d5db',
+                                                                width: '100%'
+                                                            }}
+                                                        />
+                                                    </div>
                                                 </div>
-                                                <div className="form-group"><label>SL <span className="required">*</span></label><input type="number" min="1" className="form-control" value={item.quantity} onChange={(e)=>handleUpdateRestockItem(index, 'quantity', e.target.value)}/></div>
-                                                <div className="form-group"><label>Số lô <span className="required">*</span></label><input type="text" className="form-control" value={item.batchNumber} onChange={(e)=>handleUpdateRestockItem(index, 'batchNumber', e.target.value)} placeholder="VD: BATCH-001"/></div>
                                             </div>
                                         </div>
                                     ))}
@@ -636,15 +917,105 @@ const CabinetInventoryPage = () => {
 
                             {/* Summary */}
                             {restockItems.length > 0 && (
-                                <div style={{padding: '10px', background: '#e7f3ff', borderRadius: '8px', marginTop: '10px'}}>
-                                    <strong>Tổng kết:</strong> {restockItems.length} items. Tổng số lượng: {restockItems.reduce((sum, i) => sum + (parseInt(i.quantity)||0), 0)}
+                                <div style={{
+                                    padding: '20px',
+                                    background: 'linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%)',
+                                    borderRadius: '12px',
+                                    marginTop: '20px',
+                                    border: '2px solid #93c5fd',
+                                    display: 'flex',
+                                    justifyContent: 'space-between',
+                                    alignItems: 'center'
+                                }}>
+                                    <div>
+                                        <div style={{ fontSize: '14px', color: '#1e40af', marginBottom: '5px', fontWeight: '600' }}>
+                                            📊 Tổng kết
+                                        </div>
+                                        <div style={{ fontSize: '24px', fontWeight: '700', color: '#1e3a8a' }}>
+                                            {restockItems.length} items
+                                        </div>
+                                    </div>
+                                    <div style={{ textAlign: 'right' }}>
+                                        <div style={{ fontSize: '14px', color: '#1e40af', marginBottom: '5px', fontWeight: '600' }}>
+                                            📦 Tổng số lượng
+                                        </div>
+                                        <div style={{ fontSize: '24px', fontWeight: '700', color: '#1e3a8a' }}>
+                                            {restockItems.reduce((sum, i) => sum + (parseInt(i.quantity) || 0), 0)} đơn vị
+                                        </div>
+                                    </div>
                                 </div>
                             )}
                         </div>
-                        <div className="modal-footer">
-                            <button className="btn-secondary" onClick={()=>setShowRestockModal(false)} disabled={loading}>Hủy</button>
-                            <button className="btn-primary" onClick={handleRestock} disabled={loading || restockItems.length === 0}>
-                                <FiSave/> {loading ? 'Đang xử lý...' : 'Xác nhận bổ sung'}
+                        <div className="modal-footer" style={{
+                            padding: '20px 24px',
+                            borderTop: '2px solid #e5e7eb',
+                            display: 'flex',
+                            justifyContent: 'flex-end',
+                            gap: '12px'
+                        }}>
+                            <button
+                                className="btn-secondary"
+                                onClick={() => setShowRestockModal(false)}
+                                disabled={loading}
+                                style={{
+                                    padding: '12px 24px',
+                                    fontSize: '14px',
+                                    fontWeight: '600',
+                                    borderRadius: '8px',
+                                    border: '2px solid #d1d5db',
+                                    background: '#fff',
+                                    color: '#6b7280',
+                                    cursor: loading ? 'not-allowed' : 'pointer',
+                                    transition: 'all 0.2s'
+                                }}
+                                onMouseEnter={(e) => {
+                                    if (!loading) {
+                                        e.target.style.background = '#f9fafb';
+                                        e.target.style.borderColor = '#9ca3af';
+                                    }
+                                }}
+                                onMouseLeave={(e) => {
+                                    e.target.style.background = '#fff';
+                                    e.target.style.borderColor = '#d1d5db';
+                                }}
+                            >
+                                Hủy
+                            </button>
+                            <button
+                                className="btn-primary"
+                                onClick={handleRestock}
+                                disabled={loading || restockItems.length === 0}
+                                style={{
+                                    padding: '12px 24px',
+                                    fontSize: '14px',
+                                    fontWeight: '600',
+                                    borderRadius: '8px',
+                                    border: 'none',
+                                    background: (loading || restockItems.length === 0)
+                                        ? '#9ca3af'
+                                        : 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
+                                    color: '#fff',
+                                    cursor: (loading || restockItems.length === 0) ? 'not-allowed' : 'pointer',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '8px',
+                                    boxShadow: (loading || restockItems.length === 0)
+                                        ? 'none'
+                                        : '0 4px 6px rgba(59, 130, 246, 0.3)',
+                                    transition: 'all 0.2s'
+                                }}
+                                onMouseEnter={(e) => {
+                                    if (!loading && restockItems.length > 0) {
+                                        e.target.style.transform = 'translateY(-2px)';
+                                        e.target.style.boxShadow = '0 6px 12px rgba(59, 130, 246, 0.4)';
+                                    }
+                                }}
+                                onMouseLeave={(e) => {
+                                    e.target.style.transform = 'translateY(0)';
+                                    e.target.style.boxShadow = '0 4px 6px rgba(59, 130, 246, 0.3)';
+                                }}
+                            >
+                                <FiSave size={18} /> {loading ? '⏳ Đang xử lý...' : '✅ Xác nhận bổ sung'}
                             </button>
                         </div>
                     </div>
