@@ -41,7 +41,9 @@ const InventoryTransactionsPage = () => {
 
     // Record Movement Modal state
     const [showRecordModal, setShowRecordModal] = useState(false);
-    const [stockItems, setStockItems] = useState([]);
+    const [stockItems, setStockItems] = useState([]); // All stock items
+    const [filteredStockItems, setFilteredStockItems] = useState([]); // Filtered stock items
+    const [stockSearchTerm, setStockSearchTerm] = useState('');
     const [loadingStockItems, setLoadingStockItems] = useState(false);
     const [submittingMovement, setSubmittingMovement] = useState(false);
 
@@ -435,36 +437,56 @@ const InventoryTransactionsPage = () => {
     const handleCloseRecordModal = () => {
         setShowRecordModal(false);
         resetMovementForm();
+        setStockSearchTerm('');
     };
 
     // Load stock items for dropdown
     const loadStockItems = async () => {
         try {
             setLoadingStockItems(true);
-            const response = await pharmacistInventoryAPI.getInventory(0, 1000);
+            const response = await pharmacistInventoryAPI.getAllInventory();
             console.log('Stock Items Response:', response);
 
-            if (response && response.data) {
-                if (response.data.content) {
-                    setStockItems(response.data.content);
-                } else if (Array.isArray(response.data)) {
-                    setStockItems(response.data);
-                }
-            } else if (response && response.content) {
-                setStockItems(response.content);
+            // Handle new API response format
+            if (response && response.status === 'OK' && Array.isArray(response.data)) {
+                setStockItems(response.data);
+                setFilteredStockItems(response.data);
+            } else if (response && Array.isArray(response.data)) {
+                setStockItems(response.data);
+                setFilteredStockItems(response.data);
             } else if (Array.isArray(response)) {
                 setStockItems(response);
+                setFilteredStockItems(response);
             } else {
+                console.warn('Unexpected response format:', response);
                 setStockItems([]);
+                setFilteredStockItems([]);
             }
         } catch (err) {
             console.error('Error loading stock items:', err);
             alert('❌ Không thể tải danh sách tồn kho');
             setStockItems([]);
+            setFilteredStockItems([]);
         } finally {
             setLoadingStockItems(false);
         }
     };
+
+    // Filter stock items based on search term
+    useEffect(() => {
+        if (!stockSearchTerm.trim()) {
+            setFilteredStockItems(stockItems);
+        } else {
+            const searchLower = stockSearchTerm.toLowerCase();
+            const filtered = stockItems.filter(item =>
+                // Handle both snake_case (new API) and camelCase (old API)
+                (item.item_name || item.itemName)?.toLowerCase().includes(searchLower) ||
+                (item.item_type || item.itemType)?.toLowerCase().includes(searchLower) ||
+                (item.batch_number || item.batchNumber)?.toLowerCase().includes(searchLower)
+            );
+            setFilteredStockItems(filtered);
+        }
+    }, [stockSearchTerm, stockItems]);
 
     // Reset movement form
     const resetMovementForm = () => {
@@ -492,7 +514,7 @@ const InventoryTransactionsPage = () => {
     // Validate movement form
     const validateMovementForm = () => {
         if (!movementForm.stockId) {
-            alert('⚠️ Vui lòng chọn stock item');
+            alert('⚠️ Vui lòng chọn thuốc/vật tư');
             return false;
         }
         if (!movementForm.movementType) {
@@ -1322,14 +1344,14 @@ const InventoryTransactionsPage = () => {
                                     }}
                                 >
                                     <option value="">-- Chọn loại --</option>
-                                    <option value="PRESCRIPTION">PRESCRIPTION</option>
-                                    <option value="GOODS_RECEIPT">GOODS_RECEIPT</option>
-                                    <option value="INVOICE">INVOICE</option>
-                                    <option value="MANUAL">MANUAL</option>
-                                    <option value="GOODS_ISSUE">GOODS_ISSUE</option>
-                                    <option value="PURCHASE_ORDER">PURCHASE_ORDER</option>
-                                    <option value="TRANSFER_ORDER">TRANSFER_ORDER</option>
-                                    <option value="INVENTORY_CHECK">INVENTORY_CHECK</option>
+                                    <option value="PRESCRIPTION">PRESCRIPTION - Đơn thuốc</option>
+                                    <option value="MEDICATION_ADMINISTRATION">MEDICATION_ADMINISTRATION - Cấp phát thuốc</option>
+                                    <option value="GOODS_RECEIPT">GOODS_RECEIPT - Phiếu nhập kho</option>
+                                    <option value="GOODS_ISSUE">GOODS_ISSUE - Phiếu xuất kho</option>
+                                    <option value="STOCK_TAKING">STOCK_TAKING - Kiểm kê</option>
+                                    <option value="TRANSFER">TRANSFER - Chuyển kho</option>
+                                    <option value="ADJUSTMENT">ADJUSTMENT - Điều chỉnh</option>
+                                    <option value="MANUAL">MANUAL - Thủ công</option>
                                 </select>
                                 {filters.referenceType && (
                                     <div style={{
@@ -3026,23 +3048,69 @@ const InventoryTransactionsPage = () => {
 
                         <div className="modal-body">
                             <form style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '1rem' }}>
-                                {/* Stock Item */}
+                                {/* Stock Item Selection */}
                                 <div className="form-group" style={{ gridColumn: '1 / -1' }}>
                                     <label>
-                                        Stock Item <span style={{ color: '#dc3545' }}>*</span>
+                                        Mã hàng tồn kho <span style={{ color: '#dc3545' }}>*</span>
                                     </label>
-                                    <select
-                                        value={movementForm.stockId}
-                                        onChange={(e) => handleFormChange('stockId', e.target.value)}
-                                        disabled={loadingStockItems}
-                                    >
-                                        <option value="">-- Chọn stock item --</option>
-                                        {stockItems.map(item => (
-                                            <option key={item.stockId} value={item.stockId}>
-                                                {item.itemName} ({item.itemType}) - Tồn: {item.currentQuantity || 0}
-                                            </option>
-                                        ))}
-                                    </select>
+
+                                    {/* Search Input */}
+                                    <div style={{ marginBottom: '10px' }}>
+                                        <input
+                                            type="text"
+                                            placeholder="Tìm kiếm theo tên thuốc, loại, số lô..."
+                                            value={stockSearchTerm}
+                                            onChange={(e) => setStockSearchTerm(e.target.value)}
+                                            style={{
+                                                width: '100%',
+                                                padding: '0.5rem',
+                                                border: '1px solid #dee2e6',
+                                                borderRadius: '4px',
+                                                fontSize: '0.95rem'
+                                            }}
+                                        />
+                                    </div>
+
+                                    {/* Stock Items Dropdown */}
+                                    {loadingStockItems ? (
+                                        <p style={{ color: '#888', fontSize: '14px' }}>Đang tải danh sách tồn kho...</p>
+                                    ) : (
+                                        <select
+                                            value={movementForm.stockId}
+                                            onChange={(e) => handleFormChange('stockId', e.target.value)}
+                                            disabled={loadingStockItems}
+                                            size="6"
+                                            style={{
+                                                width: '100%',
+                                                padding: '0.5rem',
+                                                border: '1px solid #dee2e6',
+                                                borderRadius: '4px',
+                                                fontSize: '0.95rem'
+                                            }}
+                                        >
+                                            <option value="">-- Chọn thuốc/vật tư --</option>
+                                            {filteredStockItems.map(item => {
+                                                // Handle both snake_case (new API) and camelCase (old API)
+                                                const stockId = item.stock_id || item.stockId;
+                                                const itemName = item.item_name || item.itemName;
+                                                const itemType = item.item_type || item.itemType;
+                                                const quantity = item.quantity_on_hand || item.currentQuantity || 0;
+                                                const batchNumber = item.batch_number || item.batchNumber || 'N/A';
+
+                                                return (
+                                                    <option key={stockId} value={stockId}>
+                                                        {itemName} ({itemType}) - Tồn: {quantity} - Lô: {batchNumber}
+                                                    </option>
+                                                );
+                                            })}
+                                        </select>
+                                    )}
+
+                                    {filteredStockItems.length === 0 && stockSearchTerm && !loadingStockItems && (
+                                        <p style={{ color: '#dc3545', fontSize: '14px', marginTop: '5px' }}>
+                                            Không tìm thấy thuốc/vật tư phù hợp
+                                        </p>
+                                    )}
                                 </div>
 
                                 {/* Movement Type */}
@@ -3073,9 +3141,12 @@ const InventoryTransactionsPage = () => {
                                     >
                                         <option value="MANUAL">MANUAL - Thủ công</option>
                                         <option value="PRESCRIPTION">PRESCRIPTION - Đơn thuốc</option>
-                                        <option value="PURCHASE_ORDER">PURCHASE_ORDER - Đơn đặt hàng</option>
-                                        <option value="TRANSFER_ORDER">TRANSFER_ORDER - Lệnh điều chuyển</option>
-                                        <option value="INVENTORY_CHECK">INVENTORY_CHECK - Kiểm kê</option>
+                                        <option value="MEDICATION_ADMINISTRATION">MEDICATION_ADMINISTRATION - Cấp phát thuốc</option>
+                                        <option value="GOODS_RECEIPT">GOODS_RECEIPT - Phiếu nhập kho</option>
+                                        <option value="GOODS_ISSUE">GOODS_ISSUE - Phiếu xuất kho</option>
+                                        <option value="STOCK_TAKING">STOCK_TAKING - Kiểm kê</option>
+                                        <option value="TRANSFER">TRANSFER - Chuyển kho</option>
+                                        <option value="ADJUSTMENT">ADJUSTMENT - Điều chỉnh</option>
                                     </select>
                                 </div>
 

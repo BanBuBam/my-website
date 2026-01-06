@@ -484,26 +484,6 @@ const SessionManagementPage = () => {
                                 <div className="stat-label">Đăng nhập thất bại</div>
                             </div>
                         </div>
-
-                        <div className="stat-card">
-                            <div className="stat-icon purple">
-                                <FiMonitor />
-                            </div>
-                            <div className="stat-content">
-                                <div className="stat-value">{statistics.peakConcurrentUsers}</div>
-                                <div className="stat-label">Số người dùng đồng thời cao nhất</div>
-                            </div>
-                        </div>
-
-                        <div className="stat-card">
-                            <div className="stat-icon teal">
-                                <FiClock />
-                            </div>
-                            <div className="stat-content">
-                                <div className="stat-value">{statistics.avgSessionDurationMinutes} phút</div>
-                                <div className="stat-label">Thời gian phiên trung bình</div>
-                            </div>
-                        </div>
                     </div>
                 </div>
             )}

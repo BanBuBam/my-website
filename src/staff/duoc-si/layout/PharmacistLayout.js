@@ -175,7 +175,7 @@ const PharmacistLayout = () => {
                     </div>
 
                     {/* Nhà cung cấp */}
-                    <div className="nav-category">
+                    {/* <div className="nav-category">
                         <div className="category-header">Nhà cung cấp</div>
                         <ul>
                             <li>
@@ -197,7 +197,7 @@ const PharmacistLayout = () => {
                                 </NavLink>
                             </li>
                         </ul>
-                    </div>
+                    </div> */}
 
                     {/* Báo cáo
                     <div className="nav-category">
